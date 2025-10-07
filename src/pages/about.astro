@@ -1,0 +1,253 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Button from '../components/Button.astro';
+---
+
+<BaseLayout
+  title="About PhilaCon Valley - Our Story & Mission"
+  description="Learn about PhilaCon Valley's mission to make Philadelphia a tech hub by centering Black, Brown, LGBTQIA+, and underrepresented folks in tech."
+>
+  <Header />
+
+  <!-- Hero Section -->
+  <section class="bg-gradient-to-br from-primary-600 to-accent-600 text-white py-20">
+    <div class="container-custom">
+      <div class="max-w-4xl mx-auto text-center">
+        <h1 class="text-5xl md:text-6xl font-bold mb-6">About PhilaCon Valley</h1>
+        <p class="text-2xl opacity-90">
+          Making Philly the tech hub it's meant to be: by us, for us.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Our Story -->
+  <section class="section-padding">
+    <div class="container-custom">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-4xl font-bold mb-8">Our Story</h2>
+        <div class="prose prose-lg max-w-none space-y-6 text-gray-700">
+          <p class="text-xl leading-relaxed">
+            PhilaCon Valley was born from a simple truth: Philadelphia has incredible tech talent,
+            but too many of us – Black, Brown, LGBTQIA+, and underrepresented folks – face
+            barriers to breaking into and thriving in tech.
+          </p>
+          <p class="text-lg">
+            Founded by Waskar Paulino, PhilaCon Valley started as a vision to create a different
+            kind of tech community. Not another networking event where you hand out business cards
+            and leave. Not another conference where you sit and listen. A real community where
+            we learn together, build together, and lift each other up.
+          </p>
+          <p class="text-lg">
+            We meet at Pennovation Works and other spaces around Philadelphia for hands-on
+            collaboration sessions. No lectures. No passive learning. Just us, building real
+            projects, pair programming, sharing knowledge, and supporting each other's growth.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mission & Values -->
+  <section class="section-padding bg-gray-50">
+    <div class="container-custom">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-4xl font-bold mb-12 text-center">Our Mission & Values</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="bg-white p-8 rounded-lg shadow-md">
+            <div class="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-3">Centering the Margins</h3>
+            <p class="text-gray-600">
+              We deliberately center Black, Brown, LGBTQIA+, and underrepresented folks in tech.
+              This isn't just inclusion – it's making sure our voices lead.
+            </p>
+          </div>
+
+          <div class="bg-white p-8 rounded-lg shadow-md">
+            <div class="w-12 h-12 bg-accent-600 rounded-lg flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-3">Hands-On Learning</h3>
+            <p class="text-gray-600">
+              We believe the best way to learn is by doing. Our events are collaborative build
+              sessions, not passive lectures.
+            </p>
+          </div>
+
+          <div class="bg-white p-8 rounded-lg shadow-md">
+            <div class="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-3">Community Over Competition</h3>
+            <p class="text-gray-600">
+              We're not competing with each other. We're building each other up. Your success
+              is our success.
+            </p>
+          </div>
+
+          <div class="bg-white p-8 rounded-lg shadow-md">
+            <div class="w-12 h-12 bg-accent-600 rounded-lg flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-3">Philly Pride</h3>
+            <p class="text-gray-600">
+              This is Philadelphia's tech community. We're building the future of tech right here
+              in our city, our way.
+            </p>
+          </div>
+
+          <div class="bg-white p-8 rounded-lg shadow-md">
+            <div class="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-3">Open Knowledge</h3>
+            <p class="text-gray-600">
+              All our projects are open source. All our resources are free. Knowledge should be
+              accessible to everyone.
+            </p>
+          </div>
+
+          <div class="bg-white p-8 rounded-lg shadow-md">
+            <div class="w-12 h-12 bg-accent-600 rounded-lg flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-3">Radical Welcome</h3>
+            <p class="text-gray-600">
+              Everyone is welcome here, regardless of experience level. Whether you wrote your
+              first line of code yesterday or you're a senior engineer, you belong.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What We Do -->
+  <section class="section-padding">
+    <div class="container-custom">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-4xl font-bold mb-8">What We Do</h2>
+        <div class="space-y-8">
+          <div>
+            <h3 class="text-2xl font-bold mb-3">Collab Lab</h3>
+            <p class="text-gray-700 text-lg">
+              Our flagship event. We meet regularly to work on real projects together. Bring
+              your own project or join someone else's. Learn through pair programming, code
+              reviews, and building together. No presentations, just building.
+            </p>
+          </div>
+
+          <div>
+            <h3 class="text-2xl font-bold mb-3">Workshops</h3>
+            <p class="text-gray-700 text-lg">
+              Hands-on technical workshops covering everything from Git basics to building APIs.
+              We learn by doing, and we learn together.
+            </p>
+          </div>
+
+          <div>
+            <h3 class="text-2xl font-bold mb-3">Career Support</h3>
+            <p class="text-gray-700 text-lg">
+              Resume reviews, interview prep, job search strategies, and connections to inclusive
+              companies. We help each other land jobs where we'll be valued and can thrive.
+            </p>
+          </div>
+
+          <div>
+            <h3 class="text-2xl font-bold mb-3">Community Projects</h3>
+            <p class="text-gray-700 text-lg">
+              We build tools for our community – job boards, learning platforms, portfolio
+              builders. Real projects that solve real problems and give us experience to add
+              to our resumes.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Who We Serve -->
+  <section class="section-padding bg-gradient-to-br from-primary-50 to-accent-50">
+    <div class="container-custom">
+      <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-4xl font-bold mb-6">Who We Serve</h2>
+        <p class="text-xl text-gray-700 leading-relaxed mb-8">
+          PhilaCon Valley centers Black, Brown, LGBTQIA+, and underrepresented folks in tech.
+          We know that tech isn't always welcoming to us. We know the barriers, the
+          microaggressions, the imposter syndrome.
+        </p>
+        <p class="text-lg text-gray-600 mb-8">
+          This space exists for us to learn, grow, and build together without having to code
+          switch, without having to prove ourselves, without having to be "the only one in the
+          room." Here, we're not the only ones. We're the majority. And we're building the
+          tech industry we want to see.
+        </p>
+        <p class="text-lg text-gray-600">
+          Everyone is welcome at our events, but our focus and resources center those who have
+          been historically excluded from tech spaces.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Philadelphia Focus -->
+  <section class="section-padding">
+    <div class="container-custom">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-4xl font-bold mb-8">Philly, By Us, For Us</h2>
+        <p class="text-xl text-gray-700 leading-relaxed mb-6">
+          Philadelphia has always been a city of innovation, from Benjamin Franklin to The Fresh
+          Prince. But when people talk about tech hubs, they talk about Silicon Valley, New York,
+          Austin. Not Philly.
+        </p>
+        <p class="text-lg text-gray-600 mb-6">
+          We're changing that. Philadelphia has the talent, the diversity, the creativity, and
+          the grit to be a major tech hub. What we've lacked is the infrastructure and
+          community to support homegrown tech talent – especially talent from communities
+          that have been historically locked out.
+        </p>
+        <p class="text-lg text-gray-600">
+          PhilaCon Valley is building that infrastructure. We're proving that you don't need
+          to move to San Francisco to work in tech. You can build a tech career right here in
+          Philadelphia, surrounded by people who look like you, support you, and believe in you.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section-padding bg-gradient-to-r from-primary-600 to-accent-600 text-white">
+    <div class="container-custom text-center">
+      <h2 class="text-4xl font-bold mb-6">Join the Movement</h2>
+      <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">
+        Be part of building the Philadelphia tech community we want to see.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <Button href="/join" variant="secondary" size="lg">
+          Get Involved
+        </Button>
+        <Button href="/events" variant="outline" size="lg" class="!text-white !border-white hover:!bg-white/10">
+          Attend an Event
+        </Button>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

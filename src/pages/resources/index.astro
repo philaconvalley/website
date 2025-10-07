@@ -1,0 +1,210 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import ResourceCard from '../../components/ResourceCard.astro';
+import Button from '../../components/Button.astro';
+import { getCollection } from 'astro:content';
+
+const resources = (await getCollection('resources')).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+);
+
+// Get unique categories and levels
+const categories = [...new Set(resources.map(r => r.data.category))];
+const levels = [...new Set(resources.map(r => r.data.level))];
+---
+
+<BaseLayout
+  title="Learning Resources - PhilaCon Valley"
+  description="Free tutorials, workshops, and career resources for learning web development and tech skills."
+>
+  <Header />
+
+  <!-- Hero Section -->
+  <section class="bg-gradient-to-br from-primary-600 to-accent-600 text-white py-20">
+    <div class="container-custom">
+      <div class="max-w-4xl mx-auto text-center">
+        <h1 class="text-5xl md:text-6xl font-bold mb-6">Learning Resources</h1>
+        <p class="text-2xl opacity-90">
+          Free tutorials, guides, and resources to level up your tech skills
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {resources.length === 0 ? (
+    <!-- Coming Soon -->
+    <section class="section-padding">
+      <div class="container-custom">
+        <div class="max-w-3xl mx-auto text-center">
+          <div class="bg-gradient-to-br from-primary-50 to-accent-50 rounded-2xl p-12 md:p-16">
+            <svg class="w-24 h-24 mx-auto mb-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">Resources Coming Soon</h2>
+            <p class="text-xl text-gray-700 mb-8 leading-relaxed">
+              We're creating free tutorials, guides, and learning materials for the community!
+              Check back soon, or join us to help create and share knowledge.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button href="/events" variant="primary" size="lg">
+                Attend a Workshop
+              </Button>
+              <Button href="/join" variant="outline" size="lg">
+                Join the Community
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  ) : (
+    <>
+      <!-- Intro -->
+      <section class="section-padding bg-gray-50">
+        <div class="container-custom">
+          <div class="max-w-3xl mx-auto text-center">
+            <p class="text-xl text-gray-700 leading-relaxed">
+              All resources are free and created by the PhilaCon Valley community. Whether you're
+              just starting out or looking to level up, we've got something for you.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Filter and Search Section with Alpine.js -->
+      <section class="section-padding">
+        <div class="container-custom">
+          <div
+            x-data="{
+              searchQuery: '',
+              categoryFilter: 'all',
+              levelFilter: 'all',
+              resources: $el.querySelectorAll('[data-resource]'),
+              filterResources() {
+                this.resources.forEach(resource => {
+                  const matchesSearch = !this.searchQuery ||
+                    resource.dataset.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                    resource.dataset.tags.toLowerCase().includes(this.searchQuery.toLowerCase());
+                  const matchesCategory = this.categoryFilter === 'all' || resource.dataset.category === this.categoryFilter;
+                  const matchesLevel = this.levelFilter === 'all' || resource.dataset.level === this.levelFilter;
+
+                  if (matchesSearch && matchesCategory && matchesLevel) {
+                    resource.style.display = 'block';
+                  } else {
+                    resource.style.display = 'none';
+                  }
+                });
+              }
+            }"
+          >
+            <!-- Search and Filters -->
+            <div class="mb-12 space-y-6">
+              <!-- Search Bar -->
+              <div class="max-w-2xl mx-auto">
+                <div class="relative">
+                  <input
+                    type="text"
+                    x-model="searchQuery"
+                    @input="filterResources()"
+                    placeholder="Search resources by title or tags..."
+                    class="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  />
+                  <svg class="w-5 h-5 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Filters -->
+              <div class="flex flex-wrap justify-center gap-4">
+                <!-- Category Filter -->
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2">Category</label>
+                  <select
+                    x-model="categoryFilter"
+                    @change="filterResources()"
+                    class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  >
+                    <option value="all">All Categories</option>
+                    {categories.map(cat => (
+                      <option value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <!-- Level Filter -->
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2">Level</label>
+                  <select
+                    x-model="levelFilter"
+                    @change="filterResources()"
+                    class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  >
+                    <option value="all">All Levels</option>
+                    {levels.map(level => (
+                      <option value={level}>{level}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Resources Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {
+                resources.map((resource) => (
+                  <div
+                    data-resource
+                    data-title={resource.data.title}
+                    data-category={resource.data.category}
+                    data-level={resource.data.level}
+                    data-tags={resource.data.tags.join(' ')}
+                  >
+                    <ResourceCard
+                      title={resource.data.title}
+                      description={resource.data.description}
+                      category={resource.data.category}
+                      level={resource.data.level}
+                      author={resource.data.author}
+                      tags={resource.data.tags}
+                      slug={resource.slug}
+                    />
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  )}
+
+  <!-- Contribute CTA -->
+  <section class="section-padding bg-gradient-to-r from-primary-600 to-accent-600 text-white">
+    <div class="container-custom text-center">
+      <h2 class="text-4xl font-bold mb-6">Share Your Knowledge</h2>
+      <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">
+        Have expertise to share? Create a tutorial or guide for the community.
+        All contributions are welcome!
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <Button href="/contact" variant="secondary" size="lg">
+          Contribute a Resource
+        </Button>
+        <Button href="/join" variant="outline" size="lg" class="!text-white !border-white hover:!bg-white/10">
+          Join the Community
+        </Button>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  [x-cloak] {
+    display: none !important;
+  }
+</style>

@@ -1,0 +1,138 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Hero from '../components/Hero.astro';
+import Button from '../components/Button.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+
+const projects = (await getCollection('projects')).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+).slice(0, 3);
+---
+
+<BaseLayout title="PhilaCon Valley - Philadelphia's Tech Community By Us, For Us">
+  <Header />
+
+  <Hero />
+
+  <!-- Mission Section -->
+  <section class="section-padding">
+    <div class="container-custom">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-4xl font-bold mb-6">Our Mission</h2>
+        <p class="text-xl text-gray-700 leading-relaxed mb-8">
+          PhilaCon Valley exists to make Philadelphia the tech hub it's meant to be.
+          We center Black, Brown, LGBTQIA+, and underrepresented folks in tech through
+          hands-on learning, pair programming, collaborative workshops, and community support.
+        </p>
+        <p class="text-lg text-gray-600 mb-8">
+          This is a community <strong>by us, for us</strong> – where everyone belongs,
+          everyone learns, and everyone builds the future of Philly tech together.
+        </p>
+        <Button href="/about" variant="primary" size="lg">
+          Learn More About Us
+        </Button>
+      </div>
+    </div>
+  </section>
+
+  <!-- What We Do Section -->
+  <section class="section-padding bg-gradient-to-br from-primary-50 to-accent-50">
+    <div class="container-custom">
+      <h2 class="text-4xl font-bold text-center mb-12">What We Do</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Workshops</h3>
+          <p class="text-gray-600">Hands-on learning sessions covering web dev, APIs, Git, and more</p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-16 h-16 bg-accent-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Collab Labs</h3>
+          <p class="text-gray-600">Build real projects together through pair programming and mentorship</p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Career Support</h3>
+          <p class="text-gray-600">Resume reviews, interview prep, and job search guidance</p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-16 h-16 bg-accent-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Community</h3>
+          <p class="text-gray-600">A supportive network of developers learning and growing together</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Latest Projects -->
+  {projects.length > 0 && (
+    <section class="section-padding">
+      <div class="container-custom">
+        <div class="flex items-center justify-between mb-12">
+          <h2 class="text-4xl font-bold">Community Projects</h2>
+          <Button href="/projects" variant="outline">
+            View All Projects
+          </Button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {
+            projects.map((project) => (
+              <ProjectCard
+                title={project.data.title}
+                description={project.data.description}
+                techStack={project.data.techStack}
+                githubUrl={project.data.githubUrl}
+                liveUrl={project.data.liveUrl}
+                slug={project.slug}
+                status={project.data.status}
+              />
+            ))
+          }
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- CTA Section -->
+  <section class="section-padding bg-gradient-to-r from-primary-600 to-accent-600 text-white">
+    <div class="container-custom text-center">
+      <h2 class="text-4xl font-bold mb-6">Ready to Join the Community?</h2>
+      <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">
+        Whether you're just starting your tech journey or you're an experienced developer,
+        there's a place for you in PhilaCon Valley.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <Button href="/join" variant="secondary" size="lg">
+          Join Us Today
+        </Button>
+        <Button href="/events" variant="outline" size="lg" class="!text-white !border-white hover:!bg-white/10">
+          See Upcoming Events
+        </Button>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
