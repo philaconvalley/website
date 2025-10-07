@@ -1,0 +1,175 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import Button from '../../components/Button.astro';
+import { getCollection } from 'astro:content';
+
+const projects = (await getCollection('projects')).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+);
+---
+
+<BaseLayout
+  title="Community Projects - PhilaCon Valley"
+  description="Explore projects built by PhilaCon Valley community members. Open source, collaborative, and built in Philadelphia."
+>
+  <Header />
+
+  <!-- Hero Section -->
+  <section class="bg-gradient-to-br from-primary-600 to-accent-600 text-white py-20">
+    <div class="container-custom">
+      <div class="max-w-4xl mx-auto text-center">
+        <h1 class="text-5xl md:text-6xl font-bold mb-6">Community Projects</h1>
+        <p class="text-2xl opacity-90">
+          Built by the community, for the community
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {projects.length === 0 ? (
+    <!-- Coming Soon -->
+    <section class="section-padding">
+      <div class="container-custom">
+        <div class="max-w-3xl mx-auto text-center">
+          <div class="bg-gradient-to-br from-primary-50 to-accent-50 rounded-2xl p-12 md:p-16">
+            <svg class="w-24 h-24 mx-auto mb-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+            </svg>
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">Projects Coming Soon</h2>
+            <p class="text-xl text-gray-700 mb-8 leading-relaxed">
+              We're building amazing projects at our Collab Labs! Check back soon to see
+              what the community is creating, or join us at our next event to start building your own.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button href="/events" variant="primary" size="lg">
+                Attend a Collab Lab
+              </Button>
+              <Button href="/join" variant="outline" size="lg">
+                Join the Community
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  ) : (
+    <>
+      <!-- Intro -->
+      <section class="section-padding bg-gray-50">
+        <div class="container-custom">
+          <div class="max-w-3xl mx-auto text-center">
+            <p class="text-xl text-gray-700 leading-relaxed mb-6">
+              These projects were built during our Collab Labs and workshops. Every project is
+              open source and welcomes contributions. Whether you want to add features, fix bugs,
+              or learn from the code, dive in!
+            </p>
+            <Button href="/join" variant="primary">
+              Join Us and Build Your Own
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Filter Section with Alpine.js -->
+      <section class="section-padding">
+        <div class="container-custom">
+          <div
+            x-data="{
+              filter: 'all',
+              projects: $el.querySelectorAll('[data-project]'),
+              get filteredProjects() {
+                return Array.from(this.projects).filter(project => {
+                  if (this.filter === 'all') return true;
+                  return project.dataset.status === this.filter;
+                });
+              },
+              filterProjects() {
+                this.projects.forEach(project => {
+                  if (this.filter === 'all' || project.dataset.status === this.filter) {
+                    project.style.display = 'block';
+                  } else {
+                    project.style.display = 'none';
+                  }
+                });
+              }
+            }"
+          >
+            <!-- Filter Buttons -->
+            <div class="flex justify-center gap-4 mb-12">
+              <button
+                @click="filter = 'all'; filterProjects()"
+                :class="filter === 'all' ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
+                class="px-6 py-2 rounded-lg font-semibold transition-colors"
+              >
+                All Projects
+              </button>
+              <button
+                @click="filter = 'active'; filterProjects()"
+                :class="filter === 'active' ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
+                class="px-6 py-2 rounded-lg font-semibold transition-colors"
+              >
+                Active
+              </button>
+              <button
+                @click="filter = 'completed'; filterProjects()"
+                :class="filter === 'completed' ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
+                class="px-6 py-2 rounded-lg font-semibold transition-colors"
+              >
+                Completed
+              </button>
+            </div>
+
+            <!-- Projects Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {
+                projects.map((project) => (
+                  <div data-project data-status={project.data.status}>
+                    <ProjectCard
+                      title={project.data.title}
+                      description={project.data.description}
+                      techStack={project.data.techStack}
+                      githubUrl={project.data.githubUrl}
+                      liveUrl={project.data.liveUrl}
+                      slug={project.slug}
+                      status={project.data.status}
+                    />
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  )}
+
+  <!-- Submit Project CTA -->
+  <section class="section-padding bg-gradient-to-r from-primary-600 to-accent-600 text-white">
+    <div class="container-custom text-center">
+      <h2 class="text-4xl font-bold mb-6">Built Something Cool?</h2>
+      <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">
+        Share your project with the community! Whether you built it at one of our events
+        or on your own, we'd love to showcase it.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <Button href="/contact" variant="secondary" size="lg">
+          Submit Your Project
+        </Button>
+        <Button href="https://github.com/philaconvalley" external variant="outline" size="lg" class="!text-white !border-white hover:!bg-white/10">
+          View on GitHub
+        </Button>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  [x-cloak] {
+    display: none !important;
+  }
+</style>

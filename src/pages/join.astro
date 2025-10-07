@@ -1,0 +1,243 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Button from '../components/Button.astro';
+---
+
+<BaseLayout
+  title="Join PhilaCon Valley - Get Involved"
+  description="Join Philadelphia's tech community by us, for us. Connect on Slack, attend events, and start building with us."
+>
+  <Header />
+
+  <!-- Hero Section -->
+  <section class="bg-gradient-to-br from-primary-600 to-accent-600 text-white py-20">
+    <div class="container-custom">
+      <div class="max-w-4xl mx-auto text-center">
+        <h1 class="text-5xl md:text-6xl font-bold mb-6">Join the Community</h1>
+        <p class="text-2xl opacity-90">
+          Everyone is welcome. Everyone belongs. Everyone builds.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ways to Join -->
+  <section class="section-padding">
+    <div class="container-custom">
+      <h2 class="text-4xl font-bold mb-12 text-center">How to Get Involved</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <!-- Attend Events -->
+        <div class="card p-8 text-center">
+          <div class="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold mb-3">Attend an Event</h3>
+          <p class="text-gray-600 mb-6">
+            RSVP for our next Collab Lab or workshop. No experience required – just bring your curiosity and laptop.
+          </p>
+          <Button href="https://lu.ma/philaconvalley" external variant="primary" class="w-full">
+            View Events
+          </Button>
+        </div>
+
+        <!-- Join Slack -->
+        <div class="card p-8 text-center">
+          <div class="w-16 h-16 bg-accent-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold mb-3">Join Our Slack</h3>
+          <p class="text-gray-600 mb-6">
+            Connect with the community, ask questions, share resources, and find pair programming partners.
+          </p>
+          <Button href="/contact" variant="primary" class="w-full">
+            Request Invite
+          </Button>
+        </div>
+
+        <!-- Follow Us -->
+        <div class="card p-8 text-center">
+          <div class="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold mb-3">Follow on Social</h3>
+          <p class="text-gray-600 mb-6">
+            Stay updated on events, resources, and community news. Connect with us on your favorite platform.
+          </p>
+          <div class="space-y-2">
+            <Button href="https://www.instagram.com/phlconvalley/" external variant="outline" class="w-full">
+              Instagram
+            </Button>
+            <Button href="https://www.linkedin.com/company/philaconvalley/" external variant="outline" class="w-full">
+              LinkedIn
+            </Button>
+            <Button href="https://x.com/PhlConValley" external variant="outline" class="w-full">
+              Twitter/X
+            </Button>
+          </div>
+        </div>
+
+        <!-- Contribute to Projects -->
+        <div class="card p-8 text-center">
+          <div class="w-16 h-16 bg-accent-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold mb-3">Contribute to Projects</h3>
+          <p class="text-gray-600 mb-6">
+            All our projects are open source. Browse our repos, pick an issue, and submit your first PR!
+          </p>
+          <Button href="/projects" variant="primary" class="w-full">
+            View Projects
+          </Button>
+        </div>
+
+        <!-- Share Resources -->
+        <div class="card p-8 text-center">
+          <div class="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold mb-3">Share Your Knowledge</h3>
+          <p class="text-gray-600 mb-6">
+            Write a tutorial, lead a workshop, or mentor newer developers. Your knowledge helps the community grow.
+          </p>
+          <Button href="/resources" variant="primary" class="w-full">
+            View Resources
+          </Button>
+        </div>
+
+        <!-- Support Us -->
+        <div class="card p-8 text-center">
+          <div class="w-16 h-16 bg-accent-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold mb-3">Support the Mission</h3>
+          <p class="text-gray-600 mb-6">
+            Help us keep events free and accessible through Open Collective. Every contribution counts.
+          </p>
+          <Button href="/support" variant="primary" class="w-full">
+            Support Us
+          </Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What You'll Find -->
+  <section class="section-padding bg-gray-50">
+    <div class="container-custom">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-4xl font-bold mb-8 text-center">What You'll Find Here</h2>
+        <div class="space-y-6 text-lg text-gray-700">
+          <div class="flex items-start">
+            <svg class="w-6 h-6 text-primary-600 mr-3 mt-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <p><strong>A supportive community</strong> that celebrates your wins and helps you through challenges</p>
+          </div>
+          <div class="flex items-start">
+            <svg class="w-6 h-6 text-primary-600 mr-3 mt-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <p><strong>Hands-on learning</strong> through building real projects, not just watching tutorials</p>
+          </div>
+          <div class="flex items-start">
+            <svg class="w-6 h-6 text-primary-600 mr-3 mt-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <p><strong>Mentorship and pair programming</strong> to accelerate your growth</p>
+          </div>
+          <div class="flex items-start">
+            <svg class="w-6 h-6 text-primary-600 mr-3 mt-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <p><strong>Career support</strong> including resume reviews, interview prep, and job connections</p>
+          </div>
+          <div class="flex items-start">
+            <svg class="w-6 h-6 text-primary-600 mr-3 mt-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <p><strong>A space where you belong</strong> – no code switching, no being "the only one"</p>
+          </div>
+          <div class="flex items-start">
+            <svg class="w-6 h-6 text-primary-600 mr-3 mt-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <p><strong>Portfolio-worthy projects</strong> built collaboratively with the community</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Code of Conduct -->
+  <section class="section-padding">
+    <div class="container-custom">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-3xl font-bold mb-6">Our Values</h2>
+        <p class="text-lg text-gray-700 mb-6">
+          PhilaCon Valley is committed to providing a welcoming, inclusive, and harassment-free
+          experience for everyone. We value:
+        </p>
+        <ul class="space-y-3 text-gray-700 mb-8">
+          <li class="flex items-start">
+            <span class="text-primary-600 mr-2">•</span>
+            <span>Respect for all community members, regardless of background or experience level</span>
+          </li>
+          <li class="flex items-start">
+            <span class="text-primary-600 mr-2">•</span>
+            <span>Creating space for marginalized voices to lead and be heard</span>
+          </li>
+          <li class="flex items-start">
+            <span class="text-primary-600 mr-2">•</span>
+            <span>Collaborative learning over competition</span>
+          </li>
+          <li class="flex items-start">
+            <span class="text-primary-600 mr-2">•</span>
+            <span>Kindness, patience, and empathy in all interactions</span>
+          </li>
+          <li class="flex items-start">
+            <span class="text-primary-600 mr-2">•</span>
+            <span>Zero tolerance for harassment, discrimination, or exclusionary behavior</span>
+          </li>
+        </ul>
+        <p class="text-gray-600">
+          By participating in PhilaCon Valley, you agree to uphold these values and create a
+          positive environment for all members.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section-padding bg-gradient-to-r from-primary-600 to-accent-600 text-white">
+    <div class="container-custom text-center">
+      <h2 class="text-4xl font-bold mb-6">Ready to Get Started?</h2>
+      <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">
+        The best time to join was yesterday. The second best time is now.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <Button href="https://lu.ma/philaconvalley" external variant="secondary" size="lg">
+          Attend Next Event
+        </Button>
+        <Button href="/contact" variant="outline" size="lg" class="!text-white !border-white hover:!bg-white/10">
+          Get in Touch
+        </Button>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

@@ -1,0 +1,53 @@
+---
+import Button from './Button.astro';
+---
+
+<section class="relative bg-gradient-to-br from-primary-600 via-primary-700 to-accent-700 text-white overflow-hidden">
+  <!-- Background Pattern -->
+  <div class="absolute inset-0 opacity-10">
+    <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fill-opacity=&quot;1&quot;%3E%3Cpath d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+  </div>
+
+  <div class="container-custom relative">
+    <div class="py-20 md:py-28 lg:py-36">
+      <div class="max-w-4xl mx-auto text-center">
+        <!-- Main Heading -->
+        <h1 class="text-4xl md:text-6xl lg:text-7xl font-display font-black mb-6 animate-fade-in">
+          Philadelphia's Tech Community
+          <span class="block mt-2 bg-gradient-to-r from-yellow-300 to-pink-300 bg-clip-text text-transparent">
+            By Us, For Us
+          </span>
+        </h1>
+
+        <!-- Mission Statement -->
+        <p class="text-xl md:text-2xl lg:text-3xl font-medium mb-8 text-blue-100 animate-slide-up">
+          Making Philly the tech hub it's meant to be
+        </p>
+
+        <p class="text-lg md:text-xl mb-10 text-blue-50 max-w-2xl mx-auto">
+          Centering Black, Brown, LGBTQIA+, and underrepresented folks in tech through hands-on learning, collaboration, and community.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <Button href="/join" variant="secondary" size="lg">
+            Join Our Community
+          </Button>
+          <Button href="/events" variant="outline" size="lg" class="!text-white !border-white hover:!bg-white/10">
+            View Events
+          </Button>
+          <Button href="/support" variant="outline" size="lg" class="!text-white !border-white hover:!bg-white/10">
+            Support Us
+          </Button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Wave -->
+  <div class="absolute bottom-0 left-0 right-0">
+    <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 0L60 10C120 20 240 40 360 46.7C480 53 600 47 720 43.3C840 40 960 40 1080 46.7C1200 53 1320 67 1380 73.3L1440 80V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0V0Z" fill="white"/>
+    </svg>
+  </div>
+</section>
