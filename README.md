@@ -38,6 +38,14 @@ PhilaCon Valley is a community-driven tech organization centering Black, Brown, 
 
 **Why this stack?** Fast (Astro ships minimal JS), beginner-friendly (Tailwind + Markdown content), zero-config deploys (push to main).
 
+### Design System
+
+The visual identity uses the official PhilaCon Valley brand palette (Baloo 2 + Nunito fonts, warm yellow/pink/coral/purple colors) with a playful card style featuring soft offset shadows and hover lift animations. Brand colors and tokens are defined in `tailwind.config.mjs`.
+
+### Projects Page
+
+The `/projects` page fetches repos from the [philaconvalley GitHub org](https://github.com/philaconvalley) at build time via the GitHub API. Repo cards display the name, description, language, stars, forks, and topic tags — no manual content needed. Data refreshes on every deploy.
+
 ---
 
 ## Getting Started
