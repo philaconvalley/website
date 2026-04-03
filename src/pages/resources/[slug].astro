@@ -57,11 +57,13 @@ const levelColors = {
           <span>By {author}</span>
           <span class="mx-2">•</span>
           <span>
-            {date.toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })}
+            {
+              date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })
+            }
           </span>
         </div>
       </div>
@@ -85,11 +87,13 @@ const levelColors = {
             <div class="bg-gray-50 rounded-lg p-6 sticky top-24">
               <h3 class="font-bold text-gray-900 mb-4">Tags</h3>
               <div class="flex flex-wrap gap-2">
-                {tags.map((tag) => (
-                  <span class="px-2 py-1 bg-white text-gray-600 text-sm rounded shadow-sm">
-                    #{tag}
-                  </span>
-                ))}
+                {
+                  tags.map((tag) => (
+                    <span class="px-2 py-1 bg-white text-gray-600 text-sm rounded shadow-sm">
+                      #{tag}
+                    </span>
+                  ))
+                }
               </div>
 
               <hr class="my-6 border-gray-200" />
@@ -128,12 +132,8 @@ const levelColors = {
         Join us at our workshops and Collab Labs to practice these skills with the community.
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button href="/events" variant="primary">
-          View Events
-        </Button>
-        <Button href="/resources" variant="outline">
-          Browse All Resources
-        </Button>
+        <Button href="/events" variant="primary"> View Events </Button>
+        <Button href="/resources" variant="outline"> Browse All Resources </Button>
       </div>
     </div>
   </section>

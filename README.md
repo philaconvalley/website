@@ -14,14 +14,14 @@ The official website for **PhilaCon Valley** — Philadelphia's tech community b
 
 Whether you're a first-time contributor, a seasoned developer, a designer, a writer, or someone who just wants to help — there's a place for you here.
 
-| I want to... | Start here |
-|---|---|
-| Report a bug or suggest a feature | [Open an issue](https://github.com/philaconvalley/website/issues/new/choose) |
-| Add a project or resource (no code needed) | [Adding Content](docs/adding-content.md) |
-| Set up the site on my computer | [Getting Started](docs/getting-started.md) |
-| Contribute code | [Contributing Guide](docs/contributing.md) |
-| Understand how the site is built | [Architecture](docs/architecture.md) |
-| Work with the brand colors and design | [Design System](docs/design-system.md) |
+| I want to...                               | Start here                                                                   |
+| ------------------------------------------ | ---------------------------------------------------------------------------- |
+| Report a bug or suggest a feature          | [Open an issue](https://github.com/philaconvalley/website/issues/new/choose) |
+| Add a project or resource (no code needed) | [Adding Content](docs/adding-content.md)                                     |
+| Set up the site on my computer             | [Getting Started](docs/getting-started.md)                                   |
+| Contribute code                            | [Contributing Guide](docs/contributing.md)                                   |
+| Understand how the site is built           | [Architecture](docs/architecture.md)                                         |
+| Work with the brand colors and design      | [Design System](docs/design-system.md)                                       |
 
 ---
 

@@ -29,18 +29,21 @@ Follow these steps to make your repository open source:
 Go to **Settings** in your GitHub repository:
 
 #### General
+
 - [ ] Set repository to **Public** (Settings > General > Danger Zone > Change visibility)
 - [ ] Add description: "Official website for PhilaCon Valley - Philadelphia's tech community by us, for us"
 - [ ] Add website: https://philaconvalley.com
 - [ ] Add topics/tags: `community`, `philadelphia`, `tech-community`, `astro`, `open-source`, `diversity`, `inclusion`
 
 #### Features
+
 - [ ] Enable **Issues**
 - [ ] Enable **Discussions** (optional, for community Q&A)
 - [ ] Enable **Projects** (optional, for roadmap)
 - [ ] Disable **Wiki** (we use README instead)
 
 #### Manage Access
+
 - [ ] Add core contributors as maintainers
 - [ ] Set up branch protection for `main`:
   - Require pull request reviews before merging
@@ -59,6 +62,7 @@ git push -u origin main
 ### 4. Set Up Community Health Files
 
 GitHub will automatically detect these files:
+
 - [ ] Verify LICENSE shows up in repository
 - [ ] Check that CODE_OF_CONDUCT.md is recognized
 - [ ] Confirm CONTRIBUTING.md appears in "Contributing" section
@@ -66,7 +70,9 @@ GitHub will automatically detect these files:
 ### 5. Configure GitHub Features
 
 #### Labels
+
 Create labels for issues (Settings > Labels):
+
 - [ ] `bug` (red) - Something isn't working
 - [ ] `enhancement` (blue) - New feature or request
 - [ ] `documentation` (yellow) - Documentation improvements
@@ -76,6 +82,7 @@ Create labels for issues (Settings > Labels):
 - [ ] `accessibility` (pink) - Accessibility improvements
 
 #### Security
+
 - [ ] Add SECURITY.md with security policy (optional)
 - [ ] Enable Dependabot alerts (Settings > Security)
 - [ ] Enable Dependabot security updates
@@ -118,6 +125,7 @@ jobs:
 ### 8. Create Initial Issues
 
 Create some "good first issue" issues to help new contributors:
+
 - [ ] Fix typo in documentation
 - [ ] Improve accessibility (add ARIA labels)
 - [ ] Add new project to showcase

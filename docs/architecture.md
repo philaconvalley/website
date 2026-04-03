@@ -4,14 +4,14 @@ This doc explains how the site is built and how the pieces fit together. It's fo
 
 ## Tech Stack
 
-| Tool | What it does |
-|---|---|
-| [Astro 4.x](https://astro.build) | Generates all the HTML pages at build time (no server needed at runtime) |
-| [Tailwind CSS 3](https://tailwindcss.com) | Utility-first CSS framework — styles are written as class names directly in HTML |
-| [Alpine.js 3.15](https://alpinejs.dev) | Tiny JavaScript library for interactive bits (mobile menu, form handling, filters) |
-| [TypeScript](https://www.typescriptlang.org) | Adds type checking to catch bugs before they ship |
-| [Vercel](https://vercel.com) | Hosts the site and auto-deploys when code is pushed to `main` |
-| [Vercel Analytics](https://vercel.com/analytics) | Privacy-friendly usage analytics |
+| Tool                                             | What it does                                                                       |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| [Astro 5.x](https://astro.build)                 | Generates all the HTML pages at build time (no server needed at runtime)           |
+| [Tailwind CSS 3](https://tailwindcss.com)        | Utility-first CSS framework — styles are written as class names directly in HTML   |
+| [Alpine.js 3.15](https://alpinejs.dev)           | Tiny JavaScript library for interactive bits (mobile menu, form handling, filters) |
+| [TypeScript](https://www.typescriptlang.org)     | Adds type checking to catch bugs before they ship                                  |
+| [Vercel](https://vercel.com)                     | Hosts the site and auto-deploys when code is pushed to `main`                      |
+| [Vercel Analytics](https://vercel.com/analytics) | Privacy-friendly usage analytics                                                   |
 
 ### Why Astro?
 

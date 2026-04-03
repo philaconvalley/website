@@ -1,0 +1,14 @@
+# Default owners for everything in the repo
+* @philaconvalley/maintainers
+
+# Website code
+/src/ @philaconvalley/maintainers
+
+# Content can be reviewed by a broader group
+/src/content/ @philaconvalley/maintainers
+
+# CI/CD and config changes need maintainer review
+/.github/ @philaconvalley/maintainers
+/astro.config.mjs @philaconvalley/maintainers
+/tailwind.config.mjs @philaconvalley/maintainers
+/package.json @philaconvalley/maintainers

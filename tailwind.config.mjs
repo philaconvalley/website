@@ -6,7 +6,7 @@ export default {
       colors: {
         // PhilaCon Valley brand palette — extracted from official brand file
         primary: {
-          50:  '#FFF9F0',
+          50: '#FFF9F0',
           100: '#FFEED0',
           200: '#FDE0A8',
           300: '#FDC873',
@@ -19,7 +19,7 @@ export default {
           950: '#4A2F09',
         },
         accent: {
-          50:  '#FFF0F5',
+          50: '#FFF0F5',
           100: '#FFD6E7',
           200: '#FFB3D1',
           300: '#FF8FB3',
@@ -32,14 +32,14 @@ export default {
           950: '#5C1F2D',
         },
         brand: {
-          yellow:  '#FDC873',
-          cream:   '#FFEED0',
-          pink:    '#FF66A8',
-          coral:   '#EF657F',
-          salmon:  '#F37188',
-          purple:  '#B383C3',
-          amber:   '#FCBC68',
-          dark:    '#1A1A1A',
+          yellow: '#FDC873',
+          cream: '#FFEED0',
+          pink: '#FF66A8',
+          coral: '#EF657F',
+          salmon: '#F37188',
+          purple: '#B383C3',
+          amber: '#FCBC68',
+          dark: '#1A1A1A',
         },
       },
       fontFamily: {
@@ -47,12 +47,12 @@ export default {
         display: ['"Baloo 2"', 'cursive', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        'retro': '4px 4px 0 rgba(26,26,26,0.15)',
+        retro: '4px 4px 0 rgba(26,26,26,0.15)',
         'retro-lg': '6px 6px 0 rgba(26,26,26,0.15)',
         'retro-hover': '8px 8px 0 rgba(26,26,26,0.12)',
       },
       borderRadius: {
-        'retro': '20px',
+        retro: '20px',
       },
     },
   },

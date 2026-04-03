@@ -48,11 +48,11 @@ Press `Ctrl + C` in the terminal to stop the server.
 
 ## Useful Commands
 
-| Command | What it does |
-|---|---|
-| `npm run dev` | Starts a local server so you can preview changes live |
-| `npm run build` | Builds the production version and checks for errors |
-| `npm run preview` | Preview the production build before deploying |
+| Command           | What it does                                          |
+| ----------------- | ----------------------------------------------------- |
+| `npm run dev`     | Starts a local server so you can preview changes live |
+| `npm run build`   | Builds the production version and checks for errors   |
+| `npm run preview` | Preview the production build before deploying         |
 
 ## Common Issues
 
