@@ -64,8 +64,8 @@
 
   /* Card styles — retro offset shadow */
   .card {
-    @apply bg-white rounded-retro border-[3px] border-brand-dark shadow-retro
-           transition-all duration-200 hover:-translate-x-1 hover:-translate-y-1
+    @apply bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro
+           transition-all duration-200 hover:-translate-y-1
            hover:shadow-retro-hover;
   }
 
