@@ -3,7 +3,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import Button from '../../components/Button.astro';
-import { getCollection } from 'astro:content';
 import { links } from '../../config';
 
 // Fetch repos from the GitHub org at build time
@@ -16,33 +15,36 @@ type GitHubRepo = {
   forks_count: number;
   topics: string[];
   updated_at: string;
+  open_issues_count: number;
+  fork: boolean;
+  archived: boolean;
 };
 
 let repos: GitHubRepo[] = [];
 try {
+  const headers: Record<string, string> = { Accept: 'application/vnd.github.v3+json' };
+  if (import.meta.env.GITHUB_TOKEN) {
+    headers.Authorization = `Bearer ${import.meta.env.GITHUB_TOKEN}`;
+  }
   const res = await fetch(
     'https://api.github.com/orgs/philaconvalley/repos?sort=updated&per_page=20',
-    {
-      headers: { Accept: 'application/vnd.github.v3+json' },
-    },
+    { headers, signal: AbortSignal.timeout(10_000) },
   );
-  if (res.ok) repos = await res.json();
+  if (res.ok) {
+    const allRepos: GitHubRepo[] = await res.json();
+    repos = allRepos.filter((r) => !r.fork && !r.archived && !r.name.startsWith('.'));
+  }
 } catch {
   /* build continues with empty repos */
 }
 
-// Content collection projects (for future Markdown write-ups)
-const projects = (await getCollection('projects')).sort(
-  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
-);
-
-const langColors: Record<string, string> = {
-  TypeScript: 'bg-blue-500',
-  JavaScript: 'bg-yellow-400',
-  Astro: 'bg-orange-500',
-  Python: 'bg-green-500',
-  HTML: 'bg-red-500',
-  CSS: 'bg-purple-500',
+// Human-readable display names for repos
+const displayNames: Record<string, string> = {
+  'p-l-otHole': 'P-l-otHole',
+  shoppingDebateChromeExtension: 'Shopping Debate',
+  'community-handbook': 'Community Handbook',
+  waterICE: 'WaterICE',
+  website: 'Website',
 };
 ---
 
@@ -65,7 +67,7 @@ const langColors: Record<string, string> = {
   <!-- Open Source Repos -->
   <section class="section-padding">
     <div class="container-custom">
-      <div class="max-w-3xl mx-auto text-center mb-12">
+      <div class="max-w-3xl mx-auto text-center mb-10">
         <p class="text-xl text-brand-dark/70 leading-relaxed">
           Everything we build is open source. Browse our repos, pick an issue, and submit your first
           PR.
@@ -74,85 +76,87 @@ const langColors: Record<string, string> = {
 
       {
         repos.length > 0 ? (
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          <div class="max-w-5xl mx-auto flex flex-col gap-4">
             {repos.map((repo) => (
               <a
                 href={repo.html_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="card p-6 flex flex-col gap-3 group"
+                class="card px-6 py-5 flex flex-col sm:flex-row sm:items-center gap-4 group"
               >
-                <h3 class="text-lg font-display font-bold text-brand-dark group-hover:text-accent-600 transition-colors">
-                  {repo.name}
-                </h3>
-
-                <p class="text-sm text-brand-dark/60 leading-relaxed flex-grow">
-                  {repo.description || 'Community project — check it out on GitHub.'}
-                </p>
-
-                {repo.topics.length > 0 && (
-                  <div class="flex flex-wrap gap-1.5">
-                    {repo.topics.slice(0, 4).map((topic) => (
-                      <span class="text-xs font-display font-bold px-2 py-0.5 rounded-full bg-primary-100 text-primary-800">
-                        {topic}
+                {/* Left: project info */}
+                <div class="flex-grow min-w-0">
+                  <div class="flex items-center gap-3 mb-1.5">
+                    <h3 class="text-lg font-display font-bold text-brand-dark group-hover:text-accent-600 transition-colors leading-tight">
+                      {displayNames[repo.name] || repo.name}
+                    </h3>
+                    {repo.language && (
+                      <span class="shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-dark/5 text-brand-dark/50">
+                        {repo.language}
                       </span>
-                    ))}
+                    )}
                   </div>
-                )}
-
-                <div class="flex items-center gap-4 pt-2 text-sm text-brand-dark/50">
-                  {repo.language && (
-                    <span class="flex items-center gap-1.5">
-                      <span
-                        class={`w-3 h-3 rounded-full ${langColors[repo.language] || 'bg-gray-400'}`}
-                      />
-                      {repo.language}
-                    </span>
-                  )}
-                  <span class="flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-                      />
-                    </svg>
-                    {repo.stargazers_count}
-                  </span>
-                  <span class="flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-                      />
-                    </svg>
-                    {repo.forks_count}
-                  </span>
+                  <p class="text-sm text-brand-dark/55 leading-relaxed line-clamp-2">
+                    {repo.description || 'Community project — check it out on GitHub.'}
+                  </p>
                 </div>
 
-                <div class="flex items-center gap-2 pt-3 mt-auto border-t border-brand-dark/5 text-sm font-display font-bold text-accent-600 group-hover:text-accent-700 transition-colors">
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path
-                      fill-rule="evenodd"
-                      d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                  View on GitHub
+                {/* Right: stats + arrow */}
+                <div class="flex items-center gap-5 shrink-0 sm:pl-4">
+                  <div class="flex items-center gap-3 text-xs text-brand-dark/40">
+                    <span class="flex items-center gap-1">
+                      <svg
+                        class="w-3.5 h-3.5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                        />
+                      </svg>
+                      {repo.stargazers_count}
+                    </span>
+                    <span class="flex items-center gap-1">
+                      <svg
+                        class="w-3.5 h-3.5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+                        />
+                      </svg>
+                      {repo.forks_count}
+                    </span>
+                  </div>
+                  {repo.open_issues_count > 0 && (
+                    <span class="text-xs font-semibold text-green-600 whitespace-nowrap">
+                      {repo.open_issues_count} open{' '}
+                      {repo.open_issues_count === 1 ? 'issue' : 'issues'}
+                    </span>
+                  )}
                   <svg
-                    class="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity"
+                    class="w-5 h-5 text-brand-dark/20 group-hover:text-accent-600 transition-colors shrink-0"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
+                    aria-hidden="true"
                   >
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
                       stroke-width="2"
-                      d="M14 5l7 7m0 0l-7 7m7-7H3"
+                      d="M9 5l7 7-7 7"
                     />
                   </svg>
                 </div>
