@@ -9,6 +9,13 @@ updates:
       - 'dependencies'
     commit-message:
       prefix: 'deps'
+    ignore:
+      - dependency-name: 'astro'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'tailwindcss'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
 
   - package-ecosystem: 'github-actions'
     directory: '/'
