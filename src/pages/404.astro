@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Button from '../components/Button.astro';
+---
+
+<BaseLayout title="Page Not Found - PhilaCon Valley">
+  <Header />
+
+  <section class="section-padding">
+    <div class="container-custom">
+      <div class="max-w-2xl mx-auto text-center">
+        <p class="text-8xl font-display font-black text-accent-400 mb-4">404</p>
+        <h1 class="text-3xl md:text-4xl font-bold mb-4">Page Not Found</h1>
+        <p class="text-lg text-brand-dark/60 mb-8">
+          Looks like this page took a wrong turn on Broad Street. Let's get you back on track.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button href="/" variant="primary" size="lg"> Go Home </Button>
+          <Button href="/events" variant="outline" size="lg"> View Events </Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
