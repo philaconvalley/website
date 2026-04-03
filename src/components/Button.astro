@@ -9,12 +9,12 @@ interface Props {
 
 const { href, variant = 'primary', size = 'md', class: className = '', external = false } = Astro.props;
 
-const baseClasses = 'inline-flex items-center justify-center font-display font-bold rounded-full border-[3px] border-brand-dark transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
+const baseClasses = 'inline-flex items-center justify-center font-display font-bold rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
 
 const variantClasses = {
-  primary: 'bg-accent-400 text-white hover:bg-accent-500 focus:ring-accent-400 shadow-retro hover:-translate-x-0.5 hover:-translate-y-0.5',
-  secondary: 'bg-primary-300 text-brand-dark hover:bg-primary-400 focus:ring-primary-400 shadow-retro hover:-translate-x-0.5 hover:-translate-y-0.5',
-  outline: 'bg-transparent text-brand-dark hover:bg-brand-dark/5 focus:ring-accent-400',
+  primary: 'bg-accent-400 text-white hover:bg-accent-500 focus:ring-accent-400 shadow-md hover:shadow-lg hover:-translate-y-0.5',
+  secondary: 'bg-primary-300 text-brand-dark hover:bg-primary-400 focus:ring-primary-400 shadow-md hover:shadow-lg hover:-translate-y-0.5',
+  outline: 'border-2 border-current bg-transparent text-brand-dark hover:bg-brand-dark/5 focus:ring-accent-400',
 };
 
 const sizeClasses = {

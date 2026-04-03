@@ -47,9 +47,9 @@ export default {
         display: ['"Baloo 2"', 'cursive', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        'retro': '6px 6px 0 #1A1A1A',
-        'retro-lg': '8px 8px 0 #1A1A1A',
-        'retro-hover': '10px 10px 0 #1A1A1A',
+        'retro': '4px 4px 0 rgba(26,26,26,0.15)',
+        'retro-lg': '6px 6px 0 rgba(26,26,26,0.15)',
+        'retro-hover': '8px 8px 0 rgba(26,26,26,0.12)',
       },
       borderRadius: {
         'retro': '20px',
