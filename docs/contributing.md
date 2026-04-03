@@ -87,14 +87,14 @@ Then go to [github.com/philaconvalley/website](https://github.com/philaconvalley
 
 ## Where Things Live
 
-| I want to change... | Look in... |
-|---|---|
-| Page content or layout | `src/pages/` |
-| Reusable UI pieces (header, footer, cards) | `src/components/` |
-| Colors, fonts, or spacing | `tailwind.config.mjs` |
-| External URLs (Luma, Formspree, etc.) | `src/config.ts` |
-| Global styles | `src/styles/global.css` |
-| Project or resource write-ups | `src/content/` |
+| I want to change...                        | Look in...              |
+| ------------------------------------------ | ----------------------- |
+| Page content or layout                     | `src/pages/`            |
+| Reusable UI pieces (header, footer, cards) | `src/components/`       |
+| Colors, fonts, or spacing                  | `tailwind.config.mjs`   |
+| External URLs (Luma, Formspree, etc.)      | `src/config.ts`         |
+| Global styles                              | `src/styles/global.css` |
+| Project or resource write-ups              | `src/content/`          |
 
 For more detail, see [Architecture](architecture.md).
 

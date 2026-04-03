@@ -22,7 +22,9 @@ const currentPath = Astro.url.pathname;
             alt="PhilaCon Valley Logo"
             class="h-11 w-11 rounded-full drop-shadow-md"
           />
-          <span class="text-lg font-display font-black text-accent-400 leading-tight">PhilaCon Valley</span>
+          <span class="text-lg font-display font-black text-accent-400 leading-tight"
+            >PhilaCon Valley</span
+          >
         </a>
       </div>
 
@@ -69,7 +71,11 @@ const currentPath = Astro.url.pathname;
             viewBox="0 0 24 24"
             stroke="currentColor"
           >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"></path>
           </svg>
           <!-- Close icon -->
           <svg
@@ -79,14 +85,23 @@ const currentPath = Astro.url.pathname;
             viewBox="0 0 24 24"
             stroke="currentColor"
           >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"></path>
           </svg>
         </button>
       </div>
     </div>
 
     <!-- Mobile menu -->
-    <div x-show="mobileMenuOpen" x-cloak class="md:hidden bg-brand-dark" @click.away="mobileMenuOpen = false">
+    <div
+      x-show="mobileMenuOpen"
+      x-cloak
+      class="md:hidden bg-brand-dark"
+      @click.away="mobileMenuOpen = false"
+    >
       <div class="px-2 pt-2 pb-3 space-y-1">
         {
           navItems.map((item) => (

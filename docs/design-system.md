@@ -10,56 +10,56 @@ All colors are defined in `tailwind.config.mjs`. You use them with Tailwind clas
 
 The warm, welcoming base of the palette.
 
-| Token | Hex | Usage |
-|---|---|---|
+| Token         | Hex       | Usage                           |
+| ------------- | --------- | ------------------------------- |
 | `primary-100` | `#FFEED0` | Cream backgrounds, input fields |
-| `primary-300` | `#FDC873` | Secondary buttons |
-| `primary-400` | `#FCBC68` | Hover states |
+| `primary-300` | `#FDC873` | Secondary buttons               |
+| `primary-400` | `#FCBC68` | Hover states                    |
 
 ### Accent (Pink/Coral)
 
 The energetic pop color for CTAs and highlights.
 
-| Token | Hex | Usage |
-|---|---|---|
+| Token        | Hex       | Usage                                     |
+| ------------ | --------- | ----------------------------------------- |
 | `accent-400` | `#FF66A8` | Primary buttons, CTA sections, active nav |
-| `accent-500` | `#F07AAC` | Button hover |
-| `accent-600` | `#EF657F` | Links, "View on GitHub" labels |
+| `accent-500` | `#F07AAC` | Button hover                              |
+| `accent-600` | `#EF657F` | Links, "View on GitHub" labels            |
 
 ### Brand Tokens
 
 Named colors for specific uses:
 
-| Token | Hex | Usage |
-|---|---|---|
-| `brand-yellow` | `#FDC873` | Homepage hero background |
-| `brand-cream` | `#FFEED0` | Page body background |
-| `brand-pink` | `#FF66A8` | CTA sections |
-| `brand-coral` | `#EF657F` | Page heroes (About, Resources, Contact) |
+| Token          | Hex       | Usage                                   |
+| -------------- | --------- | --------------------------------------- |
+| `brand-yellow` | `#FDC873` | Homepage hero background                |
+| `brand-cream`  | `#FFEED0` | Page body background                    |
+| `brand-pink`   | `#FF66A8` | CTA sections                            |
+| `brand-coral`  | `#EF657F` | Page heroes (About, Resources, Contact) |
 | `brand-purple` | `#B383C3` | Page heroes (Events, Projects, Support) |
-| `brand-dark` | `#1A1A1A` | Header, footer, text |
+| `brand-dark`   | `#1A1A1A` | Header, footer, text                    |
 
 ### Page Hero Colors
 
 Each page has a distinct hero background:
 
-| Page | Color | Class |
-|---|---|---|
-| Home | Yellow | `bg-brand-yellow` |
-| About | Coral | `bg-brand-coral` |
-| Events | Purple | `bg-brand-purple` |
-| Projects | Purple | `bg-brand-purple` |
-| Resources | Coral | `bg-brand-coral` |
-| Join | Pink | `bg-accent-400` |
-| Support | Purple | `bg-brand-purple` |
-| Contact | Coral | `bg-brand-coral` |
+| Page      | Color  | Class             |
+| --------- | ------ | ----------------- |
+| Home      | Yellow | `bg-brand-yellow` |
+| About     | Coral  | `bg-brand-coral`  |
+| Events    | Purple | `bg-brand-purple` |
+| Projects  | Purple | `bg-brand-purple` |
+| Resources | Coral  | `bg-brand-coral`  |
+| Join      | Pink   | `bg-accent-400`   |
+| Support   | Purple | `bg-brand-purple` |
+| Contact   | Coral  | `bg-brand-coral`  |
 
 ## Fonts
 
-| Font | Tailwind class | Usage |
-|---|---|---|
-| [Baloo 2](https://fonts.google.com/specimen/Baloo+2) | `font-display` | Headings, buttons, nav links, tags |
-| [Nunito](https://fonts.google.com/specimen/Nunito) | `font-sans` | Body text, descriptions, form labels |
+| Font                                                 | Tailwind class | Usage                                |
+| ---------------------------------------------------- | -------------- | ------------------------------------ |
+| [Baloo 2](https://fonts.google.com/specimen/Baloo+2) | `font-display` | Headings, buttons, nav links, tags   |
+| [Nunito](https://fonts.google.com/specimen/Nunito)   | `font-sans`    | Body text, descriptions, form labels |
 
 Baloo 2 is playful and bold — it gives the site its personality. Nunito is clean and rounded — easy to read for longer text.
 
@@ -71,11 +71,11 @@ Fonts are loaded via Google Fonts in `src/layouts/BaseLayout.astro` with `precon
 
 Three variants, all pill-shaped:
 
-| Variant | Look | Usage |
-|---|---|---|
-| `primary` | Pink background, white text | Main CTAs ("Join", "Donate") |
-| `secondary` | Yellow background, dark text | Secondary actions |
-| `outline` | Transparent with border | Tertiary actions, dark backgrounds |
+| Variant     | Look                         | Usage                              |
+| ----------- | ---------------------------- | ---------------------------------- |
+| `primary`   | Pink background, white text  | Main CTAs ("Join", "Donate")       |
+| `secondary` | Yellow background, dark text | Secondary actions                  |
+| `outline`   | Transparent with border      | Tertiary actions, dark backgrounds |
 
 ```astro
 <Button href="/join" variant="primary" size="lg">Join Us</Button>
@@ -106,6 +106,22 @@ Alternate between cream and brand colors to create visual rhythm:
 - Buttons maintain contrast ratios against their backgrounds
 - Hero text uses white on dark backgrounds (coral, purple, pink) for readability
 - The homepage hero uses dark text on yellow
+
+## OG Images (Social Sharing)
+
+Each page can specify a unique Open Graph image for social sharing previews. Pass the `image` prop to `BaseLayout`:
+
+```astro
+<BaseLayout
+  title="Events - PhilaCon Valley"
+  description="Join us for hands-on workshops..."
+  image="/images/og-events.png"
+/>
+```
+
+**Image specs**: 1200x675px, PNG or JPG. Place files in `public/images/`.
+
+Currently all pages use the default banner (`/images/1200x675 banner.png`). To add unique images per page, create them and add the `image` prop — the SEO component handles the rest.
 
 ## Making Changes
 

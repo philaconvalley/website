@@ -23,13 +23,13 @@ Create a new file in `src/content/projects/`. The filename becomes the URL (e.g.
 
 ```markdown
 ---
-title: "My Awesome Project"
-description: "A short description of what this project does"
-techStack: ["React", "Node.js", "PostgreSQL"]
-githubUrl: "https://github.com/username/project"
-liveUrl: "https://project.com"
-contributors: ["Your Name", "Another Contributor"]
-status: "active"
+title: 'My Awesome Project'
+description: 'A short description of what this project does'
+techStack: ['React', 'Node.js', 'PostgreSQL']
+githubUrl: 'https://github.com/username/project'
+liveUrl: 'https://project.com'
+contributors: ['Your Name', 'Another Contributor']
+status: 'active'
 date: 2025-10-06
 ---
 
@@ -46,16 +46,16 @@ Share what you learned building it...
 
 ### Field reference
 
-| Field | Required? | What it is |
-|---|---|---|
-| `title` | Yes | The project name |
-| `description` | Yes | One-line summary |
-| `techStack` | Yes | List of technologies used |
-| `githubUrl` | No | Link to the GitHub repo |
-| `liveUrl` | No | Link to the live version |
-| `contributors` | Yes | Who built it |
-| `status` | Yes | `"active"` or `"completed"` |
-| `date` | Yes | When it was added (YYYY-MM-DD) |
+| Field          | Required? | What it is                     |
+| -------------- | --------- | ------------------------------ |
+| `title`        | Yes       | The project name               |
+| `description`  | Yes       | One-line summary               |
+| `techStack`    | Yes       | List of technologies used      |
+| `githubUrl`    | No        | Link to the GitHub repo        |
+| `liveUrl`      | No        | Link to the live version       |
+| `contributors` | Yes       | Who built it                   |
+| `status`       | Yes       | `"active"` or `"completed"`    |
+| `date`         | Yes       | When it was added (YYYY-MM-DD) |
 
 ## Adding a Resource
 
@@ -63,13 +63,13 @@ Create a new file in `src/content/resources/`. Same idea — filename becomes th
 
 ```markdown
 ---
-title: "How to Build a REST API"
-description: "Learn to build a RESTful API with Node.js and Express"
-category: "Tutorial"
-level: "Beginner"
-author: "Your Name"
+title: 'How to Build a REST API'
+description: 'Learn to build a RESTful API with Node.js and Express'
+category: 'Tutorial'
+level: 'Beginner'
+author: 'Your Name'
 date: 2025-10-06
-tags: ["api", "nodejs", "backend"]
+tags: ['api', 'nodejs', 'backend']
 ---
 
 Write your tutorial, guide, or resource here...
@@ -77,15 +77,15 @@ Write your tutorial, guide, or resource here...
 
 ### Field reference
 
-| Field | Required? | Options |
-|---|---|---|
-| `title` | Yes | — |
-| `description` | Yes | One-line summary |
-| `category` | Yes | `"Workshop"`, `"Tutorial"`, `"Career"`, or `"Tool"` |
-| `level` | Yes | `"Beginner"`, `"Intermediate"`, or `"Advanced"` |
-| `author` | Yes | Your name |
-| `date` | Yes | When it was added (YYYY-MM-DD) |
-| `tags` | Yes | List of relevant keywords |
+| Field         | Required? | Options                                             |
+| ------------- | --------- | --------------------------------------------------- |
+| `title`       | Yes       | —                                                   |
+| `description` | Yes       | One-line summary                                    |
+| `category`    | Yes       | `"Workshop"`, `"Tutorial"`, `"Career"`, or `"Tool"` |
+| `level`       | Yes       | `"Beginner"`, `"Intermediate"`, or `"Advanced"`     |
+| `author`      | Yes       | Your name                                           |
+| `date`        | Yes       | When it was added (YYYY-MM-DD)                      |
+| `tags`        | Yes       | List of relevant keywords                           |
 
 ## What About GitHub Repos?
 

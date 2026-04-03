@@ -65,6 +65,7 @@ PhilaCon Valley exists to make Philadelphia the tech hub it's meant to be **by u
 Community leaders and maintainers are responsible for clarifying and enforcing our standards of acceptable behavior. They will take appropriate and fair corrective action in response to any behavior that they deem inappropriate, threatening, offensive, or harmful.
 
 Community leaders have the right and responsibility to:
+
 - Remove, edit, or reject comments, commits, code, wiki edits, issues, and other contributions that are not aligned with this Code of Conduct
 - Ban temporarily or permanently any contributor for behaviors that they deem inappropriate, threatening, offensive, or harmful
 
@@ -188,6 +189,7 @@ The community welcomes people who want to learn and grow. Mistakes are opportuni
 ## Attribution
 
 This Code of Conduct is adapted from:
+
 - [Contributor Covenant](https://www.contributor-covenant.org), version 2.1
 - [Mozilla Community Participation Guidelines](https://www.mozilla.org/en-US/about/governance/policies/participation/)
 - [Django Code of Conduct](https://www.djangoproject.com/conduct/)
