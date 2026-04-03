@@ -8,7 +8,7 @@
   }
 
   body {
-    @apply font-sans text-gray-900 bg-white antialiased;
+    @apply font-sans text-brand-dark bg-brand-cream antialiased;
   }
 
   h1,
@@ -38,7 +38,7 @@
 
   /* Focus styles for accessibility */
   *:focus-visible {
-    @apply outline-2 outline-offset-2 outline-primary-600 ring-2 ring-primary-500 ring-offset-2;
+    @apply outline-2 outline-offset-2 outline-accent-400 ring-2 ring-accent-400 ring-offset-2;
   }
 
   /* Alpine.js cloak — hides elements until Alpine initialises */
@@ -59,12 +59,14 @@
 
   /* Gradient text effect */
   .gradient-text {
-    @apply bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-accent-400 to-accent-600 bg-clip-text text-transparent;
   }
 
-  /* Card styles */
+  /* Card styles — retro offset shadow */
   .card {
-    @apply bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300;
+    @apply bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro
+           transition-all duration-200 hover:-translate-y-1
+           hover:shadow-retro-hover;
   }
 
 }
