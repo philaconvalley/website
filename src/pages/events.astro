@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Button from '../components/Button.astro';
+import { links } from '../config';
 ---
 
 <BaseLayout
@@ -69,7 +70,8 @@ import Button from '../components/Button.astro';
       <div class="max-w-4xl mx-auto">
         <div class="bg-white rounded-lg shadow-lg overflow-hidden flex justify-center p-4">
           <iframe
-            src="https://luma.com/embed/calendar/cal-KkQjuykLZNrSChl/events"
+            src={links.lumaEmbed}
+            title="PhilaCon Valley Event Calendar"
             width="100%"
             height="600"
             frameborder="0"
@@ -80,7 +82,7 @@ import Button from '../components/Button.astro';
           ></iframe>
         </div>
         <p class="text-center mt-4 text-gray-600">
-          Can't see the calendar? <a href="https://lu.ma/philaconvalley" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:text-primary-700 font-semibold">View on Luma</a>
+          Can't see the calendar? <a href={links.luma} target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:text-primary-700 font-semibold">View on Luma</a>
         </p>
       </div>
     </div>
@@ -138,7 +140,7 @@ import Button from '../components/Button.astro';
         RSVP for our next event and become part of Philadelphia's thriving tech community.
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button href="https://lu.ma/philaconvalley" external variant="secondary" size="lg">
+        <Button href={links.luma} external variant="secondary" size="lg">
           View Events on Luma
         </Button>
         <Button href="/join" variant="outline" size="lg" class="!text-white !border-white hover:!bg-white/10">

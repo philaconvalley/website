@@ -58,7 +58,7 @@ const currentPath = Astro.url.pathname;
           @click="mobileMenuOpen = !mobileMenuOpen"
           type="button"
           class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
-          aria-expanded="false"
+          :aria-expanded="mobileMenuOpen.toString()"
         >
           <span class="sr-only">Open main menu</span>
           <!-- Hamburger icon -->
@@ -112,9 +112,3 @@ const currentPath = Astro.url.pathname;
     </div>
   </nav>
 </header>
-
-<style>
-  [x-cloak] {
-    display: none !important;
-  }
-</style>

@@ -1,4 +1,6 @@
 ---
+import { site, links } from '../config';
+
 const currentYear = new Date().getFullYear();
 
 type FooterLink = {
@@ -18,13 +20,13 @@ const footerLinks: Record<string, FooterLink[]> = {
     { name: 'Learning Resources', href: '/resources' },
     { name: 'Support Us', href: '/support' },
     { name: 'Contact', href: '/contact' },
-    { name: 'GitHub', href: 'https://github.com/philaconvalley', external: true },
+    { name: 'GitHub', href: links.github.org, external: true },
   ],
   Connect: [
-    { name: 'Luma', href: 'https://lu.ma/philaconvalley', external: true },
-    { name: 'Instagram', href: 'https://www.instagram.com/phlconvalley/', external: true },
-    { name: 'LinkedIn', href: 'https://www.linkedin.com/company/philaconvalley/', external: true },
-    { name: 'Twitter/X', href: 'https://x.com/PhlConValley', external: true },
+    { name: 'Luma', href: links.luma, external: true },
+    { name: 'Instagram', href: links.social.instagram, external: true },
+    { name: 'LinkedIn', href: links.social.linkedin, external: true },
+    { name: 'Twitter/X', href: links.social.twitter, external: true },
   ],
 };
 ---
@@ -43,8 +45,8 @@ const footerLinks: Record<string, FooterLink[]> = {
           Making Philly the tech hub it's meant to be: by us, for us.
         </p>
         <div class="mt-6">
-          <a href="mailto:waskar@philaconvalley.com" class="text-sm text-gray-400 hover:text-white transition-colors">
-            waskar@philaconvalley.com
+          <a href={`mailto:${site.email}`} class="text-sm text-gray-400 hover:text-white transition-colors">
+            {site.email}
           </a>
         </div>
       </div>
@@ -95,7 +97,7 @@ const footerLinks: Record<string, FooterLink[]> = {
             &copy; {currentYear} PhilaCon Valley. All rights reserved.
           </p>
           <a
-            href="https://github.com/philaconvalley/website"
+            href={links.github.website}
             target="_blank"
             rel="noopener noreferrer"
             class="text-sm text-gray-500 hover:text-gray-300 transition-colors flex items-center gap-1"

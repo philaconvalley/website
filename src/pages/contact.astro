@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { site, links } from '../config';
 ---
 
 <BaseLayout
@@ -44,8 +45,8 @@ import Footer from '../components/Footer.astro';
               </div>
               <div>
                 <h3 class="font-bold mb-1">Email</h3>
-                <a href="mailto:waskar@philaconvalley.com" class="text-primary-600 hover:text-primary-700">
-                  waskar@philaconvalley.com
+                <a href={`mailto:${site.email}`} class="text-primary-600 hover:text-primary-700">
+                  {site.email}
                 </a>
               </div>
             </div>
@@ -71,7 +72,7 @@ import Footer from '../components/Footer.astro';
               </div>
               <div>
                 <h3 class="font-bold mb-1">Events</h3>
-                <a href="https://lu.ma/philaconvalley" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:text-primary-700">
+                <a href={links.luma} target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:text-primary-700">
                   lu.ma/philaconvalley
                 </a>
               </div>
@@ -83,7 +84,7 @@ import Footer from '../components/Footer.astro';
             <h3 class="font-bold mb-4">Follow Us</h3>
             <div class="flex gap-4">
               <a
-                href="https://www.instagram.com/phlconvalley/"
+                href={links.social.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
                 class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center hover:bg-primary-100 transition-colors"
@@ -94,7 +95,7 @@ import Footer from '../components/Footer.astro';
                 </svg>
               </a>
               <a
-                href="https://www.linkedin.com/company/philaconvalley/"
+                href={links.social.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
                 class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center hover:bg-primary-100 transition-colors"
@@ -105,7 +106,7 @@ import Footer from '../components/Footer.astro';
                 </svg>
               </a>
               <a
-                href="https://x.com/PhlConValley"
+                href={links.social.twitter}
                 target="_blank"
                 rel="noopener noreferrer"
                 class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center hover:bg-primary-100 transition-colors"
@@ -116,7 +117,7 @@ import Footer from '../components/Footer.astro';
                 </svg>
               </a>
               <a
-                href="https://github.com/philaconvalley"
+                href={links.github.org}
                 target="_blank"
                 rel="noopener noreferrer"
                 class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center hover:bg-primary-100 transition-colors"
@@ -134,7 +135,7 @@ import Footer from '../components/Footer.astro';
         <div>
           <h2 class="text-3xl font-bold mb-6">Send Us a Message</h2>
           <form
-            action="https://formspree.io/f/xovklgrn"
+            action={links.formspree}
             method="POST"
             class="space-y-6"
             x-data="{ submitted: false }"
@@ -267,9 +268,3 @@ import Footer from '../components/Footer.astro';
 
   <Footer />
 </BaseLayout>
-
-<style>
-  [x-cloak] {
-    display: none !important;
-  }
-</style>

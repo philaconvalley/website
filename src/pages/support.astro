@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Button from '../components/Button.astro';
+import { links } from '../config';
 ---
 
 <BaseLayout
@@ -117,7 +118,7 @@ import Button from '../components/Button.astro';
               Visit our Open Collective page to make a one-time or recurring contribution.
               All transactions are transparent and publicly visible.
             </p>
-            <Button href="https://opencollective.com/philacon-valley" external variant="primary" size="lg">
+            <Button href={links.openCollective} external variant="primary" size="lg">
               Donate on Open Collective
             </Button>
           </div>
@@ -194,7 +195,7 @@ import Button from '../components/Button.astro';
         Your support helps us build the Philadelphia tech community we want to see.
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button href="https://opencollective.com/philacon-valley" external variant="secondary" size="lg">
+        <Button href={links.openCollective} external variant="secondary" size="lg">
           Donate Now
         </Button>
         <Button href="/contact" variant="outline" size="lg" class="!text-white !border-white hover:!bg-white/10">

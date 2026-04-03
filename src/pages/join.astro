@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Button from '../components/Button.astro';
+import { links } from '../config';
 ---
 
 <BaseLayout
@@ -39,7 +40,7 @@ import Button from '../components/Button.astro';
           <p class="text-gray-600 mb-6">
             RSVP for our next Collab Lab or workshop. No experience required – just bring your curiosity and laptop.
           </p>
-          <Button href="https://lu.ma/philaconvalley" external variant="primary" class="w-full">
+          <Button href={links.luma} external variant="primary" class="w-full">
             View Events
           </Button>
         </div>
@@ -72,13 +73,13 @@ import Button from '../components/Button.astro';
             Stay updated on events, resources, and community news. Connect with us on your favorite platform.
           </p>
           <div class="space-y-2">
-            <Button href="https://www.instagram.com/phlconvalley/" external variant="outline" class="w-full">
+            <Button href={links.social.instagram} external variant="outline" class="w-full">
               Instagram
             </Button>
-            <Button href="https://www.linkedin.com/company/philaconvalley/" external variant="outline" class="w-full">
+            <Button href={links.social.linkedin} external variant="outline" class="w-full">
               LinkedIn
             </Button>
-            <Button href="https://x.com/PhlConValley" external variant="outline" class="w-full">
+            <Button href={links.social.twitter} external variant="outline" class="w-full">
               Twitter/X
             </Button>
           </div>
@@ -229,7 +230,7 @@ import Button from '../components/Button.astro';
         The best time to join was yesterday. The second best time is now.
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button href="https://lu.ma/philaconvalley" external variant="secondary" size="lg">
+        <Button href={links.luma} external variant="secondary" size="lg">
           Attend Next Event
         </Button>
         <Button href="/contact" variant="outline" size="lg" class="!text-white !border-white hover:!bg-white/10">

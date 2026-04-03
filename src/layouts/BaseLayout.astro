@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import SEO from '../components/SEO.astro';
 import { inject } from '@vercel/analytics';
 
 inject();
@@ -8,15 +9,15 @@ interface Props {
   title: string;
   description?: string;
   image?: string;
+  type?: string;
 }
 
 const {
   title,
   description = 'PhilaCon Valley - Philadelphia\'s tech community by us, for us. Centering Black, Brown, LGBTQIA+, and underrepresented folks in tech.',
   image = '/images/1200x675 banner.png',
+  type = 'website',
 } = Astro.props;
-
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
@@ -26,34 +27,28 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="/images/pink circle sunset logo.png" />
     <link rel="apple-touch-icon" href="/images/pink circle sunset logo.png" />
-    <link rel="canonical" href={canonicalURL} />
 
-    <!-- Primary Meta Tags -->
-    <title>{title}</title>
-    <meta name="title" content={title} />
-    <meta name="description" content={description} />
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800;900&display=swap"
+    />
 
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={canonicalURL} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:image" content={new URL(image, Astro.site)} />
+    <SEO title={title} description={description} image={image} type={type} />
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={canonicalURL} />
-    <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={new URL(image, Astro.site)} />
-    <meta property="twitter:site" content="@PhlConValley" />
-
-    <!-- Alpine.js from CDN -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Alpine.js -->
+    <script is:inline defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.15.11/dist/cdn.min.js"></script>
 
     <meta name="generator" content={Astro.generator} />
   </head>
   <body>
-    <slot />
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary-600 focus:text-white focus:rounded-lg">
+      Skip to main content
+    </a>
+    <main id="main-content">
+      <slot />
+    </main>
   </body>
 </html>
