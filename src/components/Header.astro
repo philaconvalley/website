@@ -11,32 +11,32 @@ const navItems = [
 const currentPath = Astro.url.pathname;
 ---
 
-<header class="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+<header class="sticky top-0 z-50 bg-brand-dark border-b-[3px] border-accent-400">
   <nav class="container-custom" x-data="{ mobileMenuOpen: false }">
-    <div class="flex items-center justify-between h-16">
+    <div class="flex items-center justify-between h-[68px]">
       <!-- Logo -->
       <div class="flex-shrink-0">
         <a href="/" class="flex items-center space-x-3 group">
           <img
             src="/images/pink circle sunset logo.png"
             alt="PhilaCon Valley Logo"
-            class="h-10 w-10 rounded-full"
+            class="h-11 w-11 rounded-full drop-shadow-md"
           />
-          <span class="text-2xl font-display font-bold gradient-text">PhilaCon Valley</span>
+          <span class="text-lg font-display font-black text-accent-400 leading-tight">PhilaCon Valley</span>
         </a>
       </div>
 
       <!-- Desktop Navigation -->
       <div class="hidden md:block">
-        <div class="flex items-center space-x-1">
+        <div class="flex items-center space-x-0.5">
           {
             navItems.map((item) => (
               <a
                 href={item.href}
-                class={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                class={`px-3 py-1.5 rounded-full text-sm font-display font-bold transition-colors ${
                   currentPath === item.href || currentPath.startsWith(item.href + '/')
-                    ? 'bg-primary-100 text-primary-700'
-                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                    ? 'bg-accent-400 text-white'
+                    : 'text-primary-100 hover:bg-accent-400 hover:text-white'
                 }`}
               >
                 {item.name}
@@ -45,7 +45,7 @@ const currentPath = Astro.url.pathname;
           }
           <a
             href="/contact"
-            class="ml-4 px-4 py-2 rounded-lg bg-primary-600 text-white font-semibold hover:bg-primary-700 transition-colors"
+            class="ml-4 px-4 py-1.5 rounded-full bg-primary-300 text-brand-dark font-display font-black border-2 border-brand-dark hover:bg-primary-400 transition-colors"
           >
             Contact
           </a>
@@ -57,7 +57,7 @@ const currentPath = Astro.url.pathname;
         <button
           @click="mobileMenuOpen = !mobileMenuOpen"
           type="button"
-          class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
+          class="inline-flex items-center justify-center p-2 rounded-md text-primary-100 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-accent-400"
           :aria-expanded="mobileMenuOpen.toString()"
         >
           <span class="sr-only">Open main menu</span>
@@ -86,16 +86,16 @@ const currentPath = Astro.url.pathname;
     </div>
 
     <!-- Mobile menu -->
-    <div x-show="mobileMenuOpen" x-cloak class="md:hidden" @click.away="mobileMenuOpen = false">
+    <div x-show="mobileMenuOpen" x-cloak class="md:hidden bg-brand-dark" @click.away="mobileMenuOpen = false">
       <div class="px-2 pt-2 pb-3 space-y-1">
         {
           navItems.map((item) => (
             <a
               href={item.href}
-              class={`block px-3 py-2 rounded-md text-base font-medium ${
+              class={`block px-3 py-2 rounded-lg text-base font-display font-bold ${
                 currentPath === item.href || currentPath.startsWith(item.href + '/')
-                  ? 'bg-primary-100 text-primary-700'
-                  : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                  ? 'bg-accent-400 text-white'
+                  : 'text-primary-100 hover:bg-accent-400 hover:text-white'
               }`}
             >
               {item.name}
@@ -104,7 +104,7 @@ const currentPath = Astro.url.pathname;
         }
         <a
           href="/contact"
-          class="block px-3 py-2 rounded-md text-base font-medium bg-primary-600 text-white hover:bg-primary-700"
+          class="block px-3 py-2 rounded-lg text-base font-display font-black bg-primary-300 text-brand-dark hover:bg-primary-400"
         >
           Contact
         </a>
