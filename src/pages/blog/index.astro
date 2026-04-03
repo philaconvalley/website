@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import Button from '../../components/Button.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+---
+
+<BaseLayout
+  title="Blog - PhilaCon Valley"
+  description="Community updates, event recaps, and member spotlights from PhilaCon Valley."
+>
+  <Header />
+
+  <section class="bg-brand-yellow text-brand-dark py-20">
+    <div class="container-custom">
+      <div class="max-w-4xl mx-auto text-center">
+        <h1 class="text-5xl md:text-6xl font-bold mb-6">Blog</h1>
+        <p class="text-2xl text-brand-dark/70">
+          Community updates, event recaps, and member spotlights
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-padding">
+    <div class="container-custom">
+      <div class="max-w-3xl mx-auto space-y-8">
+        {
+          posts.map((post) => (
+            <a href={`/blog/${post.slug}`} class="card p-8 block group">
+              <div class="flex items-center gap-3 mb-3 text-sm text-brand-dark/50">
+                <span>{post.data.author}</span>
+                <span>·</span>
+                <time>
+                  {post.data.date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </time>
+              </div>
+              <h2 class="text-2xl font-display font-bold text-brand-dark group-hover:text-accent-600 transition-colors mb-2">
+                {post.data.title}
+              </h2>
+              <p class="text-brand-dark/60 mb-4">{post.data.description}</p>
+              {post.data.tags.length > 0 && (
+                <div class="flex flex-wrap gap-1.5">
+                  {post.data.tags.map((tag) => (
+                    <span class="px-2 py-0.5 bg-primary-100 text-primary-800 text-xs font-display font-bold rounded-full">
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section-padding bg-accent-400 text-white">
+    <div class="container-custom text-center">
+      <h2 class="text-4xl font-bold mb-6">Want to Write for Us?</h2>
+      <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">
+        Share your experience, write an event recap, or spotlight a community member.
+      </p>
+      <Button href="/contact" variant="secondary" size="lg">Get in Touch</Button>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

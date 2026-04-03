@@ -5,8 +5,15 @@ import type { APIContext } from 'astro';
 export async function GET(context: APIContext) {
   const resources = await getCollection('resources');
   const projects = await getCollection('projects');
+  const blog = await getCollection('blog');
 
   const items = [
+    ...blog.map((b) => ({
+      title: b.data.title,
+      description: b.data.description,
+      pubDate: b.data.date,
+      link: `/blog/${b.slug}/`,
+    })),
     ...resources.map((r) => ({
       title: r.data.title,
       description: r.data.description,

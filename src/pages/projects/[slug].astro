@@ -58,16 +58,16 @@ const { title, description, techStack, githubUrl, liveUrl, contributors, status,
 
           <!-- Sidebar -->
           <div class="lg:col-span-1">
-            <div class="bg-gray-50 rounded-lg p-6 sticky top-24">
+            <div class="bg-primary-100 rounded-lg p-6 sticky top-24">
               <h3 class="text-xl font-bold mb-4">Project Info</h3>
 
               <!-- Tech Stack -->
               <div class="mb-6">
-                <h4 class="font-semibold text-gray-700 mb-2">Tech Stack</h4>
+                <h4 class="font-semibold text-brand-dark/70 mb-2">Tech Stack</h4>
                 <div class="flex flex-wrap gap-2">
                   {
                     techStack.map((tech) => (
-                      <span class="px-3 py-1 bg-white text-gray-700 text-sm font-medium rounded shadow-sm">
+                      <span class="px-3 py-1 bg-white text-brand-dark/70 text-sm font-medium rounded shadow-sm">
                         {tech}
                       </span>
                     ))
@@ -77,16 +77,20 @@ const { title, description, techStack, githubUrl, liveUrl, contributors, status,
 
               <!-- Contributors -->
               <div class="mb-6">
-                <h4 class="font-semibold text-gray-700 mb-2">Contributors</h4>
+                <h4 class="font-semibold text-brand-dark/70 mb-2">Contributors</h4>
                 <ul class="space-y-1">
-                  {contributors.map((contributor) => <li class="text-gray-600">{contributor}</li>)}
+                  {
+                    contributors.map((contributor) => (
+                      <li class="text-brand-dark/60">{contributor}</li>
+                    ))
+                  }
                 </ul>
               </div>
 
               <!-- Date -->
               <div class="mb-6">
-                <h4 class="font-semibold text-gray-700 mb-2">Last Updated</h4>
-                <p class="text-gray-600">
+                <h4 class="font-semibold text-brand-dark/70 mb-2">Last Updated</h4>
+                <p class="text-brand-dark/60">
                   {
                     date.toLocaleDateString('en-US', {
                       year: 'numeric',
@@ -142,10 +146,10 @@ const { title, description, techStack, githubUrl, liveUrl, contributors, status,
   </section>
 
   <!-- CTA -->
-  <section class="section-padding bg-gray-50">
+  <section class="section-padding bg-primary-100">
     <div class="container-custom text-center">
       <h2 class="text-3xl font-bold mb-4">Want to Contribute?</h2>
-      <p class="text-lg text-gray-600 mb-6 max-w-2xl mx-auto">
+      <p class="text-lg text-brand-dark/60 mb-6 max-w-2xl mx-auto">
         All our projects are open source and welcome contributions. Check out the GitHub repo to see
         open issues and get started!
       </p>
