@@ -17,45 +17,43 @@ const { resource } = Astro.props;
 const { Content } = await resource.render();
 const { title, description, category, level, author, date, tags } = resource.data;
 
-const categoryColors = {
-  Workshop: 'bg-purple-100 text-purple-800',
-  Tutorial: 'bg-blue-100 text-blue-800',
-  Career: 'bg-green-100 text-green-800',
-  Tool: 'bg-orange-100 text-orange-800',
-};
-
-const levelColors = {
-  Beginner: 'bg-green-100 text-green-700',
-  Intermediate: 'bg-yellow-100 text-yellow-700',
-  Advanced: 'bg-red-100 text-red-700',
-};
+const categoryColor = 'bg-white/20 text-white';
 ---
 
 <BaseLayout title={`${title} - PhilaCon Valley Resources`} description={description}>
   <Header />
 
-  <!-- Hero -->
-  <section class="bg-gradient-to-br from-primary-600 to-accent-600 text-white py-16">
+  <section class="bg-brand-coral text-white py-16">
     <div class="container-custom">
       <div class="max-w-4xl mx-auto">
-        <div class="mb-4">
-          <a href="/resources" class="text-white hover:text-blue-200 transition-colors">
-            ← Back to Resources
-          </a>
-        </div>
+        <a
+          href="/resources"
+          class="inline-flex items-center gap-1 text-sm text-white/70 hover:text-white transition-colors mb-6"
+        >
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Back to Resources
+        </a>
         <div class="flex flex-wrap gap-2 mb-4">
-          <span class={`px-3 py-1 text-sm font-semibold rounded ${categoryColors[category]}`}>
+          <span class={`px-3 py-1 text-sm font-display font-bold rounded-full ${categoryColor}`}>
             {category}
           </span>
-          <span class={`px-3 py-1 text-sm font-semibold rounded ${levelColors[level]}`}>
+          <span
+            class="px-3 py-1 text-sm font-display font-bold rounded-full bg-white/20 text-white"
+          >
             {level}
           </span>
         </div>
         <h1 class="text-4xl md:text-5xl font-bold mb-4">{title}</h1>
-        <p class="text-xl opacity-90 mb-6">{description}</p>
-        <div class="flex items-center text-sm opacity-75">
+        <p class="text-xl text-white/85 mb-6">{description}</p>
+        <div class="flex items-center text-sm text-white/60">
           <span>By {author}</span>
-          <span class="mx-2">•</span>
+          <span class="mx-2">·</span>
           <span>
             {
               date.toLocaleDateString('en-US', {
@@ -70,51 +68,60 @@ const levelColors = {
     </div>
   </section>
 
-  <!-- Content -->
   <section class="section-padding">
     <div class="container-custom">
       <div class="max-w-4xl mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <!-- Main Content -->
           <div class="lg:col-span-3">
             <div class="prose prose-lg max-w-none">
               <Content />
             </div>
           </div>
 
-          <!-- Sidebar -->
           <div class="lg:col-span-1">
-            <div class="bg-gray-50 rounded-lg p-6 sticky top-24">
-              <h3 class="font-bold text-gray-900 mb-4">Tags</h3>
-              <div class="flex flex-wrap gap-2">
+            <div
+              class="bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro p-6 sticky top-24"
+            >
+              <h3 class="font-display font-bold text-brand-dark mb-3">Tags</h3>
+              <div class="flex flex-wrap gap-1.5">
                 {
                   tags.map((tag) => (
-                    <span class="px-2 py-1 bg-white text-gray-600 text-sm rounded shadow-sm">
+                    <span class="px-2 py-0.5 bg-primary-100 text-primary-800 text-xs font-display font-bold rounded-full">
                       #{tag}
                     </span>
                   ))
                 }
               </div>
 
-              <hr class="my-6 border-gray-200" />
+              <hr class="my-5 border-brand-dark/5" />
 
-              <h3 class="font-bold text-gray-900 mb-4">Share</h3>
+              <h3 class="font-display font-bold text-brand-dark mb-3">Share</h3>
               <div class="space-y-2">
                 <a
                   href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(Astro.url.href)}&via=PhlConValley`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="block text-sm text-gray-600 hover:text-primary-600 transition-colors"
+                  class="flex items-center gap-2 text-sm text-brand-dark/50 hover:text-accent-600 transition-colors"
                 >
-                  Share on Twitter →
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                      d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+                    ></path>
+                  </svg>
+                  Share on X
                 </a>
                 <a
                   href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(Astro.url.href)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="block text-sm text-gray-600 hover:text-primary-600 transition-colors"
+                  class="flex items-center gap-2 text-sm text-brand-dark/50 hover:text-accent-600 transition-colors"
                 >
-                  Share on LinkedIn →
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                      d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"
+                    ></path>
+                  </svg>
+                  Share on LinkedIn
                 </a>
               </div>
             </div>
@@ -124,16 +131,21 @@ const levelColors = {
     </div>
   </section>
 
-  <!-- Related Resources / CTA -->
-  <section class="section-padding bg-gray-50">
+  <section class="section-padding bg-brand-purple text-white">
     <div class="container-custom text-center">
       <h2 class="text-3xl font-bold mb-4">Want to Learn More?</h2>
-      <p class="text-lg text-gray-600 mb-6 max-w-2xl mx-auto">
+      <p class="text-lg text-white/80 mb-6 max-w-2xl mx-auto">
         Join us at our workshops and Collab Labs to practice these skills with the community.
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <Button href="/events" variant="primary"> View Events </Button>
-        <Button href="/resources" variant="outline"> Browse All Resources </Button>
+        <Button
+          href="/resources"
+          variant="outline"
+          class="!text-white !border-white hover:!bg-white/10"
+        >
+          Browse All Resources
+        </Button>
       </div>
     </div>
   </section>

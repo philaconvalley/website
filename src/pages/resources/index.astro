@@ -29,6 +29,13 @@ const levels = [...new Set(resources.map((r) => r.data.level))];
         <p class="text-2xl text-white/85">
           Free tutorials, guides, and resources to level up your tech skills
         </p>
+        {
+          resources.length > 0 && (
+            <p class="mt-4 text-sm font-display font-bold text-white/50">
+              {resources.length} {resources.length === 1 ? 'resource' : 'resources'} and counting
+            </p>
+          )
+        }
       </div>
     </div>
   </section>
@@ -152,7 +159,10 @@ const levels = [...new Set(resources.map((r) => r.data.level))];
                 </div>
               </div>
 
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div
+                x-show="Array.from(resources).some(r => r.style.display !== 'none')"
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+              >
                 {resources.map((resource) => (
                   <div
                     data-resource
@@ -173,6 +183,17 @@ const levels = [...new Set(resources.map((r) => r.data.level))];
                   </div>
                 ))}
               </div>
+
+              <div
+                x-show="!Array.from(resources).some(r => r.style.display !== 'none')"
+                x-cloak
+                class="text-center py-12"
+              >
+                <p class="text-lg font-display font-bold text-brand-dark/40 mb-2">
+                  No resources match your filters
+                </p>
+                <p class="text-sm text-brand-dark/30">Try adjusting your search or filters</p>
+              </div>
             </div>
           </div>
         </section>
@@ -181,7 +202,7 @@ const levels = [...new Set(resources.map((r) => r.data.level))];
   }
 
   <!-- Contribute CTA -->
-  <section class="section-padding bg-accent-400 text-white border-t-[3px]">
+  <section class="section-padding bg-accent-400 text-white">
     <div class="container-custom text-center">
       <h2 class="text-4xl font-bold mb-6">Share Your Knowledge</h2>
       <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">
