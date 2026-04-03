@@ -36,6 +36,22 @@
           },
           "default": []
         },
+        "externalUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "platform": {
+          "type": "string",
+          "enum": [
+            "Substack",
+            "Medium",
+            "YouTube",
+            "Dev.to",
+            "LinkedIn",
+            "Podcast",
+            "Other"
+          ]
+        },
         "$schema": {
           "type": "string"
         }

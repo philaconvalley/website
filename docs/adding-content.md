@@ -87,6 +87,34 @@ Write your tutorial, guide, or resource here...
 | `date`        | Yes       | When it was added (YYYY-MM-DD)                      |
 | `tags`        | Yes       | List of relevant keywords                           |
 
+## Adding a Blog Post or Community Spotlight
+
+The `/blog` page (Community Voices) features both PhilaCon-authored posts and external content from community members. If you have a Substack, Medium, YouTube channel, podcast, or any other platform, we can spotlight your work.
+
+### External content (links to your platform)
+
+Create a file at `src/content/blog/your-post.md` with just the frontmatter -- no body content needed:
+
+```markdown
+---
+title: 'My Article Title'
+description: 'A short summary of what the article covers'
+author: 'Your Name'
+date: 2025-10-15
+tags: ['topic1', 'topic2']
+externalUrl: 'https://your-substack.substack.com/p/your-article'
+platform: 'Substack'
+---
+```
+
+Supported platforms: `Substack`, `Medium`, `YouTube`, `Dev.to`, `LinkedIn`, `Podcast`, `Other`.
+
+The card on `/blog` will link directly to your content. PhilaCon Valley amplifies your voice without duplicating it.
+
+### PhilaCon-authored posts
+
+Same as above but without `externalUrl` and `platform`. Write the full content in the Markdown body and it will be hosted on the site.
+
 ## What About GitHub Repos?
 
 The `/projects` page automatically displays all repositories from the [philaconvalley GitHub organization](https://github.com/philaconvalley). If your project is in the org, it shows up with no file needed.

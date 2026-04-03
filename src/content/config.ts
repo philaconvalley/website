@@ -36,6 +36,10 @@ const blog = defineCollection({
     author: z.string(),
     date: z.date(),
     tags: z.array(z.string()).default([]),
+    externalUrl: z.string().url().optional(),
+    platform: z
+      .enum(['Substack', 'Medium', 'YouTube', 'Dev.to', 'LinkedIn', 'Podcast', 'Other'])
+      .optional(),
   }),
 });
 
