@@ -14,7 +14,7 @@ const { title, description, techStack, githubUrl, liveUrl, slug, status } = Astr
 
 <div class="card p-6 h-full flex flex-col">
   <div class="flex items-start justify-between mb-3">
-    <h3 class="text-xl font-bold text-gray-900 flex-1">
+    <h3 class="text-xl font-bold text-brand-dark flex-1">
       <a href={`/projects/${slug}`} class="hover:text-primary-600 transition-colors">
         {title}
       </a>
@@ -28,13 +28,13 @@ const { title, description, techStack, githubUrl, liveUrl, slug, status } = Astr
     </span>
   </div>
 
-  <p class="text-gray-600 mb-4 flex-1">{description}</p>
+  <p class="text-brand-dark/60 mb-4 flex-1">{description}</p>
 
   <div class="mb-4">
     <div class="flex flex-wrap gap-2">
       {
         techStack.map((tech) => (
-          <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded">
+          <span class="px-2 py-1 bg-primary-100 text-brand-dark/70 text-xs font-medium rounded">
             {tech}
           </span>
         ))
@@ -55,7 +55,7 @@ const { title, description, techStack, githubUrl, liveUrl, slug, status } = Astr
           href={githubUrl}
           target="_blank"
           rel="noopener noreferrer"
-          class="text-gray-600 hover:text-gray-900 transition-colors"
+          class="text-brand-dark/60 hover:text-brand-dark transition-colors"
           aria-label="View on GitHub"
         >
           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -74,7 +74,7 @@ const { title, description, techStack, githubUrl, liveUrl, slug, status } = Astr
           href={liveUrl}
           target="_blank"
           rel="noopener noreferrer"
-          class="text-gray-600 hover:text-gray-900 transition-colors"
+          class="text-brand-dark/60 hover:text-brand-dark transition-colors"
           aria-label="View live site"
         >
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

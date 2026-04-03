@@ -15,7 +15,7 @@ interface Props {
 const {
   title,
   description = "PhilaCon Valley - Philadelphia's tech community by us, for us. Centering Black, Brown, LGBTQIA+, and underrepresented folks in tech.",
-  image = '/images/1200x675 banner.png',
+  image = '/images/1200x675 banner.webp',
   type = 'website',
 } = Astro.props;
 ---
@@ -25,8 +25,10 @@ const {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href="/images/pink circle sunset logo.png" />
-    <link rel="apple-touch-icon" href="/images/pink circle sunset logo.png" />
+    <link rel="icon" type="image/webp" href="/images/pink circle sunset logo.webp" />
+    <link rel="apple-touch-icon" href="/images/pink circle sunset logo.webp" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#1A1A1A" />
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -43,6 +45,29 @@ const {
     ></script>
 
     <meta name="generator" content={Astro.generator} />
+
+    <script is:inline type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "PhilaCon Valley",
+        "url": "https://philaconvalley.com",
+        "logo": "https://philaconvalley.com/images/sunset philacon valley logo.webp",
+        "description": "Philadelphia's tech community by us, for us. Centering Black, Brown, LGBTQIA+, and underrepresented folks in tech.",
+        "sameAs": [
+          "https://github.com/philaconvalley",
+          "https://www.instagram.com/phlconvalley/",
+          "https://www.linkedin.com/company/philaconvalley/",
+          "https://x.com/PhlConValley"
+        ],
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Philadelphia",
+          "addressRegion": "PA",
+          "addressCountry": "US"
+        }
+      }
+    </script>
   </head>
   <body>
     <a

@@ -22,6 +22,7 @@ Whether you're a first-time contributor, a seasoned developer, a designer, a wri
 | Contribute code                            | [Contributing Guide](docs/contributing.md)                                   |
 | Understand how the site is built           | [Architecture](docs/architecture.md)                                         |
 | Work with the brand colors and design      | [Design System](docs/design-system.md)                                       |
+| Write a blog post or share my content      | [Writing Guide](docs/writing-guide.md)                                       |
 
 ---
 

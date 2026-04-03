@@ -1,0 +1,16 @@
+{
+  "name": "PhilaCon Valley",
+  "short_name": "PhilaCon",
+  "description": "Philadelphia's tech community by us, for us.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFEED0",
+  "theme_color": "#1A1A1A",
+  "icons": [
+    {
+      "src": "/images/pink circle sunset logo.webp",
+      "sizes": "512x512",
+      "type": "image/webp"
+    }
+  ]
+}

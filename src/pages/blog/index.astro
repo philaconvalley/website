@@ -1,0 +1,165 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import Button from '../../components/Button.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+---
+
+<BaseLayout
+  title="Blog - PhilaCon Valley"
+  description="Community updates, event recaps, and member spotlights from PhilaCon Valley."
+>
+  <Header />
+
+  <section class="bg-brand-yellow text-brand-dark py-20">
+    <div class="container-custom">
+      <div class="max-w-4xl mx-auto text-center">
+        <h1 class="text-5xl md:text-6xl font-bold mb-6">Community Voices</h1>
+        <p class="text-2xl text-brand-dark/70">
+          Updates, spotlights, and stories from our community
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-padding">
+    <div class="container-custom">
+      <div class="max-w-3xl mx-auto space-y-8">
+        {
+          posts.map((post) => {
+            const isExternal = !!post.data.externalUrl;
+            const href = isExternal ? post.data.externalUrl! : `/blog/${post.slug}`;
+            return (
+              <a
+                href={href}
+                class="card p-8 block group"
+                {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+              >
+                <div class="flex items-center gap-3 mb-3 text-sm text-brand-dark/50">
+                  <span>{post.data.author}</span>
+                  <span>·</span>
+                  <time>
+                    {post.data.date.toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </time>
+                  {post.data.platform && (
+                    <span class="px-2 py-0.5 bg-accent-100 text-accent-700 text-xs font-display font-bold rounded-full">
+                      {post.data.platform}
+                    </span>
+                  )}
+                </div>
+                <h2 class="text-2xl font-display font-bold text-brand-dark group-hover:text-accent-600 transition-colors mb-2">
+                  {post.data.title}
+                  {isExternal && (
+                    <svg
+                      class="inline-block w-5 h-5 ml-2 text-brand-dark/30"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                      />
+                    </svg>
+                  )}
+                </h2>
+                <p class="text-brand-dark/60 mb-4">{post.data.description}</p>
+                {post.data.tags.length > 0 && (
+                  <div class="flex flex-wrap gap-1.5">
+                    {post.data.tags.map((tag) => (
+                      <span class="px-2 py-0.5 bg-primary-100 text-primary-800 text-xs font-display font-bold rounded-full">
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </a>
+            );
+          })
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section-padding bg-primary-100">
+    <div class="container-custom">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-3xl font-bold mb-8 text-center">Ways to Contribute</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="card p-6 text-center">
+            <p class="text-3xl mb-3 font-display font-black text-accent-400">01</p>
+            <h3 class="text-lg font-display font-bold mb-2">Share a Link</h3>
+            <p class="text-sm text-brand-dark/60">
+              Already write on Substack, Medium, YouTube, or your own blog? We will spotlight it
+              here.
+            </p>
+          </div>
+          <div class="card p-6 text-center">
+            <p class="text-3xl mb-3 font-display font-black text-accent-400">02</p>
+            <h3 class="text-lg font-display font-bold mb-2">Write Something New</h3>
+            <p class="text-sm text-brand-dark/60">
+              Use our templates to write a story, tutorial, event recap, or community spotlight.
+            </p>
+          </div>
+          <div class="card p-6 text-center">
+            <p class="text-3xl mb-3 font-display font-black text-accent-400">03</p>
+            <h3 class="text-lg font-display font-bold mb-2">Not Sure Yet?</h3>
+            <p class="text-sm text-brand-dark/60">
+              Check our Writing Guide for topic ideas, templates, and tips to get you started.
+            </p>
+          </div>
+        </div>
+        <div class="text-center mt-8">
+          <Button
+            href="https://github.com/philaconvalley/website/blob/main/docs/writing-guide.md"
+            external
+            variant="outline"
+          >
+            Read the Writing Guide
+          </Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-padding bg-accent-400 text-white">
+    <div class="container-custom text-center">
+      <h2 class="text-4xl font-bold mb-6">Share Your Voice</h2>
+      <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">
+        Have a blog, Substack, podcast, or YouTube channel? We would love to spotlight your work
+        here.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <Button
+          href="https://github.com/philaconvalley/website/issues/new?template=blog_submission.md"
+          external
+          variant="secondary"
+          size="lg"
+        >
+          Submit Your Content
+        </Button>
+        <Button
+          href="/contact"
+          variant="outline"
+          size="lg"
+          class="!text-white !border-white hover:!bg-white/10"
+        >
+          Get in Touch
+        </Button>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
