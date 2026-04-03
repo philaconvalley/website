@@ -19,7 +19,7 @@ const projects = (await getCollection('projects')).sort(
   <Header />
 
   <!-- Hero Section -->
-  <section class="bg-gradient-to-br from-primary-600 to-accent-600 text-white py-20">
+  <section class="bg-brand-yellow text-brand-dark py-20 border-b-[3px] border-brand-dark">
     <div class="container-custom">
       <div class="max-w-4xl mx-auto text-center">
         <h1 class="text-5xl md:text-6xl font-bold mb-6">Community Projects</h1>
@@ -35,7 +35,7 @@ const projects = (await getCollection('projects')).sort(
     <section class="section-padding">
       <div class="container-custom">
         <div class="max-w-3xl mx-auto text-center">
-          <div class="bg-gradient-to-br from-primary-50 to-accent-50 rounded-2xl p-12 md:p-16">
+          <div class="bg-white rounded-retro border-[3px] border-brand-dark shadow-retro-lg p-12 md:p-16">
             <svg class="w-24 h-24 mx-auto mb-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
             </svg>
@@ -148,7 +148,7 @@ const projects = (await getCollection('projects')).sort(
   )}
 
   <!-- Submit Project CTA -->
-  <section class="section-padding bg-gradient-to-r from-primary-600 to-accent-600 text-white">
+  <section class="section-padding bg-accent-400 text-white border-t-[3px] border-b-[3px] border-brand-dark">
     <div class="container-custom text-center">
       <h2 class="text-4xl font-bold mb-6">Built Something Cool?</h2>
       <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">
