@@ -8,6 +8,10 @@ The official website for **PhilaCon Valley** — Philadelphia's tech community b
 
 **Live Site**: [philaconvalley.com](https://philaconvalley.com) | **Events**: [lu.ma/philaconvalley](https://lu.ma/philaconvalley) | **Donate**: [Open Collective](https://opencollective.com/philacon-valley)
 
+Built with [Astro](https://astro.build), [Tailwind CSS](https://tailwindcss.com), and [Alpine.js](https://alpinejs.dev), hosted on [Vercel](https://vercel.com). See [Architecture](docs/architecture.md) for the full breakdown.
+
+![PhilaCon Valley homepage](docs/screenshots/homepage.png)
+
 ---
 
 ## Who is this for?
