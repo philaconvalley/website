@@ -2,6 +2,9 @@
 
 Thank you for wanting to contribute to PhilaCon Valley! This guide covers the workflow for submitting changes.
 
+<!-- Screenshots in docs/screenshots/ (fork-repo.png, create-branch.png) were captured from github.com in July 2026.
+     If GitHub redesigns the fork or branch-creation UI, recapture and replace these two files. -->
+
 ## Ways to Contribute (No Code Needed)
 
 You don't need to write code to help:
