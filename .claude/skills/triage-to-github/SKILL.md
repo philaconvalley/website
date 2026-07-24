@@ -41,8 +41,8 @@ version of this skill would skip:
 
 1. **Bias toward more onboarding surface, not less.** Don't default a finding
    to `intermediate` just because the tool/agent that surfaced it was
-   reasoning at a code-review level. Ask: could a newcomer do this *with a
-   good Context section*? If yes, it's `beginner`/`good first issue` — under-
+   reasoning at a code-review level. Ask: could a newcomer do this _with a
+   good Context section_? If yes, it's `beginner`/`good first issue` — under-
    labeling difficulty quietly gatekeeps the community you're trying to grow.
 2. **Every issue says why it matters to the community, not just to the
    codebase.** A missing RSS redirect isn't just "a bug" — it's a community
@@ -113,7 +113,7 @@ if the fix ends up small.
 **Default to asking "could a Context section make this beginner-approachable?"
 before settling for `intermediate`.** A fix that's mechanically small — swap
 an import, add one HTML attribute, extract markup you can point at an existing
-example of — is `beginner`/`good first issue` even if *understanding why*
+example of — is `beginner`/`good first issue` even if _understanding why_
 requires explaining a concept (build-time vs. browser execution, what SRI is,
 component extraction), as long as that explanation fits in a short `## Context`
 section. Reserve `intermediate`/`advanced` for issues that genuinely require

@@ -1,9 +1,7 @@
 ---
 import '../styles/global.css';
 import SEO from '../components/SEO.astro';
-import { inject } from '@vercel/analytics';
-
-inject();
+import Analytics from '@vercel/analytics/astro';
 
 interface Props {
   title: string;
@@ -45,6 +43,8 @@ const {
     ></script>
 
     <meta name="generator" content={Astro.generator} />
+
+    <Analytics />
 
     <script is:inline type="application/ld+json">
       {

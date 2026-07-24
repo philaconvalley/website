@@ -88,7 +88,7 @@ collection" or "SSG build step" is breaks that promise; they'll bounce off
 the issue instead of picking it up.
 
 Whenever an issue carries either label, add a `## Context` section, placed
-right after `## Description`, that a newcomer can read *before* opening any
+right after `## Description`, that a newcomer can read _before_ opening any
 code:
 
 - Explain the one underlying concept in plain language (what a content
