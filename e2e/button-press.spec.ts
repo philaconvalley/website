@@ -17,10 +17,10 @@ test.describe('Button press feedback', () => {
   test('scales down on press with no-preference motion', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.goto('/');
-    const button = page.locator('a.bg-accent-400[href="/join"]');
+    const button = page.locator('[data-testid="hero-cta"]');
     await expect(button).toHaveCSS('transform', 'none');
 
-    const client = await forceActive(page, 'a.bg-accent-400[href="/join"]');
+    const client = await forceActive(page, '[data-testid="hero-cta"]');
     await expect(button).toHaveCSS('transform', 'matrix(0.97, 0, 0, 0.97, 0, 0)');
     await client.detach();
   });
@@ -28,9 +28,9 @@ test.describe('Button press feedback', () => {
   test('dims via opacity instead of scaling when motion is reduced', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
-    const button = page.locator('a.bg-accent-400[href="/join"]');
+    const button = page.locator('[data-testid="hero-cta"]');
 
-    const client = await forceActive(page, 'a.bg-accent-400[href="/join"]');
+    const client = await forceActive(page, '[data-testid="hero-cta"]');
     await expect(button).toHaveCSS('transform', 'none');
     await expect(button).toHaveCSS('opacity', '0.8');
     await client.detach();

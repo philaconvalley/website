@@ -119,7 +119,7 @@
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  .backdrop-blur-lg {
+  [data-testid='mobile-menu'] {
     @apply backdrop-blur-none bg-brand-dark;
   }
 }

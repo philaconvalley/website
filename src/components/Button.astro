@@ -5,6 +5,7 @@ interface Props {
   size?: 'sm' | 'md' | 'lg';
   class?: string;
   external?: boolean;
+  'data-testid'?: string;
 }
 
 const {
@@ -13,6 +14,7 @@ const {
   size = 'md',
   class: className = '',
   external = false,
+  'data-testid': testId,
 } = Astro.props;
 
 const baseClasses =
@@ -40,7 +42,7 @@ const externalProps = external ? { target: '_blank', rel: 'noopener noreferrer' 
 
 {
   href ? (
-    <a href={href} class={classes} {...externalProps}>
+    <a href={href} class={classes} data-testid={testId} {...externalProps}>
       <slot />
       {external && (
         <svg class="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -54,7 +56,7 @@ const externalProps = external ? { target: '_blank', rel: 'noopener noreferrer' 
       )}
     </a>
   ) : (
-    <button class={classes}>
+    <button class={classes} data-testid={testId}>
       <slot />
     </button>
   )

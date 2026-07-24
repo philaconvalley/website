@@ -15,14 +15,23 @@ test.describe('desktop nav sliding pill indicator', () => {
 
   test('follows keyboard focus, not just mouse hover', async ({ page }) => {
     await page.goto('/');
-    const before = await page.locator('[data-testid="nav-pill"]').getAttribute('style');
+    const pill = page.locator('[data-testid="nav-pill"]');
+    const before = await pill.getAttribute('style');
 
-    await page.locator('[data-testid="desktop-nav"] a', { hasText: 'Blog' }).focus();
-    await page.waitForTimeout(100);
+    const blogLink = page.locator('[data-testid="desktop-nav"] a', { hasText: 'Blog' });
+    await blogLink.focus();
+    await page.waitForTimeout(50);
 
-    const after = await page.locator('[data-testid="nav-pill"]').getAttribute('style');
+    const after = await pill.getAttribute('style');
     expect(after).not.toBe(before);
-    expect(after).toContain('width: 52px');
+
+    // Compare against the Blog link's own live offsetLeft/offsetWidth rather than a
+    // hardcoded pixel value or the pill's rendered boundingBox — the latter would race
+    // the pill's 300ms CSS transition and could be read mid-animation.
+    const expectedLeft = await blogLink.evaluate((el) => (el as HTMLElement).offsetLeft);
+    const expectedWidth = await blogLink.evaluate((el) => (el as HTMLElement).offsetWidth);
+    expect(after).toContain(`translateX(${expectedLeft}px)`);
+    expect(after).toContain(`width: ${expectedWidth}px`);
   });
 });
 

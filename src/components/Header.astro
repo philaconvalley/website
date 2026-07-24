@@ -131,18 +131,22 @@ const currentPath = Astro.url.pathname;
     >
       <div class="px-2 pt-2 pb-3 space-y-1">
         {
-          navItems.map((item) => (
-            <a
-              href={item.href}
-              class={`block px-3 py-2 rounded-lg text-base font-display font-bold ${
-                currentPath === item.href || currentPath.startsWith(item.href + '/')
-                  ? 'bg-accent-400 text-white'
-                  : 'text-primary-100 hover:bg-accent-400 hover:text-white'
-              }`}
-            >
-              {item.name}
-            </a>
-          ))
+          navItems.map((item) => {
+            const isCurrent = currentPath === item.href || currentPath.startsWith(item.href + '/');
+            return (
+              <a
+                href={item.href}
+                aria-current={isCurrent ? 'page' : undefined}
+                class={`block px-3 py-2 rounded-lg text-base font-display font-bold ${
+                  isCurrent
+                    ? 'bg-accent-400 text-white'
+                    : 'text-primary-100 hover:bg-accent-400 hover:text-white'
+                }`}
+              >
+                {item.name}
+              </a>
+            );
+          })
         }
         <a
           href="/contact"

@@ -13,7 +13,7 @@ test.describe('prefers-reduced-motion', () => {
   test('hero entrance animations run normally with no preference', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.goto('/');
-    const tagline = page.locator('.animate-slide-up').first();
+    const tagline = page.locator('[data-testid="hero-tagline"]');
     await expect(tagline).toHaveCSS('animation-name', 'slideUp');
   });
 
@@ -23,7 +23,7 @@ test.describe('prefers-reduced-motion', () => {
     const html = page.locator('html');
     await expect(html).toHaveCSS('scroll-behavior', 'auto');
 
-    const tagline = page.locator('.animate-slide-up').first();
+    const tagline = page.locator('[data-testid="hero-tagline"]');
     await expect(tagline).toHaveCSS('animation-name', 'none');
     await expect(tagline).toHaveCSS('transform', 'none');
   });
