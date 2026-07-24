@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import Button from '../../components/Button.astro';
+import BlogPostCard from '../../components/BlogPostCard.astro';
 import { getCollection } from 'astro:content';
 
 const posts = (await getCollection('blog')).sort(
@@ -31,62 +32,19 @@ const posts = (await getCollection('blog')).sort(
     <div class="container-custom">
       <div class="max-w-3xl mx-auto space-y-8">
         {
-          posts.map((post) => {
-            const isExternal = !!post.data.externalUrl;
-            const href = isExternal ? post.data.externalUrl! : `/blog/${post.slug}`;
-            return (
-              <a
-                href={href}
-                class="card p-8 block group"
-                {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-              >
-                <div class="flex items-center gap-3 mb-3 text-sm text-brand-dark/50">
-                  <span>{post.data.author}</span>
-                  <span>·</span>
-                  <time>
-                    {post.data.date.toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </time>
-                  {post.data.platform && (
-                    <span class="px-2 py-0.5 bg-accent-100 text-accent-700 text-xs font-display font-bold rounded-full">
-                      {post.data.platform}
-                    </span>
-                  )}
-                </div>
-                <h2 class="text-2xl font-display font-bold text-brand-dark group-hover:text-accent-600 transition-colors mb-2">
-                  {post.data.title}
-                  {isExternal && (
-                    <svg
-                      class="inline-block w-5 h-5 ml-2 text-brand-dark/30"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                      />
-                    </svg>
-                  )}
-                </h2>
-                <p class="text-brand-dark/60 mb-4">{post.data.description}</p>
-                {post.data.tags.length > 0 && (
-                  <div class="flex flex-wrap gap-1.5">
-                    {post.data.tags.map((tag) => (
-                      <span class="px-2 py-0.5 bg-primary-100 text-primary-800 text-xs font-display font-bold rounded-full">
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </a>
-            );
-          })
+          posts.map((post) => (
+            <BlogPostCard
+              title={post.data.title}
+              description={post.data.description}
+              author={post.data.author}
+              date={post.data.date}
+              slug={post.slug}
+              tags={post.data.tags}
+              externalUrl={post.data.externalUrl}
+              platform={post.data.platform}
+              size="lg"
+            />
+          ))
         }
       </div>
     </div>

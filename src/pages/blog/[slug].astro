@@ -7,10 +7,14 @@ import Button from '../../components/Button.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
-  return posts.map((post) => ({
-    params: { slug: post.slug },
-    props: { post },
-  }));
+  // Cross-posts (externalUrl set) have no real body content — they link out from
+  // blog/index.astro instead, so no internal page should exist for their slug.
+  return posts
+    .filter((post) => !post.data.externalUrl)
+    .map((post) => ({
+      params: { slug: post.slug },
+      props: { post },
+    }));
 }
 
 const { post } = Astro.props;

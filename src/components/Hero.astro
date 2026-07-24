@@ -22,6 +22,7 @@ import Button from './Button.astro';
         />
 
         <p
+          data-testid="hero-tagline"
           class="text-xl md:text-2xl lg:text-3xl font-semibold mb-6 text-brand-dark/80 animate-slide-up"
         >
           Philadelphia's Tech Community
@@ -35,7 +36,9 @@ import Button from './Button.astro';
 
         <!-- CTA Buttons -->
         <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <Button href="/join" variant="primary" size="lg"> Join Our Community </Button>
+          <Button href="/join" variant="primary" size="lg" data-testid="hero-cta">
+            Join Our Community
+          </Button>
           <Button href="/events" variant="outline" size="lg"> View Events </Button>
           <Button href="/support" variant="outline" size="lg"> Support Us </Button>
         </div>

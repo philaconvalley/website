@@ -12,7 +12,7 @@ export async function GET(context: APIContext) {
       title: b.data.title,
       description: b.data.description,
       pubDate: b.data.date,
-      link: `/blog/${b.slug}/`,
+      link: b.data.externalUrl ?? `/blog/${b.slug}/`,
     })),
     ...resources.map((r) => ({
       title: r.data.title,
