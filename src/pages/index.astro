@@ -5,9 +5,14 @@ import Footer from '../components/Footer.astro';
 import Hero from '../components/Hero.astro';
 import Button from '../components/Button.astro';
 import ProjectCard from '../components/ProjectCard.astro';
+import BlogPostCard from '../components/BlogPostCard.astro';
 import { getCollection } from 'astro:content';
 
 const projects = (await getCollection('projects'))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
+
+const posts = (await getCollection('blog'))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 3);
 ---
@@ -117,6 +122,36 @@ const projects = (await getCollection('projects'))
       </div>
     </div>
   </section>
+
+  <!-- Community Voices -->
+  {
+    posts.length > 0 && (
+      <section class="section-padding bg-brand-cream">
+        <div class="container-custom">
+          <div class="flex items-center justify-between mb-12">
+            <h2 class="text-4xl font-bold">Community Voices</h2>
+            <Button href="/blog" variant="outline">
+              Read More Stories
+            </Button>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {posts.map((post) => (
+              <BlogPostCard
+                title={post.data.title}
+                description={post.data.description}
+                author={post.data.author}
+                date={post.data.date}
+                slug={post.slug}
+                tags={post.data.tags}
+                externalUrl={post.data.externalUrl}
+                platform={post.data.platform}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   <!-- Latest Projects -->
   {

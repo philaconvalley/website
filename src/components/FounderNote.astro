@@ -1,0 +1,31 @@
+---
+/**
+ * DRAFT copy — see src/pages/about.astro comment above this component's usage.
+ * This text is a starting draft for Waskar to edit/approve before it ships;
+ * it should read as his actual words, not a paraphrase written about him.
+ */
+---
+
+<div class="relative bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro-lg p-8 md:p-12">
+  <span
+    class="absolute -top-4 left-8 text-7xl font-display font-black text-accent-400/30 select-none"
+    aria-hidden="true"
+  >
+    "
+  </span>
+  <div class="prose prose-lg max-w-none text-brand-dark/80 space-y-5">
+    <slot />
+  </div>
+  <div class="flex items-center gap-3 mt-8 pt-6 border-t border-brand-dark/10">
+    <img
+      src="/images/orange circle sunset logo.webp"
+      alt=""
+      aria-hidden="true"
+      class="w-10 h-10 rounded-full"
+    />
+    <div>
+      <p class="font-display font-bold text-brand-dark">Waskar Paulino</p>
+      <p class="text-sm text-brand-dark/50">Founder &amp; Executive Director</p>
+    </div>
+  </div>
+</div>

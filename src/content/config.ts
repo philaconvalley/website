@@ -43,8 +43,20 @@ const blog = defineCollection({
   }),
 });
 
+const gallery = defineCollection({
+  type: 'data',
+  schema: z.object({
+    image: z.string(),
+    alt: z.string(),
+    event: z.string(),
+    date: z.date(),
+    caption: z.string().optional(),
+  }),
+});
+
 export const collections = {
   projects,
   resources,
   blog,
+  gallery,
 };
