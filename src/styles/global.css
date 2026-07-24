@@ -100,3 +100,26 @@
     }
   }
 }
+
+/*
+ * Deliberately unlayered (outside @layer) so these accessibility overrides win
+ * against @layer utilities regardless of Tailwind's cascade-layer ordering.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .animate-fade-in,
+  .animate-slide-up {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .backdrop-blur-lg {
+    @apply backdrop-blur-none bg-brand-dark;
+  }
+}

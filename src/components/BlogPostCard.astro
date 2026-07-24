@@ -1,0 +1,78 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  author: string;
+  date: Date;
+  slug: string;
+  tags: string[];
+  externalUrl?: string;
+  platform?: string;
+}
+
+const { title, description, author, date, slug, tags, externalUrl, platform } = Astro.props;
+
+const isExternal = !!externalUrl;
+const href = isExternal ? externalUrl! : `/blog/${slug}`;
+const externalProps = isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+---
+
+<a href={href} class="card p-6 h-full flex flex-col group" {...externalProps}>
+  <div class="flex items-center gap-2 mb-3 text-xs text-brand-dark/50">
+    <span>{author}</span>
+    <span>·</span>
+    <time>
+      {
+        date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })
+      }
+    </time>
+    {
+      platform && (
+        <span class="px-2 py-0.5 bg-accent-100 text-accent-700 text-xs font-display font-bold rounded-full">
+          {platform}
+        </span>
+      )
+    }
+  </div>
+
+  <h3
+    class="text-xl font-display font-bold text-brand-dark group-hover:text-accent-600 transition-colors mb-2"
+  >
+    {title}
+    {
+      isExternal && (
+        <svg
+          class="inline-block w-4 h-4 ml-1 text-brand-dark/30"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+          />
+        </svg>
+      )
+    }
+  </h3>
+
+  <p class="text-brand-dark/60 mb-4 flex-1">{description}</p>
+
+  {
+    tags.length > 0 && (
+      <div class="flex flex-wrap gap-1.5 mt-auto">
+        {tags.map((tag) => (
+          <span class="px-2 py-0.5 bg-primary-100 text-primary-800 text-xs font-display font-bold rounded-full">
+            #{tag}
+          </span>
+        ))}
+      </div>
+    )
+  }
+</a>

@@ -1,0 +1,44 @@
+---
+interface Photo {
+  image: string;
+  alt: string;
+  event: string;
+  date: Date;
+  caption?: string;
+}
+
+interface Props {
+  photos: Photo[];
+}
+
+const { photos } = Astro.props;
+---
+
+{
+  photos.length > 0 ? (
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {photos.map((photo) => (
+        <figure class="group relative overflow-hidden rounded-retro border-2 border-brand-dark/10 shadow-retro">
+          <img
+            src={photo.image}
+            alt={photo.alt}
+            loading="lazy"
+            class="w-full aspect-square object-cover transition-transform duration-300 motion-safe:group-hover:scale-105"
+          />
+          <figcaption class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-dark/80 to-transparent p-3 pt-8 opacity-0 motion-safe:transition-opacity motion-safe:duration-200 group-hover:opacity-100 motion-reduce:opacity-100 motion-reduce:bg-brand-dark/60">
+            <p class="text-white text-xs font-display font-bold">{photo.event}</p>
+            {photo.caption && <p class="text-white/80 text-xs">{photo.caption}</p>}
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  ) : (
+    <div class="text-center py-12 px-6 rounded-retro border-2 border-dashed border-brand-dark/20">
+      <p class="text-lg font-display font-bold text-brand-dark/70 mb-2">Photos are on their way</p>
+      <p class="text-brand-dark/50 max-w-md mx-auto">
+        We're gathering shots from Commit, Ship It, and our Collab Labs — check back after our next
+        event to see the community in action.
+      </p>
+    </div>
+  )
+}

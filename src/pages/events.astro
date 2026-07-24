@@ -3,7 +3,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Button from '../components/Button.astro';
+import PhotoGrid from '../components/PhotoGrid.astro';
 import { links } from '../config';
+import { getCollection } from 'astro:content';
+
+const photos = (await getCollection('gallery')).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
 ---
 
 <BaseLayout
@@ -169,6 +175,24 @@ import { links } from '../config';
             Resume reviews, interview prep, job search strategies, and networking opportunities.
           </p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Community Photos -->
+  <section class="section-padding">
+    <div class="container-custom">
+      <h2 class="text-3xl font-bold mb-8 text-center">The Community, In Person</h2>
+      <div class="max-w-5xl mx-auto">
+        <PhotoGrid
+          photos={photos.map((photo) => ({
+            image: photo.data.image,
+            alt: photo.data.alt,
+            event: photo.data.event,
+            date: photo.data.date,
+            caption: photo.data.caption,
+          }))}
+        />
       </div>
     </div>
   </section>

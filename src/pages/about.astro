@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Button from '../components/Button.astro';
+import FounderNote from '../components/FounderNote.astro';
 ---
 
 <BaseLayout
@@ -46,6 +47,38 @@ import Button from '../components/Button.astro';
             projects, pair programming, sharing knowledge, and supporting each other's growth.
           </p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!--
+    DRAFT — needs Waskar's review before shipping.
+    This is a starting draft for a first-person founder's note. It should be
+    edited/approved so it reads as Waskar's actual words, not a paraphrase
+    written about him. Do not treat this copy as final.
+  -->
+  <section class="section-padding bg-brand-cream">
+    <div class="container-custom">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-4xl font-bold mb-8 text-center">A Note From Our Founder</h2>
+        <FounderNote>
+          <p>
+            I started PhilaCon Valley because I was tired of showing up to tech events in Philly and
+            being the only one in the room who looked like me — tired of networking events where you
+            hand out a business card and leave, conferences where you sit and listen but never
+            really connect.
+          </p>
+          <p>
+            I wanted something different: a place where we actually build together. Where you don't
+            have to code-switch, prove yourself twice, or wonder if you belong. Where showing up
+            means you're already part of it.
+          </p>
+          <p>
+            This site, this community, every workshop and Collab Lab — it's still early. We're
+            building it in public, together, the same way we build everything else here. If you've
+            ever felt like tech wasn't built with you in mind, this is for you.
+          </p>
+        </FounderNote>
       </div>
     </div>
   </section>
