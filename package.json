@@ -12,6 +12,8 @@
     "format:check": "prettier --check .",
     "astro": "astro",
     "test:e2e": "playwright test",
+    "test:csp": "playwright test --config playwright.csp.config.ts",
+    "csp:hash": "node scripts/check-csp-hashes.mjs",
     "prepare": "husky"
   },
   "lint-staged": {

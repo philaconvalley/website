@@ -32,6 +32,12 @@ jobs:
       - name: Build and type check
         run: npm run build
 
+      # The CSP allowlists build-generated inline scripts by hash, so a dependency
+      # that changes those bytes silently invalidates the policy. Fails loudly here
+      # rather than shipping an analytics script the browser will block.
+      - name: Check CSP script hashes match the build
+        run: npm run csp:hash
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v7
         with:
@@ -61,6 +67,11 @@ jobs:
 
       - name: Run e2e smoke suite
         run: npm run test:e2e
+
+      # Serves dist/ with the vercel.json headers applied — `astro preview` ignores
+      # them, so these assertions only mean anything under the dedicated config.
+      - name: Run security header suite
+        run: npm run test:csp
 
       - name: Upload Playwright report
         if: failure()
