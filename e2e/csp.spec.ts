@@ -1,0 +1,110 @@
+import { test, expect, type Page } from '@playwright/test';
+
+/**
+ * Guards the security headers in `vercel.json` against the real production
+ * build. Runs under `playwright.csp.config.ts`, which serves `dist/` through
+ * `scripts/serve-with-headers.mjs` so the headers actually apply — `astro
+ * preview` ignores vercel.json, and `vercel dev` applies it to dev-server HTML
+ * that carries Vite HMR and a differently-hashed inline analytics script.
+ */
+
+interface Violation {
+  directive: string;
+  blockedURI: string;
+  disposition: 'enforce' | 'report';
+}
+
+declare global {
+  interface Window {
+    __cspViolations: Violation[];
+  }
+}
+
+/** Must run before `goto` — violations fire during initial parse. */
+async function recordViolations(page: Page) {
+  await page.addInitScript(() => {
+    window.__cspViolations = [];
+    document.addEventListener('securitypolicyviolation', (e) => {
+      window.__cspViolations.push({
+        directive: e.effectiveDirective,
+        blockedURI: e.blockedURI,
+        disposition: e.disposition as 'enforce' | 'report',
+      });
+    });
+  });
+}
+
+const read = (page: Page) => page.evaluate(() => window.__cspViolations);
+
+const PAGES = ['/', '/about', '/contact', '/resources', '/blog'];
+
+test.describe('Content-Security-Policy (enforcing)', () => {
+  for (const path of PAGES) {
+    test(`blocks nothing on ${path}`, async ({ page }) => {
+      await recordViolations(page);
+      await page.goto(path);
+      await page.waitForLoadState('networkidle');
+
+      const enforced = (await read(page)).filter((v) => v.disposition === 'enforce');
+      expect(enforced, `enforced CSP violations on ${path}`).toEqual([]);
+    });
+  }
+
+  test('survives Alpine interaction (mobile menu open/close)', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await recordViolations(page);
+    await page.goto('/');
+
+    const toggle = page.getByRole('button', { name: 'Open main menu' });
+    await toggle.click();
+    await expect(page.locator('[data-testid="mobile-menu"]')).toBeVisible();
+    await toggle.click();
+
+    const enforced = (await read(page)).filter((v) => v.disposition === 'enforce');
+    expect(enforced, 'enforced CSP violations during Alpine interaction').toEqual([]);
+  });
+
+  test('serves every security header', async ({ page }) => {
+    const response = await page.goto('/');
+    const headers = response!.headers();
+
+    expect(headers['x-content-type-options']).toBe('nosniff');
+    expect(headers['x-frame-options']).toBe('DENY');
+    expect(headers['referrer-policy']).toBe('strict-origin-when-cross-origin');
+    expect(headers['content-security-policy']).toContain("frame-ancestors 'none'");
+    expect(headers['content-security-policy-report-only']).toBeTruthy();
+  });
+});
+
+test.describe('Content-Security-Policy-Report-Only (the strict experiment)', () => {
+  /**
+   * The report-only header drops 'unsafe-eval'. Alpine evaluates its directive
+   * expressions via `new Function()`, so this is expected to report — that
+   * report IS the data point for whether swapping to `@alpinejs/csp` is worth
+   * doing. If this ever stops reporting, the strict policy has become viable
+   * and the enforcing header should be tightened.
+   */
+  test('reports exactly the known Alpine eval gap, and nothing new', async ({ page }) => {
+    await recordViolations(page);
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+
+    const reported = (await read(page)).filter((v) => v.disposition === 'report');
+
+    // Nothing beyond eval should be reported — fonts, styles, images, connect
+    // and form all already satisfy the strict policy. A new category here means
+    // a dependency started reaching somewhere the allowlist does not cover.
+    const unexpected = reported.filter((v) => !v.directive.startsWith('script-src'));
+    expect(unexpected, 'unexpected report-only violations beyond the Alpine eval gap').toEqual([]);
+
+    // Deliberate tripwire: this asserts the gap still EXISTS, so the test cannot
+    // pass vacuously. If it fails because no eval violations were reported, Alpine
+    // no longer needs eval — drop 'unsafe-eval' from the enforcing header and
+    // delete this assertion.
+    const evalViolations = reported.filter((v) => v.blockedURI === 'eval');
+    expect(
+      evalViolations.length,
+      "no eval violations reported — if Alpine no longer needs eval, remove 'unsafe-eval' from the enforcing CSP",
+    ).toBeGreaterThan(0);
+  });
+});
