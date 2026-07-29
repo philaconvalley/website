@@ -1,0 +1,12 @@
+{
+  "_comment": "Last-known-good community numbers. Used ONLY when Luma or GitHub fail to answer during a build, so the site never blocks a deploy and never invents a number. Regenerate with `npm run data:refresh` and commit the diff.",
+  "_generated": "2026-07-29",
+  "nextEvent": {
+    "title": "PATCH 002: TAP IN NFC LAB",
+    "start": "2026-07-30T22:00:00.000Z",
+    "venue": "Pennovation Center",
+    "url": "https://luma.com/p30z896q"
+  },
+  "nightsHeld": 12,
+  "thingsShipped": 1
+}

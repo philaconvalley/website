@@ -2,207 +2,161 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import Hero from '../components/Hero.astro';
-import Button from '../components/Button.astro';
-import ProjectCard from '../components/ProjectCard.astro';
-import BlogPostCard from '../components/BlogPostCard.astro';
+import EventBar from '../components/EventBar.astro';
+import BuilderNightTrack from '../components/BuilderNightTrack.astro';
+import { getCommunityData } from '../lib/community';
+import { community } from '../config';
 import { getCollection } from 'astro:content';
 
-const projects = (await getCollection('projects'))
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-  .slice(0, 3);
+const { nextEvent, nightsHeld, thingsShipped } = await getCommunityData();
 
-const posts = (await getCollection('blog'))
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-  .slice(0, 3);
+/**
+ * The design calls for one full-bleed photo of a Builder Night — warm, faces.
+ * There is no stand-in for that: the banner artwork is brand illustration, not a
+ * room full of people, and cropping it full-bleed would read as a placeholder.
+ * So the section renders only when a real photo exists in the gallery
+ * collection, and is absent rather than wrong until one is added.
+ */
+const photo = (await getCollection('gallery')).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+)[0];
+
+const stats = [
+  { value: community.memberCount, label: 'people, not users' },
+  { value: nightsHeld, label: nightsHeld === 1 ? 'night held' : 'nights held' },
+  {
+    value: thingsShipped,
+    label: thingsShipped === 1 ? 'thing shipped, so far' : 'things shipped, so far',
+  },
+];
 ---
 
-<BaseLayout title="PhilaCon Valley - Philadelphia's Tech Community By Us, For Us">
+<BaseLayout title="PhilaCon Valley — Come as you are. Leave with a flock.">
   <Header />
 
-  <Hero />
-
-  <!-- Mission Section -->
-  <section class="section-padding">
-    <div class="container-custom">
-      <div class="max-w-3xl mx-auto text-center">
-        <h2 class="text-4xl font-bold mb-6">Our Mission</h2>
-        <p class="text-xl text-brand-dark/70 leading-relaxed mb-8">
-          PhilaCon Valley exists to make Philadelphia the tech hub it's meant to be. We center
-          Black, Brown, LGBTQIA+, and underrepresented folks in tech through hands-on learning, pair
-          programming, collaborative workshops, and community support.
-        </p>
-        <p class="text-lg text-brand-dark/60 mb-8">
-          This is a community <strong>by us, for us</strong> – where everyone belongs, everyone learns,
-          and everyone builds the future of Philly tech together.
-        </p>
-        <Button href="/about" variant="primary" size="lg"> Learn More About Us </Button>
-      </div>
-    </div>
-  </section>
-
-  <!-- What We Do Section -->
-  <section class="section-padding bg-brand-purple">
-    <div class="container-custom">
-      <h2 class="text-4xl font-bold text-center mb-12">What We Do</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        <div class="text-center">
-          <div
-            class="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-4"
-          >
-            <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-              ></path>
-            </svg>
-          </div>
-          <h3 class="text-xl font-bold mb-2">Workshops</h3>
-          <p class="text-brand-dark/60">
-            Hands-on learning sessions covering web dev, APIs, Git, and more
-          </p>
-        </div>
-
-        <div class="text-center">
-          <div
-            class="w-16 h-16 bg-accent-600 rounded-full flex items-center justify-center mx-auto mb-4"
-          >
-            <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-              ></path>
-            </svg>
-          </div>
-          <h3 class="text-xl font-bold mb-2">Collab Labs</h3>
-          <p class="text-brand-dark/60">
-            Build real projects together through pair programming and mentorship
-          </p>
-        </div>
-
-        <div class="text-center">
-          <div
-            class="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-4"
-          >
-            <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-              ></path>
-            </svg>
-          </div>
-          <h3 class="text-xl font-bold mb-2">Career Support</h3>
-          <p class="text-brand-dark/60">Resume reviews, interview prep, and job search guidance</p>
-        </div>
-
-        <div class="text-center">
-          <div
-            class="w-16 h-16 bg-accent-600 rounded-full flex items-center justify-center mx-auto mb-4"
-          >
-            <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-              ></path>
-            </svg>
-          </div>
-          <h3 class="text-xl font-bold mb-2">Community</h3>
-          <p class="text-brand-dark/60">
-            A supportive network of developers learning and growing together
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Community Voices -->
-  {
-    posts.length > 0 && (
-      <section class="section-padding bg-brand-cream">
-        <div class="container-custom">
-          <div class="flex items-center justify-between mb-12">
-            <h2 class="text-4xl font-bold">Community Voices</h2>
-            <Button href="/blog" variant="outline">
-              Read More Stories
-            </Button>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {posts.map((post) => (
-              <BlogPostCard
-                title={post.data.title}
-                description={post.data.description}
-                author={post.data.author}
-                date={post.data.date}
-                slug={post.slug}
-                tags={post.data.tags}
-                externalUrl={post.data.externalUrl}
-                platform={post.data.platform}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-    )
-  }
-
-  <!-- Latest Projects -->
-  {
-    projects.length > 0 && (
-      <section class="section-padding">
-        <div class="container-custom">
-          <div class="flex items-center justify-between mb-12">
-            <h2 class="text-4xl font-bold">Community Projects</h2>
-            <Button href="/projects" variant="outline">
-              View All Projects
-            </Button>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {projects.map((project) => (
-              <ProjectCard
-                title={project.data.title}
-                description={project.data.description}
-                techStack={project.data.techStack}
-                githubUrl={project.data.githubUrl}
-                liveUrl={project.data.liveUrl}
-                slug={project.slug}
-                status={project.data.status}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-    )
-  }
-
-  <!-- CTA Section -->
-  <section class="section-padding bg-accent-400 text-white">
-    <div class="container-custom text-center">
-      <h2 class="text-4xl font-bold mb-6">Ready to Join the Community?</h2>
-      <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-        Whether you're just starting your tech journey or you're an experienced developer, there's a
-        place for you in PhilaCon Valley.
+  <!-- No <main> here: BaseLayout already wraps the page slot in
+       <main id="main-content">, and nesting a second one is invalid HTML that
+       reports two main landmarks and strips the footer's contentinfo role. -->
+  <div>
+    <!-- Hero -->
+    <section class="px-5 lg:px-[72px] pt-[76px] pb-[84px] lg:pt-[136px] lg:pb-[140px]">
+      <h1
+        class="font-display font-extrabold text-[44px] lg:text-[96px] leading-[1.02] lg:leading-[0.98] tracking-[-0.03em] lg:tracking-[-0.035em] m-0 max-w-[900px]"
+      >
+        <span class="block overflow-hidden">
+          <span class="inline-block pcv-enter-word [animation-delay:0.1s]">Come as you are.</span>
+        </span>
+        <span class="block overflow-hidden text-accent-600">
+          <span class="inline-block pcv-enter-word [animation-delay:0.35s]">
+            Leave with a flock.
+          </span>
+        </span>
+      </h1>
+      <p
+        data-testid="hero-tagline"
+        class="text-[17px] lg:text-[22px] leading-[1.55] lg:leading-[1.5] text-brand-dark/[0.72] max-w-[560px] mt-6 lg:mt-[34px] pcv-enter-rise [animation-delay:0.6s]"
+      >
+        A tech community in Philly for the people who were never handed a way in. Free, in person,
+        and open before you feel ready.
       </p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button href="/join" variant="secondary" size="lg"> Join Us Today </Button>
-        <Button
-          href="/events"
-          variant="outline"
-          size="lg"
-          class="!text-white !border-white hover:!bg-white/10"
+    </section>
+
+    <!-- What a Builder Night actually is -->
+    <section
+      class="px-5 lg:px-[72px] py-14 lg:py-[104px] border-t border-brand-dark/[0.11] bg-primary-50 lg:grid lg:grid-cols-2 lg:gap-24 lg:items-start"
+    >
+      <h2
+        class="font-display font-extrabold text-[30px] lg:text-[52px] leading-[1.08] lg:leading-[1.04] tracking-[-0.02em] lg:tracking-[-0.025em] m-0 mb-9 lg:mb-0 pcv-enter-rise"
+      >
+        One night. Three hours. Something exists that didn't.
+      </h2>
+      <BuilderNightTrack
+        outcome="Your first pull request"
+        outcomeDetail="Reviewed, merged, and live."
+      />
+    </section>
+
+    {
+      photo && (
+        <section class="border-t border-brand-dark/[0.11]">
+          <img
+            src={photo.data.image}
+            alt={photo.data.alt}
+            loading="lazy"
+            class="w-full h-[300px] lg:h-[440px] object-cover block"
+          />
+        </section>
+      )
+    }
+
+    <!-- The two halves of the org -->
+    <section
+      class="px-5 lg:px-[72px] py-[60px] lg:py-[104px] border-t border-brand-dark/[0.11] lg:grid lg:grid-cols-2 lg:gap-24 lg:max-w-[1000px]"
+    >
+      <div>
+        <h3
+          class="font-display font-extrabold text-[28px] lg:text-[38px] leading-[1.08] lg:leading-[1.05] tracking-[-0.02em] m-0 mb-3 lg:mb-3.5"
         >
-          See Upcoming Events
-        </Button>
+          Free, forever, for us.
+        </h3>
+        <p class="text-base lg:text-[17px] leading-[1.65] text-brand-dark/70 m-0">
+          Builder Nights, workshops, and career labs. You show up, you pair with someone, you leave
+          having made a thing. No application, no fee, no prerequisite.
+        </p>
+        <a
+          href="/join"
+          class="inline-block font-display font-bold text-base mt-3.5 lg:mt-5 py-3 lg:py-0 lg:pb-0.5 text-brand-dark no-underline border-b-2 border-brand-pink hover:text-accent-700 transition-colors"
+        >
+          Join {community.memberCount} of us →
+        </a>
       </div>
-    </div>
-  </section>
+      <div class="mt-[52px] lg:mt-0">
+        <h3
+          class="font-display font-extrabold text-[28px] lg:text-[38px] leading-[1.08] lg:leading-[1.05] tracking-[-0.02em] m-0 mb-3 lg:mb-3.5"
+        >
+          Paid work that pays for it.
+        </h3>
+        <p class="text-base lg:text-[17px] leading-[1.65] text-brand-dark/70 m-0">
+          Design, apps, and software for Philly nonprofits and community orgs. The fee funds the
+          free side — and the people who build it came up through it.
+        </p>
+        <a
+          href="/contact"
+          class="inline-block font-display font-bold text-base mt-3.5 lg:mt-5 py-3 lg:py-0 lg:pb-0.5 text-brand-dark no-underline border-b-2 border-brand-pink hover:text-accent-700 transition-colors"
+        >
+          Start a project →
+        </a>
+      </div>
+    </section>
+
+    <!-- What it adds up to -->
+    <section
+      class="px-5 lg:px-[72px] py-14 lg:py-[84px] border-t border-brand-dark/[0.11] flex flex-col lg:flex-row gap-[30px] lg:gap-[88px] pcv-enter-stat"
+    >
+      {
+        stats.map((stat) => (
+          <div>
+            <div class="font-display font-extrabold text-[60px] lg:text-[84px] leading-[0.86] lg:leading-[0.9] tracking-[-0.04em]">
+              {stat.value}
+            </div>
+            <div class="font-mono text-[10px] lg:text-[11px] font-medium uppercase tracking-[0.18em] text-brand-dark/50 mt-2 lg:mt-3">
+              {stat.label}
+            </div>
+          </div>
+        ))
+      }
+    </section>
+  </div>
 
   <Footer />
+
+  <!-- Clears the fixed bottom bar so the footer's last line is never trapped under
+       it. Carries the same expiry as the bar: once the bar removes itself, this
+       would otherwise leave 88px of dead space at the bottom of the page. -->
+  {
+    nextEvent && (
+      <div class="lg:hidden h-[88px]" data-pcv-event-start={nextEvent.start} aria-hidden="true" />
+    )
+  }
+  <EventBar event={nextEvent} />
 </BaseLayout>

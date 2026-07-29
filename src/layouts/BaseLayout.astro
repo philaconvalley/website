@@ -79,5 +79,13 @@ const {
     <main id="main-content">
       <slot />
     </main>
+
+    <!-- Expires time-bound claims against the visitor's clock, which a static build
+         cannot do on its own. Served from public/ and loaded with `is:inline` so it
+         stays an external file: Astro's script pipeline inlines chunks this small,
+         and an inline script would need its sha256 hand-maintained in both CSP
+         policies in vercel.json. As a file it is covered by `script-src 'self'`.
+         Full reasoning in public/js/event-freshness.js. -->
+    <script is:inline defer src="/js/event-freshness.js"></script>
   </body>
 </html>

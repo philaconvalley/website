@@ -144,3 +144,6 @@ playwright-report/
 blob-report/
 playwright/.cache/
 .vercel
+
+# Playwright MCP session artifacts
+.playwright-mcp/

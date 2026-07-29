@@ -4,7 +4,11 @@ import { test, expect } from '@playwright/test';
 // rendered a blank internal page and the RSS feed linked to it instead of the real
 // external article. See GitHub issue #83.
 
-test.describe('blog external-post routing', () => {
+// Skipped, not deleted: the blog is hidden until an editorial procedure exists,
+// so /blog and /blog/* no longer route (src/pages/_blog/) and the feed no longer
+// carries posts. These assertions are still the correct contract for when it
+// returns — unskip this block at the same time as the routes.
+test.describe.skip('blog external-post routing', () => {
   test('a cross-post slug has no internal page (404s, does not render blank)', async ({ page }) => {
     const response = await page.goto('/blog/waskar-between-commits/');
     expect(response?.status()).toBe(404);
