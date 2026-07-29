@@ -174,7 +174,31 @@ async function fetchLuma(now: Date) {
 }
 
 /**
- * Things shipped = public org repos with a live deployed URL.
+ * What counts as one of the org's public projects.
+ *
+ * Exported and shared with src/pages/projects/index.astro deliberately. Both
+ * surfaces answer the same question about the same endpoint, and they used to
+ * answer it differently: this one additionally required a non-empty `homepage`,
+ * so the homepage announced "2 things shipped, so far" while /projects listed six
+ * of them. A visitor who read the headline number and then clicked through saw the
+ * site contradict itself. One predicate in one place is the only version of this
+ * that cannot drift again.
+ *
+ * Note what this does NOT filter on: a deployed URL. "Shipped" here means the work
+ * is public and live in the org, not that it has a hosted front end — a Discord
+ * bot and a Chrome extension ship without a homepage field.
+ *
+ * Takes `unknown` because the GitHub response is untrusted input; narrowing happens
+ * here, at the boundary, rather than with a cast at each call site.
+ */
+export function isPublicOrgProject(repo: unknown): boolean {
+  if (typeof repo !== 'object' || repo === null) return false;
+  const r = repo as { name?: unknown; archived?: unknown; fork?: unknown };
+  return typeof r.name === 'string' && !r.name.startsWith('.') && !r.archived && !r.fork;
+}
+
+/**
+ * Things shipped = public org repos, counted by the shared predicate above.
  *
  * Sourcing this from the GitHub *org* rather than a hand-kept list is what keeps
  * client work out of a public counter structurally instead of by discipline:
@@ -194,10 +218,7 @@ async function fetchShipped(): Promise<number | null> {
       console.warn('[community] GitHub API returned a non-array — using snapshot.');
       return null;
     }
-    return repos.filter((repo) => {
-      const r = repo as { homepage?: unknown; archived?: unknown; fork?: unknown };
-      return typeof r.homepage === 'string' && r.homepage.trim() !== '' && !r.archived && !r.fork;
-    }).length;
+    return repos.filter(isPublicOrgProject).length;
   } catch {
     console.warn('[community] GitHub API returned unparseable JSON — using snapshot.');
     return null;

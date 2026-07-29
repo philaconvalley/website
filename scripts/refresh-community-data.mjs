@@ -94,12 +94,13 @@ const snapshot = {
       }
     : null,
   nightsHeld: events.filter((event) => event.start <= now).length,
+  // Mirrors isPublicOrgProject() in src/lib/community.ts, which is also what
+  // /projects filters on. If that predicate changes, change it here too — a
+  // snapshot counted by different rules than the live fetch would make the
+  // fallback silently disagree with the number it is standing in for.
   thingsShipped: repos.filter(
     (repo) =>
-      typeof repo.homepage === 'string' &&
-      repo.homepage.trim() !== '' &&
-      !repo.archived &&
-      !repo.fork,
+      typeof repo.name === 'string' && !repo.name.startsWith('.') && !repo.archived && !repo.fork,
   ).length,
 };
 

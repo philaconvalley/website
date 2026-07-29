@@ -1,4 +1,28 @@
 {
+  "redirects": [
+    {
+      "source": "/blog/waskar-between-commits",
+      "destination": "https://raksaw.substack.com/p/between-commits-hello-world",
+      "permanent": true
+    },
+    {
+      "source": "/blog/waskar-between-commits/",
+      "destination": "https://raksaw.substack.com/p/between-commits-hello-world",
+      "permanent": true
+    },
+    {
+      "source": "/blog/waskar-plot-holes-potholes",
+      "destination": "https://raksaw.substack.com/p/plot-holes-and-potholes-what-happened",
+      "permanent": true
+    },
+    {
+      "source": "/blog/waskar-plot-holes-potholes/",
+      "destination": "https://raksaw.substack.com/p/plot-holes-and-potholes-what-happened",
+      "permanent": true
+    },
+    { "source": "/blog", "destination": "/resources", "permanent": false },
+    { "source": "/blog/:slug*", "destination": "/resources", "permanent": false }
+  ],
   "headers": [
     {
       "source": "/(.*)",

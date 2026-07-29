@@ -10,7 +10,21 @@ export async function GET(context: APIContext) {
   // routes live in src/pages/_blog/ (underscore = excluded from routing), and
   // its posts are pulled out of the feed here so subscribers do not keep
   // receiving entries for a section the site no longer publishes.
-  // To reinstate: restore this block and `git mv src/pages/_blog src/pages/blog`.
+  //
+  // Because those URLs were live and syndicated, the ones already in the wild are
+  // redirected rather than left to 404 — see the `redirects` block in vercel.json.
+  // The two cross-posts redirect permanently, since Substack has always been their
+  // canonical home. /blog and /blog/<slug>/ redirect *temporarily* (307, not 308)
+  // precisely because this hiding is temporary: a permanent redirect would sit in
+  // browser and proxy caches long after the routes came back.
+  //
+  // To reinstate, all three of:
+  //   1. restore this block,
+  //   2. `git mv src/pages/_blog src/pages/blog`,
+  //   3. remove the /blog entries from `redirects` in vercel.json — otherwise the
+  //      restored routes are shadowed by a redirect and never render.
+  // Also re-add '/blog' to PAGES in e2e/csp.spec.ts and unskip
+  // e2e/blog-external-links.spec.ts.
   // const blog = await getCollection('blog');
 
   const items = [

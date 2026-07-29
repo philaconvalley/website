@@ -66,7 +66,10 @@ const rsvpHref = nextEvent?.url ?? '/events';
                   @focus="pos = { left: $el.offsetLeft, width: $el.offsetWidth }"
                   class={`relative z-10 px-3 py-1.5 rounded-full text-sm font-display font-semibold transition-colors ${
                     isCurrent
-                      ? 'text-white'
+                      ? // Dark, not white: the pill behind this is accent-400 (#FF66A8),
+                        // where white text measures 2.72:1 against a 4.5:1 requirement
+                        // at 14px. brand-dark on the same pink is 6.40:1.
+                        'text-brand-dark'
                       : 'text-brand-dark/60 hover:text-brand-dark focus-visible:text-brand-dark'
                   }`}
                 >
@@ -106,7 +109,7 @@ const rsvpHref = nextEvent?.url ?? '/events';
               }
             : {}}
           data-testid="hero-cta"
-          class="font-display font-bold text-[15px] px-6 py-3 rounded-full bg-brand-pink text-white transition-all duration-150 ease-out hover:-translate-x-px hover:-translate-y-px hover:shadow-[6px_6px_0_rgba(26,26,26,0.18)] motion-safe:active:scale-[0.97] motion-reduce:active:opacity-80 motion-reduce:transition-none"
+          class="font-display font-bold text-[15px] px-6 py-3 rounded-full bg-brand-pink text-brand-dark transition-all duration-150 ease-out hover:-translate-x-px hover:-translate-y-px hover:shadow-[6px_6px_0_rgba(26,26,26,0.18)] motion-safe:active:scale-[0.97] motion-reduce:active:opacity-80 motion-reduce:transition-none"
         >
           RSVP →
         </a>
@@ -176,8 +179,8 @@ const rsvpHref = nextEvent?.url ?? '/events';
                 aria-current={isCurrent ? 'page' : undefined}
                 class={`block px-3 py-2 rounded-lg text-base font-display font-bold ${
                   isCurrent
-                    ? 'bg-accent-400 text-white'
-                    : 'text-primary-100 hover:bg-accent-400 hover:text-white'
+                    ? 'bg-accent-400 text-brand-dark'
+                    : 'text-primary-100 hover:bg-accent-400 hover:text-brand-dark'
                 }`}
               >
                 {item.name}

@@ -4,6 +4,7 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import Button from '../../components/Button.astro';
 import { links } from '../../config';
+import { isPublicOrgProject } from '../../lib/community';
 
 // Fetch repos from the GitHub org at build time
 type GitHubRepo = {
@@ -35,7 +36,9 @@ try {
   );
   if (res.ok) {
     const allRepos: GitHubRepo[] = await res.json();
-    repos = allRepos.filter((r) => !r.fork && !r.archived && !r.name.startsWith('.'));
+    // Shared with the homepage's "things shipped" counter so the two pages cannot
+    // state different counts of the same repos — see src/lib/community.ts.
+    repos = allRepos.filter(isPublicOrgProject);
   }
 } catch {
   /* build continues with empty repos */
