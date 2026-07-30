@@ -1,8 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.astro';
 import Button from '../../components/Button.astro';
 
 export async function getStaticPaths() {
@@ -23,8 +21,6 @@ const { title, description, author, date, tags } = post.data;
 ---
 
 <BaseLayout title={`${title} - PhilaCon Valley Blog`} description={description}>
-  <Header />
-
   <section class="bg-brand-yellow text-brand-dark py-16">
     <div class="container-custom">
       <div class="max-w-3xl mx-auto">
@@ -100,6 +96,4 @@ const { title, description, author, date, tags } = post.data;
       </div>
     </div>
   </section>
-
-  <Footer />
 </BaseLayout>

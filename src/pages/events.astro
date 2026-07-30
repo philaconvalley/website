@@ -1,7 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
 import Button from '../components/Button.astro';
 import PhotoGrid from '../components/PhotoGrid.astro';
 import { links } from '../config';
@@ -16,8 +14,6 @@ const photos = (await getCollection('gallery')).sort(
   title="Events - PhilaCon Valley"
   description="Join us for hands-on workshops, Collab Labs, and community events in Philadelphia."
 >
-  <Header />
-
   <!-- Hero Section -->
   <section class="bg-brand-purple text-white py-20">
     <div class="container-custom">
@@ -219,6 +215,4 @@ const photos = (await getCollection('gallery')).sort(
       </div>
     </div>
   </section>
-
-  <Footer />
 </BaseLayout>

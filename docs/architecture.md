@@ -41,7 +41,8 @@ src/
 │
 ├── layouts/
 │   └── BaseLayout.astro   # The HTML shell every page shares
-│                          # Includes: <head>, fonts, SEO, analytics, skip nav
+│                          # Includes: <head>, fonts, SEO, analytics, skip nav,
+│                          # Header, <main> wrapper, Footer
 │
 ├── pages/                 # Each file = one URL on the site
 │   ├── index.astro        # / (homepage)
@@ -85,13 +86,13 @@ Every page follows the same pattern:
 
 ```astro
 <BaseLayout title="Page Title">
-  <Header />
-  <!-- page content -->
-  <Footer />
+  <!-- page content only — no <Header />, <Footer />, or <main> -->
 </BaseLayout>
 ```
 
-`BaseLayout` provides the `<html>`, `<head>` (with SEO, fonts, analytics), and the `<main>` wrapper.
+`BaseLayout` provides the `<html>`, `<head>` (with SEO, fonts, analytics), the skip link, `<Header />`, the `<main>` wrapper around the slot, and `<Footer />`.
+
+Pages used to import and render `<Header />` / `<Footer />` themselves. They no longer do, and shouldn't — that put both components _inside_ `<main>`, which demotes `<header>` from the `banner` landmark and `<footer>` from `contentinfo`, and made the "Skip to main content" link land above the nav instead of past it. Owning the chrome in the layout makes the landmark order correct by construction on every page rather than by convention on each one. There is deliberately no opt-out prop: if a page ever genuinely needs bare chrome, add a separate layout rather than a flag that can silently strip landmarks from the other pages.
 
 ## CI/CD
 

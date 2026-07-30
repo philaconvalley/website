@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
 import SEO from '../components/SEO.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 import Analytics from '@vercel/analytics/astro';
 
 interface Props {
@@ -76,9 +78,20 @@ const {
     >
       Skip to main content
     </a>
+    {
+      /* Header and Footer live here, not in each page, so the landmark structure is
+        guaranteed by construction: the header element is the banner landmark and
+        the footer element is contentinfo only while they sit outside main, and the
+        skip link above only actually skips the nav if main starts after the nav.
+        Pages render page content into the slot and nothing else. */
+    }
+    <Header />
+
     <main id="main-content">
       <slot />
     </main>
+
+    <Footer />
 
     <!-- Expires time-bound claims against the visitor's clock, which a static build
          cannot do on its own. Served from public/ and loaded with `is:inline` so it

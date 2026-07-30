@@ -1,7 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
 import Button from '../components/Button.astro';
 import { links } from '../config';
 ---
@@ -10,8 +8,6 @@ import { links } from '../config';
   title="Support PhilaCon Valley - Donate"
   description="Support PhilaCon Valley's mission to make Philadelphia a tech hub by us, for us. Your donation keeps events free and accessible."
 >
-  <Header />
-
   <!-- Hero Section -->
   <section class="bg-brand-purple text-white py-20">
     <div class="container-custom">
@@ -242,6 +238,4 @@ import { links } from '../config';
       </div>
     </div>
   </section>
-
-  <Footer />
 </BaseLayout>

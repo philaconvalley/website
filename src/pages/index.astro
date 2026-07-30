@@ -1,7 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
 import EventBar from '../components/EventBar.astro';
 import BuilderNightTrack from '../components/BuilderNightTrack.astro';
 import { getCommunityData } from '../lib/community';
@@ -32,11 +30,9 @@ const stats = [
 ---
 
 <BaseLayout title="PhilaCon Valley — Come as you are. Leave with a flock.">
-  <Header />
-
   <!-- No <main> here: BaseLayout already wraps the page slot in
        <main id="main-content">, and nesting a second one is invalid HTML that
-       reports two main landmarks and strips the footer's contentinfo role. -->
+       reports two main landmarks. -->
   <div>
     <!-- Hero -->
     <section class="px-5 lg:px-[72px] pt-[76px] pb-[84px] lg:pt-[136px] lg:pb-[140px]">
@@ -147,8 +143,6 @@ const stats = [
       }
     </section>
   </div>
-
-  <Footer />
 
   <!-- Clears the fixed bottom bar so the footer's last line is never trapped under
        it. Carries the same expiry as the bar: once the bar removes itself, this
