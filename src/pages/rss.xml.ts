@@ -13,6 +13,15 @@ export async function GET(context: APIContext) {
   //
   // Because those URLs were live and syndicated, the ones already in the wild are
   // redirected rather than left to 404 — see the `redirects` block in vercel.json.
+  //
+  // Trailing slashes there are load-bearing, and cost us a round of debugging:
+  // Astro builds directory-style URLs, so the URL that actually shipped and went
+  // out in the feed was `/blog/welcome/`, WITH the slash. A Vercel `source` of
+  // `/blog` does not match `/blog/`, and neither does `/blog/:slug*` — verified
+  // against a preview deploy, where the slash forms 404'd while the slashless ones
+  // redirected fine. Every rule needs both forms, or a `(.*)` pattern that eats the
+  // slash. If you add a rule here, test it with AND without the trailing slash on a
+  // preview URL; `astro preview` cannot exercise vercel.json at all.
   // The two cross-posts redirect permanently, since Substack has always been their
   // canonical home. /blog and /blog/<slug>/ redirect *temporarily* (307, not 308)
   // precisely because this hiding is temporary: a permanent redirect would sit in

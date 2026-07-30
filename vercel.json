@@ -21,7 +21,8 @@
       "permanent": true
     },
     { "source": "/blog", "destination": "/resources", "permanent": false },
-    { "source": "/blog/:slug*", "destination": "/resources", "permanent": false }
+    { "source": "/blog/", "destination": "/resources", "permanent": false },
+    { "source": "/blog/:rest(.*)", "destination": "/resources", "permanent": false }
   ],
   "headers": [
     {
