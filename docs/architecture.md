@@ -105,6 +105,7 @@ Pages used to import and render `<Header />` / `<Footer />` themselves. They no 
 ## CI/CD
 
 - **GitHub Actions** (`.github/workflows/ci.yml`) runs `npm ci` + `npm run build` on every push/PR to `main`
+- **Dependency rollup** (`.github/workflows/dependency-rollup.yml`) rewrites a single "Dependency security rollup" issue every Monday from the open Dependabot alerts. Dependabot cannot open issues itself, and its alerts live in the Security tab, which needs push access to read — so without this, dependency risk is invisible to contributors. Dependabot security updates are enabled, so the fix path is its PRs; that issue is a dashboard, not a work queue.
 - **Vercel** auto-deploys on push to `main` independently
 - **Branch protection** requires CI to pass + 1 approving review before merge
 
