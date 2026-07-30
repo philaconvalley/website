@@ -1,7 +1,5 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.astro';
 import Button from '../../components/Button.astro';
 import { links } from '../../config';
 import { isPublicOrgProject } from '../../lib/community';
@@ -57,8 +55,6 @@ const displayNames: Record<string, string> = {
   title="Community Projects - PhilaCon Valley"
   description="Explore projects built by PhilaCon Valley community members. Open source, collaborative, and built in Philadelphia."
 >
-  <Header />
-
   <!-- Hero Section -->
   <section class="bg-brand-purple text-white py-20">
     <div class="container-custom">
@@ -226,6 +222,4 @@ const displayNames: Record<string, string> = {
       </div>
     </div>
   </section>
-
-  <Footer />
 </BaseLayout>

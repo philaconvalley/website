@@ -1,7 +1,5 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.astro';
 import Button from '../../components/Button.astro';
 import BlogPostCard from '../../components/BlogPostCard.astro';
 import { getCollection } from 'astro:content';
@@ -15,8 +13,6 @@ const posts = (await getCollection('blog')).sort(
   title="Blog - PhilaCon Valley"
   description="Community updates, event recaps, and member spotlights from PhilaCon Valley."
 >
-  <Header />
-
   <section class="bg-brand-yellow text-brand-dark py-20">
     <div class="container-custom">
       <div class="max-w-4xl mx-auto text-center">
@@ -118,6 +114,4 @@ const posts = (await getCollection('blog')).sort(
       </div>
     </div>
   </section>
-
-  <Footer />
 </BaseLayout>

@@ -1,8 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.astro';
 import Button from '../../components/Button.astro';
 
 export async function getStaticPaths() {
@@ -21,8 +19,6 @@ const categoryColor = 'bg-white/20 text-white';
 ---
 
 <BaseLayout title={`${title} - PhilaCon Valley Resources`} description={description}>
-  <Header />
-
   <section class="bg-brand-coral text-white py-16">
     <div class="container-custom">
       <div class="max-w-4xl mx-auto">
@@ -149,6 +145,4 @@ const categoryColor = 'bg-white/20 text-white';
       </div>
     </div>
   </section>
-
-  <Footer />
 </BaseLayout>

@@ -1,7 +1,5 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.astro';
 import ResourceCard from '../../components/ResourceCard.astro';
 import Button from '../../components/Button.astro';
 import { getCollection } from 'astro:content';
@@ -19,8 +17,6 @@ const levels = [...new Set(resources.map((r) => r.data.level))];
   title="Learning Resources - PhilaCon Valley"
   description="Free tutorials, workshops, and career resources for learning web development and tech skills."
 >
-  <Header />
-
   <!-- Hero Section -->
   <section class="bg-brand-coral text-white py-20">
     <div class="container-custom">
@@ -222,6 +218,4 @@ const levels = [...new Set(resources.map((r) => r.data.level))];
       </div>
     </div>
   </section>
-
-  <Footer />
 </BaseLayout>
