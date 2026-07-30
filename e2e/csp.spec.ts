@@ -36,14 +36,21 @@ async function recordViolations(page: Page) {
 
 const read = (page: Page) => page.evaluate(() => window.__cspViolations);
 
-const PAGES = ['/', '/about', '/contact', '/resources', '/blog'];
+// `/blog` is absent because the blog no longer routes (src/pages/_blog/). Add it
+// back when the routes return — see src/pages/rss.xml.ts for the full checklist.
+const PAGES = ['/', '/about', '/contact', '/resources', '/projects'];
 
 test.describe('Content-Security-Policy (enforcing)', () => {
   for (const path of PAGES) {
     test(`blocks nothing on ${path}`, async ({ page }) => {
       await recordViolations(page);
-      await page.goto(path);
+      const response = await page.goto(path);
       await page.waitForLoadState('networkidle');
+
+      // Anti-vacuity tripwire: serve-with-headers.mjs substitutes 404.html for a
+      // missing route, so without this a page that stopped existing would keep
+      // reporting a clean policy — against the 404 page, not the page named here.
+      expect(response?.status(), `${path} should exist to be a meaningful CSP case`).toBe(200);
 
       const enforced = (await read(page)).filter((v) => v.disposition === 'enforce');
       expect(enforced, `enforced CSP violations on ${path}`).toEqual([]);

@@ -1,33 +1,44 @@
 ---
+import { getCommunityData, formatEventDate } from '../lib/community';
+
+/**
+ * The redesign shows a three-link nav (Community / Studio / Stories). That is an
+ * information architecture the site does not have yet — collapsing to three real
+ * links today would orphan five reachable pages, so the full nav is kept and the
+ * design's *styling* is applied to it. Revisit if the IA is ever consolidated.
+ */
 const navItems = [
   { name: 'About', href: '/about' },
   { name: 'Events', href: '/events' },
   { name: 'Projects', href: '/projects' },
   { name: 'Resources', href: '/resources' },
-  { name: 'Blog', href: '/blog' },
+  // Blog is hidden until an editorial procedure exists — see src/pages/_blog/.
+  // { name: 'Blog', href: '/blog' },
   { name: 'Join', href: '/join' },
   { name: 'Support', href: '/support' },
+  { name: 'Contact', href: '/contact' },
 ];
 
 const currentPath = Astro.url.pathname;
+
+const { nextEvent } = await getCommunityData();
+const eventDate = nextEvent ? formatEventDate(nextEvent.start) : null;
+const rsvpHref = nextEvent?.url ?? '/events';
 ---
 
-<header class="sticky top-0 z-50 bg-brand-dark border-b-2 border-accent-400/40">
+<header class="sticky top-0 z-50 bg-primary-100/95 backdrop-blur-sm border-b border-brand-dark/10">
   <nav class="container-custom" x-data="{ mobileMenuOpen: false }">
     <div class="flex items-center justify-between h-[68px]">
-      <!-- Logo -->
-      <div class="flex-shrink-0">
-        <a href="/" class="flex items-center space-x-3 group">
-          <img
-            src="/images/philacon-valley-wordmark.webp"
-            alt="PhilaCon Valley"
-            class="h-10 md:h-11"
-          />
-        </a>
-      </div>
+      <!-- Wordmark -->
+      <a
+        href="/"
+        class="flex-shrink-0 font-display font-extrabold text-base md:text-[17px] tracking-tight text-brand-dark"
+      >
+        PhilaCon Valley
+      </a>
 
       <!-- Desktop Navigation -->
-      <div class="hidden md:block">
+      <div class="hidden lg:block">
         <div
           data-testid="desktop-nav"
           class="relative flex items-center space-x-0.5"
@@ -39,7 +50,7 @@ const currentPath = Astro.url.pathname;
           <div
             x-cloak
             data-testid="nav-pill"
-            class="absolute inset-y-0 left-0 rounded-full bg-accent-400 transition-[transform,width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none"
+            class="absolute inset-y-1 left-0 rounded-full bg-accent-400 transition-[transform,width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none"
             :style="`transform: translateX(${pos.left}px); width: ${pos.width}px;`"
           >
           </div>
@@ -53,10 +64,13 @@ const currentPath = Astro.url.pathname;
                   aria-current={isCurrent ? 'page' : undefined}
                   @mouseenter="pos = { left: $el.offsetLeft, width: $el.offsetWidth }"
                   @focus="pos = { left: $el.offsetLeft, width: $el.offsetWidth }"
-                  class={`relative z-10 px-3 py-1.5 rounded-full text-sm font-display font-bold transition-colors ${
+                  class={`relative z-10 px-3 py-1.5 rounded-full text-sm font-display font-semibold transition-colors ${
                     isCurrent
-                      ? 'text-white'
-                      : 'text-primary-100 hover:text-white focus-visible:text-white'
+                      ? // Dark, not white: the pill behind this is accent-400 (#FF66A8),
+                        // where white text measures 2.72:1 against a 4.5:1 requirement
+                        // at 14px. brand-dark on the same pink is 6.40:1.
+                        'text-brand-dark'
+                      : 'text-brand-dark/60 hover:text-brand-dark focus-visible:text-brand-dark'
                   }`}
                 >
                   {item.name}
@@ -64,25 +78,52 @@ const currentPath = Astro.url.pathname;
               );
             })
           }
-          <a
-            href="/contact"
-            class="relative z-10 ml-4 px-4 py-1.5 rounded-full bg-primary-300 text-brand-dark font-display font-black border-2 border-brand-dark hover:bg-primary-400 transition-colors"
-          >
-            Contact
-          </a>
         </div>
       </div>
 
+      <!-- Next event + RSVP. The date is a quiet inline row on desktop; on phones
+           it lives in the thumb-reachable bottom bar instead (see EventBar). -->
+      <div class="hidden lg:flex items-center gap-4 flex-shrink-0">
+        {
+          eventDate && (
+            <span
+              data-pcv-event-start={nextEvent!.start}
+              class="hidden xl:inline font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-brand-dark/50 animate-fade-in"
+            >
+              {eventDate}
+            </span>
+          )
+        }
+        <!-- Both attributes are the static-build guard, continued client-side: once
+             the visitor's clock passes the event, the date row removes itself and
+             this CTA falls back to /events rather than deep-linking a closed Luma
+             page. See BaseLayout.astro. -->
+        <a
+          href={rsvpHref}
+          {...nextEvent
+            ? {
+                target: '_blank',
+                rel: 'noopener noreferrer',
+                'data-pcv-event-start': nextEvent.start,
+                'data-pcv-event-fallback': '/events',
+              }
+            : {}}
+          data-testid="hero-cta"
+          class="font-display font-bold text-[15px] px-6 py-3 rounded-full bg-brand-pink text-brand-dark transition-all duration-150 ease-out hover:-translate-x-px hover:-translate-y-px hover:shadow-[6px_6px_0_rgba(26,26,26,0.18)] motion-safe:active:scale-[0.97] motion-reduce:active:opacity-80 motion-reduce:transition-none"
+        >
+          RSVP →
+        </a>
+      </div>
+
       <!-- Mobile menu button -->
-      <div class="md:hidden">
+      <div class="lg:hidden">
         <button
           @click="mobileMenuOpen = !mobileMenuOpen"
           type="button"
-          class="inline-flex items-center justify-center p-2 rounded-md text-primary-100 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-accent-400"
+          class="inline-flex items-center justify-center p-2 rounded-md text-brand-dark hover:bg-brand-dark/5 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-accent-400"
           :aria-expanded="mobileMenuOpen.toString()"
         >
           <span class="sr-only">Open main menu</span>
-          <!-- Hamburger icon -->
           <svg
             class="h-6 w-6"
             :class="{ 'hidden': mobileMenuOpen, 'block': !mobileMenuOpen }"
@@ -94,9 +135,8 @@ const currentPath = Astro.url.pathname;
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M4 6h16M4 12h16M4 18h16"></path>
+              d="M4 8h16M4 16h16"></path>
           </svg>
-          <!-- Close icon -->
           <svg
             class="h-6 w-6"
             :class="{ 'block': mobileMenuOpen, 'hidden': !mobileMenuOpen }"
@@ -125,7 +165,7 @@ const currentPath = Astro.url.pathname;
       x-transition:leave="transition ease-in duration-150 motion-reduce:duration-0"
       x-transition:leave-start="opacity-100 translate-y-0"
       x-transition:leave-end="opacity-0 -translate-y-2"
-      class="md:hidden bg-brand-dark/90 backdrop-blur-lg border-t border-white/10"
+      class="lg:hidden bg-brand-dark/90 backdrop-blur-lg border-t border-white/10"
       @click.away="mobileMenuOpen = false"
       @keydown.escape.window="mobileMenuOpen = false"
     >
@@ -139,8 +179,8 @@ const currentPath = Astro.url.pathname;
                 aria-current={isCurrent ? 'page' : undefined}
                 class={`block px-3 py-2 rounded-lg text-base font-display font-bold ${
                   isCurrent
-                    ? 'bg-accent-400 text-white'
-                    : 'text-primary-100 hover:bg-accent-400 hover:text-white'
+                    ? 'bg-accent-400 text-brand-dark'
+                    : 'text-primary-100 hover:bg-accent-400 hover:text-brand-dark'
                 }`}
               >
                 {item.name}
@@ -148,12 +188,6 @@ const currentPath = Astro.url.pathname;
             );
           })
         }
-        <a
-          href="/contact"
-          class="block px-3 py-2 rounded-lg text-base font-display font-black bg-primary-300 text-brand-dark hover:bg-primary-400"
-        >
-          Contact
-        </a>
       </div>
     </div>
   </nav>

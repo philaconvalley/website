@@ -1,4 +1,10 @@
 {
+  "redirects": [
+    { "source": "/blog", "destination": "/resources", "permanent": false },
+    { "source": "/blog/", "destination": "/resources", "permanent": false },
+    { "source": "/blog/welcome", "destination": "/resources", "permanent": false },
+    { "source": "/blog/welcome/", "destination": "/resources", "permanent": false }
+  ],
   "headers": [
     {
       "source": "/(.*)",
