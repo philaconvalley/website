@@ -6,7 +6,7 @@ This doc explains how the site is built and how the pieces fit together. It's fo
 
 | Tool                                             | What it does                                                                       |
 | ------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| [Astro 5.x](https://astro.build)                 | Generates all the HTML pages at build time (no server needed at runtime)           |
+| [Astro 7.x](https://astro.build)                 | Generates all the HTML pages at build time (no server needed at runtime)           |
 | [Tailwind CSS 3](https://tailwindcss.com)        | Utility-first CSS framework — styles are written as class names directly in HTML   |
 | [Alpine.js 3.15](https://alpinejs.dev)           | Tiny JavaScript library for interactive bits (mobile menu, form handling, filters) |
 | [TypeScript](https://www.typescriptlang.org)     | Adds type checking to catch bugs before they ship                                  |
@@ -34,8 +34,10 @@ src/
 │   ├── ProjectCard.astro  # Project card component
 │   └── ResourceCard.astro # Resource card component
 │
+├── content.config.ts      # Collection schemas + glob loaders (uses Zod)
+│                          # Lives here, not in content/, since Astro 6
+│
 ├── content/               # Markdown content (projects & resources)
-│   ├── config.ts          # Schemas that validate content fields (uses Zod)
 │   ├── projects/          # One .md file per project write-up
 │   └── resources/         # One .md file per resource/tutorial
 │
@@ -78,7 +80,13 @@ The Projects page fetches repos from the `philaconvalley` GitHub organization us
 
 ### Content Collections (`src/content/`)
 
-Astro's [content collections](https://docs.astro.build/en/guides/content-collections/) turn Markdown files into typed, validated data. The schemas in `src/content/config.ts` define what fields each content type requires. Astro validates them at build time — if a required field is missing, the build fails with a clear error.
+Astro's [content collections](https://docs.astro.build/en/guides/content-collections/) turn Markdown files into typed, validated data. The schemas in `src/content.config.ts` define what fields each content type requires, and each collection names a `glob()` loader saying which files it reads. Astro validates them at build time — if a required field is missing, the build fails with a clear error.
+
+Entries expose `entry.id` (derived from the filename, so it is what the `[slug]` routes use) and are rendered with `render(entry)` imported from `astro:content`. The older `entry.slug` and `entry.render()` were removed in Astro 6 along with `type: 'content'`.
+
+### Tailwind via PostCSS, not the Astro integration
+
+Tailwind is wired up in `postcss.config.mjs` rather than through `@astrojs/tailwind`. That integration is capped at `astro@^5` — `6.0.2` is its final release — and Astro deprecated it in favour of `@tailwindcss/vite`, which requires Tailwind 4. Vite reads a PostCSS config on its own, so Tailwind 3 and the whole `tailwind.config.mjs` theme keep working with no integration in between, and the Tailwind 4 migration stays a separate decision.
 
 ### Component-Based Layout
 

@@ -1,49 +1,31 @@
 {
-  "$ref": "#/definitions/gallery",
-  "definitions": {
-    "gallery": {
-      "type": "object",
-      "properties": {
-        "image": {
-          "type": "string"
-        },
-        "alt": {
-          "type": "string"
-        },
-        "event": {
-          "type": "string"
-        },
-        "date": {
-          "anyOf": [
-            {
-              "type": "string",
-              "format": "date-time"
-            },
-            {
-              "type": "string",
-              "format": "date"
-            },
-            {
-              "type": "integer",
-              "format": "unix-time"
-            }
-          ]
-        },
-        "caption": {
-          "type": "string"
-        },
-        "$schema": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "image",
-        "alt",
-        "event",
-        "date"
-      ],
-      "additionalProperties": false
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "image": {
+      "type": "string"
+    },
+    "alt": {
+      "type": "string"
+    },
+    "event": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "caption": {
+      "type": "string"
+    },
+    "$schema": {
+      "type": "string"
     }
   },
-  "$schema": "http://json-schema.org/draft-07/schema#"
+  "required": [
+    "image",
+    "alt",
+    "event",
+    "date"
+  ]
 }
