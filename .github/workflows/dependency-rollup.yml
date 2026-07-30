@@ -1,0 +1,42 @@
+name: Dependency rollup
+
+# Keeps a single issue up to date with the open Dependabot alerts, because
+# Dependabot cannot open issues itself and its alerts live in the Security tab,
+# which needs push access to read. Contributors watch the issue tracker, so
+# without this the dependency backlog is invisible to everyone but maintainers.
+
+on:
+  schedule:
+    # Mondays 13:00 UTC. Dependabot's own weekly run fires around 05:00 UTC, so by
+    # now its PRs exist and any alert they already closed is out of the numbers.
+    - cron: '0 13 * * 1'
+  # So a maintainer can refresh the issue on demand after merging a batch of bumps
+  # instead of waiting a week for the numbers to stop being wrong.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  # Dependabot alerts are NOT covered by `security-events` (that is code scanning).
+  # Read-only is the only level this permission supports.
+  vulnerability-alerts: read
+
+# A scheduled run and a manual run at the same moment would both try to write the
+# same issue; the later one waits rather than racing it.
+concurrency:
+  group: dependency-rollup
+  cancel-in-progress: false
+
+jobs:
+  rollup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Update the rollup issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: ./.github/scripts/dependency-rollup.sh
