@@ -1,18 +1,18 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Button from '../../components/Button.astro';
 
 export async function getStaticPaths() {
   const resources = await getCollection('resources');
   return resources.map((resource) => ({
-    params: { slug: resource.slug },
+    params: { slug: resource.id },
     props: { resource },
   }));
 }
 
 const { resource } = Astro.props;
-const { Content } = await resource.render();
+const { Content } = await render(resource);
 const { title, description, category, level, author, date, tags } = resource.data;
 
 const categoryColor = 'bg-white/20 text-white';
