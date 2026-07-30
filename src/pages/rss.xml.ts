@@ -11,21 +11,29 @@ export async function GET(context: APIContext) {
   // its posts are pulled out of the feed here so subscribers do not keep
   // receiving entries for a section the site no longer publishes.
   //
-  // Because those URLs were live and syndicated, the ones already in the wild are
-  // redirected rather than left to 404 — see the `redirects` block in vercel.json.
+  // The `redirects` block in vercel.json covers the URLs that were genuinely
+  // published — `/blog` and `/blog/welcome/` — so anyone holding one lands on
+  // /resources instead of a 404. It covers those and nothing else, deliberately.
+  // The two cross-post slugs (`/blog/waskar-*`) never rendered an internal page:
+  // posts with an `externalUrl` are linked straight to the external article, and
+  // their internal route 404s on purpose (issue #83, still asserted in the skipped
+  // e2e/blog-external-links.spec.ts). A URL that was never live has nobody to
+  // redirect, and pointing philaconvalley.com at a personal Substack would also
+  // blur two different publications together. So there is no catch-all rule here:
+  // unpublished /blog/* paths 404, which is what a URL that never existed should do.
   //
-  // Trailing slashes there are load-bearing, and cost us a round of debugging:
-  // Astro builds directory-style URLs, so the URL that actually shipped and went
-  // out in the feed was `/blog/welcome/`, WITH the slash. A Vercel `source` of
-  // `/blog` does not match `/blog/`, and neither does `/blog/:slug*` — verified
-  // against a preview deploy, where the slash forms 404'd while the slashless ones
-  // redirected fine. Every rule needs both forms, or a `(.*)` pattern that eats the
-  // slash. If you add a rule here, test it with AND without the trailing slash on a
-  // preview URL; `astro preview` cannot exercise vercel.json at all.
-  // The two cross-posts redirect permanently, since Substack has always been their
-  // canonical home. /blog and /blog/<slug>/ redirect *temporarily* (307, not 308)
-  // precisely because this hiding is temporary: a permanent redirect would sit in
-  // browser and proxy caches long after the routes came back.
+  // These redirect *temporarily* (307, not 308) because the hiding is temporary —
+  // a permanent redirect would sit in browser and proxy caches long after the
+  // routes came back.
+  //
+  // Trailing slashes are load-bearing, and cost a round of debugging: Astro builds
+  // directory-style URLs, so the URL that actually shipped and went out in the feed
+  // was `/blog/welcome/`, WITH the slash. A Vercel `source` of `/blog` does not
+  // match `/blog/`, and neither does `/blog/:slug*` — verified against a preview
+  // deploy, where the slash forms 404'd while the slashless ones redirected fine.
+  // Every rule needs both forms spelled out. If you add one, test it with AND
+  // without the trailing slash on a preview URL; `astro preview` cannot exercise
+  // vercel.json at all.
   //
   // To reinstate, all three of:
   //   1. restore this block,
