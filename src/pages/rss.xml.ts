@@ -49,19 +49,19 @@ export async function GET(context: APIContext) {
     //   title: b.data.title,
     //   description: b.data.description,
     //   pubDate: b.data.date,
-    //   link: b.data.externalUrl ?? `/blog/${b.slug}/`,
+    //   link: b.data.externalUrl ?? `/blog/${b.id}/`,
     // })),
     ...resources.map((r) => ({
       title: r.data.title,
       description: r.data.description,
       pubDate: r.data.date,
-      link: `/resources/${r.slug}/`,
+      link: `/resources/${r.id}/`,
     })),
     ...projects.map((p) => ({
       title: p.data.title,
       description: p.data.description,
       pubDate: p.data.date,
-      link: `/projects/${p.slug}/`,
+      link: `/projects/${p.id}/`,
     })),
   ].sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime());
 
