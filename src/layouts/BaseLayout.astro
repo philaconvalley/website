@@ -40,9 +40,22 @@ const {
 
     <SEO title={title} description={description} image={image} type={type} />
 
-    <!-- Alpine.js -->
-    <script is:inline defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.15.11/dist/cdn.min.js"
-    ></script>
+    <!-- Alpine.js — bundled from node_modules rather than loaded from a CDN.
+         Alpine is the only JavaScript that reaches a visitor's browser, and as a
+         CDN tag it was the one dependency with no integrity guarantee (CSP checks
+         the origin, not the bytes) and no manifest entry, so Dependabot could not
+         see it either. Importing it here serves it from our own origin under
+         `script-src 'self'`, puts version bumps under Dependabot, and removes a
+         third-party failure domain: if the origin serving this is down, the page
+         it belongs to is already down. Note this does NOT remove the need for
+         'unsafe-eval' — Alpine evaluates x-* directives through `new Function`
+         wherever it is hosted. See e2e/csp.spec.ts. -->
+    <script>
+      import Alpine from 'alpinejs';
+
+      window.Alpine = Alpine;
+      Alpine.start();
+    </script>
 
     <meta name="generator" content={Astro.generator} />
 
