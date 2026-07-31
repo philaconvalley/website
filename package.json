@@ -31,7 +31,7 @@
     ]
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.9",
+    "@astrojs/check": "^0.9.10",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.3",
     "@tailwindcss/typography": "^0.5.20",
@@ -43,10 +43,10 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.62.0",
-    "@types/node": "^26.1.1",
+    "@types/node": "^26.1.2",
     "@typescript-eslint/parser": "^8.65.0",
-    "autoprefixer": "^10.4.21",
-    "eslint": "^10.7.0",
+    "autoprefixer": "^10.5.4",
+    "eslint": "^10.8.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-astro": "^3.0.1",
     "husky": "^9.1.7",
