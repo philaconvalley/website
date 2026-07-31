@@ -9,6 +9,33 @@ updates:
       - 'dependencies'
     commit-message:
       prefix: 'deps'
+    # Without grouping, every bump is its own PR against a limit of 10, so a
+    # routine week can fill the queue with PRs that are really one change — #107
+    # and #108 were two reviews for two halves of the same package family.
+    # Groups apply to version updates only (that is the default when
+    # `applies-to` is omitted); security updates stay one-per-alert on purpose,
+    # so an advisory is never held up waiting on unrelated packages in its group.
+    groups:
+      astro:
+        patterns:
+          - 'astro'
+          - '@astrojs/*'
+      dev-tooling:
+        patterns:
+          - 'eslint*'
+          - 'prettier*'
+          - '@typescript-eslint/*'
+          - '@playwright/test'
+          - '@types/*'
+          - 'husky'
+          - 'lint-staged'
+      # Catch-all, listed last so the named groups claim their packages first.
+      # Majors stay ungrouped: they are the ones that need to be reviewed and
+      # reverted individually.
+      minor-and-patch:
+        update-types:
+          - 'minor'
+          - 'patch'
     ignore:
       - dependency-name: 'astro'
         update-types: ['version-update:semver-major']
@@ -26,3 +53,7 @@ updates:
       - 'ci'
     commit-message:
       prefix: 'ci'
+    groups:
+      actions:
+        patterns:
+          - '*'

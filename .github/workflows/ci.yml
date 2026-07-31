@@ -6,6 +6,13 @@ on:
   push:
     branches: [main]
 
+# Declared here rather than inherited. The repo default is read-only today, but
+# that is an org-level setting someone can widen later, and a workflow with no
+# `permissions` block silently picks up whatever the default becomes. This job
+# only ever reads the checkout, so it says so.
+permissions:
+  contents: read
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -54,7 +61,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: '22'
           cache: 'npm'
@@ -101,8 +108,12 @@ jobs:
       - name: Build
         run: npm run build
 
+      # Pinned to a commit rather than the mutable `v12` tag: this is the only
+      # third-party action in the repo, and a tag can be repointed at new code
+      # without the reference here changing. Dependabot updates SHA pins and
+      # keeps the version comment in sync, so this costs nothing to maintain.
       - name: Run Lighthouse
-        uses: treosh/lighthouse-ci-action@v12
+        uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12.6.2
         with:
           uploadArtifacts: true
           configPath: .lighthouserc.json

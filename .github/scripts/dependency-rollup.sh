@@ -73,14 +73,42 @@ severities="$(jq -r '
 
 pkgs="$(jq '[.[].dependency.package.name] | unique | length' <<<"$alerts")"
 
+# Whether a package is declared in package.json decides whether anyone is coming
+# to fix it. Dependabot's security updater edits manifests, so a package with no
+# entry there gets no PR — not "eventually", ever. Every alert on `picomatch` and
+# `sharp` sat open for exactly this reason while the issue told readers to wait
+# for a PR. Read from the checkout the workflow already does; if it is missing
+# (script run from outside a checkout) every row falls back to "transitive",
+# which over-reports work rather than telling someone to wait for nothing.
+manifest="${MANIFEST_PATH:-package.json}"
+if [ -f "$manifest" ]; then
+  direct="$(jq -c '[(.dependencies // {}), (.devDependencies // {})] | add | keys' "$manifest")"
+else
+  echo "warning: ${manifest} not found — every package will be listed as transitive." >&2
+  direct='[]'
+fi
+
+transitive_count="$(jq --argjson direct "$direct" \
+  '[.[].dependency.package.name] | unique | map(select(. as $p | $direct | index($p) | not)) | length' \
+  <<<"$alerts")"
+
+if [ "$transitive_count" -eq 0 ]; then
+  transitive_line="Every package below is a direct dependency, so every row has a pull request coming."
+elif [ "$transitive_count" -eq "$pkgs" ]; then
+  transitive_line="**All ${pkgs} packages below are transitive and will not fix themselves.**"
+else
+  transitive_line="**${transitive_count} of the ${pkgs} packages below are transitive and will not fix themselves.**"
+fi
+
 # Ordered worst-first so the table is a priority list rather than an inventory.
-rows="$(jq -r --arg repo "$REPO" '
+rows="$(jq -r --arg repo "$REPO" --argjson direct "$direct" '
   def sevrank: {"critical":4,"high":3,"medium":2,"low":1}[.] // 0;
   group_by(.dependency.package.name)
   | map({
       pkg:     .[0].dependency.package.name,
       scope:   (.[0].dependency.scope // "unknown"),
       n:       length,
+      is_direct: (.[0].dependency.package.name as $p | $direct | index($p) | not | not),
       top:     (max_by(.security_advisory.severity | sevrank).security_advisory.severity),
       # The highest patched version across all advisories for the package, compared
       # numerically rather than as a string ("10" > "9"). Advisories on different
@@ -92,7 +120,11 @@ rows="$(jq -r --arg repo "$REPO" '
                    else (max_by(split(".") | map(tonumber? // 0))) end)
     })
   | sort_by([-(.top | sevrank), -.n, .pkg])
-  | map("| [`\(.pkg)`](https://github.com/\($repo)/security/dependabot?q=is%3Aopen+package%3A\(.pkg)) | \(.n) | \(.top) | \(if .patched == "" then "**none available**" else "`\(.patched)`" end) | \(.scope) |")
+  | map("| [`\(.pkg)`](https://github.com/\($repo)/security/dependabot?q=is%3Aopen+package%3A\(.pkg)) | \(.n) | \(.top) | \(if .patched == "" then "**none available**" else "`\(.patched)`" end) | \(.scope) | \(
+      if .patched == "" then "blocked upstream"
+      elif .is_direct then "wait for the PR"
+      else "**`npm update \(.pkg)`**"
+      end) |")
   | join("\n")' <<<"$alerts")"
 
 unpatched="$(jq '[.[] | select(.security_vulnerability.first_patched_version == null)] | length' <<<"$alerts")"
@@ -117,20 +149,26 @@ ${patch_line}
 
 ## How to act on this
 
-Dependabot security updates are enabled on this repo, so the fix for most rows below arrives on its own as a pull request — **review and merge those PRs rather than picking a row here and upgrading by hand.** Two people patching the same transitive dependency in different ways is worse than waiting a day.
+Read the **Fix path** column first — it says who is coming to fix each row, and for some of them the answer is nobody.
 
-This issue is a dashboard, not a work queue. It is rewritten in place every Monday, so it always reflects the current state and never needs triaging as stale.
+- **wait for the PR** — the package is declared in \`package.json\`, so Dependabot's security updater can edit it and opens a pull request on its own. Review and merge that PR rather than upgrading by hand; two people patching the same dependency in different ways is worse than waiting a day.
+- **\`npm update <pkg>\`** — the package is **transitive**: nothing in \`package.json\` names it, so there is no manifest line for the security updater to change and **no pull request is coming, however long you wait.** Run the command, commit the \`package-lock.json\` change, open a PR. If \`npm update\` will not move it because a parent pins the old version, an \`overrides\` entry in \`package.json\` is the escape hatch — say so in the PR, since an override is a thing someone has to remember to remove later.
+- **blocked upstream** — no patched version exists yet. Nothing to merge; it needs a workaround or an accepted risk.
+
+${transitive_line}
+
+This issue is a dashboard, not a work queue — with one exception: the \`npm update\` rows genuinely are claimable work, because nothing else will claim them. It is rewritten in place every Monday, so it always reflects the current state and never needs triaging as stale.
 
 ## Reading the severity honestly
 
-This site is a static build: Astro compiles to HTML at deploy time and the only JavaScript reaching a visitor is Alpine.js from a CDN. Most packages below (\`vite\`, \`rollup\`, \`postcss\`, \`esbuild\`, \`svgo\`, \`sharp\`) are **build toolchain** — they run on CI and on maintainer laptops, never in a visitor's browser, even though GitHub labels their scope \`runtime\`. A "high" here usually does not mean a high risk to anyone visiting the site.
+This site is a static build: Astro compiles to HTML at deploy time and the only JavaScript reaching a visitor is Alpine.js. Most packages below (\`vite\`, \`rollup\`, \`postcss\`, \`esbuild\`, \`svgo\`, \`sharp\`) are **build toolchain** — they run on CI and on maintainer laptops, never in a visitor's browser, even though GitHub labels their scope \`runtime\`. A "high" here usually does not mean a high risk to anyone visiting the site.
 
 The exposure that *is* real for this repo: it is public and accepts pull requests from forks, and CI runs \`npm ci\` + \`npm run build\` on them. A code-execution flaw in a build dependency is reachable by anyone who can open a PR. That is the reason to keep this list short, rather than visitor-facing risk.
 
 ## Alerts by package
 
-| Package | Alerts | Highest severity | Patched in | Scope |
-| ------- | -----: | ---------------- | ---------- | ----- |
+| Package | Alerts | Highest severity | Patched in | Scope | Fix path |
+| ------- | -----: | ---------------- | ---------- | ----- | -------- |
 ${rows}
 
 Full detail, including the advisory text and the dependency path for each alert, is in [the Dependabot alerts tab](https://github.com/${REPO}/security/dependabot) — visible to maintainers only, which is why this summary exists.
