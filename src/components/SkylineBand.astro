@@ -1,0 +1,31 @@
+---
+/**
+ * The sky band under the hero, where the design puts an illustrated
+ * Philadelphia skyline.
+ *
+ * The design rendered this as a flat-shaded WebGL city over a static
+ * `skyline.png`. The 3D was dropped deliberately: three.js cost 504 KB — three
+ * quarters of all JavaScript on the site — and ~2.5s of main-thread blocking on
+ * the highest-traffic page, for decoration. The band keeps its place in the
+ * layout and its sky colour, and the illustration returns as a plain image.
+ *
+ * `public/images/skyline.png` could not be transferred from the design project
+ * (it exceeds the 256 KiB asset limit and arrived truncated). Drop the real file
+ * in and un-comment the <img> below — nothing else needs to change. Until then
+ * this is a colour field with no content, so it carries no img role and no alt
+ * text: there is no image here to describe.
+ */
+---
+
+<div class="relative h-[180px] lg:h-[260px] bg-brand-sky overflow-hidden" aria-hidden="true">
+  {
+    /* Restore once public/images/skyline.png exists — and give the wrapper back
+    its role="img" and aria-label at the same time:
+  <img
+    src="/images/skyline.png"
+    alt=""
+    class="absolute -bottom-px left-0 w-full block pointer-events-none"
+  />
+  */
+  }
+</div>

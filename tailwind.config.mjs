@@ -40,11 +40,17 @@ export default {
           purple: '#B383C3',
           amber: '#FCBC68',
           dark: '#1A1A1A',
+          // The redesign's hero sky. The only colour in the homepage design that
+          // was not already in the brand palette — it is the backdrop the
+          // illustrated skyline and the 3D city are both drawn against, so it
+          // has to match the WebGL clear colour exactly (see SkylineBand.astro).
+          sky: '#54B5FC',
         },
       },
       fontFamily: {
         sans: ['"Nunito"', 'system-ui', 'sans-serif'],
         display: ['"Baloo 2"', 'cursive', 'system-ui', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       boxShadow: {
         retro: '4px 4px 0 rgba(26,26,26,0.15)',

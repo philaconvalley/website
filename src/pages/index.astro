@@ -1,152 +1,345 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import EventBar from '../components/EventBar.astro';
-import BuilderNightTrack from '../components/BuilderNightTrack.astro';
-import { getCommunityData } from '../lib/community';
-import { community } from '../config';
+import SkylineBand from '../components/SkylineBand.astro';
+import { getCommunityData, formatEventDate } from '../lib/community';
+import { community, links } from '../config';
 import { getCollection } from 'astro:content';
 
 const { nextEvent, nightsHeld, thingsShipped } = await getCommunityData();
 
 /**
- * The design calls for one full-bleed photo of a Builder Night — warm, faces.
- * There is no stand-in for that: the banner artwork is brand illustration, not a
- * room full of people, and cropping it full-bleed would read as a placeholder.
- * So the section renders only when a real photo exists in the gallery
- * collection, and is absent rather than wrong until one is added.
+ * The design's stat line ("425 members · 12 nights held · 6 things shipped")
+ * appears twice. It is assembled here from the same live sources the rest of the
+ * page uses rather than written out, so the two copies can never disagree with
+ * each other or with the stats further down the page.
  */
-const photo = (await getCollection('gallery')).sort(
-  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
-)[0];
+const memberLine = `${community.memberCount} members · ${nightsHeld} ${
+  nightsHeld === 1 ? 'night' : 'nights'
+} held · ${thingsShipped} ${thingsShipped === 1 ? 'thing' : 'things'} shipped`;
 
-const stats = [
-  { value: community.memberCount, label: 'people, not users' },
-  { value: nightsHeld, label: nightsHeld === 1 ? 'night held' : 'nights held' },
+/**
+ * The design's five-photo mosaic sits under the headline "Every photo is a real
+ * Thursday" — a claim only the photos themselves can honour. In the design they
+ * are empty <image-slot> placeholders, and the gallery collection is currently
+ * empty, so the whole section renders only once real photos exist. Shipping the
+ * claim over placeholder boxes is the failure mode of #98, at larger scale.
+ */
+const photos = (await getCollection('gallery'))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 5);
+
+/**
+ * The design showed three repo cards, one of which (`p-l-otHole`) does not exist
+ * in the org. These are the real ones. Issue counts are deliberately not shown:
+ * the design hardcoded them and they were already wrong (it claimed 7 and 3 for
+ * repos that have 11 and 4), and a number frozen at build time is the same bug
+ * as #94. The link goes to the live filtered list instead, which is never stale.
+ */
+const repos = [
   {
-    value: thingsShipped,
-    label: thingsShipped === 1 ? 'thing shipped, so far' : 'things shipped, so far',
+    name: 'This website',
+    blurb: 'The page you are on. Open source, built at Collab Labs, reviewed by whoever shows up.',
+    stack: ['Astro', 'Tailwind', 'Alpine.js'],
+    href: `${links.github.website}/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22`,
+  },
+  {
+    name: 'Community Handbook',
+    blurb:
+      'Our philosophy, values, and governance in plain markdown. Disagree with a line? Open a PR.',
+    stack: ['Markdown', 'GitHub'],
+    href: `${links.github.org}/community-handbook/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22`,
+  },
+  {
+    name: 'djVisualizer',
+    blurb:
+      'Real-time audio visualizer and effects processor for DJs, built with the Web Audio API.',
+    stack: ['JavaScript', 'Web Audio'],
+    href: `${links.github.org}/djVisualizer/issues`,
+  },
+];
+
+/**
+ * "Vision Lab" and its "Indy Hall" venue in the design have no source anywhere in
+ * this repo or the org. Builder Nights and Collab Labs are real and documented;
+ * workshops are referenced on /join and in the blog. The third card is that,
+ * rather than a night we do not run. Counts on the first card come from live
+ * data; the others carry no number, because there is no source for one.
+ */
+const tracks = [
+  {
+    tag: 'Builder Night',
+    tagClass: 'bg-brand-pink text-white',
+    title: 'Bring a thing. Leave with it further along.',
+    body: 'Every other Thursday. Two hours of heads-down work in a room of people doing the same, plus whoever wants to pair.',
+    meta: `${nightsHeld} ${nightsHeld === 1 ? 'night' : 'nights'} held`,
+  },
+  {
+    tag: 'Collab Lab',
+    tagClass: 'bg-brand-purple text-white',
+    title: 'Ship something with three strangers.',
+    body: 'Designers and developers on one repo for an afternoon. This website was built here, in public, by people who met that day.',
+    meta: `${thingsShipped} ${thingsShipped === 1 ? 'thing' : 'things'} shipped`,
+  },
+  {
+    tag: 'Workshops',
+    tagClass: 'bg-brand-yellow text-brand-dark',
+    title: 'Learn the thing you keep meaning to learn.',
+    body: 'Hands-on sessions and career support, free and open to every skill level. No prerequisite beyond showing up.',
+    meta: 'Free · all levels',
   },
 ];
 ---
 
-<BaseLayout title="PhilaCon Valley — Come as you are. Leave with a flock.">
-  <!-- No <main> here: BaseLayout already wraps the page slot in
-       <main id="main-content">, and nesting a second one is invalid HTML that
-       reports two main landmarks. -->
+<BaseLayout title="PhilaCon Valley — You're not the only one in the room.">
+  {
+    /* No <main> here: BaseLayout already wraps the page slot in
+      <main id="main-content">, and nesting a second one reports two main
+      landmarks. Same reason this page renders no header or footer of its own,
+      even though the source design carried both. */
+  }
   <div>
     <!-- Hero -->
-    <section class="px-5 lg:px-[72px] pt-[76px] pb-[84px] lg:pt-[136px] lg:pb-[140px]">
-      <h1
-        class="font-display font-extrabold text-[44px] lg:text-[96px] leading-[1.02] lg:leading-[0.98] tracking-[-0.03em] lg:tracking-[-0.035em] m-0 max-w-[900px]"
-      >
-        <span class="block overflow-hidden">
-          <span class="inline-block pcv-enter-word [animation-delay:0.1s]">Come as you are.</span>
-        </span>
-        <span class="block overflow-hidden text-accent-600">
-          <span class="inline-block pcv-enter-word [animation-delay:0.35s]">
-            Leave with a flock.
-          </span>
-        </span>
-      </h1>
-      <p
-        data-testid="hero-tagline"
-        class="text-[17px] lg:text-[22px] leading-[1.55] lg:leading-[1.5] text-brand-dark/[0.72] max-w-[560px] mt-6 lg:mt-[34px] pcv-enter-rise [animation-delay:0.6s]"
-      >
-        A tech community in Philly for the people who were never handed a way in. Free, in person,
-        and open before you feel ready.
-      </p>
+    <section id="top" class="bg-brand-sky px-5 lg:px-8 pt-[74px] pb-[30px] text-center">
+      <div class="max-w-[1200px] mx-auto">
+        <div
+          class="font-display font-bold text-xs tracking-[0.14em] uppercase text-brand-dark/[0.72] mb-3 pcv-enter-rise"
+        >
+          Philadelphia · creativity × technology
+        </div>
+        <h1
+          class="font-display font-extrabold text-[44px] lg:text-[80px] leading-[1.02] lg:leading-[0.96] tracking-[-0.02em] mx-auto mb-5 max-w-[880px] text-balance pcv-enter-rise [animation-delay:0.08s]"
+        >
+          You're not the only one in the room.
+        </h1>
+        <p
+          data-testid="hero-tagline"
+          class="text-[18px] lg:text-[22px] leading-[1.5] max-w-[720px] mx-auto mb-[30px] pcv-enter-rise [animation-delay:0.16s]"
+        >
+          Designers, artists, engineers, and folks three weeks into a tutorial. One Philly community
+          — free, no application, no one checking credentials at the door.
+        </p>
+        <div class="flex gap-3.5 justify-center flex-wrap pcv-enter-rise [animation-delay:0.24s]">
+          <a
+            href={links.luma}
+            class="pcv-pill bg-brand-pink text-white text-[18px] lg:text-[21px] px-8 lg:px-10 py-4 lg:py-[19px] shadow-[5px_5px_0_#1A1A1A]"
+          >
+            Come to a night →
+          </a>
+          <a
+            href="#nights"
+            class="pcv-pill bg-brand-yellow text-brand-dark text-[18px] lg:text-[21px] px-8 lg:px-10 py-4 lg:py-[19px] shadow-[5px_5px_0_#1A1A1A]"
+          >
+            See what happens
+          </a>
+        </div>
+      </div>
     </section>
 
-    <!-- What a Builder Night actually is -->
-    <section
-      class="px-5 lg:px-[72px] py-14 lg:py-[104px] border-t border-brand-dark/[0.11] bg-primary-50 lg:grid lg:grid-cols-2 lg:gap-24 lg:items-start"
-    >
-      <h2
-        class="font-display font-extrabold text-[30px] lg:text-[52px] leading-[1.08] lg:leading-[1.04] tracking-[-0.02em] lg:tracking-[-0.025em] m-0 mb-9 lg:mb-0 pcv-enter-rise"
-      >
-        One night. Three hours. Something exists that didn't.
-      </h2>
-      <BuilderNightTrack
-        outcome="Your first pull request"
-        outcomeDetail="Reviewed, merged, and live."
-      />
-    </section>
+    <SkylineBand />
 
+    <!-- Next night. Carries data-pcv-event-start so public/js/event-freshness.js
+         removes the whole band once the event has started, rather than leaving a
+         past date advertised as upcoming. -->
     {
-      photo && (
-        <section class="border-t border-brand-dark/[0.11]">
-          <img
-            src={photo.data.image}
-            alt={photo.data.alt}
-            loading="lazy"
-            class="w-full h-[300px] lg:h-[440px] object-cover block"
-          />
+      nextEvent && (
+        <section
+          class="bg-brand-dark text-white px-5 lg:px-8 py-[30px]"
+          data-pcv-event-start={nextEvent.start}
+          data-testid="next-night"
+        >
+          <div class="max-w-[1200px] mx-auto flex items-center justify-between gap-6 lg:gap-9 flex-wrap">
+            <div class="flex-1 min-w-[280px]">
+              <div class="font-display font-bold text-xs tracking-[0.14em] uppercase text-brand-yellow">
+                Next night · {formatEventDate(nextEvent.start)}
+              </div>
+              <div class="font-display font-bold text-[22px] lg:text-[26px] leading-[1.1] mt-1">
+                {nextEvent.title}
+                {nextEvent.venue && ` · ${nextEvent.venue}`}
+              </div>
+            </div>
+            <a
+              href={nextEvent.url}
+              class="pcv-pill bg-brand-yellow text-brand-dark text-base px-[26px] py-[13px] shadow-[4px_4px_0_#FFEED0] border-brand-cream"
+            >
+              RSVP
+            </a>
+          </div>
         </section>
       )
     }
 
-    <!-- The two halves of the org -->
-    <section
-      class="px-5 lg:px-[72px] py-[60px] lg:py-[104px] border-t border-brand-dark/[0.11] lg:grid lg:grid-cols-2 lg:gap-24 lg:max-w-[1000px]"
-    >
-      <div>
-        <h3
-          class="font-display font-extrabold text-[28px] lg:text-[38px] leading-[1.08] lg:leading-[1.05] tracking-[-0.02em] m-0 mb-3 lg:mb-3.5"
-        >
-          Free, forever, for us.
-        </h3>
-        <p class="text-base lg:text-[17px] leading-[1.65] text-brand-dark/70 m-0">
-          Builder Nights, workshops, and career labs. You show up, you pair with someone, you leave
-          having made a thing. No application, no fee, no prerequisite.
-        </p>
-        <a
-          href="/join"
-          class="inline-block font-display font-bold text-base mt-3.5 lg:mt-5 py-3 lg:py-0 lg:pb-0.5 text-brand-dark no-underline border-b-2 border-brand-pink hover:text-accent-700 transition-colors"
-        >
-          Join {community.memberCount} of us →
-        </a>
-      </div>
-      <div class="mt-[52px] lg:mt-0">
-        <h3
-          class="font-display font-extrabold text-[28px] lg:text-[38px] leading-[1.08] lg:leading-[1.05] tracking-[-0.02em] m-0 mb-3 lg:mb-3.5"
-        >
-          Paid work that pays for it.
-        </h3>
-        <p class="text-base lg:text-[17px] leading-[1.65] text-brand-dark/70 m-0">
-          Design, apps, and software for Philly nonprofits and community orgs. The fee funds the
-          free side — and the people who build it came up through it.
-        </p>
-        <a
-          href="/contact"
-          class="inline-block font-display font-bold text-base mt-3.5 lg:mt-5 py-3 lg:py-0 lg:pb-0.5 text-brand-dark no-underline border-b-2 border-brand-pink hover:text-accent-700 transition-colors"
-        >
-          Start a project →
-        </a>
+    <!-- What actually happens -->
+    <section id="what" class="px-5 lg:px-8 py-14 lg:py-[88px] bg-brand-cream">
+      <div class="max-w-[1200px] mx-auto">
+        <div class="max-w-[760px] mx-auto mb-11 text-center">
+          <div class="font-display font-bold text-xs tracking-[0.14em] uppercase text-brand-coral">
+            What actually happens
+          </div>
+          <h2
+            class="font-display font-extrabold text-[32px] lg:text-[48px] leading-[1.05] mt-2.5 mb-3"
+          >
+            Show up before you feel ready.
+          </h2>
+          <p class="text-[17px] lg:text-[19px] text-brand-dark/[0.72] m-0">
+            Three kinds of nights. All free, all in Philly, all fine to attend alone.
+          </p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-[22px]">
+          {
+            tracks.map((track) => (
+              <div class="pcv-card">
+                <span class={`pcv-tag ${track.tagClass}`}>{track.tag}</span>
+                <h3 class="font-display font-bold text-[22px] lg:text-[25px] m-0 leading-[1.15]">
+                  {track.title}
+                </h3>
+                <p class="text-base text-brand-dark/[0.72] m-0">{track.body}</p>
+                <div class="mt-auto pt-3 font-mono text-xs text-brand-dark/[0.55]">
+                  {track.meta}
+                </div>
+              </div>
+            ))
+          }
+        </div>
       </div>
     </section>
 
-    <!-- What it adds up to -->
-    <section
-      class="px-5 lg:px-[72px] py-14 lg:py-[84px] border-t border-brand-dark/[0.11] flex flex-col lg:flex-row gap-[30px] lg:gap-[88px] pcv-enter-stat"
-    >
+    <!-- The room -->
+    <section id="nights" class="bg-brand-dark text-white">
       {
-        stats.map((stat) => (
-          <div>
-            <div class="font-display font-extrabold text-[60px] lg:text-[84px] leading-[0.86] lg:leading-[0.9] tracking-[-0.04em]">
-              {stat.value}
-            </div>
-            <div class="font-mono text-[10px] lg:text-[11px] font-medium uppercase tracking-[0.18em] text-brand-dark/50 mt-2 lg:mt-3">
-              {stat.label}
-            </div>
+        photos.length > 0 && (
+          <div class="grid grid-cols-2 lg:grid-cols-3 grid-rows-2 gap-[3px] auto-rows-[220px]">
+            {photos.map((photo, i) => (
+              <div class={i === 0 ? 'lg:row-span-2 relative' : 'relative'}>
+                <img
+                  src={photo.data.image}
+                  alt={photo.data.alt}
+                  loading="lazy"
+                  class="w-full h-full object-cover block"
+                />
+              </div>
+            ))}
           </div>
-        ))
+        )
       }
+      <div
+        class="max-w-[1200px] mx-auto px-5 lg:px-8 py-[52px] grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-10 lg:gap-14 items-end"
+      >
+        <div>
+          <div
+            class="font-display font-bold text-xs tracking-[0.14em] uppercase text-brand-yellow mb-3.5"
+          >
+            The room
+          </div>
+          <h2
+            class="font-display font-extrabold text-[34px] lg:text-[52px] leading-none m-0 mb-4 text-white"
+          >
+            {photos.length > 0 ? 'Every photo is a real Thursday.' : 'Come see the room.'}
+          </h2>
+          <p class="text-[17px] lg:text-[19px] leading-[1.5] text-white/[0.82] m-0 max-w-[540px]">
+            Nobody here is going to ask what you do for a living before they ask what you're making.
+            That's the whole difference, and it's the part a website can't prove — so come see.
+          </p>
+        </div>
+        <div
+          class="bg-brand-cream text-brand-dark rounded-retro p-[26px] shadow-[6px_6px_0_rgba(255,238,208,.25)]"
+        >
+          <div class="font-mono text-xs text-brand-dark/60 mb-2.5">{memberLine}</div>
+          <div class="font-display font-extrabold text-[26px] leading-[1.15] mb-4">
+            Start with one night, not a commitment.
+          </div>
+          <a
+            href={links.luma}
+            class="pcv-pill bg-brand-pink text-white text-[18px] px-7 py-[15px] shadow-[4px_4px_0_#1A1A1A] w-full"
+          >
+            See the calendar →
+          </a>
+          <div class="mt-3 text-[13.5px] text-brand-dark/[0.65] text-center">
+            Free · no application · lurking encouraged
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Open source -->
+    <section id="build" class="px-5 lg:px-8 py-14 lg:py-[88px] bg-primary-50">
+      <div class="max-w-[1200px] mx-auto">
+        <div class="max-w-[760px] mx-auto mb-11 text-center">
+          <div class="font-display font-bold text-xs tracking-[0.14em] uppercase text-brand-coral">
+            Open source
+          </div>
+          <h2
+            class="font-display font-extrabold text-[32px] lg:text-[48px] leading-[1.05] mt-2.5 mb-3"
+          >
+            We learn by shipping.
+          </h2>
+          <p class="text-[17px] lg:text-[19px] text-brand-dark/[0.72] m-0">
+            Every repo keeps issues sized for a first pull request. Design work counts as a
+            contribution here.
+          </p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-[22px]">
+          {
+            repos.map((repo) => (
+              <div class="pcv-card">
+                <h3 class="font-display font-bold text-[24px] m-0">{repo.name}</h3>
+                <p class="text-base text-brand-dark/[0.72] m-0">{repo.blurb}</p>
+                <div class="flex gap-1.5 flex-wrap">
+                  {repo.stack.map((tech) => (
+                    <span class="pcv-chip">{tech}</span>
+                  ))}
+                </div>
+                <a
+                  href={repo.href}
+                  class="font-display font-bold text-[13px] text-brand-coral no-underline mt-auto pt-3.5 border-t border-dashed border-brand-dark/15 hover:text-accent-700 transition-colors"
+                >
+                  Good first issues →
+                </a>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- Join -->
+    <section
+      id="join"
+      class="bg-brand-pink text-white border-y-2 border-brand-dark px-5 lg:px-8 py-14 lg:py-[88px] text-center"
+    >
+      <div class="max-w-[1200px] mx-auto">
+        <img
+          src="/images/orange circle sunset logo.webp"
+          alt="The PhilaCon Valley pigeon, perched on a keyboard in front of the Philadelphia skyline"
+          width="92"
+          height="92"
+          loading="lazy"
+          class="w-[92px] h-[92px] rounded-full border-2 border-brand-dark block mx-auto mb-[26px]"
+        />
+        <h2
+          class="font-display font-extrabold text-[36px] lg:text-[54px] leading-[1.02] mx-auto mb-3.5 text-white max-w-[820px]"
+        >
+          A pigeon flies alone. A flock goes much further.
+        </h2>
+        <p class="text-[17px] lg:text-[19px] text-white/90 max-w-[560px] mx-auto mb-7">
+          You don't have to earn your place. Come to one night and see — nobody is going to ask for
+          your credentials at the door.
+        </p>
+        <a
+          href={links.luma}
+          class="pcv-pill bg-brand-yellow text-brand-dark text-[18px] lg:text-[21px] px-9 lg:px-[42px] py-4 lg:py-[19px] shadow-[5px_5px_0_#1A1A1A]"
+        >
+          Find your first night →
+        </a>
+        <div class="mt-3.5 font-mono text-[13px] text-white/80">{memberLine}</div>
+      </div>
     </section>
   </div>
 
-  <!-- Clears the fixed bottom bar so the footer's last line is never trapped under
-       it. Carries the same expiry as the bar: once the bar removes itself, this
-       would otherwise leave 88px of dead space at the bottom of the page. -->
+  {
+    /* Clears the fixed bottom bar so the footer's last line is never trapped
+      under it. Carries the same expiry as the bar. */
+  }
   {
     nextEvent && (
       <div class="lg:hidden h-[88px]" data-pcv-event-start={nextEvent.start} aria-hidden="true" />
@@ -154,3 +347,60 @@ const stats = [
   }
   <EventBar event={nextEvent} />
 </BaseLayout>
+
+<script>
+  // GSAP owns the homepage's scroll choreography: eased in-page navigation and
+  // section reveals. Imported from node_modules rather than cdnjs — the CSP
+  // allows script-src 'self' only, and re-adding a CDN origin would undo #109.
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
+
+  gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Eased scroll for every in-page link. Offset clears the sticky header.
+  document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((a) => {
+    a.addEventListener('click', (e) => {
+      const sel = a.getAttribute('href');
+      if (!sel || sel === '#') return;
+      const el = document.querySelector(sel);
+      if (!el) return;
+      e.preventDefault();
+      const y = el.getBoundingClientRect().top + window.scrollY - 62;
+      if (reduced) {
+        window.scrollTo(0, y);
+        return;
+      }
+      gsap.to(window, {
+        duration: 1.05,
+        ease: 'power3.inOut',
+        scrollTo: { y, autoKill: false },
+        overwrite: 'auto',
+      });
+    });
+  });
+
+  if (!reduced) {
+    document.querySelectorAll('#what .pcv-card, #build .pcv-card').forEach((el, i) => {
+      gsap.from(el, {
+        y: 34,
+        opacity: 0,
+        duration: 0.7,
+        ease: 'power3.out',
+        delay: (i % 3) * 0.09,
+        scrollTrigger: { trigger: el, start: 'top 88%' },
+      });
+    });
+    document.querySelectorAll('#what h2, #build h2, #nights h2').forEach((el) => {
+      gsap.from(el, {
+        y: 26,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: el, start: 'top 90%' },
+      });
+    });
+  }
+</script>

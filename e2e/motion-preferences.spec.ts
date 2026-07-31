@@ -17,25 +17,16 @@ test.describe('prefers-reduced-motion', () => {
     await expect(tagline).toHaveCSS('animation-name', 'pcvRise');
   });
 
-  test('the looping Builder Night track keeps its spine when motion is reduced', async ({
-    page,
-  }) => {
-    // The track draws itself by animating width from 0. Killing the animation
-    // without restoring the width would leave a zero-width line and the dots
-    // would sit on nothing — so assert the restored width, not just the absence
-    // of animation.
+  test('scroll-revealed cards are visible when motion is reduced', async ({ page }) => {
+    // GSAP reveals these by animating from opacity 0. If the reduced-motion
+    // branch ever stops skipping that, the cards stay invisible forever rather
+    // than merely un-animated — so assert they are actually painted.
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
 
-    const track = page.locator('.pcv-loop-track');
-    await expect(track).toHaveCSS('animation-name', 'none');
-
-    const [trackWidth, parentWidth] = await track.evaluate((el) => [
-      el.getBoundingClientRect().width,
-      (el.parentElement as HTMLElement).getBoundingClientRect().width,
-    ]);
-    expect(trackWidth).toBeGreaterThan(0);
-    expect(Math.abs(trackWidth - parentWidth)).toBeLessThan(2);
+    const card = page.locator('#what .pcv-card').first();
+    await expect(card).toBeVisible();
+    await expect(card).toHaveCSS('opacity', '1');
   });
 
   test('hero entrance animations and scroll-smooth are disabled when reduced', async ({ page }) => {
