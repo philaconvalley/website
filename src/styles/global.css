@@ -114,10 +114,6 @@
     animation: fadeIn 0.5s ease-in;
   }
 
-  .animate-slide-up {
-    animation: slideUp 0.6s ease-out;
-  }
-
   /*
    * Homepage motion.
    *
@@ -130,16 +126,8 @@
    * Every looping element must remain legible in its final state, because that
    * is exactly where the reduced-motion block below freezes it.
    */
-  .pcv-enter-word {
-    animation: pcvWord 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
   .pcv-enter-rise {
     animation: pcvRise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
-  .pcv-enter-stat {
-    animation: pcvStat 1s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
   .pcv-enter-bar {
@@ -150,32 +138,10 @@
     animation: pcvBob 5s ease-in-out infinite;
   }
 
-  @keyframes pcvWord {
-    from {
-      opacity: 0;
-      transform: translateY(0.5em) rotate(-1.5deg);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) rotate(0);
-    }
-  }
-
   @keyframes pcvRise {
     from {
       opacity: 0;
       transform: translateY(22px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes pcvStat {
-    from {
-      opacity: 0;
-      transform: translateY(28px);
     }
     to {
       opacity: 1;
@@ -210,17 +176,6 @@
       opacity: 1;
     }
   }
-
-  @keyframes slideUp {
-    from {
-      transform: translateY(20px);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  }
 }
 
 /*
@@ -233,10 +188,7 @@
   }
 
   .animate-fade-in,
-  .animate-slide-up,
-  .pcv-enter-word,
   .pcv-enter-rise,
-  .pcv-enter-stat,
   .pcv-enter-bar,
   .pcv-loop-bob {
     animation: none;
