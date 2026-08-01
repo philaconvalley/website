@@ -2,21 +2,12 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import EventBar from '../components/EventBar.astro';
 import SkylineBand from '../components/SkylineBand.astro';
+import StatLine from '../components/StatLine.astro';
 import { getCommunityData, formatEventDate } from '../lib/community';
 import { community, links } from '../config';
 import { getCollection } from 'astro:content';
 
 const { nextEvent, nightsHeld, thingsShipped } = await getCommunityData();
-
-/**
- * The design's stat line ("425 members · 12 nights held · 6 things shipped")
- * appears twice. It is assembled here from the same live sources the rest of the
- * page uses rather than written out, so the two copies can never disagree with
- * each other or with the stats further down the page.
- */
-const memberLine = `${community.memberCount} members · ${nightsHeld} ${
-  nightsHeld === 1 ? 'night' : 'nights'
-} held · ${thingsShipped} ${thingsShipped === 1 ? 'thing' : 'things'} shipped`;
 
 /**
  * The design's five-photo mosaic sits under the headline "Every photo is a real
@@ -244,7 +235,12 @@ const tracks = [
         <div
           class="bg-brand-cream text-brand-dark rounded-retro p-[26px] shadow-[6px_6px_0_rgba(255,238,208,.25)]"
         >
-          <div class="font-mono text-xs text-brand-dark/60 mb-2.5">{memberLine}</div>
+          <StatLine
+            memberCount={community.memberCount}
+            nightsHeld={nightsHeld}
+            thingsShipped={thingsShipped}
+            class="font-mono text-xs text-brand-dark/60 mb-2.5 block"
+          />
           <div class="font-display font-extrabold text-[26px] leading-[1.15] mb-4">
             Start with one night, not a commitment.
           </div>
@@ -331,7 +327,12 @@ const tracks = [
         >
           Find your first night →
         </a>
-        <div class="mt-3.5 font-mono text-[13px] text-white/80">{memberLine}</div>
+        <StatLine
+          memberCount={community.memberCount}
+          nightsHeld={nightsHeld}
+          thingsShipped={thingsShipped}
+          class="mt-3.5 font-mono text-[13px] text-white/80 block"
+        />
       </div>
     </section>
   </div>
