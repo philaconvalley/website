@@ -61,6 +61,106 @@ if (!reduced) {
       scrollTrigger: { trigger: el, start: 'top 90%' },
     });
   });
+
+  /**
+   * The photo mosaic, when the gallery collection has entries. Without this the
+   * heading above it animates while five photos pop in underneath — the gap is
+   * invisible today only because the collection is empty.
+   */
+  gsap.from('#nights [data-pcv-photo]', {
+    y: 28,
+    opacity: 0,
+    duration: 0.7,
+    ease: 'power3.out',
+    stagger: 0.07,
+    scrollTrigger: { trigger: '#nights', start: 'top 85%' },
+  });
+
+  /**
+   * The skyline scrubs sideways against the hero as you pass it.
+   *
+   * This is the effect that pays for the library. It is bound to scroll
+   * position rather than a crossing, so it runs backwards when you scroll back
+   * up — IntersectionObserver fires once, in one direction, and has no cheap
+   * equivalent. The band's background is a mirror-seamless repeating tile, so
+   * moving it sideways exposes no edge: the seam is what makes this possible.
+   */
+  gsap.to('[data-pcv-parallax]', {
+    backgroundPositionX: '-260px',
+    ease: 'none',
+    scrollTrigger: {
+      trigger: '[data-pcv-parallax]',
+      start: 'top bottom',
+      end: 'bottom top',
+      scrub: 0.6,
+    },
+  });
+
+  /**
+   * The room holds still while its numbers arrive.
+   *
+   * The page spends its boldness here and nowhere else. Pinning is the other
+   * thing no observer can do: `position: sticky` can hold an element, but it
+   * cannot drive a timeline against the distance travelled while it holds.
+   *
+   * Deliberately desktop-only. On a phone the section already fills the screen,
+   * so pinning it reads as a page that has stopped responding rather than as a
+   * held moment.
+   */
+  const room = document.querySelector<HTMLElement>('#nights');
+  const counters = document.querySelectorAll<HTMLElement>('#nights [data-count-to]');
+
+  if (room && counters.length && window.innerWidth >= 1024) {
+    /**
+     * A pinned section has to fill the screen or the pin reads as a page that
+     * has stopped responding: the room is 342px tall in a 900px viewport, so
+     * without this the next section sits frozen in frame for the whole hold.
+     *
+     * Applied here rather than in the markup on purpose. It is a consequence of
+     * pinning, not of the design, so it should exist in exactly the case that
+     * pins — desktop, motion allowed — and nowhere else. Phones and
+     * reduced-motion visitors keep the layout they have today.
+     */
+    room.style.minHeight = `calc(100vh - ${HEADER_OFFSET}px)`;
+    room.style.display = 'flex';
+    room.style.flexDirection = 'column';
+    room.style.justifyContent = 'center';
+
+    const hold = gsap.timeline({
+      scrollTrigger: {
+        trigger: room,
+        start: `top ${HEADER_OFFSET}px`,
+        end: '+=420',
+        pin: true,
+        pinSpacing: true,
+        scrub: 0.4,
+        invalidateOnRefresh: true,
+      },
+    });
+
+    counters.forEach((el, i) => {
+      const to = Number(el.dataset.countTo ?? el.textContent ?? 0);
+      if (!Number.isFinite(to)) return;
+      const counter = { value: 0 };
+      hold.to(
+        counter,
+        {
+          value: to,
+          ease: 'none',
+          // The element's text is already the final value, so a scrub that is
+          // dragged backwards must always land back on truth, never on a
+          // half-counted number left behind by the tween.
+          onUpdate: () => {
+            el.textContent = String(Math.round(counter.value));
+          },
+          onComplete: () => {
+            el.textContent = String(to);
+          },
+        },
+        i * 0.12,
+      );
+    });
+  }
 }
 
 /**

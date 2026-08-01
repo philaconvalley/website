@@ -201,7 +201,7 @@ const tracks = [
         photos.length > 0 && (
           <div class="grid grid-cols-2 lg:grid-cols-3 grid-rows-2 gap-[3px] auto-rows-[220px]">
             {photos.map((photo, i) => (
-              <div class={i === 0 ? 'lg:row-span-2 relative' : 'relative'}>
+              <div data-pcv-photo class={i === 0 ? 'lg:row-span-2 relative' : 'relative'}>
                 <img
                   src={photo.data.image}
                   alt={photo.data.alt}
