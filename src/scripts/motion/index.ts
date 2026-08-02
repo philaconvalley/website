@@ -28,17 +28,24 @@ const media = gsap.matchMedia();
 
 media.add('(prefers-reduced-motion: no-preference)', () => {
   groups('[data-pcv-arrive]').forEach((group) => arrive(group));
-  countUpInHolds();
 });
 
 media.add('(prefers-reduced-motion: no-preference) and (min-width: 1024px)', () => {
   document.querySelectorAll<HTMLElement>('[data-pcv-hold]').forEach((section) => hold(section));
+  countUpInHolds();
 });
 
 /**
  * Counters fire when their section is reached, once. Scoped to hold sections
  * because that is the only place the page is standing still long enough for a
  * count to be read rather than glimpsed.
+ *
+ * Which is also why this shares the pin's `min-width: 1024px` gate rather than
+ * sitting in the plain no-preference block. Below 1024px nothing pins, so the
+ * section slides past at scroll speed and a 0.9s count is not read, it is a
+ * flicker of wrong numbers on the way past. Phones show the true values from
+ * the markup and never animate them — which is what the site did before the
+ * motion system, and it must stay true.
  */
 function countUpInHolds(): void {
   document.querySelectorAll<HTMLElement>('[data-pcv-hold]').forEach((section) => {

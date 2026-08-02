@@ -89,12 +89,23 @@ export function arrive(elements: HTMLElement[], opts: { y?: number } = {}): void
  * A pinned section must fill the screen or the pin reads as a page that has
  * stopped responding — but that is a consequence of pinning, not of the
  * design, so it must exist in exactly the case that pins and nowhere else.
+ *
+ * They go through `gsap.set()` rather than `element.style`. This function is
+ * only ever called from inside a `gsap.matchMedia()` callback, and a context
+ * can only revert what it created — hand-written inline styles are invisible to
+ * it. Set by hand, a desktop visitor who narrows the window past 1024px loses
+ * the pin but keeps `min-height: calc(100vh - 62px)` and the flex centring
+ * forever, leaving a phone-width band stretched to a full viewport with its
+ * content floating in the middle. `gsap.set` is a zero-duration tween, so the
+ * context records these four properties and puts them back on teardown.
  */
 export function hold(section: HTMLElement, distance = 420): void {
-  section.style.minHeight = `calc(100vh - ${HEADER_OFFSET}px)`;
-  section.style.display = 'flex';
-  section.style.flexDirection = 'column';
-  section.style.justifyContent = 'center';
+  gsap.set(section, {
+    minHeight: `calc(100vh - ${HEADER_OFFSET}px)`,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+  });
 
   ScrollTrigger.create({
     trigger: section,
@@ -122,12 +133,21 @@ export function hold(section: HTMLElement, distance = 420): void {
  * if it never fires at all the markup's own value — already the real one — is
  * left untouched. It also stops the numbers counting *down* on scroll-up,
  * which reads as members leaving.
+ *
+ * `onInterrupt` closes the one remaining route to a false number. A tween that
+ * is killed mid-flight — the visitor flips the OS motion preference while it is
+ * running, and the matchMedia context reverts — never reaches `onComplete`, so
+ * whatever half-counted value `onUpdate` wrote last would stay on the page for
+ * good. Both exits therefore write the true value.
  */
 export function countUp(elements: HTMLElement[]): void {
   elements.forEach((el, i) => {
     const to = Number(el.dataset.countTo ?? el.textContent ?? 0);
     if (!Number.isFinite(to)) return;
     const counter = { value: 0 };
+    const settle = () => {
+      el.textContent = String(to);
+    };
     gsap.to(counter, {
       value: to,
       duration: 0.9,
@@ -136,9 +156,8 @@ export function countUp(elements: HTMLElement[]): void {
       onUpdate: () => {
         el.textContent = String(Math.round(counter.value));
       },
-      onComplete: () => {
-        el.textContent = String(to);
-      },
+      onComplete: settle,
+      onInterrupt: settle,
     });
   });
 }
