@@ -1,0 +1,35 @@
+---
+/**
+ * A band of the page.
+ *
+ * Every page runs the same sequence — open air, the door, inside the room,
+ * the invitation — and colour marks position in that story rather than which
+ * page you are on. That rule lives here rather than in a doc because a
+ * component with five allowed roles cannot be quietly ignored, and a
+ * convention can.
+ *
+ * `role` is a prop, NOT the ARIA `role` attribute, and is deliberately not
+ * forwarded to the DOM: "air" is not a valid ARIA role and would be a real
+ * accessibility defect if it leaked. It is exposed as `data-pcv-section`,
+ * which the motion scanner also uses to scope stagger groups.
+ *
+ * This component renders no background of its own yet. Adopting it and
+ * restyling the site are two different changes, and doing them together would
+ * mean a refactor nobody could review. Slice 3 replaces the `class`
+ * pass-through with a role-driven background, in this file only.
+ */
+type Role = 'door' | 'air' | 'room' | 'work' | 'invitation';
+
+interface Props {
+  role: Role;
+  hold?: boolean;
+  id?: string;
+  class?: string;
+}
+
+const { role, hold = false, id, class: className } = Astro.props;
+---
+
+<section id={id} class={className} data-pcv-section={role} data-pcv-hold={hold ? '' : undefined}>
+  <slot />
+</section>

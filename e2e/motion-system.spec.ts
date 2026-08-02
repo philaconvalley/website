@@ -56,3 +56,26 @@ test.describe('humanised stagger', () => {
     expect(await firstOf('#what')).toBe(await firstOf('#build'));
   });
 });
+
+test.describe('section roles', () => {
+  test('the homepage bands declare their story position', async ({ page }) => {
+    await page.goto('/');
+    const roles = await page
+      .locator('[data-pcv-section]')
+      .evaluateAll((els) => els.map((el) => el.getAttribute('data-pcv-section')));
+
+    expect(roles).toEqual(['door', 'air', 'room', 'work', 'invitation']);
+  });
+
+  test('the story position never leaks into ARIA', async ({ page }) => {
+    await page.goto('/');
+    // "air" and "door" are not valid ARIA roles. If `role` is ever forwarded to
+    // the DOM this becomes a genuine accessibility defect, so assert it is not.
+    await expect(page.locator('section[role="air"], section[role="door"]')).toHaveCount(0);
+  });
+
+  test('exactly one section holds, per spec §5.1', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('[data-pcv-hold]')).toHaveCount(1);
+  });
+});
