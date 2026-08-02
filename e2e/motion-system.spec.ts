@@ -83,3 +83,49 @@ test.describe('section bands', () => {
     await expect(page.locator('[data-pcv-hold]')).toHaveCount(1);
   });
 });
+
+/**
+ * The hero is the one place the stagger system is deliberately broken.
+ *
+ * Its headline is "You're not the only one in the room." An evenly-staggered
+ * entrance under that sentence is four elements arriving alone, one at a time —
+ * the motion arguing against the copy. So the hero declares ordinals instead of
+ * relying on source order: 0, 1, [3 skipped], 3, 3. The place, then you, then a
+ * held beat, then the tagline and both buttons together.
+ *
+ * Both halves are asserted because both are easy to erase without noticing. Drop
+ * the shared ordinal and the unison silently becomes a stagger; renumber to
+ * close the gap and the beat disappears.
+ */
+test.describe('hero sequence', () => {
+  const delays = (page: import('@playwright/test').Page) =>
+    page
+      .locator('#top [data-pcv-arrive][data-pcv-delay]')
+      .evaluateAll((els) => els.map((el) => Number((el as HTMLElement).dataset.pcvDelay)));
+
+  test('the tagline and the buttons arrive in unison, not in sequence', async ({ page }) => {
+    await page.goto('/');
+    const [, , tagline, ctas] = await delays(page);
+    expect(tagline).toBe(ctas);
+  });
+
+  test('a beat separates the headline from everything that follows', async ({ page }) => {
+    await page.goto('/');
+    const [eyebrow, headline, tagline] = await delays(page);
+
+    const firstGap = headline - eyebrow;
+    const beat = tagline - headline;
+
+    // The pause after the headline is the longest on the page — that is the
+    // loneliness the sentence is about, and it has to be felt as a hold rather
+    // than read as one more even step.
+    expect(beat).toBeGreaterThan(firstGap * 1.4);
+  });
+
+  test('the hero runs on the motion system, not on a CSS keyframe', async ({ page }) => {
+    await page.goto('/');
+    // Four elements wired by arrive(), and no survivor of the old CSS entrance.
+    await expect(page.locator('#top [data-pcv-arrive][data-pcv-delay]')).toHaveCount(4);
+    await expect(page.locator('#top .pcv-enter-rise')).toHaveCount(0);
+  });
+});

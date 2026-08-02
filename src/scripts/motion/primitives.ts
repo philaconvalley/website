@@ -78,6 +78,31 @@ export function staggerDelay(index: number, base = STAGGER_STEP): number {
 }
 
 /**
+ * Where an element sits in its group's sequence.
+ *
+ * By default that is simply its position in the DOM, which is what almost every
+ * group wants. `data-pcv-order` overrides it, and exists so a sequence can be
+ * *composed* rather than merely listed:
+ *
+ *   - Two elements sharing an order arrive in **unison**. `staggerDelay` is
+ *     deterministic, so the same ordinal yields the same delay and the same
+ *     jitter — they land on the same frame, not merely close together.
+ *   - A skipped ordinal buys a **beat**: the gap doubles wherever a number is
+ *     left out, without inventing a separate pause mechanism.
+ *
+ * The homepage hero is the reason this exists. Its headline says "You're not
+ * the only one in the room", and an evenly-staggered entrance underneath that
+ * sentence is four things arriving alone, one at a time — the motion arguing
+ * against the copy. With ordinals the hero reads 0, 1, [beat], 3, 3: the place,
+ * then you, then a held pause, then everything else at once. It is the only
+ * group on the site that lands in unison, and the exception is the point.
+ */
+function orderOf(el: HTMLElement, fallback: number): number {
+  const declared = Number(el.dataset.pcvOrder);
+  return Number.isFinite(declared) && el.dataset.pcvOrder !== undefined ? declared : fallback;
+}
+
+/**
  * Collect matching elements, grouped by the section they live in.
  *
  * Grouping matters: stagger restarts at zero in every section, so the fourth
@@ -118,7 +143,7 @@ export function groups(selector: string): HTMLElement[][] {
 export function arrive(elements: HTMLElement[], opts: { y?: number; shared?: boolean } = {}): void {
   const sharedTrigger = opts.shared ? elements[0] : undefined;
   elements.forEach((el, i) => {
-    const delay = staggerDelay(i);
+    const delay = staggerDelay(orderOf(el, i));
     el.dataset.pcvDelay = String(delay);
     gsap.from(el, {
       y: opts.y ?? 34,

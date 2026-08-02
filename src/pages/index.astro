@@ -93,24 +93,38 @@ const tracks = [
     <!-- Hero -->
     <Section band="door" id="top" class="bg-brand-sky px-5 lg:px-8 pt-[74px] pb-[30px] text-center">
       <div class="max-w-[1200px] mx-auto">
+        {
+          /* Ordinals, not source order: 0, 1, [beat], 3, 3.
+            The place arrives, then you, then a pause longer than any other on
+            the page, then the tagline and both buttons together. Everywhere
+            else on this site a group staggers; this is the one that lands in
+            unison, because the headline above it is about not being alone and
+            a single-file entrance would be arguing the opposite. */
+        }
         <div
-          class="font-display font-bold text-xs tracking-[0.14em] uppercase text-brand-dark/[0.72] mb-3 pcv-enter-rise"
+          data-pcv-arrive
+          data-pcv-order="0"
+          class="font-display font-bold text-xs tracking-[0.14em] uppercase text-brand-dark/[0.72] mb-3"
         >
           Philadelphia · creativity × technology
         </div>
         <h1
-          class="font-display font-extrabold text-[44px] lg:text-[80px] leading-[1.02] lg:leading-[0.96] tracking-[-0.02em] mx-auto mb-5 max-w-[880px] text-balance pcv-enter-rise [animation-delay:0.08s]"
+          data-pcv-arrive
+          data-pcv-order="1"
+          class="font-display font-extrabold text-[44px] lg:text-[80px] leading-[1.02] lg:leading-[0.96] tracking-[-0.02em] mx-auto mb-5 max-w-[880px] text-balance"
         >
           You're not the only one in the room.
         </h1>
         <p
           data-testid="hero-tagline"
-          class="text-[18px] lg:text-[22px] leading-[1.5] max-w-[720px] mx-auto mb-[30px] pcv-enter-rise [animation-delay:0.16s]"
+          data-pcv-arrive
+          data-pcv-order="3"
+          class="text-[18px] lg:text-[22px] leading-[1.5] max-w-[720px] mx-auto mb-[30px]"
         >
           Designers, artists, engineers, and folks three weeks into a tutorial. One Philly community
           — free, no application, no one checking credentials at the door.
         </p>
-        <div class="flex gap-3.5 justify-center flex-wrap pcv-enter-rise [animation-delay:0.24s]">
+        <div data-pcv-arrive data-pcv-order="3" class="flex gap-3.5 justify-center flex-wrap">
           <a
             href={links.luma}
             class="pcv-pill bg-brand-pink text-white text-[18px] lg:text-[21px] px-8 lg:px-10 py-4 lg:py-[19px] shadow-[5px_5px_0_#1A1A1A]"

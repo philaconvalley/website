@@ -115,38 +115,31 @@
   }
 
   /*
-   * Homepage motion.
+   * Motion that is not GSAP's.
    *
-   * Two distinct families, and the distinction matters for accessibility:
+   * Content entrances all live in src/scripts/motion — one vocabulary, declared
+   * in markup, so there is exactly one implementation of "a thing arrives".
+   * `.pcv-enter-rise` used to be the exception: the homepage hero animated here
+   * in CSS, on its own 0.9s clock, while everything below it arrived on GSAP's.
+   * Two engines meant two timings that could not be composed and drifted apart
+   * the moment either was tuned. The hero moved to `data-pcv-arrive`; this is
+   * what is left.
    *
-   *   .pcv-enter-*  run ONCE on load. Entrances.
-   *   .pcv-loop-*   run forever, so they are the first thing killed under
-   *                 prefers-reduced-motion.
+   * What remains is deliberately NOT content arriving:
+   *
+   *   .pcv-enter-bar  a fixed chrome bar sliding into place, once.
+   *   .pcv-loop-*     runs forever, so it is the first thing killed under
+   *                   prefers-reduced-motion.
    *
    * Every looping element must remain legible in its final state, because that
    * is exactly where the reduced-motion block below freezes it.
    */
-  .pcv-enter-rise {
-    animation: pcvRise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
   .pcv-enter-bar {
     animation: pcvBarUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 1.1s both;
   }
 
   .pcv-loop-bob {
     animation: pcvBob 5s ease-in-out infinite;
-  }
-
-  @keyframes pcvRise {
-    from {
-      opacity: 0;
-      transform: translateY(22px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
   }
 
   @keyframes pcvBarUp {
@@ -188,7 +181,6 @@
   }
 
   .animate-fade-in,
-  .pcv-enter-rise,
   .pcv-enter-bar,
   .pcv-loop-bob {
     animation: none;
