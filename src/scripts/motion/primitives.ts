@@ -30,7 +30,7 @@ export const HEADER_OFFSET = 62;
  * which is a flicker nobody asked for. Eight values is enough that no group on
  * this site repeats the pattern visibly.
  */
-const JITTER = [0, 0.037, 0.019, 0.051, 0.008, 0.043, 0.026, 0.061];
+const JITTER = [0, 0.074, 0.038, 0.102, 0.016, 0.086, 0.052, 0.122];
 
 /**
  * Ceiling on the *cumulative* part of the delay, in steps.
@@ -52,7 +52,27 @@ const JITTER = [0, 0.037, 0.019, 0.051, 0.008, 0.043, 0.026, 0.061];
  */
 const STAGGER_CAP = 3;
 
-export function staggerDelay(index: number, base = 0.09): number {
+/**
+ * Base step and travel time, calibrated by side-by-side comparison rather than
+ * argued from theory.
+ *
+ * The first version ran a 0.09s step under a 0.7s travel. The irregularity was
+ * real but illegible: the whole group resolved in 321ms, which is too fast to
+ * perceive as a sequence, so the uneven gaps read as a stutter rather than as
+ * people arriving. Shown three candidate timings side by side, the character
+ * only started reading at half speed — so both the step and the travel are
+ * doubled here, not just the delays, because halving the global time scale is
+ * what was actually judged.
+ *
+ * The cost is stated plainly: the cards now finish arriving a little over two
+ * seconds after the group is triggered. That is long, it was chosen with those
+ * numbers on screen, and it is the first thing to revisit if the homepage reads
+ * as sluggish in ordinary use rather than under deliberate replay.
+ */
+const STAGGER_STEP = 0.18;
+const ARRIVE_TRAVEL = 1.4;
+
+export function staggerDelay(index: number, base = STAGGER_STEP): number {
   const steps = Math.min(index, STAGGER_CAP);
   return Number((steps * base + JITTER[index % JITTER.length]).toFixed(3));
 }
@@ -103,7 +123,7 @@ export function arrive(elements: HTMLElement[], opts: { y?: number; shared?: boo
     gsap.from(el, {
       y: opts.y ?? 34,
       opacity: 0,
-      duration: 0.7,
+      duration: ARRIVE_TRAVEL,
       ease: 'power3.out',
       delay,
       scrollTrigger: { trigger: sharedTrigger ?? el, start: 'top 88%' },
