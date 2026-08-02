@@ -865,3 +865,32 @@ stale relative to the code. Since the homepage is the agreed north star, the spe
 disagree about the single most-repeated colour on the site.
 
 This does not block slices 1 or 2, which change no colours. It must be resolved before slice 3.
+
+---
+
+## Carried forward to slice 4
+
+Deferred observations from the final whole-branch review and its fix wave. None block this
+slice; all of them are cheapest to resolve when slice 4 (Home) wires the photo mosaic.
+
+1. **`arrive()`'s `shared` option has no caller and no test.** It was added so a grid row can
+   share one trigger instead of firing twelve. It is unverified until slice 4 uses it — wire the
+   photo mosaic to it and test it there, or delete it if the mosaic does not need it.
+2. **The stagger cap can invert order past index 3.** `staggerDelay` caps the linear term at
+   `Math.min(index, 3)`, so items 4+ are separated only by jitter and can land a few hundredths
+   out of sequence. That is the intended "they arrive together" reading, and it is unreachable
+   today (no group exceeds four elements). It is stated in the fix report but not in
+   `primitives.ts` — add a sentence there when a group first exceeds four elements.
+3. **`countUp()`'s interrupt path is untested.** `onInterrupt` writes the true value if the
+   motion-preference context reverts mid-tween. Sound by inspection, unguarded against
+   regression. A test would need to flip `prefers-reduced-motion` while a tween is running.
+4. **`e2e/mobile-motion.spec.ts` keys observed counter values by `data-count-to`.** If two
+   counters in `#nights` ever share a value the map collapses and the test fails for an
+   unrelated reason. Safe today (425 / 13 / 6); fragile if the numbers converge.
+5. **`e2e/mobile-motion.spec.ts` reads `minHeight` but never asserts on it.** Harmless, mildly
+   misleading — assert it or drop it.
+
+## Still open, blocking slice 3
+
+The `door` role's colour. Spec §4 says `brand-yellow`; the homepage hero is `bg-brand-sky`.
+Unchanged by this slice, which deliberately altered no colours.
