@@ -77,24 +77,48 @@ if (!reduced) {
   });
 
   /**
-   * The skyline scrubs sideways against the hero as you pass it.
+   * The skyline band grows taller as you scroll into the page, so the city
+   * rises to meet you and pushes the rest of the page down ahead of it.
    *
    * This is the effect that pays for the library. It is bound to scroll
    * position rather than a crossing, so it runs backwards when you scroll back
    * up — IntersectionObserver fires once, in one direction, and has no cheap
-   * equivalent. The band's background is a mirror-seamless repeating tile, so
-   * moving it sideways exposes no edge: the seam is what makes this possible.
+   * equivalent. Because the tile is anchored to the bottom and sized
+   * `auto 100%`, the artwork scales with the band: taller band, bigger city,
+   * still seamless across the width.
+   *
+   * Growing an element mid-document moves every trigger position below it, so
+   * the pin further down would fire at a stale scroll offset. The growth
+   * finishes well before the room comes into range, so one refresh at each end
+   * of the range is enough to put those positions back where they belong —
+   * refreshing continuously during the scrub would cost a full layout pass per
+   * frame for no benefit.
    */
-  gsap.to('[data-pcv-parallax]', {
-    backgroundPositionX: '-260px',
-    ease: 'none',
-    scrollTrigger: {
-      trigger: '[data-pcv-parallax]',
-      start: 'top bottom',
-      end: 'bottom top',
-      scrub: 0.6,
-    },
-  });
+  const band = document.querySelector<HTMLElement>('[data-pcv-skyline]');
+
+  if (band) {
+    const isDesktop = () => window.innerWidth >= 1024;
+    const restingHeight = () => (isDesktop() ? 260 : 180);
+    const grownHeight = () => (isDesktop() ? 480 : 300);
+
+    gsap.fromTo(
+      band,
+      { height: restingHeight },
+      {
+        height: grownHeight,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '#top',
+          start: 'top top',
+          end: '+=560',
+          scrub: 0.5,
+          invalidateOnRefresh: true,
+          onLeave: () => ScrollTrigger.refresh(),
+          onEnterBack: () => ScrollTrigger.refresh(),
+        },
+      },
+    );
+  }
 
   /**
    * The room holds still while its numbers arrive.
@@ -126,39 +150,55 @@ if (!reduced) {
     room.style.flexDirection = 'column';
     room.style.justifyContent = 'center';
 
-    const hold = gsap.timeline({
-      scrollTrigger: {
-        trigger: room,
-        start: `top ${HEADER_OFFSET}px`,
-        end: '+=420',
-        pin: true,
-        pinSpacing: true,
-        scrub: 0.4,
-        invalidateOnRefresh: true,
-      },
+    ScrollTrigger.create({
+      trigger: room,
+      start: `top ${HEADER_OFFSET}px`,
+      end: '+=420',
+      pin: true,
+      pinSpacing: true,
+      invalidateOnRefresh: true,
     });
 
-    counters.forEach((el, i) => {
-      const to = Number(el.dataset.countTo ?? el.textContent ?? 0);
-      if (!Number.isFinite(to)) return;
-      const counter = { value: 0 };
-      hold.to(
-        counter,
-        {
-          value: to,
-          ease: 'none',
-          // The element's text is already the final value, so a scrub that is
-          // dragged backwards must always land back on truth, never on a
-          // half-counted number left behind by the tween.
-          onUpdate: () => {
-            el.textContent = String(Math.round(counter.value));
-          },
-          onComplete: () => {
-            el.textContent = String(to);
-          },
-        },
-        i * 0.12,
-      );
+    /**
+     * The counters are deliberately NOT scrubbed, and that is a correctness
+     * requirement rather than a matter of taste.
+     *
+     * A scrubbed counter *owns* the text: whatever progress the scrub is
+     * stranded at becomes what the page claims. Jump past this section in a
+     * single frame — a restored scroll position, the End key, an anchor link —
+     * and the tween renders once at progress 0 and stops, leaving "0 members ·
+     * 0 nights held · 0 things shipped" on screen permanently. That is the same
+     * defect as #94 and #98: a number on the page that is not true. Measured,
+     * not theorised: every instant jump past the room reproduced it.
+     *
+     * A one-shot tween cannot fail that way. Its only writer always runs to the
+     * end, and if it never fires at all the markup's own value — already the
+     * real one — is left untouched. It also stops the numbers counting *down*
+     * when someone scrolls back up, which reads as members leaving.
+     */
+    ScrollTrigger.create({
+      trigger: room,
+      start: `top ${HEADER_OFFSET}px`,
+      once: true,
+      onEnter: () => {
+        counters.forEach((el, i) => {
+          const to = Number(el.dataset.countTo ?? el.textContent ?? 0);
+          if (!Number.isFinite(to)) return;
+          const counter = { value: 0 };
+          gsap.to(counter, {
+            value: to,
+            duration: 0.9,
+            ease: 'power2.out',
+            delay: i * 0.12,
+            onUpdate: () => {
+              el.textContent = String(Math.round(counter.value));
+            },
+            onComplete: () => {
+              el.textContent = String(to);
+            },
+          });
+        });
+      },
     });
   }
 }

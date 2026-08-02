@@ -9,8 +9,8 @@ import { test, expect } from '@playwright/test';
  * these tests is deleted, the library should be deleted with it.
  */
 
-const bgPositionX = (page: import('@playwright/test').Page) =>
-  page.$eval('[data-pcv-parallax]', (el) => getComputedStyle(el).backgroundPositionX);
+const bandHeight = (page: import('@playwright/test').Page) =>
+  page.$eval('[data-pcv-skyline]', (el) => Math.round(el.getBoundingClientRect().height));
 
 /**
  * `settle` is the wait after scrolling. A pin takes effect on the same frame,
@@ -22,27 +22,43 @@ async function scrollTo(page: import('@playwright/test').Page, y: number, settle
   await page.waitForTimeout(settle);
 }
 
-test.describe('skyline parallax', () => {
-  test('is driven by scroll position, and reverses when you scroll back', async ({ page }) => {
+test.describe('skyline band', () => {
+  test('grows taller as you scroll down, and shrinks back when you scroll up', async ({ page }) => {
     await page.goto('/');
     await scrollTo(page, 0);
-    const atTop = await bgPositionX(page);
+    const atRest = await bandHeight(page);
 
-    await scrollTo(page, 700);
-    const scrolled = await bgPositionX(page);
-    expect(scrolled).not.toBe(atTop);
+    await scrollTo(page, 560);
+    expect(await bandHeight(page), 'the city should rise as you scroll').toBeGreaterThan(atRest);
 
     // Reversibility is the whole argument for a scrub over an observer.
     await scrollTo(page, 0);
-    expect(await bgPositionX(page)).toBe(atTop);
+    expect(await bandHeight(page)).toBe(atRest);
   });
 
-  test('does not run when motion is reduced', async ({ page }) => {
+  test('pushes the page down as it grows rather than covering it', async ({ page }) => {
+    await page.goto('/');
+    await scrollTo(page, 0);
+    const before = await page.$eval(
+      '#what',
+      (el) => el.getBoundingClientRect().top + window.scrollY,
+    );
+
+    await scrollTo(page, 560);
+    const after = await page.$eval(
+      '#what',
+      (el) => el.getBoundingClientRect().top + window.scrollY,
+    );
+
+    expect(after, 'the section below should be displaced downward').toBeGreaterThan(before);
+  });
+
+  test('does not grow when motion is reduced', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
-    const atTop = await bgPositionX(page);
-    await scrollTo(page, 700);
-    expect(await bgPositionX(page)).toBe(atTop);
+    const atRest = await bandHeight(page);
+    await scrollTo(page, 560);
+    expect(await bandHeight(page)).toBe(atRest);
   });
 });
 
