@@ -28,9 +28,17 @@
  */
 ---
 
+{
+  /* background-size is set here rather than with a Tailwind `bg-[length:…]`
+    class so it can read a custom property. The scroll choreography scales the
+    city by writing --pcv-sky-scale; with the tile anchored bottom, a larger
+    value grows the buildings up out of the band instead of revealing more sky.
+    The band's own height never changes, so nothing below it moves. */
+}
 <div
   data-pcv-skyline
-  class="relative h-[180px] lg:h-[260px] bg-brand-sky overflow-hidden bg-[url('/images/skyline.webp')] bg-bottom bg-repeat-x bg-[length:auto_100%]"
+  class="relative h-[180px] lg:h-[260px] bg-brand-sky overflow-hidden bg-[url('/images/skyline.webp')] bg-bottom bg-repeat-x"
+  style="background-size: auto var(--pcv-sky-scale, 100%)"
   role="img"
   aria-label="An illustrated Philadelphia skyline in the PhilaCon Valley brand colours"
 >

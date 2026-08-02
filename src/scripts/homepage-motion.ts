@@ -77,47 +77,46 @@ if (!reduced) {
   });
 
   /**
-   * The skyline band grows taller as you scroll into the page, so the city
-   * rises to meet you and pushes the rest of the page down ahead of it.
+   * The city grows as you scroll down: the band keeps its height and the
+   * artwork scales up inside it, anchored to the bottom, so the buildings rise
+   * out of frame as though you were walking toward them.
    *
    * This is the effect that pays for the library. It is bound to scroll
    * position rather than a crossing, so it runs backwards when you scroll back
    * up — IntersectionObserver fires once, in one direction, and has no cheap
-   * equivalent. Because the tile is anchored to the bottom and sized
-   * `auto 100%`, the artwork scales with the band: taller band, bigger city,
-   * still seamless across the width.
+   * equivalent.
    *
-   * Growing an element mid-document moves every trigger position below it, so
-   * the pin further down would fire at a stale scroll offset. The growth
-   * finishes well before the room comes into range, so one refresh at each end
-   * of the range is enough to put those positions back where they belong —
-   * refreshing continuously during the scrub would cost a full layout pass per
-   * frame for no benefit.
+   * Scaling the background rather than the band is what keeps this cheap.
+   * background-size does not affect layout, so nothing below the band moves, no
+   * trigger position downstream goes stale, and there is no reflow per frame —
+   * the alternative, animating the band's height, cost a full layout pass on
+   * every scroll event and shifted the pinned section further down the page.
+   *
+   * The scale is written through a custom property rather than tweened as a
+   * background-size string, because `auto 100%` has a keyword in it and string
+   * interpolation across that is not something to rely on.
    */
   const band = document.querySelector<HTMLElement>('[data-pcv-skyline]');
 
   if (band) {
-    const isDesktop = () => window.innerWidth >= 1024;
-    const restingHeight = () => (isDesktop() ? 260 : 180);
-    const grownHeight = () => (isDesktop() ? 480 : 300);
-
-    gsap.fromTo(
-      band,
-      { height: restingHeight },
-      {
-        height: grownHeight,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: '#top',
-          start: 'top top',
-          end: '+=560',
-          scrub: 0.5,
-          invalidateOnRefresh: true,
-          onLeave: () => ScrollTrigger.refresh(),
-          onEnterBack: () => ScrollTrigger.refresh(),
-        },
+    /**
+     * 140%, not more. Past roughly 150% the rooflines and the sky above them
+     * both crop out of the band and the illustration stops reading as a skyline
+     * — it becomes a wall of building facade. 140% is a plainly visible zoom
+     * that still keeps a horizon in frame at the end of the range.
+     */
+    const zoom = { scale: 100 };
+    gsap.to(zoom, {
+      scale: 140,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '#top',
+        start: 'top top',
+        end: '+=560',
+        scrub: 0.5,
       },
-    );
+      onUpdate: () => band.style.setProperty('--pcv-sky-scale', `${zoom.scale}%`),
+    });
   }
 
   /**

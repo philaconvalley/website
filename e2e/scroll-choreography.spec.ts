@@ -12,6 +12,10 @@ import { test, expect } from '@playwright/test';
 const bandHeight = (page: import('@playwright/test').Page) =>
   page.$eval('[data-pcv-skyline]', (el) => Math.round(el.getBoundingClientRect().height));
 
+/** The rendered height of the skyline artwork inside the band. */
+const cityScale = (page: import('@playwright/test').Page) =>
+  page.$eval('[data-pcv-skyline]', (el) => getComputedStyle(el).backgroundSize);
+
 /**
  * `settle` is the wait after scrolling. A pin takes effect on the same frame,
  * so position checks need almost nothing; a 0.6s scrub has inertia and needs
@@ -23,42 +27,47 @@ async function scrollTo(page: import('@playwright/test').Page, y: number, settle
 }
 
 test.describe('skyline band', () => {
-  test('grows taller as you scroll down, and shrinks back when you scroll up', async ({ page }) => {
+  test('the city grows as you scroll down, and shrinks back when you scroll up', async ({
+    page,
+  }) => {
     await page.goto('/');
     await scrollTo(page, 0);
-    const atRest = await bandHeight(page);
+    const atRest = await cityScale(page);
 
     await scrollTo(page, 560);
-    expect(await bandHeight(page), 'the city should rise as you scroll').toBeGreaterThan(atRest);
+    expect(await cityScale(page), 'the city should grow as you scroll').not.toBe(atRest);
 
     // Reversibility is the whole argument for a scrub over an observer.
     await scrollTo(page, 0);
-    expect(await bandHeight(page)).toBe(atRest);
+    expect(await cityScale(page)).toBe(atRest);
   });
 
-  test('pushes the page down as it grows rather than covering it', async ({ page }) => {
+  test('growing the city moves nothing on the page', async ({ page }) => {
     await page.goto('/');
     await scrollTo(page, 0);
-    const before = await page.$eval(
+    const bandBefore = await bandHeight(page);
+    const sectionBefore = await page.$eval(
       '#what',
       (el) => el.getBoundingClientRect().top + window.scrollY,
     );
 
     await scrollTo(page, 560);
-    const after = await page.$eval(
-      '#what',
-      (el) => el.getBoundingClientRect().top + window.scrollY,
-    );
 
-    expect(after, 'the section below should be displaced downward').toBeGreaterThan(before);
+    // The artwork scales; the box it sits in does not. This is what keeps the
+    // effect off the layout path and every trigger below it valid.
+    expect(await bandHeight(page), 'the band itself must not resize').toBe(bandBefore);
+    expect(
+      await page.$eval('#what', (el) => el.getBoundingClientRect().top + window.scrollY),
+      'nothing below the band should be displaced',
+    ).toBe(sectionBefore);
   });
 
   test('does not grow when motion is reduced', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
-    const atRest = await bandHeight(page);
+    const atRest = await cityScale(page);
     await scrollTo(page, 560);
-    expect(await bandHeight(page)).toBe(atRest);
+    expect(await cityScale(page)).toBe(atRest);
   });
 });
 
