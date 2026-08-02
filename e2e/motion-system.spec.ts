@@ -57,21 +57,25 @@ test.describe('humanised stagger', () => {
   });
 });
 
-test.describe('section roles', () => {
+test.describe('section bands', () => {
   test('the homepage bands declare their story position', async ({ page }) => {
     await page.goto('/');
-    const roles = await page
+    const bands = await page
       .locator('[data-pcv-section]')
       .evaluateAll((els) => els.map((el) => el.getAttribute('data-pcv-section')));
 
-    expect(roles).toEqual(['door', 'air', 'room', 'work', 'invitation']);
+    expect(bands).toEqual(['door', 'air', 'room', 'work', 'invitation']);
   });
 
   test('the story position never leaks into ARIA', async ({ page }) => {
     await page.goto('/');
-    // "air" and "door" are not valid ARIA roles. If `role` is ever forwarded to
-    // the DOM this becomes a genuine accessibility defect, so assert it is not.
-    await expect(page.locator('section[role="air"], section[role="door"]')).toHaveCount(0);
+    // None of the five band names — door, air, room, work, invitation — is a
+    // valid ARIA role, so `band` reaching the DOM as `role` would be a genuine
+    // accessibility defect. Asserted as "no section on this page carries an ARIA
+    // role at all" rather than as a list of the band names: `Section` now
+    // spreads arbitrary attributes through, and none of these sections needs
+    // one, so any `role` here is either the leak or a mistake.
+    await expect(page.locator('section[role]')).toHaveCount(0);
   });
 
   test('exactly one section holds, per spec §5.1', async ({ page }) => {

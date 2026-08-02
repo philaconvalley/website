@@ -6,9 +6,15 @@ import { test, expect } from '@playwright/test';
  * change blocks it, or a browser is simply slow, the page has to degrade to a
  * flat, complete, readable document — not a blank one.
  *
- * `arrive()` animates *from* opacity 0, so the elements' resting state is
- * visible and this holds today. It is asserted here so that a later change to
- * a `to()` tween, or a CSS class that pre-hides elements, fails loudly.
+ * What this file proves is narrow and worth stating exactly: with scripts
+ * disabled, the document's own resting state is already complete and readable —
+ * no stylesheet pre-hides content in anticipation of a script arriving to
+ * reveal it, and the stat numbers in the markup are already the true ones.
+ *
+ * It cannot say anything about how the tweens are written. With JavaScript off,
+ * neither a `from()` nor a `to()` tween runs, so both pass here identically. The
+ * guard against a `to()` tween stranding elements at opacity 0 is the
+ * scripts-enabled suite, not this one.
  */
 test.describe('with JavaScript disabled', () => {
   test.use({ javaScriptEnabled: false });
