@@ -890,7 +890,26 @@ slice; all of them are cheapest to resolve when slice 4 (Home) wires the photo m
 5. **`e2e/mobile-motion.spec.ts` reads `minHeight` but never asserts on it.** Harmless, mildly
    misleading — assert it or drop it.
 
-## Still open, blocking slice 3
+## Resolved: the door's colour
 
-The `door` role's colour. Spec §4 says `brand-yellow`; the homepage hero is `bg-brand-sky`.
-Unchanged by this slice, which deliberately altered no colours.
+**Decided 2026-08-02 — the `door` role is `brand-yellow` (`#FDC873`). Spec §4 stands as
+written; the homepage hero changes from `bg-brand-sky` to yellow in slice 3.**
+
+The conflict was real: spec §4 said yellow, `docs/design-system.md` said yellow, and the
+homepage shipped `bg-brand-sky` (`#54B5FC`). Since the homepage is the agreed north star,
+the code's disagreement with both documents had to be settled rather than assumed.
+
+It resolves to yellow for two reasons. The blue was painted as the sky behind an illustrated
+skyline that was deleted in `f1ba32a` — it is set dressing for a set already struck, and
+`tailwind.config.mjs` says as much in its own comment on the token. And it is the only cold
+colour in an otherwise entirely warm printed palette; the door is the invitation, so it
+should feel warm.
+
+Consequences for slice 3:
+
+- `Section.astro` maps `band="door"` to `bg-brand-yellow`, and `src/pages/index.astro` drops
+  its hand-written `bg-brand-sky`.
+- `brand-sky` becomes unreferenced. Remove the token from `tailwind.config.mjs` in the same
+  slice rather than leaving a colour nothing uses.
+- Re-check contrast: the hero runs dark text (`#1A1A1A`) on the new background, and
+  `e2e/contrast.spec.ts` covers this. It must pass unmodified.
