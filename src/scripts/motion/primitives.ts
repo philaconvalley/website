@@ -32,8 +32,29 @@ export const HEADER_OFFSET = 62;
  */
 const JITTER = [0, 0.037, 0.019, 0.051, 0.008, 0.043, 0.026, 0.061];
 
+/**
+ * Ceiling on the *cumulative* part of the delay, in steps.
+ *
+ * Without it the delay grows linearly forever: a twelve-item mosaic would make
+ * its last photo wait over a second after entering view, which stops reading as
+ * "people arriving" and starts reading as "the page is broken".
+ *
+ * A `Math.min` ceiling rather than a modulo. A modulo (the old code's
+ * `(i % 3) * 0.09`, correct only for the three-column grid it was written for)
+ * makes the delay *drop all the way back to zero* every third element, so
+ * element four arrives a full step before element three — visibly wrong in any
+ * group that is not exactly three wide. `Math.min` keeps the sequence ordered up
+ * to the cap and then simply stops the wait growing: everything past the fourth
+ * item lands together, within jitter, at ~0.27s.
+ *
+ * The jitter is applied after the clamp and is deliberately kept. The
+ * irregularity is a design property (see above); the cap is not, it is a bound.
+ */
+const STAGGER_CAP = 3;
+
 export function staggerDelay(index: number, base = 0.09): number {
-  return Number((index * base + JITTER[index % JITTER.length]).toFixed(3));
+  const steps = Math.min(index, STAGGER_CAP);
+  return Number((steps * base + JITTER[index % JITTER.length]).toFixed(3));
 }
 
 /**
@@ -61,8 +82,21 @@ export function groups(selector: string): HTMLElement[][] {
  * The computed delay is written back to the element as `data-pcv-delay` so the
  * stagger is observable from a test and legible in devtools. It is written
  * before the tween is created, so it is present even if the trigger never fires.
+ *
+ * `shared` picks which of the two honest readings of "stagger" applies:
+ *
+ *   - Per-element triggers (the default) suit a column of blocks that cross the
+ *     fold one at a time. Each one animates as *it* arrives, and the stagger
+ *     only shows when several happen to enter together.
+ *   - A shared trigger suits a grid — a photo mosaic, a row of cards — where the
+ *     whole group enters the viewport at once. One trigger on the first element
+ *     fires them all, so the stagger is the sequence the visitor actually sees
+ *     rather than an accident of where each item's own top edge sits.
+ *
+ * Default stays per-element so existing pages are unchanged.
  */
-export function arrive(elements: HTMLElement[], opts: { y?: number } = {}): void {
+export function arrive(elements: HTMLElement[], opts: { y?: number; shared?: boolean } = {}): void {
+  const sharedTrigger = opts.shared ? elements[0] : undefined;
   elements.forEach((el, i) => {
     const delay = staggerDelay(i);
     el.dataset.pcvDelay = String(delay);
@@ -72,7 +106,7 @@ export function arrive(elements: HTMLElement[], opts: { y?: number } = {}): void
       duration: 0.7,
       ease: 'power3.out',
       delay,
-      scrollTrigger: { trigger: el, start: 'top 88%' },
+      scrollTrigger: { trigger: sharedTrigger ?? el, start: 'top 88%' },
     });
   });
 }
