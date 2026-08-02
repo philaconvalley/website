@@ -91,7 +91,7 @@ const tracks = [
   }
   <div>
     <!-- Hero -->
-    <Section role="door" id="top" class="bg-brand-sky px-5 lg:px-8 pt-[74px] pb-[30px] text-center">
+    <Section band="door" id="top" class="bg-brand-sky px-5 lg:px-8 pt-[74px] pb-[30px] text-center">
       <div class="max-w-[1200px] mx-auto">
         <div
           class="font-display font-bold text-xs tracking-[0.14em] uppercase text-brand-dark/[0.72] mb-3 pcv-enter-rise"
@@ -159,7 +159,7 @@ const tracks = [
     }
 
     <!-- What actually happens -->
-    <Section role="air" id="what" class="px-5 lg:px-8 py-14 lg:py-[88px] bg-brand-cream">
+    <Section band="air" id="what" class="px-5 lg:px-8 py-14 lg:py-[88px] bg-brand-cream">
       <div class="max-w-[1200px] mx-auto">
         <div class="max-w-[760px] mx-auto mb-11 text-center">
           <div class="font-display font-bold text-xs tracking-[0.14em] uppercase text-brand-coral">
@@ -195,16 +195,12 @@ const tracks = [
     </Section>
 
     <!-- The room -->
-    <Section role="room" id="nights" class="bg-brand-dark text-white" hold>
+    <Section band="room" id="nights" class="bg-brand-dark text-white" hold>
       {
         photos.length > 0 && (
           <div class="grid grid-cols-2 lg:grid-cols-3 grid-rows-2 gap-[3px] auto-rows-[220px]">
             {photos.map((photo, i) => (
-              <div
-                data-pcv-photo
-                data-pcv-arrive
-                class={i === 0 ? 'lg:row-span-2 relative' : 'relative'}
-              >
+              <div data-pcv-arrive class={i === 0 ? 'lg:row-span-2 relative' : 'relative'}>
                 <img
                   src={photo.data.image}
                   alt={photo.data.alt}
@@ -262,7 +258,7 @@ const tracks = [
     </Section>
 
     <!-- Open source -->
-    <Section role="work" id="build" class="px-5 lg:px-8 py-14 lg:py-[88px] bg-primary-50">
+    <Section band="work" id="build" class="px-5 lg:px-8 py-14 lg:py-[88px] bg-primary-50">
       <div class="max-w-[1200px] mx-auto">
         <div class="max-w-[760px] mx-auto mb-11 text-center">
           <div class="font-display font-bold text-xs tracking-[0.14em] uppercase text-brand-coral">
@@ -305,7 +301,7 @@ const tracks = [
 
     <!-- Join -->
     <Section
-      role="invitation"
+      band="invitation"
       id="join"
       class="bg-brand-pink text-white border-y-2 border-brand-dark px-5 lg:px-8 py-14 lg:py-[88px] text-center"
     >

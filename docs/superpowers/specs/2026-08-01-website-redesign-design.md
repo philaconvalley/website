@@ -128,14 +128,16 @@ between a page that animates and a page that is populated.
 Contributors never write GSAP:
 
 ```astro
-<Section role="air" data-pcv-seam>
+<Section band="air" data-pcv-seam>
   <h2 data-pcv-arrive>Show up before you feel ready.</h2>
   <div class="pcv-card" data-pcv-arrive data-pcv-depth="near">…</div>
 </Section>
 ```
 
-`role` here is a prop on the `Section.astro` component, not the ARIA `role` attribute. The
-component renders a real `<section>` and does not forward this prop to the DOM.
+`band` here is a prop on the `Section.astro` component naming the section's position in the
+story. It is deliberately not called `role`: that would shadow the real ARIA attribute, and
+none of the five values is a valid ARIA role. The component renders a real `<section>` and does
+not forward this prop to the DOM.
 
 One module scans for `data-pcv-*` attributes and wires the timelines. Someone who has never
 opened a GSAP doc gets motion that matches the rest of the site exactly.
@@ -270,7 +272,7 @@ collected; it stops feeling like paperwork.
 - `src/scripts/motion/primitives.ts` — the four moves, humanized stagger, `matchMedia`.
 - `src/scripts/motion/index.ts` — attribute scanner; replaces `src/scripts/homepage-motion.ts`.
 - `src/components/Section.astro` — owns the color band and the seam. Takes
-  `role="door" | "air" | "room" | "work" | "invitation"`. A component cannot be ignored the
+  `band="door" | "air" | "room" | "work" | "invitation"`. A component cannot be ignored the
   way a documented convention can.
 - `src/components/Contributors.astro`
 - `src/components/StepForm.astro`

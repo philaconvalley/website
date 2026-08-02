@@ -407,7 +407,7 @@ These reproduce exactly what `homepage-motion.ts` selected by CSS selector today
 - On the `#what` and `#build` section elements, and on `#nights`, add `data-pcv-section`.
 - On the `<h2>` inside `#what`, `#build`, and `#nights`, add `data-pcv-arrive`.
 - On the `.pcv-card` divs in `#what` and `#build`, add `data-pcv-arrive`.
-- On each `[data-pcv-photo]` div in `#nights`, add `data-pcv-arrive`.
+- On each photo div in `#nights`, add `data-pcv-arrive`.
 - On the `#nights` section element, add `data-pcv-hold`.
 
 Example, on the tracks grid in `#what`:
@@ -585,9 +585,9 @@ git commit -m "test(motion): Assert the stagger is uneven, deterministic and per
 ### Task 4: Introduce `Section.astro`
 
 The colour rhythm in spec §4 is a rule, and a rule written in a doc gets ignored in four months. A
-component that only accepts five roles cannot be ignored. This task creates it and adopts it on the
-homepage **without changing any colour** — the role is recorded, not yet rendered. Slice 3 is the
-single file that turns roles into backgrounds.
+component that only accepts five bands cannot be ignored. This task creates it and adopts it on the
+homepage **without changing any colour** — the band is recorded, not yet rendered. Slice 3 is the
+single file that turns bands into backgrounds.
 
 **Files:**
 
@@ -599,8 +599,9 @@ single file that turns roles into backgrounds.
 
 - Consumes: nothing from Task 3.
 - Produces: `Section.astro` with props
-  `{ role: 'door' | 'air' | 'room' | 'work' | 'invitation'; hold?: boolean; id?: string; class?: string }`,
-  rendering `<section data-pcv-section={role}>` plus `data-pcv-hold` when `hold` is true.
+  `{ band: 'door' | 'air' | 'room' | 'work' | 'invitation'; hold?: boolean }` plus a rest spread of
+  `HTMLAttributes<'section'>`, rendering `<section data-pcv-section={band}>` plus `data-pcv-hold`
+  when `hold` is true. The prop is `band`, not `role`, so it cannot shadow the ARIA attribute.
 
 - [ ] **Step 1: Write `src/components/Section.astro`**
 
@@ -612,32 +613,34 @@ single file that turns roles into backgrounds.
  * Every page runs the same sequence — open air, the door, inside the room,
  * the invitation — and colour marks position in that story rather than which
  * page you are on. That rule lives here rather than in a doc because a
- * component with five allowed roles cannot be quietly ignored, and a
+ * component with five allowed bands cannot be quietly ignored, and a
  * convention can.
  *
- * `role` is a prop, NOT the ARIA `role` attribute, and is deliberately not
- * forwarded to the DOM: "air" is not a valid ARIA role and would be a real
- * accessibility defect if it leaked. It is exposed as `data-pcv-section`,
- * which the motion scanner also uses to scope stagger groups.
+ * The prop is called `band`, not `role`. It is a story position, not an ARIA
+ * role, and it is deliberately not forwarded to the DOM: "air" is not a valid
+ * ARIA role and would be a real accessibility defect if it leaked. It is
+ * exposed as `data-pcv-section`, which the motion scanner also uses to scope
+ * stagger groups. Everything else spreads through to the `<section>`, so
+ * callers can pass `aria-labelledby` or a genuine `role`.
  *
  * This component renders no background of its own yet. Adopting it and
  * restyling the site are two different changes, and doing them together would
  * mean a refactor nobody could review. Slice 3 replaces the `class`
- * pass-through with a role-driven background, in this file only.
+ * pass-through with a band-driven background, in this file only.
  */
-type Role = 'door' | 'air' | 'room' | 'work' | 'invitation';
+import type { HTMLAttributes } from 'astro/types';
 
-interface Props {
-  role: Role;
+type Band = 'door' | 'air' | 'room' | 'work' | 'invitation';
+
+type Props = HTMLAttributes<'section'> & {
+  band: Band;
   hold?: boolean;
-  id?: string;
-  class?: string;
-}
+};
 
-const { role, hold = false, id, class: className } = Astro.props;
+const { band, hold = false, class: className, ...rest } = Astro.props;
 ---
 
-<section id={id} class={className} data-pcv-section={role} data-pcv-hold={hold ? '' : undefined}>
+<section {...rest} class={className} data-pcv-section={band} data-pcv-hold={hold ? '' : undefined}>
   <slot />
 </section>
 ```
@@ -657,24 +660,24 @@ import Section from '../components/Section.astro';
 The five conversions, with classes copied exactly as they are today:
 
 ```astro
-<Section role="door" id="top" class="bg-brand-sky px-5 lg:px-8 pt-[74px] pb-[30px] text-center" />
+<Section band="door" id="top" class="bg-brand-sky px-5 lg:px-8 pt-[74px] pb-[30px] text-center" />
 ```
 
 ```astro
-<Section role="air" id="what" class="px-5 lg:px-8 py-14 lg:py-[88px] bg-brand-cream" />
+<Section band="air" id="what" class="px-5 lg:px-8 py-14 lg:py-[88px] bg-brand-cream" />
 ```
 
 ```astro
-<Section role="room" id="nights" class="bg-brand-dark text-white" hold />
+<Section band="room" id="nights" class="bg-brand-dark text-white" hold />
 ```
 
 ```astro
-<Section role="work" id="build" class="px-5 lg:px-8 py-14 lg:py-[88px] bg-primary-50" />
+<Section band="work" id="build" class="px-5 lg:px-8 py-14 lg:py-[88px] bg-primary-50" />
 ```
 
 ```astro
 <Section
-  role="invitation"
+  band="invitation"
   id="join"
   class="bg-brand-pink text-white border-y-2 border-brand-dark px-5 lg:px-8 py-14 lg:py-[88px] text-center"
 />
@@ -689,21 +692,22 @@ pass-through for an attribute only it uses.
 Append to `e2e/motion-system.spec.ts`:
 
 ```ts
-test.describe('section roles', () => {
+test.describe('section bands', () => {
   test('the homepage bands declare their story position', async ({ page }) => {
     await page.goto('/');
-    const roles = await page
+    const bands = await page
       .locator('[data-pcv-section]')
       .evaluateAll((els) => els.map((el) => el.getAttribute('data-pcv-section')));
 
-    expect(roles).toEqual(['door', 'air', 'room', 'work', 'invitation']);
+    expect(bands).toEqual(['door', 'air', 'room', 'work', 'invitation']);
   });
 
   test('the story position never leaks into ARIA', async ({ page }) => {
     await page.goto('/');
-    // "air" and "door" are not valid ARIA roles. If `role` is ever forwarded to
-    // the DOM this becomes a genuine accessibility defect, so assert it is not.
-    await expect(page.locator('section[role="air"], section[role="door"]')).toHaveCount(0);
+    // None of the five band names is a valid ARIA role, and no section on this
+    // page needs one, so `band` reaching the DOM as `role` is a genuine
+    // accessibility defect. Assert no section carries an ARIA role at all.
+    await expect(page.locator('section[role]')).toHaveCount(0);
   });
 
   test('exactly one section holds, per spec §5.1', async ({ page }) => {
@@ -730,9 +734,9 @@ git commit -m "feat(sections): Add Section.astro and adopt it on the homepage
 
 Colour is about to stop meaning which page you are on and start meaning where
 you are in the story. Putting that rule in a component rather than a doc is
-what stops it decaying: five roles, no others.
+what stops it decaying: five bands, no others.
 
-No colour changes here. The role is recorded, not yet rendered, so this stays
+No colour changes here. The band is recorded, not yet rendered, so this stays
 reviewable and slice 3 is a single-file change."
 ```
 
@@ -848,14 +852,14 @@ expensive to retrofit once depth and seams land."
 - **No `depth`, no `seam`.** Both are visible by definition, and slice 2 is invisible. They land in
   slice 4 on Home, where a test can observe them. Writing them now would mean shipping untested code
   and calling it done.
-- **No colour changes.** `Section` records its role and renders the existing classes. Slice 3 turns
-  roles into backgrounds in one file.
+- **No colour changes.** `Section` records its band and renders the existing classes. Slice 3 turns
+  bands into backgrounds in one file.
 - **No page merges, no redirects, no deletions.** Slices 5–9.
 - **No contributor pipeline and no photography.** Slice 6 and an external dependency respectively.
 
 ## Open question blocking slice 3
 
-Spec §4 states the `door` role is `brand-yellow` (`#FDC873`) on every page. The homepage hero is
+Spec §4 states the `door` band is `brand-yellow` (`#FDC873`) on every page. The homepage hero is
 currently `bg-brand-sky` (`#54B5FC`), and `docs/design-system.md` — which claims Home is yellow — is
 stale relative to the code. Since the homepage is the agreed north star, the spec and the code
 disagree about the single most-repeated colour on the site.
