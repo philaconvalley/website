@@ -41,9 +41,9 @@ export default {
           amber: '#FCBC68',
           dark: '#1A1A1A',
           // The redesign's hero sky. The only colour in the homepage design that
-          // was not already in the brand palette — it is the backdrop the
-          // illustrated skyline and the 3D city are both drawn against, so it
-          // has to match the WebGL clear colour exactly (see SkylineBand.astro).
+          // was not already in the brand palette. It was originally the backdrop
+          // the illustrated skyline was drawn against; the skyline is gone and
+          // this is now the hero's own background.
           sky: '#54B5FC',
         },
       },

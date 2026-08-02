@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import EventBar from '../components/EventBar.astro';
-import SkylineBand from '../components/SkylineBand.astro';
 import StatLine from '../components/StatLine.astro';
 import { getCommunityData, formatEventDate } from '../lib/community';
 import { community, links } from '../config';
@@ -126,8 +125,6 @@ const tracks = [
         </div>
       </div>
     </section>
-
-    <SkylineBand />
 
     <!-- Next night. Carries data-pcv-event-start so public/js/event-freshness.js
          removes the whole band once the event has started, rather than leaving a

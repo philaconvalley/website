@@ -1,75 +1,18 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * The two effects that justify carrying GSAP at all.
+ * The effect that justifies carrying GSAP at all.
  *
- * Both are things IntersectionObserver cannot do: it fires when an element
- * *crosses* a threshold, once, in one direction. These are bound to scroll
- * *position*, and they run backwards when you scroll back up. If either of
- * these tests is deleted, the library should be deleted with it.
+ * Pinning is the thing IntersectionObserver cannot do: an observer fires when
+ * an element *crosses* a threshold, once, and cannot hold a section in place
+ * against the distance scrolled. If this file is deleted, the library should be
+ * deleted with it.
  */
 
-const bandHeight = (page: import('@playwright/test').Page) =>
-  page.$eval('[data-pcv-skyline]', (el) => Math.round(el.getBoundingClientRect().height));
-
-/** The rendered height of the skyline artwork inside the band. */
-const cityScale = (page: import('@playwright/test').Page) =>
-  page.$eval('[data-pcv-skyline]', (el) => getComputedStyle(el).backgroundSize);
-
-/**
- * `settle` is the wait after scrolling. A pin takes effect on the same frame,
- * so position checks need almost nothing; a 0.6s scrub has inertia and needs
- * time to catch up before its value means anything.
- */
-async function scrollTo(page: import('@playwright/test').Page, y: number, settle = 900) {
+async function scrollTo(page: import('@playwright/test').Page, y: number, settle = 120) {
   await page.evaluate((v) => window.scrollTo(0, v), y);
   await page.waitForTimeout(settle);
 }
-
-test.describe('skyline band', () => {
-  test('the city grows as you scroll down, and shrinks back when you scroll up', async ({
-    page,
-  }) => {
-    await page.goto('/');
-    await scrollTo(page, 0);
-    const atRest = await cityScale(page);
-
-    await scrollTo(page, 560);
-    expect(await cityScale(page), 'the city should grow as you scroll').not.toBe(atRest);
-
-    // Reversibility is the whole argument for a scrub over an observer.
-    await scrollTo(page, 0);
-    expect(await cityScale(page)).toBe(atRest);
-  });
-
-  test('growing the city moves nothing on the page', async ({ page }) => {
-    await page.goto('/');
-    await scrollTo(page, 0);
-    const bandBefore = await bandHeight(page);
-    const sectionBefore = await page.$eval(
-      '#what',
-      (el) => el.getBoundingClientRect().top + window.scrollY,
-    );
-
-    await scrollTo(page, 560);
-
-    // The artwork scales; the box it sits in does not. This is what keeps the
-    // effect off the layout path and every trigger below it valid.
-    expect(await bandHeight(page), 'the band itself must not resize').toBe(bandBefore);
-    expect(
-      await page.$eval('#what', (el) => el.getBoundingClientRect().top + window.scrollY),
-      'nothing below the band should be displaced',
-    ).toBe(sectionBefore);
-  });
-
-  test('does not grow when motion is reduced', async ({ page }) => {
-    await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.goto('/');
-    const atRest = await cityScale(page);
-    await scrollTo(page, 560);
-    expect(await cityScale(page)).toBe(atRest);
-  });
-});
 
 /**
  * Sample the section's viewport position across a scroll sweep. Pinning is
