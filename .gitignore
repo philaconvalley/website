@@ -152,3 +152,6 @@ playwright/.cache/
 # `astro check` (and therefore `npm run build`) runs first, so nothing needs it
 # committed — tracked, it just produced a dirty tree on every dev server start.
 .astro/
+
+# Superpowers brainstorm scratch (visual companion)
+.superpowers/
