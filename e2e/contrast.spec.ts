@@ -112,4 +112,20 @@ test.describe('primary CTA colour contrast', () => {
       `current nav label is ${ratio.toFixed(2)}:1 (${color} on ${pill}), needs ${AA_NORMAL_TEXT}:1`,
     ).toBeGreaterThanOrEqual(AA_NORMAL_TEXT);
   });
+
+  // ponytail: shared Button primary was the remaining white-on-pink hotspot (#96)
+  test('shared primary Button on a pink CTA meets WCAG AA', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/about');
+
+    const cta = page.locator('section.bg-accent-400 a').first();
+    await expect(cta).toBeVisible();
+
+    const { color, background } = await effectiveColours(cta);
+    const ratio = contrastRatio(color, background);
+    expect(
+      ratio,
+      `primary Button is ${ratio.toFixed(2)}:1 (${color} on ${background}), needs ${AA_NORMAL_TEXT}:1`,
+    ).toBeGreaterThanOrEqual(AA_NORMAL_TEXT);
+  });
 });
