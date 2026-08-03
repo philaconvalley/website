@@ -53,7 +53,15 @@ const gallery = defineCollection({
     image: z.string(),
     alt: z.string(),
     event: z.string(),
-    date: z.date(),
+    /*
+     * `coerce`, unlike every other collection here, because those are Markdown:
+     * YAML frontmatter parses `2026-02-26` into a Date before Zod sees it, while
+     * JSON has no date type and hands over the string. This collection's loader
+     * advertises `.json` alongside YAML, so a plain `z.date()` rejected every
+     * JSON entry that could ever be written — latent since the collection was
+     * added, because it stayed empty until now.
+     */
+    date: z.coerce.date(),
     caption: z.string().optional(),
   }),
 });
