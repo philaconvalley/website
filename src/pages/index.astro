@@ -21,6 +21,36 @@ const photos = (await getCollection('gallery'))
   .slice(0, 5);
 
 /**
+ * Responsive sources for the mosaic.
+ *
+ * The grid renders each tile at roughly 194px wide on a phone and 425px on a
+ * desktop, but the files are 1200px — so without this a phone downloaded 674KB
+ * to draw thumbnails, about thirty times the pixels it can show.
+ *
+ * The ladder is fixed rather than derived, so every width in the srcset is a
+ * constant this file can state truthfully. Every gallery image is normalised to
+ * a 1200px canonical width with `-400` and `-800` siblings beside it;
+ * e2e/gallery-images.spec.ts fails if any sibling is missing, so the convention
+ * cannot rot silently into 404s.
+ *
+ * Not `astro:assets`, which would do all of this automatically: its image
+ * service needs `sharp`, and adding a native binary dependency to a repo built
+ * for first-time contributors is a bigger decision than this markup.
+ */
+const LADDER = [400, 800] as const;
+const CANONICAL_WIDTH = 1200;
+
+function srcset(image: string): string {
+  const base = image.replace(/\.webp$/, '');
+  return [...LADDER.map((w) => `${base}-${w}.webp ${w}w`), `${image} ${CANONICAL_WIDTH}w`].join(
+    ', ',
+  );
+}
+
+/* Two columns below `lg`, three above — matching the grid this feeds. */
+const PHOTO_SIZES = '(min-width: 1024px) 33vw, 50vw';
+
+/**
  * The design showed three repo cards, one of which (`p-l-otHole`) does not exist
  * in the org. These are the real ones. Issue counts are deliberately not shown:
  * the design hardcoded them and they were already wrong (it claimed 7 and 3 for
@@ -152,6 +182,22 @@ const tracks = [
           data-testid="next-night"
         >
           <div class="max-w-[1200px] mx-auto flex items-center justify-between gap-6 lg:gap-9 flex-wrap">
+            {/*
+              The design anchored this bar with four overlapping member avatars and
+              a "+422" bubble. We have no member headshots and no consent to put
+              faces on the homepage, and three placeholder circles under a social
+              -proof claim is the failure mode of #98 — so the bubble carries the
+              claim on its own. brand-dark on brand-purple is 5.63:1.
+
+              The number is the same hand-maintained one StatLine prints twice
+              below; it comes from config so all three can never disagree.
+            */}
+            <div
+              data-testid="member-bubble"
+              class="flex-none font-display font-extrabold text-[15px] leading-none text-brand-dark bg-brand-purple rounded-full border-2 border-brand-cream px-4 py-2.5"
+            >
+              {community.memberCount} members
+            </div>
             <div class="flex-1 min-w-[280px]">
               <div class="font-display font-bold text-xs tracking-[0.14em] uppercase text-brand-yellow">
                 Next night · {formatEventDate(nextEvent.start)}
@@ -217,8 +263,11 @@ const tracks = [
               <div data-pcv-arrive class={i === 0 ? 'lg:row-span-2 relative' : 'relative'}>
                 <img
                   src={photo.data.image}
+                  srcset={srcset(photo.data.image)}
+                  sizes={PHOTO_SIZES}
                   alt={photo.data.alt}
                   loading="lazy"
+                  decoding="async"
                   class="w-full h-full object-cover block"
                 />
               </div>
