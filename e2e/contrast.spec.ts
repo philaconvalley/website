@@ -113,12 +113,12 @@ test.describe('primary CTA colour contrast', () => {
     ).toBeGreaterThanOrEqual(AA_NORMAL_TEXT);
   });
 
-  // ponytail: shared Button primary was the remaining white-on-pink hotspot (#96)
-  test('shared primary Button on a pink CTA meets WCAG AA', async ({ page }) => {
+  // ponytail: assert real primary Button (review: /about secondary was a false guard)
+  test('shared primary Button meets WCAG AA', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/about');
+    await page.goto('/join');
 
-    const cta = page.locator('section.bg-accent-400 a').first();
+    const cta = page.getByTestId('primary-cta');
     await expect(cta).toBeVisible();
 
     const { color, background } = await effectiveColours(cta);
