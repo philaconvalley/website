@@ -26,14 +26,27 @@ function relativeLuminance([r, g, b]: number[]): number {
   return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
 }
 
-function parseRgb(value: string): number[] {
+function parseRgba(value: string): { rgb: number[]; a: number } {
   const nums = value.match(/[\d.]+/g);
   if (!nums || nums.length < 3) throw new Error(`cannot parse colour "${value}"`);
-  return nums.slice(0, 3).map(Number);
+  const parts = nums.map(Number);
+  return { rgb: parts.slice(0, 3), a: parts.length > 3 ? parts[3] : 1 };
 }
 
+/** Opaque parse kept for any call sites that only need RGB triples. */
+function parseRgb(value: string): number[] {
+  return parseRgba(value).rgb;
+}
+
+/**
+ * Composites a (possibly translucent) foreground over its background before
+ * measuring luminance — matches what a visitor actually sees.
+ */
 function contrastRatio(fg: string, bg: string): number {
-  const [hi, lo] = [relativeLuminance(parseRgb(fg)), relativeLuminance(parseRgb(bg))].sort(
+  const f = parseRgba(fg);
+  const b = parseRgba(bg);
+  const composited = f.rgb.map((v, i) => f.a * v + (1 - f.a) * b.rgb[i]);
+  const [hi, lo] = [relativeLuminance(composited), relativeLuminance(b.rgb)].sort(
     (a, b) => b - a,
   );
   return (hi + 0.05) / (lo + 0.05);
@@ -58,6 +71,22 @@ async function effectiveColours(locator: Locator) {
     return { color, background: 'rgb(255, 255, 255)', from: 'fallback' };
   });
 }
+
+
+test.describe('contrast helper alpha compositing', () => {
+  // ponytail: pure unit asserts; no browser needed for the math bug in #117
+  test('opaque colours match previous luminance math', () => {
+    const opaque = contrastRatio('rgb(26, 26, 26)', 'rgb(255, 102, 168)');
+    const opaqueRgba = contrastRatio('rgba(26, 26, 26, 1)', 'rgb(255, 102, 168)');
+    expect(opaque).toBeCloseTo(opaqueRgba, 5);
+  });
+
+  test('translucent white on coral is ~2.62:1, not the opaque ~3.07:1', () => {
+    const ratio = contrastRatio('rgba(255, 255, 255, 0.85)', 'rgb(239, 101, 127)');
+    expect(ratio).toBeCloseTo(2.62, 1);
+    expect(ratio).toBeLessThan(3.0);
+  });
+});
 
 test.describe('primary CTA colour contrast', () => {
   test('the header RSVP button meets WCAG AA for normal text', async ({ page }) => {
