@@ -15,7 +15,8 @@
     "test:csp": "playwright test --config playwright.csp.config.ts",
     "csp:hash": "node scripts/check-csp-hashes.mjs",
     "prepare": "husky",
-    "data:refresh": "node scripts/refresh-community-data.mjs"
+    "data:refresh": "node scripts/refresh-community-data.mjs",
+    "icons:generate": "node scripts/generate-icons.mjs"
   },
   "lint-staged": {
     "*.astro": [
