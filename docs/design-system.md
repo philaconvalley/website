@@ -73,7 +73,7 @@ Three variants, all pill-shaped:
 
 | Variant     | Look                         | Usage                              |
 | ----------- | ---------------------------- | ---------------------------------- |
-| `primary`   | Pink background, white text  | Main CTAs ("Join", "Donate")       |
+| `primary`   | Pink background, brand-dark text | Main CTAs ("Join", "Donate")    |
 | `secondary` | Yellow background, dark text | Secondary actions                  |
 | `outline`   | Transparent with border      | Tertiary actions, dark backgrounds |
 
@@ -104,7 +104,8 @@ Alternate between cream and brand colors to create visual rhythm:
 
 - All interactive elements have visible focus styles using `accent-400`
 - Buttons maintain contrast ratios against their backgrounds
-- Hero text uses white on dark backgrounds (coral, purple, pink) for readability
+- Hero text uses white on coral/purple backgrounds for readability
+- Pink (`accent-400`) surfaces use brand-dark text (not white) so CTA text/body meet WCAG AA ? same as header pattern from #95/#96
 - The homepage hero uses dark text on yellow
 
 ## OG Images (Social Sharing)
