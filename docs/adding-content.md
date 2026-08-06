@@ -115,6 +115,58 @@ The card on `/blog` will link directly to your content. PhilaCon Valley amplifie
 
 Same as above but without `externalUrl` and `platform`. Write the full content in the Markdown body and it will be hosted on the site.
 
+## Adding Event Photos
+
+The homepage's "The room" section renders a five-photo mosaic under the headline
+"Every photo is a real Thursday." Until there are photos, the section renders no
+mosaic at all and the headline reads "Come see the room." instead — the claim and
+the evidence ship together or not at all.
+
+Two steps. Put the image file in `public/images/gallery/`:
+
+```
+public/images/gallery/patch-002-pairing.webp
+```
+
+Then add one JSON file per photo in `src/content/gallery/`:
+
+```json
+// src/content/gallery/patch-002-pairing.json
+{
+  "image": "/images/gallery/patch-002-pairing.webp",
+  "alt": "Two people pairing on a laptop at a long table",
+  "event": "PATCH 002: Tap In NFC Lab",
+  "date": "2026-07-30"
+}
+```
+
+### Field reference
+
+| Field     | Required | Notes                                                                           |
+| --------- | -------- | ------------------------------------------------------------------------------- |
+| `image`   | Yes      | Site-absolute path into `public/`, starting with `/images/`. Not a file import. |
+| `alt`     | Yes      | What is happening in the photo, for screen readers. Not "event photo".          |
+| `event`   | Yes      | Which night it was taken at.                                                    |
+| `date`    | Yes      | `YYYY-MM-DD`. The five most recent photos are the ones the homepage shows.      |
+| `caption` | No       | Optional visible caption.                                                       |
+
+The homepage takes the five newest by `date`, so adding a sixth retires the
+oldest rather than growing the grid. YAML (`.yaml` / `.yml`) works too if you
+prefer it — the collection accepts both.
+
+**The first photo gets a double-height cell.** The mosaic's leftmost tile spans
+two rows, so whichever entry sorts first should be a **portrait** photo. A
+landscape shot there gets cropped to a tall slot, which cuts people off at both
+edges — a wide group photo is the worst thing to put in it. Give the group shot
+one of the four wide cells instead.
+
+Sorting is newest `date` first; entries sharing a date fall back to filename
+order. So among photos from the same night, `patch-001-pairing.json` comes
+before `patch-001-together.json`.
+
+**Before you add a photo:** make sure the people in it are okay with being on a
+public homepage. There is no way to un-publish a face someone finds later.
+
 ## What About GitHub Repos?
 
 The `/projects` page automatically displays all repositories from the [philaconvalley GitHub organization](https://github.com/philaconvalley). If your project is in the org, it shows up with no file needed.

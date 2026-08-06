@@ -40,7 +40,7 @@ const {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&display=swap"
     />
 
     <SEO title={title} description={description} image={image} type={type} />
@@ -118,5 +118,10 @@ const {
          policies in vercel.json. As a file it is covered by `script-src 'self'`.
          Full reasoning in public/js/event-freshness.js. -->
     <script is:inline defer src="/js/event-freshness.js"></script>
+
+    <!-- Drives the header's scroll rule. Served from public/ and loaded the same
+         way, for the same CSP reason — as a component <script> Astro inlined it
+         and the enforcing policy blocked it on every page. See the file. -->
+    <script is:inline defer src="/js/scroll-progress.js"></script>
   </body>
 </html>
