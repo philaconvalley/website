@@ -12,7 +12,12 @@ test.describe('arcade wall', () => {
     await page.goto('/arcade');
     const flappy = page.locator('[data-cabinet="flappy-philacon"]');
     await expect(flappy).toContainText('Diego Mendoza');
-    await expect(flappy.getByRole('link')).toHaveAttribute('href', '/arcade/flappy-philacon');
+    // The whole cabinet — marquee, artwork and controls — is one link, so the
+    // cabinet element itself is the anchor: exactly one role=link per game,
+    // not a second one nested inside it.
+    await expect(flappy).toHaveRole('link');
+    await expect(flappy).toHaveAttribute('href', '/arcade/flappy-philacon');
+    await expect(flappy.getByRole('link')).toHaveCount(0);
   });
 
   test('a keyboard-only game is labelled as desktop-only on the wall', async ({ page }) => {

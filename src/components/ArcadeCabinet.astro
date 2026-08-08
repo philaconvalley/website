@@ -7,6 +7,11 @@
  * The cabinet silhouette is the arcade signal, which is why this ships no
  * pixel font: the shape does the work the typeface would otherwise be asked
  * to do, and the site's two typefaces stay two. See docs/design-system.md.
+ *
+ * The whole card is one <a> — marquee, screen and control panel all sit
+ * inside it — so the obvious click target (the artwork) actually works, and
+ * a screen reader's link list gets exactly one entry per cabinet instead of
+ * two pointing at the same place.
  */
 interface Props {
   title: string;
@@ -45,21 +50,40 @@ const marqueeClass = {
 // Saying so on the placard is cheaper than a visitor discovering it after a
 // tap, a page load, and a wait.
 const desktopOnly = !empty && !input.includes('pointer') && !input.includes('touch');
+
+// The submission cabinet stays a single, unbroken link to the "how to add a
+// game" doc — same click target as a live cabinet, just pointed elsewhere.
+const linkHref = empty
+  ? 'https://github.com/philaconvalley/website/blob/main/docs/adding-content.md'
+  : href;
+
+// "YOUR GAME HERE" needs to read as unlit next to the three vivid, saturated
+// marquees — but "unlit" has to come from the marquee's own colour, not from
+// fading the text. Fading the whole marquee (bg + text together) drags the
+// text below WCAG AA against its own background; a muted, desaturated token
+// swap keeps full-strength text while still looking powered off.
+const marqueeBg = empty ? 'bg-primary-200' : marqueeClass;
 ---
 
-<div
-  class="cabinet w-full max-w-[220px]"
+<a
+  href={linkHref}
+  class="cabinet group block w-full max-w-[220px] no-underline focus:outline-none"
   data-cabinet={empty ? 'submit' : href?.split('/').pop()}
   style={`--cabinet-index:${index}`}
 >
-  <div class="rounded-t-[26px] rounded-b-md bg-brand-dark p-2.5 pb-3 shadow-retro-lg">
+  <div
+    class="cabinet-housing overflow-hidden rounded-t-[26px] rounded-b-lg bg-brand-dark shadow-retro-lg ring-4 ring-transparent transition-shadow group-focus-visible:ring-accent-500"
+  >
+    <!-- Marquee crowns the cabinet — flush to the top edge, sharing its radius,
+         so it reads as the machine's lit header rather than a label pinned
+         inside a box. -->
     <div
-      class={`${marqueeClass} rounded-t-2xl rounded-b px-2 py-2 text-center font-display text-sm font-extrabold leading-tight text-brand-dark ${empty ? 'opacity-40' : ''}`}
+      class={`${marqueeBg} px-3 py-3 text-center font-display text-sm font-extrabold leading-tight text-brand-dark`}
     >
       {empty ? 'YOUR GAME HERE' : title}
     </div>
 
-    <div class="my-2 overflow-hidden rounded border-[3px] border-black bg-brand-dark">
+    <div class="mx-2.5 mt-2.5 overflow-hidden rounded border-[3px] border-black bg-brand-dark">
       {
         empty ? (
           <div class="flex aspect-[4/3] items-center justify-center">
@@ -79,38 +103,36 @@ const desktopOnly = !empty && !input.includes('pointer') && !input.includes('tou
       }
     </div>
 
-    <div class="flex h-7 items-center justify-center gap-2 rounded bg-brand-dark/60">
-      <span class="h-2.5 w-2.5 rounded-full bg-primary-100 ring-[3px] ring-brand-dark/80"></span>
-      <span class={`h-2 w-2 rounded-full ${marqueeClass}`}></span>
-      <span class="h-2 w-2 rounded-full bg-primary-100/60"></span>
+    <!-- The shoulder: a narrower, separately-rounded panel breaks the cabinet
+         into head (marquee + screen) and base (controls) instead of one
+         uniform rectangle. -->
+    <div class="mx-4 mb-2.5 mt-2.5 rounded-lg bg-primary-950 px-3 py-2.5">
+      <div class="flex items-center justify-between">
+        <span
+          class="relative inline-flex h-7 w-7 items-center justify-center rounded-full bg-brand-dark ring-4 ring-brand-dark/50"
+          aria-hidden="true"
+        >
+          <span class="h-3 w-3 rounded-full bg-primary-100"></span>
+        </span>
+        <span class="flex items-center gap-2" aria-hidden="true">
+          <span class={`h-5 w-5 rounded-full ${marqueeBg} ring-2 ring-brand-dark/50`}></span>
+          <span class="h-5 w-5 rounded-full bg-primary-100 ring-2 ring-brand-dark/50"></span>
+        </span>
+      </div>
     </div>
   </div>
 
   <div class="mt-2.5 text-center">
-    {
-      empty ? (
-        <a
-          href="https://github.com/philaconvalley/website/blob/main/docs/adding-content.md"
-          class="font-display font-bold text-brand-dark underline decoration-accent-600 decoration-2 underline-offset-4 hover:text-accent-600"
-        >
-          Add yours
-        </a>
-      ) : (
-        <a
-          href={href}
-          class="font-display text-base font-bold text-brand-dark hover:text-accent-600"
-        >
-          {title}
-        </a>
-      )
-    }
+    <p class="font-display text-base font-bold text-brand-dark group-hover:text-accent-600">
+      {empty ? 'Add yours' : title}
+    </p>
     <p class="text-xs text-brand-dark/60">
       {empty ? 'Built something? Open a pull request.' : contributors.join(', ')}
       {!empty && kind === 'demo' && <span class="block">Demo — no score</span>}
       {desktopOnly && <span class="block font-semibold">Desktop only</span>}
     </p>
   </div>
-</div>
+</a>
 
 <style>
   /* One entrance, staggered by position. Cabinets arriving in sequence reads as
