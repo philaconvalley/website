@@ -10,7 +10,7 @@ longDescription: >-
   interest unless you enjoy flying in circles, which is a legitimate position.
 slug: 'pigeon-post'
 thumbnail: '/images/arcade/pigeon-post.webp'
-thumbnailAlt: 'A small dark pigeon gliding above the curved yellow horizon of a tiny planet under a pale blue sky.'
+thumbnailAlt: 'A cream-colored pigeon gliding above the curved green horizon of a tiny planet, with trees and small houses below a pale blue sky.'
 ogImage: '/images/arcade/pigeon-post-og.webp'
 marqueeColor: 'yellow'
 kind: 'demo'

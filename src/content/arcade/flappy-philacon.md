@@ -10,7 +10,7 @@ longDescription: >-
   of pipes cleared, and your best score for the session is shown alongside it.
 slug: 'flappy-philacon'
 thumbnail: '/images/arcade/flappy-philacon.webp'
-thumbnailAlt: 'A pink bird mid-flap between two purple pipes on a pale pink sky.'
+thumbnailAlt: 'The golden PhilaCon bird mascot mid-flap over a purple city skyline, with a pink-and-purple pipe ahead against a pale pink sky.'
 ogImage: '/images/arcade/flappy-philacon-og.webp'
 marqueeColor: 'pink'
 kind: 'game'
