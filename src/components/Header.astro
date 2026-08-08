@@ -26,13 +26,32 @@ const eventDate = nextEvent ? formatEventDate(nextEvent.start) : null;
 const rsvpHref = nextEvent?.url ?? '/events';
 ---
 
-<header class="sticky top-0 z-50 bg-primary-100/95 backdrop-blur-sm border-b border-brand-dark/10">
+<header class="sticky top-0 z-50 bg-brand-dark">
+  {
+    /* The design's scroll rule, sitting where a border-bottom used to. The track
+      is the border; the fill is the progress. Rendered on every page because the
+      header is, and driven by src/scripts/scroll-progress.ts — on a page too
+      short to scroll it stays at zero width and reads as a plain dark rule. */
+  }
+  <div class="absolute inset-x-0 bottom-0 h-[3px] bg-white/[0.12]" aria-hidden="true">
+    <div data-pcv-progress class="h-full w-full bg-brand-pink origin-left scale-x-0"></div>
+  </div>
   <nav class="container-custom" x-data="{ mobileMenuOpen: false }">
-    <div class="flex items-center justify-between h-[68px]">
-      <!-- Wordmark -->
+    {
+      /* 62px, not the 68px this carried before: it is the height the motion
+        system's HEADER_OFFSET has always assumed when it parks a pinned section
+        or lands a smooth-scrolled anchor. The two disagreed by 6px until now. */
+    }
+    <div class="flex items-center justify-between h-[62px]">
+      {
+        /* Still the wordmark as type, not public/images/philacon-valley-wordmark.webp
+          as the design does. That asset is a two-line stacked lockup at 1200x675;
+          at the design's own `height:32px` it renders about 57px wide and neither
+          word is legible. Type at this size is readable and selectable. */
+      }
       <a
         href="/"
-        class="flex-shrink-0 font-display font-extrabold text-base md:text-[17px] tracking-tight text-brand-dark"
+        class="flex-shrink-0 font-display font-extrabold text-base md:text-[17px] tracking-tight text-brand-cream"
       >
         PhilaCon Valley
       </a>
@@ -70,7 +89,12 @@ const rsvpHref = nextEvent?.url ?? '/events';
                         // where white text measures 2.72:1 against a 4.5:1 requirement
                         // at 14px. brand-dark on the same pink is 6.40:1.
                         'text-brand-dark'
-                      : 'text-brand-dark/60 hover:text-brand-dark focus-visible:text-brand-dark'
+                      : // At rest this is now white/70 on #1A1A1A (6.6:1) rather than
+                        // dark on cream. The hover and focus colour is unchanged and
+                        // still load-bearing for the same reason as above: the pill
+                        // slides under whichever link you point at, so a hovered link
+                        // is sitting on pink and must be dark to stay readable.
+                        'text-white/70 hover:text-brand-dark focus-visible:text-brand-dark'
                   }`}
                 >
                   {item.name}
@@ -88,7 +112,7 @@ const rsvpHref = nextEvent?.url ?? '/events';
           eventDate && (
             <span
               data-pcv-event-start={nextEvent!.start}
-              class="hidden xl:inline font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-brand-dark/50 animate-fade-in"
+              class="hidden xl:inline font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-white/70 animate-fade-in"
             >
               {eventDate}
             </span>
@@ -97,7 +121,12 @@ const rsvpHref = nextEvent?.url ?? '/events';
         <!-- Both attributes are the static-build guard, continued client-side: once
              the visitor's clock passes the event, the date row removes itself and
              this CTA falls back to /events rather than deep-linking a closed Luma
-             page. See BaseLayout.astro. -->
+             page. See BaseLayout.astro.
+
+             The ink shadow and border are cream rather than dark: a dark offset
+             shadow on a #1A1A1A header is invisible, which is what the design
+             solved by inverting both. Hover still lifts the face up and left into
+             a deeper shadow, the same gesture every other pill on the site makes. -->
         <a
           href={rsvpHref}
           {...nextEvent
@@ -109,7 +138,7 @@ const rsvpHref = nextEvent?.url ?? '/events';
               }
             : {}}
           data-testid="hero-cta"
-          class="font-display font-bold text-[15px] px-6 py-3 rounded-full bg-brand-pink text-brand-dark transition-all duration-150 ease-out hover:-translate-x-px hover:-translate-y-px hover:shadow-[6px_6px_0_rgba(26,26,26,0.18)] motion-safe:active:scale-[0.97] motion-reduce:active:opacity-80 motion-reduce:transition-none"
+          class="font-display font-bold text-[15px] px-6 py-3 rounded-full bg-brand-pink text-brand-dark border-2 border-brand-cream shadow-[3px_3px_0_#FFEED0] transition-all duration-150 ease-out hover:-translate-x-px hover:-translate-y-px hover:shadow-[5px_5px_0_#FFEED0] motion-safe:active:scale-[0.97] motion-reduce:active:opacity-80 motion-reduce:transition-none"
         >
           RSVP →
         </a>
@@ -120,7 +149,7 @@ const rsvpHref = nextEvent?.url ?? '/events';
         <button
           @click="mobileMenuOpen = !mobileMenuOpen"
           type="button"
-          class="inline-flex items-center justify-center p-2 rounded-md text-brand-dark hover:bg-brand-dark/5 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-accent-400"
+          class="inline-flex items-center justify-center p-2 rounded-md text-brand-cream hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-accent-400"
           :aria-expanded="mobileMenuOpen.toString()"
         >
           <span class="sr-only">Open main menu</span>

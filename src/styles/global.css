@@ -68,6 +68,44 @@
            transition-all duration-200 hover:-translate-y-1
            hover:shadow-retro-hover;
   }
+
+  /*
+   * Homepage redesign primitives, ported from the Claude Design source
+   * (`Homepage.dc.html`), which declared them as `.pill` / `.card` / `.tag` /
+   * `.chip`. They carry a `pcv-` prefix here because `.card` already exists
+   * above with a different box model and is used by five other components —
+   * redefining it to match the design would silently restyle all of them.
+   *
+   * `.pcv-card` composes that existing card rather than restating it, so the
+   * two cannot drift apart: only the design's padding and column layout are new.
+   */
+  .pcv-card {
+    @apply card p-[26px] flex flex-col gap-3;
+  }
+
+  /*
+   * The pill's press feedback is a translate, not a scale, because the offset
+   * ink shadow is a fixed pixel distance — scaling the button moves the face
+   * without moving the shadow and the two visibly separate. e2e/button-press
+   * asserts the translate on primary CTAs.
+   */
+  .pcv-pill {
+    @apply font-display font-bold no-underline rounded-full border-2 border-brand-dark
+           inline-flex items-center justify-center gap-2 flex-none whitespace-nowrap
+           leading-none transition-[transform,box-shadow] duration-150
+           hover:-translate-x-0.5 hover:-translate-y-0.5
+           active:translate-x-0.5 active:translate-y-0.5;
+  }
+
+  .pcv-tag {
+    @apply self-start px-3 py-1 rounded-full border-[1.5px] border-brand-dark
+           font-display font-bold text-[11px] tracking-[0.06em] uppercase;
+  }
+
+  .pcv-chip {
+    @apply font-mono text-[11px] bg-brand-cream px-2 py-[3px] rounded-md
+           border-[1.5px] border-brand-dark/10;
+  }
 }
 
 @layer utilities {
@@ -76,99 +114,32 @@
     animation: fadeIn 0.5s ease-in;
   }
 
-  .animate-slide-up {
-    animation: slideUp 0.6s ease-out;
-  }
-
   /*
-   * Homepage motion.
+   * Motion that is not GSAP's.
    *
-   * Two distinct families, and the distinction matters for accessibility:
+   * Content entrances all live in src/scripts/motion — one vocabulary, declared
+   * in markup, so there is exactly one implementation of "a thing arrives".
+   * `.pcv-enter-rise` used to be the exception: the homepage hero animated here
+   * in CSS, on its own 0.9s clock, while everything below it arrived on GSAP's.
+   * Two engines meant two timings that could not be composed and drifted apart
+   * the moment either was tuned. The hero moved to `data-pcv-arrive`; this is
+   * what is left.
    *
-   *   .pcv-enter-*  run ONCE on load. Entrances.
-   *   .pcv-loop-*   run forever. These narrate the Builder Night story — a dot
-   *                 arrives alone, two more join, you leave with a thing — so
-   *                 they are the page's only infinite motion and the first
-   *                 thing killed under prefers-reduced-motion.
+   * What remains is deliberately NOT content arriving:
+   *
+   *   .pcv-enter-bar  a fixed chrome bar sliding into place, once.
+   *   .pcv-loop-*     runs forever, so it is the first thing killed under
+   *                   prefers-reduced-motion.
    *
    * Every looping element must remain legible in its final state, because that
    * is exactly where the reduced-motion block below freezes it.
    */
-  .pcv-enter-word {
-    animation: pcvWord 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
-  .pcv-enter-rise {
-    animation: pcvRise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
-  .pcv-enter-stat {
-    animation: pcvStat 1s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
   .pcv-enter-bar {
     animation: pcvBarUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 1.1s both;
   }
 
-  .pcv-loop-track {
-    animation: pcvTrack 8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  }
-
-  .pcv-loop-solo {
-    animation: pcvSolo 8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
-  }
-
-  .pcv-loop-join-left {
-    animation: pcvJoinL 8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
-  }
-
-  .pcv-loop-join-right {
-    animation: pcvJoinR 8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
-  }
-
-  .pcv-loop-label {
-    animation: pcvLabel 8s ease-out infinite;
-  }
-
-  .pcv-loop-chip {
-    animation: pcvChip 8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
-  }
-
   .pcv-loop-bob {
     animation: pcvBob 5s ease-in-out infinite;
-  }
-
-  @keyframes pcvWord {
-    from {
-      opacity: 0;
-      transform: translateY(0.5em) rotate(-1.5deg);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) rotate(0);
-    }
-  }
-
-  @keyframes pcvRise {
-    from {
-      opacity: 0;
-      transform: translateY(22px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes pcvStat {
-    from {
-      opacity: 0;
-      transform: translateY(28px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
   }
 
   @keyframes pcvBarUp {
@@ -177,79 +148,6 @@
     }
     to {
       transform: translateY(0);
-    }
-  }
-
-  @keyframes pcvTrack {
-    0%,
-    12% {
-      width: 0;
-    }
-    58%,
-    100% {
-      width: 100%;
-    }
-  }
-
-  @keyframes pcvSolo {
-    0% {
-      transform: translateX(-40px);
-      opacity: 0;
-    }
-    12%,
-    100% {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-
-  @keyframes pcvJoinL {
-    0%,
-    24% {
-      transform: translateX(-52px) scale(0.5);
-      opacity: 0;
-    }
-    40%,
-    100% {
-      transform: translateX(0) scale(1);
-      opacity: 1;
-    }
-  }
-
-  @keyframes pcvJoinR {
-    0%,
-    24% {
-      transform: translateX(52px) scale(0.5);
-      opacity: 0;
-    }
-    40%,
-    100% {
-      transform: translateX(0) scale(1);
-      opacity: 1;
-    }
-  }
-
-  @keyframes pcvLabel {
-    0%,
-    26% {
-      opacity: 0;
-    }
-    42%,
-    100% {
-      opacity: 1;
-    }
-  }
-
-  @keyframes pcvChip {
-    0%,
-    60% {
-      opacity: 0;
-      transform: translateY(12px) scale(0.95);
-    }
-    74%,
-    100% {
-      opacity: 1;
-      transform: translateY(0) scale(1);
     }
   }
 
@@ -271,17 +169,6 @@
       opacity: 1;
     }
   }
-
-  @keyframes slideUp {
-    from {
-      transform: translateY(20px);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  }
 }
 
 /*
@@ -294,31 +181,11 @@
   }
 
   .animate-fade-in,
-  .animate-slide-up,
-  .pcv-enter-word,
-  .pcv-enter-rise,
-  .pcv-enter-stat,
   .pcv-enter-bar,
-  .pcv-loop-solo,
-  .pcv-loop-join-left,
-  .pcv-loop-join-right,
-  .pcv-loop-label,
-  .pcv-loop-chip,
   .pcv-loop-bob {
     animation: none;
     opacity: 1;
     transform: none;
-  }
-
-  /*
-   * The track draws itself by animating width from 0. Killing the animation
-   * without restoring the width would leave a zero-width line — the timeline
-   * would lose its spine and the dots would sit on nothing. Everything else
-   * above is safe to freeze at its natural state; this one is not.
-   */
-  .pcv-loop-track {
-    animation: none;
-    width: 100%;
   }
 }
 

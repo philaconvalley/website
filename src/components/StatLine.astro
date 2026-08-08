@@ -1,0 +1,45 @@
+---
+/**
+ * The community stat line: "425 members · 13 nights held · 6 things shipped".
+ *
+ * It appears twice on the homepage — once in the room section's card, once
+ * under the join CTA — and the two copies must never disagree. That used to be
+ * guaranteed by building one string in the page's frontmatter and printing it
+ * in both places.
+ *
+ * This keeps the guarantee (one source, one component, two call sites) while
+ * giving each number its own element, so a counter animation has something to
+ * animate. `data-count-to` carries the target; the element's own text is
+ * already that target, so the claim is true before any script runs and stays
+ * true if none ever does.
+ *
+ * Pluralisation lives on the label rather than the number, because the number
+ * is the thing that gets animated and must stay parseable.
+ */
+interface Props {
+  memberCount: number;
+  nightsHeld: number;
+  thingsShipped: number;
+  class?: string;
+}
+
+const { memberCount, nightsHeld, thingsShipped, class: className } = Astro.props;
+
+const stats = [
+  { value: memberCount, label: 'members' },
+  { value: nightsHeld, label: nightsHeld === 1 ? 'night held' : 'nights held' },
+  { value: thingsShipped, label: thingsShipped === 1 ? 'thing shipped' : 'things shipped' },
+];
+---
+
+<span data-testid="stat-line" class={className}>
+  {
+    stats.map((stat, i) => (
+      <>
+        {i > 0 && ' · '}
+        <span data-count-to={stat.value}>{stat.value}</span>
+        {` ${stat.label}`}
+      </>
+    ))
+  }
+</span>

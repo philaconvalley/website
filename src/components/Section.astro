@@ -1,0 +1,40 @@
+---
+/**
+ * A band of the page.
+ *
+ * Every page runs the same sequence — open air, the door, inside the room,
+ * the invitation — and colour marks position in that story rather than which
+ * page you are on. That rule lives here rather than in a doc because a
+ * component with five allowed roles cannot be quietly ignored, and a
+ * convention can.
+ *
+ * The prop is called `band`, not `role`. It is a story position, not an ARIA
+ * role, and it is deliberately not forwarded to the DOM: "air" is not a valid
+ * ARIA role and would be a real accessibility defect if it leaked. It is
+ * exposed as `data-pcv-section`, which the motion scanner also uses to scope
+ * stagger groups. Naming it `role` shadowed the real attribute, so no caller
+ * could ever give a section a genuine ARIA role even when it needed one.
+ *
+ * Everything else spreads straight through to the `<section>`, so callers can
+ * pass `aria-labelledby`, `data-*`, or a real `role` without editing this file.
+ *
+ * This component renders no background of its own yet. Adopting it and
+ * restyling the site are two different changes, and doing them together would
+ * mean a refactor nobody could review. Slice 3 replaces the `class`
+ * pass-through with a band-driven background, in this file only.
+ */
+import type { HTMLAttributes } from 'astro/types';
+
+type Band = 'door' | 'air' | 'room' | 'work' | 'invitation';
+
+type Props = HTMLAttributes<'section'> & {
+  band: Band;
+  hold?: boolean;
+};
+
+const { band, hold = false, class: className, ...rest } = Astro.props;
+---
+
+<section {...rest} class={className} data-pcv-section={band} data-pcv-hold={hold ? '' : undefined}>
+  <slot />
+</section>

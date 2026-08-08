@@ -40,11 +40,17 @@ export default {
           purple: '#B383C3',
           amber: '#FCBC68',
           dark: '#1A1A1A',
+          // The redesign's hero sky. The only colour in the homepage design that
+          // was not already in the brand palette. It was originally the backdrop
+          // the illustrated skyline was drawn against; the skyline is gone and
+          // this is now the hero's own background.
+          sky: '#54B5FC',
         },
       },
       fontFamily: {
         sans: ['"Nunito"', 'system-ui', 'sans-serif'],
         display: ['"Baloo 2"', 'cursive', 'system-ui', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       boxShadow: {
         retro: '4px 4px 0 rgba(26,26,26,0.15)',
