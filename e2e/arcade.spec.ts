@@ -52,10 +52,32 @@ test.describe('cabinet page', () => {
     await expect(page.getByRole('button', { name: /click to play/i })).toBeVisible();
   });
 
-  test('tells keyboard users how to get out', async ({ page }) => {
+  test('tells keyboard users how to get out, and Tab actually gets them out', async ({ page }) => {
     await page.goto('/arcade/keyboard-pong');
-    await page.getByRole('button', { name: /click to play/i }).click();
-    await expect(page.getByText(/press esc/i)).toBeVisible();
+    const startButton = page.getByRole('button', { name: /click to play/i });
+    await startButton.click();
+
+    // The copy promises Tab (and a click outside) as the way back — not Esc.
+    // Esc is swallowed the instant the iframe takes focus (keydown fired
+    // inside a focused frame never reaches this page — verified by hand
+    // with a raw capture-phase window listener that never fired), so a
+    // test that only checks a "Press Esc" string would pass even if the
+    // exit mechanism were deleted. This test drives the mechanism the page
+    // actually documents and asserts the visible result: the overlay comes
+    // back and the game's own "leave" hint disappears.
+    const leaveHint = page.getByText(/press tab or click outside/i);
+    await expect(leaveHint).toBeVisible();
+
+    // Tabbing out of the iframe takes a variable number of presses (it
+    // first cycles through whatever's focusable inside the framed game),
+    // so press until the overlay reappears rather than assuming a fixed
+    // count.
+    for (let i = 0; i < 8 && !(await startButton.isVisible()); i++) {
+      await page.keyboard.press('Tab');
+    }
+
+    await expect(startButton).toBeVisible();
+    await expect(leaveHint).toBeHidden();
   });
 
   test('describes the game in text for people who cannot play it', async ({ page }) => {

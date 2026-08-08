@@ -7,7 +7,11 @@
  *      has focus. Before that, arrows and space scroll the page while the
  *      visitor believes the game is broken. The overlay makes focus explicit.
  *   2. Escape. Having taken the keyboard, we owe a documented way out, or the
- *      cabinet is a keyboard trap and a WCAG failure.
+ *      cabinet is a keyboard trap and a WCAG failure. Esc itself cannot do
+ *      this: once the iframe holds focus, its keydown events never reach
+ *      this window (verified — see the x-init comment below), so the
+ *      documented route is Tab/Shift+Tab, which browsers already handle
+ *      natively for moving focus out of an iframe.
  *   3. Consent to motion. Nothing animates until the overlay is dismissed,
  *      which is the only honest option for motion-sensitive visitors given the
  *      page cannot control animation inside the frame.
@@ -93,7 +97,7 @@ const aspect = fixedSize ? `${fixedSize.w} / ${fixedSize.h}` : '4 / 3';
         x-cloak
         class="absolute bottom-0 left-0 right-0 bg-brand-dark/80 py-1 text-center text-xs text-primary-100"
       >
-        Press Esc to leave the game and return to the page
+        Press Tab or click outside the game to return to the page
       </p>
     </div>
 
