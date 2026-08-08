@@ -25,8 +25,13 @@ const {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/webp" href="/images/pink circle sunset logo.webp" />
-    <link rel="apple-touch-icon" href="/images/pink circle sunset logo.webp" />
+    <!-- Icons are generated from the brand mark by `npm run icons:generate`.
+         The tab icons keep their transparency; the Apple one cannot, because
+         iOS discards alpha and composites onto black, which would swallow the
+         mark's black outline. See scripts/generate-icons.mjs. -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/favicon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#1A1A1A" />
 

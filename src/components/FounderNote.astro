@@ -19,11 +19,16 @@
     <slot />
   </div>
   <div class="flex items-center gap-3 mt-8 pt-6 border-t border-brand-dark/10">
+    <!-- Decorative on purpose: Waskar's name and title sit next to this as real
+         text, so giving the photo alt text would just make a screen reader
+         announce the same name twice. -->
     <img
-      src="/images/orange circle sunset logo.webp"
+      src="/images/waskar-paulino-avatar.webp"
       alt=""
       aria-hidden="true"
-      class="w-10 h-10 rounded-full"
+      width="40"
+      height="40"
+      class="w-10 h-10 rounded-full object-cover"
     />
     <div>
       <p class="font-display font-bold text-brand-dark">Waskar Paulino</p>
