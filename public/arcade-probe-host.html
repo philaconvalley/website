@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Arcade frame host</title>
+  </head>
+  <body>
+    <!--
+      Lives outside /games/ deliberately: if this fixture sat under /games/ it
+      would inherit the games CSP's default-src 'none', which would require a
+      frame-src override just so this test page could frame its own child --
+      widening the policy every real game document ships with for a test
+      fixture's benefit. This page instead gets the site's normal permissive
+      default-src 'self', which already allows same-origin framing without
+      any special-casing. See e2e/csp.spec.ts and
+      docs/superpowers/plans/2026-08-08-philacon-arcade.md (Task 1).
+    -->
+    <iframe
+      id="probe"
+      src="/games/_probe/"
+      sandbox="allow-scripts"
+      title="Arcade CSP probe"
+      width="400"
+      height="300"
+    ></iframe>
+  </body>
+</html>

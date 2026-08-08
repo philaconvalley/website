@@ -127,7 +127,9 @@ test.describe('Content-Security-Policy-Report-Only (the strict experiment)', () 
  */
 test.describe('arcade /games/ header carve-out', () => {
   test('a game document is framable and its inline script runs', async ({ page }) => {
-    await page.goto('/games/_probe/host.html');
+    // The frame host lives outside /games/ on purpose — see
+    // public/arcade-probe-host.html for why.
+    await page.goto('/arcade-probe-host.html');
     const frame = page.frameLocator('#probe');
     await expect(frame.locator('#status')).toHaveText('inline ok');
   });
@@ -148,7 +150,7 @@ test.describe('arcade /games/ header carve-out', () => {
   });
 
   test('records whether a sibling script file loads in the sandbox', async ({ page }) => {
-    await page.goto('/games/_probe/host.html');
+    await page.goto('/arcade-probe-host.html');
     const loaded = await page
       .frameLocator('#probe')
       .locator('body')

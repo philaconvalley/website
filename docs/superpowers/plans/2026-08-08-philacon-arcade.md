@@ -25,25 +25,26 @@
 
 ## File Structure
 
-| File                                              | Responsibility                                                                         |
-| ------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `vercel.json`                                     | Two mutually exclusive header rules: strict for pages, scoped carve-out for `/games/`. |
-| `public/games/_probe/index.html`                  | Permanent canary fixture proving the carve-out still works.                            |
-| `public/games/<slug>/index.html`                  | Self-contained game builds (3).                                                        |
-| `e2e/landmarks.spec.ts`                           | Add `/games/` exclusion.                                                               |
-| `scripts/check-csp-hashes.mjs`                    | Add `/games/` exclusion.                                                               |
-| `e2e/csp.spec.ts`                                 | Add carve-out + `noindex` assertions.                                                  |
-| `src/content.config.ts`                           | Add `arcade` collection schema.                                                        |
-| `src/content/arcade/*.md`                         | One entry per game (3).                                                                |
-| `scripts/capture-arcade-shots.mjs`                | Deterministic thumbnail + og:image capture.                                            |
-| `src/components/ArcadeCabinet.astro`              | One cabinet on the wall. Presentational only.                                          |
-| `src/components/CabinetFrame.astro`               | The player: iframe, sandbox, focus overlay, scale wrapper, phone fallback.             |
-| `src/pages/arcade/index.astro`                    | The wall.                                                                              |
-| `src/pages/arcade/[slug].astro`                   | The cabinet page.                                                                      |
-| `src/components/Header.astro`                     | Add nav item.                                                                          |
-| `.lighthouserc.json`                              | Add `/arcade/` and one cabinet page.                                                   |
-| `e2e/arcade.spec.ts`                              | Arcade behavior tests.                                                                 |
-| `docs/design-system.md`, `docs/adding-content.md` | Documentation.                                                                         |
+| File                                              | Responsibility                                                                                                                               |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `vercel.json`                                     | Two mutually exclusive header rules: strict for pages, scoped carve-out for `/games/`.                                                       |
+| `public/games/_probe/index.html`                  | Permanent canary fixture proving the carve-out still works.                                                                                  |
+| `public/arcade-probe-host.html`                   | Frames the canary. Lives outside `/games/` so it keeps the site's default CSP rather than requiring a `frame-src` grant on the games policy. |
+| `public/games/<slug>/index.html`                  | Self-contained game builds (3).                                                                                                              |
+| `e2e/landmarks.spec.ts`                           | Add `/games/` exclusion.                                                                                                                     |
+| `scripts/check-csp-hashes.mjs`                    | Add `/games/` exclusion.                                                                                                                     |
+| `e2e/csp.spec.ts`                                 | Add carve-out + `noindex` assertions.                                                                                                        |
+| `src/content.config.ts`                           | Add `arcade` collection schema.                                                                                                              |
+| `src/content/arcade/*.md`                         | One entry per game (3).                                                                                                                      |
+| `scripts/capture-arcade-shots.mjs`                | Deterministic thumbnail + og:image capture.                                                                                                  |
+| `src/components/ArcadeCabinet.astro`              | One cabinet on the wall. Presentational only.                                                                                                |
+| `src/components/CabinetFrame.astro`               | The player: iframe, sandbox, focus overlay, scale wrapper, phone fallback.                                                                   |
+| `src/pages/arcade/index.astro`                    | The wall.                                                                                                                                    |
+| `src/pages/arcade/[slug].astro`                   | The cabinet page.                                                                                                                            |
+| `src/components/Header.astro`                     | Add nav item.                                                                                                                                |
+| `.lighthouserc.json`                              | Add `/arcade/` and one cabinet page.                                                                                                         |
+| `e2e/arcade.spec.ts`                              | Arcade behavior tests.                                                                                                                       |
+| `docs/design-system.md`, `docs/adding-content.md` | Documentation.                                                                                                                               |
 
 ---
 
@@ -60,7 +61,7 @@ This is a spike with a permanent artifact. **Nothing else in this plan is safe t
 - Modify: `vercel.json`
 - Modify: `e2e/landmarks.spec.ts:17-25`
 - Modify: `scripts/check-csp-hashes.mjs:24-31`
-- Create: `public/games/_probe/host.html`
+- Create: `public/arcade-probe-host.html` (**as built** — see Step 2; the brief's original path was `public/games/_probe/host.html`)
 - Modify: `e2e/csp.spec.ts`
 
 **Interfaces:**
@@ -121,7 +122,11 @@ window.__probeExternal = true;
 
 - [ ] **Step 2: Create the frame host fixture**
 
-`public/games/_probe/host.html` — a page that frames the probe the way a cabinet page will. It lives in `public/` (not `e2e/`) because the CSP suite runs against the built `dist/`, and only `public/` is copied there.
+**As built, this fixture lives at `public/arcade-probe-host.html`, not `public/games/_probe/host.html` as originally drafted below.** The path still needs to sit in `public/` (not `e2e/`) because the CSP suite runs against the built `dist/`, and only `public/` is copied there — that reasoning is unchanged. What changed is which directory under `public/`:
+
+Placing the host under `/games/` meant it inherited the games CSP's `default-src 'none'`. Since that policy declares no `frame-src` override, `frame-src` falls back to `default-src` — which blocked the host's own `<iframe>` from loading its child at all, a same-origin CSP block on the _parent_ side, distinct from `frame-ancestors` on the child side. The fix that was first tried added `frame-src 'self'` to the games CSP. Code review flagged that as widening the policy every real game document ships with, permanently, to serve a test fixture: no real game needs to frame anything, and the design anticipates community-submitted games later, at which point an unnecessary same-origin iframe-nesting allowance becomes attack surface for code nobody on the team wrote. The human partner ruled: relocate the fixture instead of widening the policy. `public/arcade-probe-host.html` sits outside `/games/`, so it gets the site's normal `default-src 'self'` policy, which already permits same-origin framing with no override needed. The games CSP shipped exactly as the brief specified, with no `frame-src` addition.
+
+This does not change what the probe proves: the framing test still fails if the `/games/` carve-out regresses, because the assertion is on the _child_ (`/games/_probe/`) receiving `X-Frame-Options`/`frame-ancestors` permissive enough to be framed — the host's own policy was never what the carve-out is guarding.
 
 ```html
 <!doctype html>
@@ -161,6 +166,7 @@ Append to `e2e/csp.spec.ts`:
  */
 test.describe('arcade /games/ header carve-out', () => {
   test('a game document is framable and its inline script runs', async ({ page }) => {
+    // As built: '/arcade-probe-host.html'. See Step 2's "as built" note.
     await page.goto('/games/_probe/host.html');
     const frame = page.frameLocator('#probe');
     await expect(frame.locator('#status')).toHaveText('inline ok');
@@ -228,6 +234,7 @@ Now determine the external-script answer explicitly. Add this test to the same d
 
 ```ts
 test('records whether a sibling script file loads in the sandbox', async ({ page }) => {
+  // As built: '/arcade-probe-host.html'. See Step 2's "as built" note.
   await page.goto('/games/_probe/host.html');
   const loaded = await page
     .frameLocator('#probe')
@@ -291,7 +298,7 @@ Expected: all PASS.
 - [ ] **Step 10: Commit**
 
 ```bash
-git add vercel.json public/games/_probe e2e/csp.spec.ts e2e/landmarks.spec.ts scripts/check-csp-hashes.mjs
+git add vercel.json public/games/_probe public/arcade-probe-host.html e2e/csp.spec.ts e2e/landmarks.spec.ts scripts/check-csp-hashes.mjs
 git commit -m "feat(arcade): Scope a header carve-out for embeddable game documents"
 ```
 
