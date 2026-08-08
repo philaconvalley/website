@@ -60,8 +60,8 @@ This is a spike with a permanent artifact. **Nothing else in this plan is safe t
 - Modify: `vercel.json`
 - Modify: `e2e/landmarks.spec.ts:17-25`
 - Modify: `scripts/check-csp-hashes.mjs:24-31`
+- Create: `public/games/_probe/host.html`
 - Modify: `e2e/csp.spec.ts`
-- Create: `e2e/fixtures/frame-host.html`
 
 **Interfaces:**
 
