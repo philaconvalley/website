@@ -10,9 +10,15 @@
  * - Flappy Philacon needs the bird kept alive with periodic flaps, or it just
  *   falls and dies before the settle time is up.
  * - Keyboard Pong needs the match explicitly started (a click, not a key),
- *   then both paddles held in motion so the ball is caught mid-rally.
+ *   then both paddles actively driven — one tracking the ball's real position
+ *   (read by patching the canvas drawing calls, since the game's script is an
+ *   IIFE with no exposed state) so the frame lands mid-rally, not on an idle
+ *   court.
  * - Pigeon Post has no start screen and no goal state — it animates on its
- *   own — but still gets banked input so the frame isn't dead-level flight.
+ *   own — but its permanent on-canvas title/instructions HUD has to be hidden
+ *   for capture (there's no in-game way to dismiss it — it's never toggled by
+ *   any script on the page), and its default altitude keeps the planet's
+ *   curve too low in frame, so the warm-up dives briefly first.
  *
  * Two crops per game: a 4:3 thumbnail for the cabinet screen, and 1200x630 for
  * og:image, which is what SEO.astro feeds to Open Graph and Twitter cards.
@@ -24,6 +30,34 @@ import { mkdir } from 'node:fs/promises';
 
 const BASE = process.env.ARCADE_BASE ?? 'http://localhost:4322';
 const OUT = 'public/images/arcade';
+
+// Exposes the ball's and both paddles' live canvas positions on
+// `window.__pong`, by wrapping the 2D context calls keyboard-pong's own
+// (IIFE-scoped, unexposed) draw loop already makes every frame: `ctx.arc()`
+// for the ball, `ctx.drawImage()` for each paddle sprite. Must be installed
+// before the game's script runs, so it's a page.addInitScript, not something
+// the warm-up can do after navigation.
+function installPongTracker(page) {
+  return page.addInitScript(() => {
+    window.__pong = { ball: null, paddles: {} };
+    const proto = CanvasRenderingContext2D.prototype;
+    const origArc = proto.arc;
+    proto.arc = function (x, y, r, ...rest) {
+      if (r > 5 && r < 15) window.__pong.ball = { x, y };
+      return origArc.call(this, x, y, r, ...rest);
+    };
+    const origDrawImage = proto.drawImage;
+    proto.drawImage = function (img, ...args) {
+      try {
+        const t = this.getTransform();
+        window.__pong.paddles[t.e < 400 ? 'left' : 'right'] = { x: t.e, y: t.f };
+      } catch {
+        /* not a paddle draw call in a state we can read a transform from */
+      }
+      return origDrawImage.call(this, img, ...args);
+    };
+  });
+}
 
 const GAMES = [
   {
@@ -50,53 +84,122 @@ const GAMES = [
   },
   {
     slug: 'keyboard-pong',
+    beforeGoto: installPongTracker,
     warmup: async (page) => {
-      // The match only starts on a button click, not a keypress. Once
-      // running, hold both paddles in motion (opposite directions so the
-      // motion reads clearly) while the ball is in flight. Paddle speed
-      // covers the full court in ~220ms at this browser's actual frame
-      // rate, so a full-length hold just pins both paddles at opposite
-      // corners — a shorter 90ms hold moves them visibly off-center
-      // without stranding them at the walls.
+      // The page is taller than either capture viewport, and the body
+      // vertically centers its whole .stage (title, scoreboard, court,
+      // controls-row legend, footer-note) as one flex column — so whichever
+      // of those blocks falls nearest the top/bottom edge gets sliced in
+      // half rather than fully shown or fully excluded. Hiding just the
+      // controls-row (the original clipping offender at 1200x630) shrinks
+      // the stage enough that re-centering then clips the title instead —
+      // confirmed by capturing that exact regression. The stable fix is to
+      // remove every text block that isn't the court itself: title,
+      // controls-row, and footer-note all get hidden, at both capture
+      // sizes, so centering always has only the scoreboard + court to work
+      // with and nothing ever lands mid-clip.
+      await page.evaluate(() => {
+        for (const sel of ['.title', '.controls-row', '.footer-note']) {
+          const el = document.querySelector(sel);
+          if (el) el.style.display = 'none';
+        }
+      });
+
+      // The match only starts on a button click, not a keypress.
       await page.click('#startBtn');
-      await page.waitForTimeout(150);
-      await page.keyboard.down('w');
-      await page.keyboard.down('ArrowDown');
-      await page.waitForTimeout(90);
-      await page.keyboard.up('w');
-      await page.keyboard.up('ArrowDown');
+
+      // Sample the ball twice to find out which way it's headed, then drive
+      // that side's paddle to track its y position in real time (bang-bang:
+      // hold up or down based on which side of the paddle the ball is on)
+      // until the ball is close enough to read as "about to be returned" —
+      // or, if the timing lines up, until it actually bounces (detected as
+      // the ball's x motion reversing direction). The far paddle is just
+      // held moving the whole time so both paddles read as driven, not
+      // idle. This reacts to the game's real, randomized ball angle instead
+      // of guessing a fixed wait that only sometimes lines up.
       await page.waitForTimeout(60);
+      const s1 = await page.evaluate(() => window.__pong.ball);
+      await page.waitForTimeout(40);
+      const s2 = await page.evaluate(() => window.__pong.ball);
+      if (!s1 || !s2) return; // ball not drawn yet on an unusually slow start — bail to the flat settle
+      const movingRight = s2.x > s1.x;
+      const targetSide = movingRight ? 'right' : 'left';
+      const otherSide = movingRight ? 'left' : 'right';
+      const keysFor = (side) => (side === 'left' ? { up: 'w', down: 's' } : { up: 'ArrowUp', down: 'ArrowDown' });
+      const targetKeys = keysFor(targetSide);
+      const otherKeys = keysFor(otherSide);
+
+      await page.keyboard.down(otherKeys.down);
+
+      let pressed = null;
+      let prevX = s2.x;
+      for (let i = 0; i < 30; i++) {
+        await page.waitForTimeout(30);
+        const state = await page.evaluate(() => window.__pong);
+        if (!state.ball || !state.paddles[targetSide]) continue;
+        const approaching = movingRight ? state.ball.x > prevX : state.ball.x < prevX;
+        if (!approaching && i > 3) break; // bounced — this is the frame
+        prevX = state.ball.x;
+
+        const dy = state.ball.y - state.paddles[targetSide].y;
+        const wantKey = dy > 6 ? targetKeys.down : dy < -6 ? targetKeys.up : null;
+        if (wantKey !== pressed) {
+          if (pressed) await page.keyboard.up(pressed);
+          if (wantKey) await page.keyboard.down(wantKey);
+          pressed = wantKey;
+        }
+        if (Math.abs(state.ball.x - state.paddles[targetSide].x) < 90) break; // close enough to read as a return
+      }
+      if (pressed) await page.keyboard.up(pressed);
+      await page.keyboard.up(otherKeys.down);
     },
   },
   {
     slug: 'pigeon-post',
     warmup: async (page) => {
-      // No start screen, no goal state — it's already flying, and the
-      // default forward-flight camera already frames the pigeon well
-      // against the planet's curved horizon. A sustained ArrowUp pitch
-      // climbs the camera away from the horizon entirely (tried it — ends
-      // up as empty sky), so this only taps a brief bank and lets it
-      // settle back toward level flight before the shot.
+      // No start screen, no goal state — it's already flying. But the
+      // title/instructions HUD ("Pigeon Post — steer with WASD/Arrows...")
+      // is permanent: grep confirms no script on the page ever hides,
+      // fades, or toggles it — it's not a dismissible splash screen, just
+      // always-on text, so a capture of any frame includes it unless we
+      // remove it ourselves.
+      await page.evaluate(() => {
+        const hud = document.getElementById('hud');
+        if (hud) hud.style.display = 'none';
+      });
+
+      // The default altitude (~9 planet-radii) keeps the horizon low in
+      // frame — mostly empty sky. Diving (ArrowDown lowers altitude, tested
+      // against the in-HUD ALT readout) brings the camera closer to the
+      // surface, making the planet's curve a real presence without landing
+      // the pigeon.
+      await page.waitForTimeout(300);
+      await page.keyboard.down('ArrowDown');
       await page.waitForTimeout(500);
-      await page.keyboard.down('ArrowLeft');
-      await page.waitForTimeout(120);
-      await page.keyboard.up('ArrowLeft');
-      await page.waitForTimeout(900);
+      await page.keyboard.up('ArrowDown');
+      await page.waitForTimeout(250);
     },
   },
 ];
 
 const SETTLE_MS = 150;
 
+// Optional slug filter (npm run arcade:shots -- keyboard-pong pigeon-post),
+// so one game's warm-up can be re-tuned without re-rolling every other
+// game's already-good, randomized capture.
+const only = process.argv.slice(2);
+const targets = only.length ? GAMES.filter((g) => only.includes(g.slug)) : GAMES;
+
 await mkdir(OUT, { recursive: true });
 const browser = await chromium.launch();
 
-for (const { slug, warmup } of GAMES) {
+for (const { slug, beforeGoto, warmup } of targets) {
   for (const [suffix, size] of [
     ['', { width: 800, height: 600 }],
     ['-og', { width: 1200, height: 630 }],
   ]) {
     const page = await browser.newPage({ viewport: size });
+    if (beforeGoto) await beforeGoto(page);
     await page.goto(`${BASE}/games/${slug}/`, { waitUntil: 'networkidle' });
     await warmup(page);
     await page.waitForTimeout(SETTLE_MS);

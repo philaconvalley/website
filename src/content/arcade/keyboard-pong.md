@@ -10,7 +10,7 @@ longDescription: >-
   same keyboard, and it cannot be played with a touchscreen alone.
 slug: 'keyboard-pong'
 thumbnail: '/images/arcade/keyboard-pong.webp'
-thumbnailAlt: 'Two keyboard-shaped paddles facing off across a dark purple court with a glowing white ball in flight between them.'
+thumbnailAlt: 'Two keyboard-shaped paddles, both displaced from center on a dark purple court, with a glowing white ball closing in on one paddle mid-rally.'
 ogImage: '/images/arcade/keyboard-pong-og.webp'
 marqueeColor: 'purple'
 kind: 'game'
