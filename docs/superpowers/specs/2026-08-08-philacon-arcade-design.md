@@ -73,11 +73,17 @@ later, the arcade follows it rather than needing a rewrite.
 
 1. Cabinets rise into place in sequence on load (~60 ms stagger).
 2. Hover lifts a cabinet and warms its marquee glow.
-3. Control-panel keycaps depress when that key is actually pressed during play — the one
-   flourish that is functional, since it teaches controls without a tutorial.
 
-All three collapse under `prefers-reduced-motion`, which `e2e/motion-preferences.spec.ts`
-already tests for.
+Both collapse under `prefers-reduced-motion`, which `e2e/motion-preferences.spec.ts` already
+tests for.
+
+**Cut during planning: live keycap depression.** An earlier draft had the control-panel
+keycaps depress as the player actually pressed those keys. It is not buildable as specced.
+Once the game has focus, its key events belong to the framed document, and the sandbox
+denies same-origin access — so the parent page cannot observe them. The only route is
+`postMessage` from inside each game, which means modifying every submission and making the
+contributor bar meaningfully harder for one decorative flourish. The keycaps ship as a
+static legend, which was always the part that carried the actual value.
 
 ### The fourth cabinet
 
