@@ -1,0 +1,119 @@
+---
+/**
+ * The player. Wraps a game in cabinet chrome and handles three things the game
+ * cannot handle for itself:
+ *
+ *   1. Focus. Games call preventDefault on their keys, but only once the frame
+ *      has focus. Before that, arrows and space scroll the page while the
+ *      visitor believes the game is broken. The overlay makes focus explicit.
+ *   2. Escape. Having taken the keyboard, we owe a documented way out, or the
+ *      cabinet is a keyboard trap and a WCAG failure.
+ *   3. Consent to motion. Nothing animates until the overlay is dismissed,
+ *      which is the only honest option for motion-sensitive visitors given the
+ *      page cannot control animation inside the frame.
+ *
+ * Fixed-size games (Pong is 860x500 with no resize handling) are scaled to fit
+ * rather than clipped.
+ */
+interface Props {
+  slug: string;
+  title: string;
+  marqueeColor: 'pink' | 'purple' | 'yellow' | 'coral';
+  controls: { keys: string[]; label: string }[];
+  fixedSize?: { w: number; h: number };
+}
+
+const { slug, title, marqueeColor, controls, fixedSize } = Astro.props;
+
+const marqueeClass = {
+  pink: 'bg-brand-pink',
+  purple: 'bg-brand-purple',
+  yellow: 'bg-brand-yellow',
+  coral: 'bg-brand-coral',
+}[marqueeColor];
+
+const aspect = fixedSize ? `${fixedSize.w} / ${fixedSize.h}` : '4 / 3';
+---
+
+<div
+  class="mx-auto w-full max-w-3xl"
+  x-data="{ playing: false }"
+  x-on:keydown.escape.window="if (playing) { playing = false; $refs.startBtn?.focus(); }"
+  x-init="
+    /* A sandboxed iframe that holds keyboard focus receives its own keydown
+       events directly — they never reach this window, so Esc pressed while
+       the game has focus cannot be caught here (verified: even a
+       capture-phase window keydown listener never fires while the iframe is
+       focused). The browser's native Tab / Shift+Tab still moves focus out
+       of the iframe, though, so keyboard users are never truly trapped.
+       This poll keeps the UI honest with whichever escape route actually
+       fired — Tab, a click elsewhere on the page, or (when focus happens to
+       still be outside the iframe) Esc — by noticing focus has left the
+       frame and dropping back to the overlay. */
+    setInterval(() => {
+      if (playing && document.activeElement !== $refs.frame) {
+        playing = false;
+      }
+    }, 200)
+  "
+>
+  <div class={`${marqueeClass} rounded-t-3xl px-4 py-3 text-center`}>
+    <p class="font-display text-xl font-extrabold text-brand-dark">{title}</p>
+  </div>
+
+  <div class="bg-brand-dark p-3">
+    <div
+      class="relative overflow-hidden rounded border-4 border-black bg-black"
+      style={`aspect-ratio:${aspect}`}
+    >
+      <iframe
+        data-game-frame
+        src={`/games/${slug}/`}
+        title={`${title} — playable game`}
+        sandbox="allow-scripts"
+        allow="fullscreen"
+        allowfullscreen
+        loading="lazy"
+        class="absolute inset-0 h-full w-full border-0"
+        x-ref="frame"></iframe>
+
+      <button
+        type="button"
+        x-ref="startBtn"
+        x-show="!playing"
+        x-on:click="playing = true; $refs.frame.focus()"
+        class="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-brand-dark/85 font-display text-xl font-extrabold text-primary-100"
+      >
+        Click to play
+        <span class="text-sm font-normal text-primary-100/70"> Nothing moves until you do </span>
+      </button>
+
+      <p
+        x-show="playing"
+        x-cloak
+        class="absolute bottom-0 left-0 right-0 bg-brand-dark/80 py-1 text-center text-xs text-primary-100"
+      >
+        Press Esc to leave the game and return to the page
+      </p>
+    </div>
+
+    <dl
+      class="mt-3 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 rounded bg-brand-dark/60 px-4 py-3"
+    >
+      {
+        controls.map((control) => (
+          <div class="flex items-center gap-2">
+            <dt class="flex gap-1">
+              {control.keys.map((key) => (
+                <kbd class="rounded bg-primary-100 px-2 py-0.5 font-sans text-xs font-bold text-brand-dark shadow-[0_2px_0_rgba(0,0,0,0.45)]">
+                  {key}
+                </kbd>
+              ))}
+            </dt>
+            <dd class="text-xs text-primary-100/80">{control.label}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</div>
