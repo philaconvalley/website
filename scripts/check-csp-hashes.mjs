@@ -24,8 +24,13 @@ const CSP_KEYS = ['Content-Security-Policy', 'Content-Security-Policy-Report-Onl
 async function htmlFiles(dir, acc = []) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
     const path = join(dir, entry.name);
-    if (entry.isDirectory()) await htmlFiles(path, acc);
-    else if (entry.name.endsWith('.html')) acc.push(path);
+    // Games are served under their own CSP (see the /games/ rule in vercel.json),
+    // which allows 'unsafe-inline' precisely because a game is inline-script
+    // driven. Hashing them against the *page* policy would fail every build.
+    if (entry.isDirectory()) {
+      if (entry.name === 'games' && dir === DIST) continue;
+      await htmlFiles(path, acc);
+    } else if (entry.name.endsWith('.html')) acc.push(path);
   }
   return acc;
 }
@@ -65,6 +70,11 @@ for (const file of await htmlFiles(DIST)) {
 
 const config = JSON.parse(await readFile('vercel.json', 'utf8'));
 const policies = (config.headers ?? [])
+  // The /games/ rule allows scripts via 'unsafe-inline', not per-script hashes
+  // (games are inline-script driven and outside this hash-allowlisting scheme
+  // entirely) — hashing page scripts against it, or it against page scripts,
+  // would fail every build for a policy this check was never meant to cover.
+  .filter((rule) => !rule.source.startsWith('/games/'))
   .flatMap((rule) => rule.headers)
   .filter((header) => CSP_KEYS.includes(header.key));
 

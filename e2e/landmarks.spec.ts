@@ -16,12 +16,19 @@ import { test, expect } from '@playwright/test';
  */
 function builtRoutes(): string[] {
   const dist = path.resolve(process.cwd(), 'dist');
-  return fs
-    .readdirSync(dist, { recursive: true })
-    .map(String)
-    .filter((f) => f.endsWith('.html'))
-    .map((f) => '/' + f.replace(/(^|\/)index\.html$/, '').replace(/\.html$/, ''))
-    .sort();
+  return (
+    fs
+      .readdirSync(dist, { recursive: true })
+      .map(String)
+      .filter((f) => f.endsWith('.html'))
+      // Games under /games/ are embedded artifacts, not pages of the site: they
+      // are bare canvas documents with no Header, <main> or Footer by design, and
+      // they are noindex. Including them would fail this suite the moment the
+      // arcade lands. See docs/superpowers/specs/2026-08-08-philacon-arcade-design.md.
+      .filter((f) => !f.startsWith('games/') && !f.includes('/games/'))
+      .map((f) => '/' + f.replace(/(^|\/)index\.html$/, '').replace(/\.html$/, ''))
+      .sort()
+  );
 }
 
 test.describe('landmark structure', () => {

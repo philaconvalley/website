@@ -115,3 +115,51 @@ test.describe('Content-Security-Policy-Report-Only (the strict experiment)', () 
     ).toBeGreaterThan(0);
   });
 });
+
+/**
+ * The arcade embeds self-hosted games in sandboxed iframes. That requires a
+ * scoped exception to the site-wide headers: pages are X-Frame-Options: DENY
+ * and frame-ancestors 'none', which forbid framing even same-origin, and
+ * script-src has no 'unsafe-inline', which would stop every game from running.
+ *
+ * These tests guard the exception's blast radius as much as its function: the
+ * looser policy must apply to /games/ and nowhere else.
+ */
+test.describe('arcade /games/ header carve-out', () => {
+  test('a game document is framable and its inline script runs', async ({ page }) => {
+    await page.goto('/games/_probe/host.html');
+    const frame = page.frameLocator('#probe');
+    await expect(frame.locator('#status')).toHaveText('inline ok');
+  });
+
+  test('game responses are noindex', async ({ page }) => {
+    const response = await page.goto('/games/_probe/');
+    expect(response?.status()).toBe(200);
+    expect(response?.headers()['x-robots-tag']).toContain('noindex');
+  });
+
+  test('real pages keep the strict policy', async ({ page }) => {
+    const response = await page.goto('/about');
+    const headers = response?.headers() ?? {};
+    expect(headers['x-frame-options']).toBe('DENY');
+    expect(headers['content-security-policy']).toContain("frame-ancestors 'none'");
+    // The carve-out must not leak: pages never get 'unsafe-inline' scripts.
+    expect(headers['content-security-policy']).not.toContain("script-src 'unsafe-inline'");
+  });
+
+  test('records whether a sibling script file loads in the sandbox', async ({ page }) => {
+    await page.goto('/games/_probe/host.html');
+    const loaded = await page
+      .frameLocator('#probe')
+      .locator('body')
+      .evaluate(
+        () =>
+          'external script marker' in window ||
+          Boolean((window as unknown as { __probeExternal?: boolean }).__probeExternal),
+      );
+    // Not an assertion of either outcome — this records the answer that decides
+    // whether games may ship sibling .js files. See the plan's Task 1.
+    console.log(`[arcade probe] external sibling script loaded: ${loaded}`);
+    expect(typeof loaded).toBe('boolean');
+  });
+});
