@@ -224,13 +224,23 @@ npm run test:csp
 
 Expected: the framing and `noindex` tests PASS.
 
-Now determine the external-script answer explicitly:
+Now determine the external-script answer explicitly. Add this test to the same describe block rather than using an interactive debug session:
 
-```bash
-npx playwright test --config playwright.csp.config.ts -g "framable" --debug
+```ts
+test('records whether a sibling script file loads in the sandbox', async ({ page }) => {
+  await page.goto('/games/_probe/host.html');
+  const loaded = await page
+    .frameLocator('#probe')
+    .locator('body')
+    .evaluate(() => 'external script marker' in window || Boolean(window.__probeExternal));
+  // Not an assertion of either outcome — this records the answer that decides
+  // whether games may ship sibling .js files. See the plan's Task 1.
+  console.log(`[arcade probe] external sibling script loaded: ${loaded}`);
+  expect(typeof loaded).toBe('boolean');
+});
 ```
 
-In the frame, evaluate `window.__probeExternal`. Record the result in the commit message:
+Run it and read the logged line. Record the result in the commit message:
 
 - `true` → sibling script files work; the single-file rule is a convention, not a constraint.
 - `undefined` → **blocked.** Games must be single self-contained HTML files. Task 2 inlines three.js into Pigeon Post.
@@ -722,7 +732,11 @@ test.describe('arcade wall', () => {
 
   test('the arcade is reachable from the header nav', async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByRole('navigation').getByRole('link', { name: 'Arcade' })).toBeVisible();
+    // Header renders navItems twice — desktop nav and the Alpine mobile menu —
+    // so this must not be a strict single-element locator.
+    await expect(
+      page.getByRole('navigation').getByRole('link', { name: 'Arcade' }).first(),
+    ).toBeVisible();
   });
 });
 ```
