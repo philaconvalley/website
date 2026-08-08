@@ -26,6 +26,12 @@ function builtRoutes(): string[] {
       // they are noindex. Including them would fail this suite the moment the
       // arcade lands. See docs/superpowers/specs/2026-08-08-philacon-arcade-design.md.
       .filter((f) => !f.startsWith('games/') && !f.includes('/games/'))
+      // arcade-probe-host.html is a permanent test fixture (Task 1), not a site
+      // page: it exists solely to frame /games/_probe/ under a real HTTP origin
+      // and has no Header/<main>/Footer by design. It lives outside /games/ on
+      // purpose (see the file's own header comment), so the filter above doesn't
+      // catch it — exclude it explicitly instead.
+      .filter((f) => f !== 'arcade-probe-host.html')
       .map((f) => '/' + f.replace(/(^|\/)index\.html$/, '').replace(/\.html$/, ''))
       .sort()
   );
