@@ -155,3 +155,6 @@ playwright/.cache/
 
 # Superpowers brainstorming session artifacts
 .superpowers/
+
+# macOS finder metadata
+.DS_Store
