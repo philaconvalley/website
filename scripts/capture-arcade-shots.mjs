@@ -4,8 +4,14 @@
  * Games animate, so a naive screenshot grabs an arbitrary frame — often the
  * title card, or a blank first tick before anything has been drawn. Each game
  * gets a scripted warm-up (input to start it, then sustained input to keep it
- * in a "playing" state) so the captured frame is deterministic and actually
- * shows gameplay:
+ * in a "playing" state) so the captured frame reliably lands on live,
+ * in-progress gameplay instead of a title card or a dead frame. That's a
+ * guarantee about *state* (playing, not stopped/blank), not about the exact
+ * composition: Flappy's pipe-gap height and Pong's ball launch angle are both
+ * unseeded `Math.random()` calls inside the games themselves, so re-running
+ * this script will still land on live gameplay every time, but the pipe
+ * position, ball angle, and paddle positions in the resulting image will
+ * differ run to run.
  *
  * - Flappy Philacon needs the bird kept alive with periodic flaps, or it just
  *   falls and dies before the settle time is up.
@@ -193,20 +199,39 @@ const targets = only.length ? GAMES.filter((g) => only.includes(g.slug)) : GAMES
 await mkdir(OUT, { recursive: true });
 const browser = await chromium.launch();
 
-for (const { slug, beforeGoto, warmup } of targets) {
-  for (const [suffix, size] of [
-    ['', { width: 800, height: 600 }],
-    ['-og', { width: 1200, height: 630 }],
-  ]) {
-    const page = await browser.newPage({ viewport: size });
-    if (beforeGoto) await beforeGoto(page);
-    await page.goto(`${BASE}/games/${slug}/`, { waitUntil: 'networkidle' });
-    await warmup(page);
-    await page.waitForTimeout(SETTLE_MS);
-    await page.screenshot({ path: `${OUT}/${slug}${suffix}.webp`, type: 'webp' });
-    await page.close();
-    console.log(`captured ${slug}${suffix}`);
+// Every path — success, a thrown error from any page.* call, an unexpected
+// selector miss — must still close the page and close the browser, or a
+// failed run leaks a Chromium process. The inner try/finally guarantees the
+// page closes even if its own capture throws; the outer try/catch/finally
+// guarantees the browser closes regardless, and aborts the remaining
+// captures (rather than silently skipping them) while making the failure
+// visible: it logs exactly which capture failed and exits non-zero, so a
+// broken run can't be mistaken for a successful one.
+try {
+  for (const { slug, beforeGoto, warmup } of targets) {
+    for (const [suffix, size] of [
+      ['', { width: 800, height: 600 }],
+      ['-og', { width: 1200, height: 630 }],
+    ]) {
+      const label = `${slug}${suffix}`;
+      const page = await browser.newPage({ viewport: size });
+      try {
+        if (beforeGoto) await beforeGoto(page);
+        await page.goto(`${BASE}/games/${slug}/`, { waitUntil: 'networkidle' });
+        await warmup(page);
+        await page.waitForTimeout(SETTLE_MS);
+        await page.screenshot({ path: `${OUT}/${label}.webp`, type: 'webp' });
+        console.log(`captured ${label}`);
+      } catch (err) {
+        throw new Error(`capture failed for ${label}: ${err.message}`, { cause: err });
+      } finally {
+        await page.close();
+      }
+    }
   }
+} catch (err) {
+  console.error(err.message);
+  process.exitCode = 1;
+} finally {
+  await browser.close();
 }
-
-await browser.close();
