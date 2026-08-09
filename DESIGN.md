@@ -2,15 +2,17 @@
 
 The **decision layer** for design work on this site: the visual thesis, the motion contract, and the rules that govern change.
 
-> **Neither this file nor `docs/design-system.md` is the top of the chain.** The canonical design system is **Brand Book Edition 1.0** — `company/brand/brand-books/PhilaCon_Valley_Brand_Book_Edition-1.0_2026-05-23.pdf` in the org repo, a real 14-section system, not a mood board. Extract it with `pdftotext -layout`. **Read it before designing anything.** That instruction exists because on 08/08/2026 a deck was built from a palette copied secondhand out of an old `deck.html` and broke six documented rules; the Book was never opened.
+> **Neither this file nor `docs/design-system.md` is the top of the chain.** The canonical design system is **PhilaCon Valley Brand Book Edition 1.0**, a 14-section system held privately by the org. Maintainers with access should read it before making visual changes; outside contributors should follow `docs/design-system.md` and this file, which implement it.
+>
+> **A secondhand palette is not the design system.** Values copied from an older file, a screenshot, or another deck drift silently and have caused real rework. Take token values from `tailwind.config.mjs` and `docs/design-system.md`, never from a sibling artifact that merely looks right.
 >
 > Three layers, and each defers upward:
 >
-> | Layer                             | Owns                                                                        | Audience                                  |
-> | --------------------------------- | --------------------------------------------------------------------------- | ----------------------------------------- |
-> | **Brand Book Ed. 1.0** (org repo) | The system itself — palette, type, mascot, the Flock, voice, taglines       | Canonical. Everything else implements it. |
-> | `docs/design-system.md`           | _What the values are_ in this codebase — tokens, variants, hero assignments | Someone making a change                   |
-> | `DESIGN.md` (this file)           | _Why they are what they are and what must stay true_                        | Someone deciding a change                 |
+> | Layer                            | Owns                                                                        | Audience                                  |
+> | -------------------------------- | --------------------------------------------------------------------------- | ----------------------------------------- |
+> | **Brand Book Ed. 1.0** (private) | The system itself — palette, type, mascot, the Flock, voice, taglines       | Canonical. Everything else implements it. |
+> | `docs/design-system.md`          | _What the values are_ in this codebase — tokens, variants, hero assignments | Someone making a change                   |
+> | `DESIGN.md` (this file)          | _Why they are what they are and what must stay true_                        | Someone deciding a change                 |
 >
 > **Do not duplicate token values here.** If a value appears in two layers and they disagree, the higher layer wins and the lower one is a bug. `docs/design-system.md` has not been formally reconciled against the Book — treat any conflict as the Book's win until it has.
 
@@ -35,20 +37,20 @@ Owned by the Brand Book's Voice & Tone section. Summarized here only where the s
 
 - **"Collab Lab"** — what the site said in 14+ places (README, Code of Conduct, Join, Events, Support, Projects, Arcade, `docs/writing-guide.md`). **Renamed to "Lab".**
 - **"Builder Night"** — invented during the homepage redesign and never reconciled with anything. **Retired.**
-- **"Lab"** — the winner, and it matches the taxonomy the team defined on 07/08/2026 in `community/events/patch-series/PATCH_SERIES.md`: _"Lab is for structured, skill-focused sessions with a single objective."_
+- **"Lab"** — the winner, and it matches the event-format taxonomy the team defined on 07/08/2026: _"Lab is for structured, skill-focused sessions with a single objective."_
 
-The rename is mechanical but wide, and it touches e2e selectors and a component name. It ships as **its own commit**, separate from any visual change, so a bisect can tell copy churn from design churn.
+The rename was mechanical but wide, touching a component name and two e2e spec filenames. It shipped as **its own commit**, separate from any visual change, so a bisect can tell copy churn from design churn.
 
 ### The homepage headline
 
 **"Come as you are. Leave with a flock."** is not one of the Book's four taglines — it is a site invention riffing on the motto. **Decided 08/09/2026: it stays, and it should be promoted to a documented line in the Book** rather than left as undocumented drift. It does a job none of the four cover: the homepage hook.
 
-> **Open action, not a website task.** The Book is a PDF owned by Saige and Diego, who adapted the motto in the first place. Adding a fifth line is their call and their file. Until it lands there, this is a recorded exception, not a precedent for inventing more lines.
+> **Open action, not a website task.** The Book is maintained outside this repo by the brand team. Adding a fifth line is their call and their file. Until it lands there, this is a recorded exception, not a precedent for inventing more lines.
 
 **Hard rules, all currently violated or at risk:**
 
 1. **Sentence case. Always. Never title case.** The rule covers headings _and_ buttons. **Swept sitewide 08/09/2026 in its own commit** — 104 replacements across 12 pages, 83 in headings and 21 in button and CTA labels — before the redesign, so the redesign cannot be blamed for copy churn. Program and surface names stay capitalized as proper nouns: PhilaCon Valley, Philly, Slack, Open Collective, The Arcade, Lab, PATCH.
-2. **"By us, for us." is never capitalized as "By Us, For Us."** The Book calls this out by name. `src/pages/about.astro:271` does exactly it.
+2. **"By us, for us." is never capitalized as "By Us, For Us."** The Book calls this out by name. About violated it until the 08/09/2026 sweep; watch for it returning.
 3. **Banned vocabulary:** leverage, elevate, synergy, unlock, 10x, ecosystem. Currently clean — keep it that way. Use build language: ship, make, show up, pair up.
 4. **Singular they. "Everyone", "y'all", "folks". Never "guys."**
 5. **No emoji in chrome.** The one documented exception is a single Unicode arrow on CTAs: "Join us →".
@@ -108,7 +110,7 @@ Every claim gets made at the highest rung it can reach. Rungs, strongest first:
 
 **Decided 08/09/2026: yes, and it is the strongest evidence the org has.** PATCH is a defined series with written doctrine, a tagline (_"Learn it. Build it. Take it home."_), physical stickers, and collectible digital artifacts — and it appears nowhere on the website.
 
-Two lines from `PATCH_SERIES.md` are this contract restated in the org's own words, written before it:
+Two lines from the series doctrine are this contract restated in the org's own words, written before it:
 
 - **"The takeaway is proof, not a souvenir."** That is rung 1 and rung 3, defined by the people who run the events.
 - **"I did not know people could do this."** The north-star feeling of a PATCH room, and a better statement of what a visitor should feel on this site than anything currently written on it.
