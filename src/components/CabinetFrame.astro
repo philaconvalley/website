@@ -20,7 +20,15 @@
  *      game cannot start animating behind the overlay. "Nothing moves until
  *      you do" describes what the code does, not just what the copy asks
  *      for. This also means the game's JS (three.js, for one) is not
- *      downloaded until someone actually asks to play.
+ *      downloaded until someone actually asks to play. That promise is only
+ *      true the first time, though: once the game has been started, it is
+ *      deliberately left running when focus is lost (see point 2's "step
+ *      away, not quit"), so the overlay reappearing mid-session is covering
+ *      a game that IS moving. `started` (separate from `playing`, which
+ *      flips back and forth every time focus is lost/regained) tracks that,
+ *      and the overlay copy switches from "Click to play / Nothing moves
+ *      until you do" to "Click to resume" once it's true — never claiming
+ *      stillness that isn't there.
  *
  * Fixed-size games (Pong's document needs ~950x740 — the canvas is 860x500,
  * but html/body are overflow:hidden with no resize handling, and the
@@ -76,7 +84,7 @@ const fixedSizeInit = fixedSize
 
 <div
   class="mx-auto w-full max-w-3xl"
-  x-data="{ playing: false }"
+  x-data="{ playing: false, started: false }"
   x-init={`
     ${fixedSizeInit}
     /* A sandboxed iframe that holds keyboard focus receives its own keydown
@@ -124,11 +132,18 @@ const fixedSizeInit = fixedSize
         type="button"
         x-ref="startBtn"
         x-show="!playing"
-        x-on:click="if (!$refs.frame.src) { $refs.frame.src = $refs.frame.dataset.src } playing = true; $refs.frame.focus()"
+        x-on:click="if (!$refs.frame.src) { $refs.frame.src = $refs.frame.dataset.src } started = true; playing = true; $refs.frame.focus()"
         class="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-brand-dark/85 font-display text-xl font-extrabold text-primary-100"
       >
-        Click to play
-        <span class="text-sm font-normal text-primary-100/70"> Nothing moves until you do </span>
+        <span x-text="started ? 'Click to resume' : 'Click to play'">Click to play</span>
+        {
+          /* Only true before the first start — once the game has been
+             started it keeps running behind the overlay on focus loss (see
+             the docstring), so this line must not reappear then. */
+        }
+        <span x-show="!started" x-cloak class="text-sm font-normal text-primary-100/70">
+          Nothing moves until you do
+        </span>
       </button>
 
       <p

@@ -75,7 +75,12 @@ test.describe('cabinet page', () => {
 
   test('tells keyboard users how to get out, and Tab actually gets them out', async ({ page }) => {
     await page.goto('/arcade/keyboard-pong');
-    const startButton = page.getByRole('button', { name: /click to play/i });
+    // A ref-based locator, not a name-based one: the button's accessible name
+    // changes from "Click to play" to "Click to resume" once the game has
+    // been started (see the next test), so a locator keyed to "click to
+    // play" would stop matching the moment this test's own click succeeds.
+    const startButton = page.locator('[x-ref="startBtn"]');
+    await expect(startButton).toHaveAccessibleName(/click to play/i);
     await startButton.click();
 
     // The copy promises Tab (and a click outside) as the way back — not Esc.
@@ -99,6 +104,30 @@ test.describe('cabinet page', () => {
 
     await expect(startButton).toBeVisible();
     await expect(leaveHint).toBeHidden();
+  });
+
+  test('the return overlay says "resume", not "nothing moves" — the game is running behind it', async ({
+    page,
+  }) => {
+    // The game is deliberately left running (not unloaded) when focus is
+    // lost, so it must not be re-covered by the first-arrival "Nothing moves
+    // until you do" copy — that would be a false claim the second time
+    // around. This drives the same return path as the Tab test above and
+    // asserts the copy, which that test does not.
+    await page.goto('/arcade/keyboard-pong');
+    const startButton = page.locator('[x-ref="startBtn"]');
+    await expect(startButton).toHaveAccessibleName(/click to play/i);
+    await startButton.click();
+    await expect(page.getByText(/nothing moves until you do/i)).toBeHidden();
+
+    for (let i = 0; i < 8 && !(await startButton.isVisible()); i++) {
+      await page.keyboard.press('Tab');
+    }
+    await expect(startButton).toBeVisible();
+
+    await expect(startButton.getByText(/click to resume/i)).toBeVisible();
+    await expect(startButton.getByText(/click to play/i)).toBeHidden();
+    await expect(page.getByText(/nothing moves until you do/i)).toBeHidden();
   });
 
   test('describes the game in text for people who cannot play it', async ({ page }) => {
