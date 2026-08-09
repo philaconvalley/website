@@ -1,3 +1,10 @@
+# OS metadata. Finder writes .DS_Store into any directory a Mac user browses,
+# so without this rule they get swept back in by the next `git add .` — which is
+# how they survived being deleted once already on waskar/site-redesign.
+.DS_Store
+._*
+Thumbs.db
+
 # Logs
 logs
 *.log
