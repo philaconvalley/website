@@ -28,14 +28,17 @@ const rsvpHref = nextEvent?.url ?? '/events';
 ---
 
 <!--
-  backdrop-blur-lg, not -sm: a 4px blur was enough while every page scrolled
-  cream-on-cream under this bar, but the arcade sends a dark cabinet and a
-  saturated marquee beneath it, and at 95% opacity their shapes stayed legible
-  through the header — you could read a game's title behind the nav links. A
-  real frost turns that into a uniform tint. Matches the mobile menu below,
-  which has always used backdrop-blur-lg.
+  Fully opaque, deliberately. This bar was bg-primary-100/95 with a blur, which
+  went unnoticed for as long as every page scrolled cream-on-cream underneath
+  it. The arcade sends a dark cabinet and a saturated marquee beneath it, and at
+  95% you could read a game's title through the nav links. A heavier blur turned
+  that into a soft tint, but a sticky bar that still smudges whatever passes
+  under it is a bar that keeps getting revisited every time the site gains a
+  high-contrast page. Opaque ends the class of bug rather than this instance.
+  The mobile menu below keeps its translucency — it sits over a dimmed page it
+  controls, not over arbitrary scrolling content.
 -->
-<header class="sticky top-0 z-50 bg-primary-100/95 backdrop-blur-lg border-b border-brand-dark/10">
+<header class="sticky top-0 z-50 bg-primary-100 border-b border-brand-dark/10">
   <nav class="container-custom" x-data="{ mobileMenuOpen: false }">
     <div class="flex items-center justify-between h-[68px]">
       <!-- Wordmark -->
