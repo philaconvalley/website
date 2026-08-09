@@ -414,7 +414,9 @@ document.getElementById('retryBtn').addEventListener('click', resetGame);
 function startGame() {
   state = STATE.PLAY;
   document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('startScreen').classList.remove('active');
   document.getElementById('gameOverScreen').classList.add('hidden');
+  document.getElementById('gameOverScreen').classList.remove('active');
   const hud = document.getElementById('hudScore');
   hud.style.display = 'block';
   hud.classList.remove('hidden');
@@ -427,7 +429,9 @@ function startGame() {
 }
 
 function resetGame() {
-  document.getElementById('gameOverScreen').classList.add('hidden');
+  const gameOver = document.getElementById('gameOverScreen');
+  gameOver.classList.add('hidden');
+  gameOver.classList.remove('active');
   startGame();
 }
 
@@ -564,7 +568,13 @@ function showGameOver() {
   } else {
     badge.style.display = 'none';
   }
-  document.getElementById('gameOverScreen').classList.remove('hidden');
+  // `active` is what grants pointer-events: `.overlay` is `pointer-events: none`
+  // by default so the canvas stays clickable underneath it. Removing `hidden`
+  // alone left this screen fully visible but transparent to clicks, so Try Again
+  // could never be pressed — only Enter restarted the game.
+  const gameOver = document.getElementById('gameOverScreen');
+  gameOver.classList.remove('hidden');
+  gameOver.classList.add('active');
 }
 
 function updateHud(bump) {

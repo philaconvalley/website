@@ -326,4 +326,12 @@
   [data-testid='mobile-menu'] {
     @apply backdrop-blur-none bg-brand-dark;
   }
+
+  /* The sticky header was left out of this rule while it was translucent
+     against cream-on-cream pages, where nobody could tell. Over the arcade's
+     dark cabinets the difference is obvious, so it honours the preference too:
+     opaque, no blur. */
+  header {
+    @apply backdrop-blur-none bg-primary-100;
+  }
 }
