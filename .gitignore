@@ -158,3 +158,6 @@ playwright/.cache/
 
 # macOS finder metadata
 .DS_Store
+
+# Lighthouse CI run output
+.lighthouseci/

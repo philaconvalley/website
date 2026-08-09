@@ -115,6 +115,79 @@ The card on `/blog` will link directly to your content. PhilaCon Valley amplifie
 
 Same as above but without `externalUrl` and `platform`. Write the full content in the Markdown body and it will be hosted on the site.
 
+## Adding a Game to the Arcade
+
+Games on `/arcade` run in a sandboxed `<iframe sandbox="allow-scripts">` on
+philaconvalley.com, so they live under a stricter policy than a normal web
+page. Read this before you start writing a game, not after — the constraints
+below shape what you can build, not just how you package it at the end.
+
+### The hard requirement: one self-contained HTML file
+
+A game must be a **single HTML file with everything inlined** — markup,
+CSS, JavaScript, and any library you use (Three.js, for example, is inlined
+whole into Pigeon Post for this reason). No sibling `.js` or `.css` file, no
+CDN `<script src>`, no build step producing multiple output files.
+
+This isn't a style preference — a sibling file genuinely does not load. The
+sandboxed iframe has no origin of its own (`sandbox="allow-scripts"` gives it
+an opaque origin), and a `fetch` or `<script src>` for a same-directory file
+is blocked by the browser as cross-origin. It fails silently in a way that
+looks like a bug in your game rather than a policy. Inlining everything is
+the only thing that works.
+
+### Other constraints the sandbox imposes
+
+- **No network calls.** The `/games/` Content-Security-Policy sets
+  `connect-src 'none'`, so there is no `fetch`, no `XHR`, no `WebSocket`, and
+  no analytics of any kind, even same-origin.
+- **No CDN links.** Google Fonts (`fonts.googleapis.com` /
+  `fonts.gstatic.com`) is the only external origin the policy allows through
+  `style-src`/`font-src`. Everything else must be inlined or omitted.
+- **No storage you can rely on.** The opaque sandbox origin means
+  `localStorage` **throws** rather than silently failing. Wrap any access in
+  `try`/`catch` and degrade to something session-only — Flappy Philacon does
+  exactly this, falling back to an in-memory high score for the tab's
+  lifetime when storage isn't available.
+- **Only inline `unsafe-inline` script/style is allowed.** The full policy
+  applied under `/games/` is:
+
+  ```
+  default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'
+  fonts.googleapis.com; font-src fonts.gstatic.com; img-src data: blob:;
+  connect-src 'none'; frame-ancestors 'self'
+  ```
+
+  Images and fonts you need must be `data:`/`blob:` URIs baked into the
+  file, not separate assets.
+
+### Steps
+
+1. Put your file at `public/games/<your-slug>/index.html`. It must be the
+   whole game — see the requirement above.
+2. Add `src/content/arcade/<your-slug>.md` — copy an existing entry (e.g.
+   `src/content/arcade/flappy-philacon.md`) for the field list. `longDescription`
+   and `thumbnailAlt` are required and must be written by a person: canvas
+   games are opaque to screen readers, so these are how someone who cannot
+   see or play your game finds out what it is.
+3. Run `npm run build && node scripts/serve-with-headers.mjs 4322`, then
+   `npm run arcade:shots` in a second terminal to generate your thumbnail.
+   Look at the result — if it captured a title screen rather than gameplay,
+   add a warm-up for your game in `scripts/capture-arcade-shots.mjs`.
+4. Set `input` to only the input methods your game truly supports. If your
+   game needs a keyboard and cannot be played by tapping or dragging, list
+   only `keyboard` — the site will then tell phone visitors honestly ("Desktop
+   only") instead of showing them something they cannot play.
+5. Open a pull request.
+
+### A note on licensing
+
+The repo is MIT-licensed, so committing a game licenses it to the world
+irrevocably. If the game wasn't written by you personally for this repo (for
+example, work done under a contractor agreement), make sure the agreement
+assigns the work to PhilaCon Valley, or attach written sign-off from the
+author on the pull request. A maintainer will ask for this before merging.
+
 ## What About GitHub Repos?
 
 The `/projects` page automatically displays all repositories from the [philaconvalley GitHub organization](https://github.com/philaconvalley). If your project is in the org, it shows up with no file needed.
