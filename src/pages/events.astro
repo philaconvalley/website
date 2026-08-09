@@ -26,35 +26,35 @@ const photos = (await getCollection('gallery')).sort(
     </div>
   </section>
 
-  <!-- What to Expect -->
+  <!-- What to expect -->
   <section class="section-padding bg-primary-100">
     <div class="container-custom">
       <div class="max-w-4xl mx-auto">
-        <h2 class="text-3xl font-bold mb-8 text-center">What to Expect</h2>
+        <h2 class="text-3xl font-bold mb-8 text-center">What to expect</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="bg-white p-6 rounded-retro border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-xl font-bold mb-3">Collaborative Environment</h3>
+            <h3 class="text-xl font-bold mb-3">Collaborative environment</h3>
             <p class="text-brand-dark/60">
               Work on projects together through pair programming and group collaboration. Everyone
               contributes, everyone learns.
             </p>
           </div>
           <div class="bg-white p-6 rounded-retro border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-xl font-bold mb-3">Hands-On Learning</h3>
+            <h3 class="text-xl font-bold mb-3">Hands-on learning</h3>
             <p class="text-brand-dark/60">
               No passive lectures. You'll be coding, building, and creating from day one. Bring your
               laptop and get ready to build.
             </p>
           </div>
           <div class="bg-white p-6 rounded-retro border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-xl font-bold mb-3">Supportive Community</h3>
+            <h3 class="text-xl font-bold mb-3">Supportive community</h3>
             <p class="text-brand-dark/60">
               Everyone is welcome, regardless of experience level. Ask questions, share knowledge,
               and support each other.
             </p>
           </div>
           <div class="bg-white p-6 rounded-retro border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-xl font-bold mb-3">Real Projects</h3>
+            <h3 class="text-xl font-bold mb-3">Real projects</h3>
             <p class="text-brand-dark/60">
               Work on projects that matter – community tools, portfolio pieces, and open source
               contributions you can showcase.
@@ -68,14 +68,14 @@ const photos = (await getCollection('gallery')).sort(
   <!-- Luma Calendar Embed -->
   <section class="section-padding bg-primary-100">
     <div class="container-custom">
-      <h2 class="text-3xl font-bold mb-8 text-center">Event Calendar</h2>
+      <h2 class="text-3xl font-bold mb-8 text-center">Event calendar</h2>
       <div class="max-w-4xl mx-auto">
         <div
           class="bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro-lg overflow-hidden flex justify-center p-4"
         >
           <iframe
             src={links.lumaEmbed}
-            title="PhilaCon Valley Event Calendar"
+            title="PhilaCon Valley Event calendar"
             width="100%"
             height="600"
             style="border: 1px solid #bfcbda88; border-radius: 4px; max-width: 800px;"
@@ -98,7 +98,7 @@ const photos = (await getCollection('gallery')).sort(
   <!-- Event Types -->
   <section class="section-padding">
     <div class="container-custom">
-      <h2 class="text-3xl font-bold mb-8 text-center">Types of Events</h2>
+      <h2 class="text-3xl font-bold mb-8 text-center">Types of events</h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
         <div class="text-center">
           <div
@@ -166,7 +166,7 @@ const photos = (await getCollection('gallery')).sort(
               ></path>
             </svg>
           </div>
-          <h3 class="text-xl font-bold mb-3">Career Sessions</h3>
+          <h3 class="text-xl font-bold mb-3">Career sessions</h3>
           <p class="text-brand-dark/60">
             Resume reviews, interview prep, job search strategies, and networking opportunities.
           </p>
@@ -178,7 +178,7 @@ const photos = (await getCollection('gallery')).sort(
   <!-- Community Photos -->
   <section class="section-padding">
     <div class="container-custom">
-      <h2 class="text-3xl font-bold mb-8 text-center">The Community, In Person</h2>
+      <h2 class="text-3xl font-bold mb-8 text-center">The community, in person</h2>
       <div class="max-w-5xl mx-auto">
         <PhotoGrid
           photos={photos.map((photo) => ({
@@ -196,13 +196,13 @@ const photos = (await getCollection('gallery')).sort(
   <!-- CTA -->
   <section class="section-padding bg-accent-400 text-white border-t-[3px]">
     <div class="container-custom text-center">
-      <h2 class="text-4xl font-bold mb-6">Ready to Join Us?</h2>
+      <h2 class="text-4xl font-bold mb-6">Ready to join us?</h2>
       <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">
         RSVP for our next event and become part of Philadelphia's thriving tech community.
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <Button href={links.luma} external variant="secondary" size="lg">
-          View Events on Luma
+          View events on Luma
         </Button>
         <Button
           href="/join"
