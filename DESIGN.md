@@ -170,9 +170,12 @@ The strongest existing part of this system and the least documented outside code
 1. **Looping motion is reserved for the Lab narrative on the homepage** (`src/components/LabTrack.astro`). It is the page's only infinite motion. Do not add a second looping element anywhere without retiring this one — two competing loops destroy the narrative reading.
 2. **Every looping element must be legible in its final state**, because `prefers-reduced-motion` freezes it exactly there.
 3. **The reduced-motion block is deliberately unlayered** (outside `@layer`) so it wins against Tailwind's cascade order regardless of layer sorting. Do not move it into a layer.
-4. **`.pcv-loop-track` needs an explicit `width: 100%` under reduced motion.** It draws itself by animating width from 0; freezing it without restoring width leaves a zero-width line and the timeline dots sit on nothing. This is the one element that is unsafe to freeze naively.
-5. **Standard easing is `cubic-bezier(0.22, 1, 0.36, 1)`** for entrances and joins — a decelerating ease-out. Durations cluster at 0.8–1.0s for entrances and 8s for the loop cycle.
-6. **New motion goes through the `animate` skill**, per the design-team charter. `impeccable animate` is not used on this repo.
+4. **Animate `transform` and `opacity`, never layout properties.** `.pcv-loop-track` used to draw itself by animating `width` from 0 — a relayout every frame, forever, and a footgun that needed its own reduced-motion special case to avoid freezing at zero width. It now scales (`transform-origin: left`, `scaleX(0) → scaleX(1)`), which composites and needs no special case. **`scaleX` is only safe on the track because it is a childless 1px line with no border-radius.** It is the wrong fix for the nav pill — see rule 5.
+5. **The desktop nav pill is a deliberate, documented exception.** `Header.astro` transitions `width` alongside `transform`. `scaleX` would stretch its `rounded-full` ends into ellipses, so the layout cost is accepted: it is one small element, on a discrete hover, bounded at 200ms — not an infinite loop. Do not "fix" it to `scaleX` without solving the radius distortion.
+6. **Standard easing is `cubic-bezier(0.22, 1, 0.36, 1)`** for entrances and joins — a decelerating ease-out. Durations cluster at 0.8–1.0s for entrances and 8s for the loop cycle. Hero entrances exceed the 300ms UI budget on purpose: they are once-per-session display motion on a Persuade surface.
+7. **Never `ease-in`, and never `transition: all`.** `ease-in` delays the moment the user is watching; `transition: all` animates whatever happens to differ, off the GPU. Name the properties.
+8. **Hover motion is gated to real pointers** by `future.hoverOnlyWhenSupported` in `tailwind.config.mjs`, so every `hover:` utility compiles inside `@media (hover: hover)`. Hand-written CSS `:hover` rules must gate themselves.
+9. **New motion goes through the `animate` skill**, per the design-team charter. `impeccable animate` is not used on this repo.
 
 ## Known tensions
 

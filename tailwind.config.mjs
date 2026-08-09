@@ -1,6 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
+  future: {
+    // Compiles every `hover:` utility inside `@media (hover: hover)`. Without
+    // it, tapping a card or button on a phone leaves the hover transform stuck
+    // until you tap elsewhere. One flag instead of gating ~30 utilities by hand.
+    hoverOnlyWhenSupported: true,
+  },
   theme: {
     extend: {
       colors: {

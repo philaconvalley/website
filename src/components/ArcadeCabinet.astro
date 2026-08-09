@@ -149,9 +149,16 @@ const marqueeBg = empty ? 'bg-primary-200' : marqueeClass;
     }
   }
 
-  .cabinet:hover {
-    transform: translateY(-4px);
-    transition: transform 0.2s ease-out;
+  /* Transition lives on the base rule, not inside :hover — declared only under
+     :hover, the lift animates in and then snaps back on mouse-out. */
+  .cabinet {
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .cabinet:hover {
+      transform: translateY(-4px);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
