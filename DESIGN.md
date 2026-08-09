@@ -90,7 +90,15 @@ Every claim gets made at the highest rung it can reach. Rungs, strongest first:
 ### Rules
 
 1. **Every surface carries at least one non-prose element above rung 5.** A page that cannot reach rung 4 has a content problem, not a design problem, and the fix is content — not more copy.
-2. **Prose budget, by mode.** Body words inside `<main>`, excluding nav, footer, and headings:
+2. **Prose budget, by mode.** Measured on the **built** page, not the source, because components expand. Count every word inside `<main>` — headings included — then subtract three things, each for a stated reason:
+
+   | Subtract                                 | Because                                                                                                                    |
+   | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+   | `<pre>` / `<code>` content               | Commands are artifacts, not sentences. A `git clone` line is evidence.                                                     |
+   | The interior of a rung-1 operable object | It is the proof, not a claim about the proof. **Capped separately at 120 words** so it cannot become an essay in disguise. |
+   | Anything outside `<main>`                | Nav and footer are chrome, and are shared.                                                                                 |
+
+   _Headings count._ An earlier draft of this rule said they were excluded while every baseline below was measured with them included; the numbers were right and the sentence was wrong. This is the reproducible definition — Join measures 154 page prose plus 117 object interior under it.
 
    | Mode     | Budget | Today                                                         |
    | -------- | ------ | ------------------------------------------------------------- |
