@@ -159,3 +159,12 @@ playwright/.cache/
 # `astro check` (and therefore `npm run build`) runs first, so nothing needs it
 # committed — tracked, it just produced a dirty tree on every dev server start.
 .astro/
+
+# Superpowers brainstorming session artifacts
+.superpowers/
+
+# macOS finder metadata
+.DS_Store
+
+# Lighthouse CI run output
+.lighthouseci/

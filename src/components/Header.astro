@@ -11,6 +11,7 @@ const navItems = [
   { name: 'About', href: '/about' },
   { name: 'Events', href: '/events' },
   { name: 'Projects', href: '/projects' },
+  { name: 'Arcade', href: '/arcade' },
   { name: 'Resources', href: '/resources' },
   // Blog is hidden until an editorial procedure exists — see src/pages/_blog/.
   // { name: 'Blog', href: '/blog' },
@@ -26,7 +27,18 @@ const eventDate = nextEvent ? formatEventDate(nextEvent.start) : null;
 const rsvpHref = nextEvent?.url ?? '/events';
 ---
 
-<header class="sticky top-0 z-50 bg-primary-100/95 backdrop-blur-sm border-b border-brand-dark/10">
+<!--
+  Fully opaque, deliberately. This bar was bg-primary-100/95 with a blur, which
+  went unnoticed for as long as every page scrolled cream-on-cream underneath
+  it. The arcade sends a dark cabinet and a saturated marquee beneath it, and at
+  95% you could read a game's title through the nav links. A heavier blur turned
+  that into a soft tint, but a sticky bar that still smudges whatever passes
+  under it is a bar that keeps getting revisited every time the site gains a
+  high-contrast page. Opaque ends the class of bug rather than this instance.
+  The mobile menu below keeps its translucency — it sits over a dimmed page it
+  controls, not over arbitrary scrolling content.
+-->
+<header class="sticky top-0 z-50 bg-primary-100 border-b border-brand-dark/10">
   <nav class="container-custom" x-data="{ mobileMenuOpen: false }">
     <div class="flex items-center justify-between h-[68px]">
       <!-- Wordmark -->

@@ -1,0 +1,108 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CabinetFrame from '../../components/CabinetFrame.astro';
+import Button from '../../components/Button.astro';
+
+export async function getStaticPaths() {
+  const games = await getCollection('arcade');
+  return games.map((game) => ({
+    params: { slug: game.data.slug },
+    props: { game, games },
+  }));
+}
+
+const { game, games } = Astro.props;
+const {
+  title,
+  contributors,
+  description,
+  longDescription,
+  ogImage,
+  marqueeColor,
+  kind,
+  input,
+  fixedSize,
+  controls,
+  slug,
+} = game.data;
+
+const playableOnPhone = input.includes('pointer') || input.includes('touch');
+
+// The suggestion offered to phone visitors when this game needs a keyboard.
+const phoneAlternative = games.find(
+  (g) =>
+    g.data.slug !== slug && (g.data.input.includes('pointer') || g.data.input.includes('touch')),
+);
+---
+
+<BaseLayout title={`${title} - PhilaCon Arcade`} description={description} image={ogImage}>
+  <section class="bg-brand-coral text-white py-12">
+    <div class="container-custom">
+      <div class="max-w-3xl mx-auto">
+        <a href="/arcade" class="text-white/90 hover:text-white">← Back to the Arcade</a>
+        <h1 class="mt-3 text-4xl md:text-5xl font-bold">{title}</h1>
+        <p class="mt-2 text-lg text-white/85">
+          Built by {contributors.join(', ')}{kind === 'demo' ? ' · Demo, no score' : ''}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-padding">
+    <div class="container-custom">
+      {
+        playableOnPhone ? (
+          <CabinetFrame
+            slug={slug}
+            title={title}
+            marqueeColor={marqueeColor}
+            controls={controls}
+            fixedSize={fixedSize}
+          />
+        ) : (
+          <>
+            {/* Keyboard-only games get the cabinet on anything wide enough for a
+                keyboard, and an honest explanation on anything that is not.
+                Shipping a cabinet a phone visitor can tap but never play is the
+                worst outcome available here. */}
+            <div class="hidden md:block">
+              <CabinetFrame
+                slug={slug}
+                title={title}
+                marqueeColor={marqueeColor}
+                controls={controls}
+                fixedSize={fixedSize}
+              />
+            </div>
+            <div class="md:hidden mx-auto max-w-md rounded-retro bg-brand-dark p-8 text-center">
+              <p class="font-display text-2xl font-extrabold text-primary-100">
+                This one needs a keyboard
+              </p>
+              <p class="mt-3 text-sm text-primary-100/75">
+                {title} is played with two sets of keys, so it cannot run on a touchscreen. Come
+                back on a laptop.
+              </p>
+              {phoneAlternative && (
+                <div class="mt-6">
+                  <Button href={`/arcade/${phoneAlternative.data.slug}`} variant="primary">
+                    Play {phoneAlternative.data.title} instead
+                  </Button>
+                </div>
+              )}
+            </div>
+          </>
+        )
+      }
+
+      <div class="mx-auto mt-12 max-w-2xl">
+        <h2 class="font-display text-2xl font-bold text-brand-dark">About this {kind}</h2>
+        {
+          /* Required prose, not decoration: a canvas game is invisible to a screen
+            reader, so this is the only description of it that some visitors get. */
+        }
+        <p class="mt-3 text-lg leading-relaxed text-brand-dark/75">{longDescription}</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

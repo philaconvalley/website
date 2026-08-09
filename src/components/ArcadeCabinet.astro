@@ -1,0 +1,165 @@
+---
+/**
+ * One arcade cabinet on the wall. Presentational — it renders a link, never a
+ * game. The wall shows static thumbnails so that visiting /arcade costs three
+ * images rather than three running games.
+ *
+ * The cabinet silhouette is the arcade signal, which is why this ships no
+ * pixel font: the shape does the work the typeface would otherwise be asked
+ * to do, and the site's two typefaces stay two. See docs/design-system.md.
+ *
+ * The whole card is one <a> — marquee, screen and control panel all sit
+ * inside it — so the obvious click target (the artwork) actually works, and
+ * a screen reader's link list gets exactly one entry per cabinet instead of
+ * two pointing at the same place.
+ */
+interface Props {
+  title: string;
+  href?: string;
+  thumbnail?: string;
+  thumbnailAlt?: string;
+  contributors?: string[];
+  marqueeColor: 'pink' | 'purple' | 'yellow' | 'coral';
+  kind?: 'game' | 'demo';
+  input?: ('keyboard' | 'pointer' | 'touch')[];
+  index?: number;
+  empty?: boolean;
+}
+
+const {
+  title,
+  href,
+  thumbnail,
+  thumbnailAlt,
+  contributors = [],
+  marqueeColor,
+  kind = 'game',
+  input = [],
+  index = 0,
+  empty = false,
+} = Astro.props;
+
+const marqueeClass = {
+  pink: 'bg-brand-pink',
+  purple: 'bg-brand-purple',
+  yellow: 'bg-brand-yellow',
+  coral: 'bg-brand-coral',
+}[marqueeColor];
+
+// A game that takes no pointer or touch input cannot be played on a phone.
+// Saying so on the placard is cheaper than a visitor discovering it after a
+// tap, a page load, and a wait.
+const desktopOnly = !empty && !input.includes('pointer') && !input.includes('touch');
+
+// The submission cabinet stays a single, unbroken link to the "how to add a
+// game" doc — same click target as a live cabinet, just pointed elsewhere.
+const linkHref = empty
+  ? 'https://github.com/philaconvalley/website/blob/main/docs/adding-content.md'
+  : href;
+
+// "YOUR GAME HERE" needs to read as unlit next to the three vivid, saturated
+// marquees — but "unlit" has to come from the marquee's own colour, not from
+// fading the text. Fading the whole marquee (bg + text together) drags the
+// text below WCAG AA against its own background; a muted, desaturated token
+// swap keeps full-strength text while still looking powered off.
+const marqueeBg = empty ? 'bg-primary-200' : marqueeClass;
+---
+
+<a
+  href={linkHref}
+  class="cabinet group block w-full max-w-[220px] no-underline focus:outline-none"
+  data-cabinet={empty ? 'submit' : href?.split('/').pop()}
+  style={`--cabinet-index:${index}`}
+>
+  <div
+    class="cabinet-housing overflow-hidden rounded-t-[26px] rounded-b-lg bg-brand-dark shadow-retro-lg ring-4 ring-transparent transition-shadow group-focus-visible:ring-accent-500"
+  >
+    <!-- Marquee crowns the cabinet — flush to the top edge, sharing its radius,
+         so it reads as the machine's lit header rather than a label pinned
+         inside a box. -->
+    <div
+      class={`${marqueeBg} px-3 py-3 text-center font-display text-sm font-extrabold leading-tight text-brand-dark`}
+    >
+      {empty ? 'YOUR GAME HERE' : title}
+    </div>
+
+    <div class="mx-2.5 mt-2.5 overflow-hidden rounded border-[3px] border-black bg-brand-dark">
+      {
+        empty ? (
+          <div class="flex aspect-[4/3] items-center justify-center">
+            <div class="h-1.5 w-12 rounded-full bg-primary-100/70" aria-hidden="true" />
+          </div>
+        ) : (
+          <img
+            src={thumbnail}
+            alt={thumbnailAlt}
+            width="800"
+            height="600"
+            loading="lazy"
+            decoding="async"
+            class="aspect-[4/3] w-full object-cover"
+          />
+        )
+      }
+    </div>
+
+    <!-- The shoulder: a narrower, separately-rounded panel breaks the cabinet
+         into head (marquee + screen) and base (controls) instead of one
+         uniform rectangle. -->
+    <div class="mx-4 mb-2.5 mt-2.5 rounded-lg bg-primary-950 px-3 py-2.5">
+      <div class="flex items-center justify-between">
+        <span
+          class="relative inline-flex h-7 w-7 items-center justify-center rounded-full bg-brand-dark ring-4 ring-brand-dark/50"
+          aria-hidden="true"
+        >
+          <span class="h-3 w-3 rounded-full bg-primary-100"></span>
+        </span>
+        <span class="flex items-center gap-2" aria-hidden="true">
+          <span class={`h-5 w-5 rounded-full ${marqueeBg} ring-2 ring-brand-dark/50`}></span>
+          <span class="h-5 w-5 rounded-full bg-primary-100 ring-2 ring-brand-dark/50"></span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-2.5 text-center">
+    <p class="font-display text-base font-bold text-brand-dark group-hover:text-accent-600">
+      {empty ? 'Add yours' : title}
+    </p>
+    <p class="text-xs text-brand-dark/60">
+      {empty ? 'Built something? Open a pull request.' : contributors.join(', ')}
+      {!empty && kind === 'demo' && <span class="block">Demo — no score</span>}
+      {desktopOnly && <span class="block font-semibold">Desktop only</span>}
+    </p>
+  </div>
+</a>
+
+<style>
+  /* One entrance, staggered by position. Cabinets arriving in sequence reads as
+     a row of machines powering on; all four at once reads as a page load. */
+  .cabinet {
+    animation: cabinet-rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+    animation-delay: calc(var(--cabinet-index) * 60ms);
+  }
+
+  @keyframes cabinet-rise {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+  }
+
+  .cabinet:hover {
+    transform: translateY(-4px);
+    transition: transform 0.2s ease-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cabinet,
+    .cabinet:hover {
+      animation: none;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>

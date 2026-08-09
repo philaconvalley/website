@@ -58,9 +58,35 @@ const gallery = defineCollection({
   }),
 });
 
+const arcade = defineCollection({
+  loader: glob({ pattern: '**/[^_]*.md', base: './src/content/arcade' }),
+  schema: z.object({
+    title: z.string(),
+    contributors: z.array(z.string()),
+    description: z.string(),
+    // Required, and required to be real prose: canvas games are opaque to
+    // screen readers and no amount of page markup fixes that. This is the
+    // description of the game for someone who cannot see or play it.
+    longDescription: z.string(),
+    slug: z.string(),
+    thumbnail: z.string(),
+    // Authored, never generated. The capture script can produce the image; it
+    // cannot describe it. Mirrors the required `alt` on the gallery collection.
+    thumbnailAlt: z.string(),
+    ogImage: z.string(),
+    marqueeColor: z.enum(['pink', 'purple', 'yellow', 'coral']),
+    kind: z.enum(['game', 'demo']),
+    input: z.array(z.enum(['keyboard', 'pointer', 'touch'])).nonempty(),
+    fixedSize: z.object({ w: z.number(), h: z.number() }).optional(),
+    controls: z.array(z.object({ keys: z.array(z.string()), label: z.string() })),
+    date: z.date(),
+  }),
+});
+
 export const collections = {
   projects,
   resources,
   blog,
   gallery,
+  arcade,
 };

@@ -123,6 +123,66 @@ Each page can specify a unique Open Graph image for social sharing previews. Pas
 
 Currently all pages use the default banner (`/images/1200x675 banner.png`). To add unique images per page, create them and add the `image` prop — the SEO component handles the rest.
 
+### Arcade Cabinet (`src/components/ArcadeCabinet.astro`)
+
+Used only on `/arcade`. The whole cabinet — marquee, screen and control deck —
+is a single `<a>`, so the obvious click target (the artwork) actually works
+and a screen reader's link list gets one entry per cabinet instead of several
+pointing at the same place.
+
+| Part         | Token                                                                          |
+| ------------ | ------------------------------------------------------------------------------ |
+| Cabinet body | `bg-brand-dark`                                                                |
+| Marquee      | one of `bg-brand-pink`, `bg-brand-purple`, `bg-brand-yellow`, `bg-brand-coral` |
+| Screen bezel | `border-black`                                                                 |
+| Control deck | `bg-primary-950`, with an offset joystick and two round buttons                |
+| Placard text | `text-brand-dark`                                                              |
+| Focus ring   | `group-focus-visible:ring-accent-500` on the cabinet housing                   |
+
+The marquee crowns the housing flush to the top edge — no margin, sharing the
+housing's corner radius — so it reads as the machine's lit header rather than
+a label pinned inside a box.
+
+The empty "YOUR GAME HERE" submission cabinet uses `bg-primary-200` for its
+marquee, not a faded/opacity version of the live marquee colors. Fading the
+whole marquee (background and text together) drags the text below WCAG AA
+against its own background; swapping to a genuinely muted token keeps
+full-strength text contrast while still reading as "powered off" next to the
+saturated, lit marquees around it.
+
+Two rules worth keeping:
+
+**No pixel font.** The cabinet silhouette is what says "arcade" — the typeface
+is not asked to do that job. Baloo 2 at `font-extrabold` on the marquee is the
+whole treatment. A third typeface would cost contrast at small sizes and buy
+nothing.
+
+**Dark as an object, not a theme.** The cabinet is dark the way `Header` and
+`Footer` are dark. The page stays cream. The site has no dark mode, and the
+arcade does not introduce one.
+
+### Arcade Player (`src/components/CabinetFrame.astro`)
+
+Used on each cabinet's own page (`/arcade/<slug>/`) to embed the actual game.
+The game runs in a sandboxed `<iframe sandbox="allow-scripts">` behind a
+"Click to play" overlay — nothing animates or takes focus until a visitor
+opts in.
+
+Once a game has focus, it owns the keyboard: **the documented way out is Tab
+(or Shift+Tab), or clicking outside the frame — not Esc.** This isn't a
+design choice; it's a browser constraint. Once the sandboxed iframe holds
+keyboard focus, its keydown events never reach the parent window, so an
+`Esc` handler on the page cannot fire while the game has focus. Tab still
+works because the browser itself moves focus out of the iframe, not the
+page's own JavaScript. If you're documenting or reviewing the cabinet page's
+behavior, say "press Tab," not "press Esc."
+
+### Page Hero Colors
+
+| Page   | Color | Class            |
+| ------ | ----- | ---------------- |
+| Arcade | Coral | `bg-brand-coral` |
+
 ## Making Changes
 
 - **Colors**: Edit the `colors` object in `tailwind.config.mjs`

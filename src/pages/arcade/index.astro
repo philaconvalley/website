@@ -1,0 +1,46 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArcadeCabinet from '../../components/ArcadeCabinet.astro';
+
+const games = (await getCollection('arcade')).sort(
+  (a, b) => a.data.date.valueOf() - b.data.date.valueOf(),
+);
+---
+
+<BaseLayout
+  title="Arcade - PhilaCon Valley"
+  description="Play browser games built by the PhilaCon Valley community. Built at Collab Labs, playable right here."
+>
+  <section class="bg-brand-coral text-white py-20">
+    <div class="container-custom">
+      <div class="max-w-4xl mx-auto text-center">
+        <h1 class="text-5xl md:text-6xl font-bold mb-6">The Arcade</h1>
+        <p class="text-2xl text-white/85">Games built by the community. Playable right here.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-padding">
+    <div class="container-custom">
+      <div class="flex flex-wrap items-start justify-center gap-6 md:gap-8">
+        {
+          games.map((game, i) => (
+            <ArcadeCabinet
+              title={game.data.title}
+              href={`/arcade/${game.data.slug}`}
+              thumbnail={game.data.thumbnail}
+              thumbnailAlt={game.data.thumbnailAlt}
+              contributors={game.data.contributors}
+              marqueeColor={game.data.marqueeColor}
+              kind={game.data.kind}
+              input={game.data.input}
+              index={i}
+            />
+          ))
+        }
+        <ArcadeCabinet title="Your game here" marqueeColor="coral" index={games.length} empty />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
