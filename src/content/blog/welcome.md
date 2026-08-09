@@ -10,7 +10,7 @@ PhilaCon Valley is a community-driven tech organization centering Black, Brown, 
 
 ## What We Do
 
-We host Collab Labs, workshops, and career support sessions across Philadelphia. Everything is free, hands-on, and open to all skill levels.
+We host Labs, workshops, and career support sessions across Philadelphia. Everything is free, hands-on, and open to all skill levels.
 
 ## Get Involved
 

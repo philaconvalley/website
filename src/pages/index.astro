@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import EventBar from '../components/EventBar.astro';
-import BuilderNightTrack from '../components/BuilderNightTrack.astro';
+import LabTrack from '../components/LabTrack.astro';
 import { getCommunityData } from '../lib/community';
 import { community } from '../config';
 import { getCollection } from 'astro:content';
@@ -9,7 +9,7 @@ import { getCollection } from 'astro:content';
 const { nextEvent, nightsHeld, thingsShipped } = await getCommunityData();
 
 /**
- * The design calls for one full-bleed photo of a Builder Night — warm, faces.
+ * The design calls for one full-bleed photo of a Lab — warm, faces.
  * There is no stand-in for that: the banner artwork is brand illustration, not a
  * room full of people, and cropping it full-bleed would read as a placeholder.
  * So the section renders only when a real photo exists in the gallery
@@ -57,7 +57,7 @@ const stats = [
       </p>
     </section>
 
-    <!-- What a Builder Night actually is -->
+    <!-- What a Lab actually is -->
     <section
       class="px-5 lg:px-[72px] py-14 lg:py-[104px] border-t border-brand-dark/[0.11] bg-primary-50 lg:grid lg:grid-cols-2 lg:gap-24 lg:items-start"
     >
@@ -66,10 +66,7 @@ const stats = [
       >
         One night. Three hours. Something exists that didn't.
       </h2>
-      <BuilderNightTrack
-        outcome="Your first pull request"
-        outcomeDetail="Reviewed, merged, and live."
-      />
+      <LabTrack outcome="Your first pull request" outcomeDetail="Reviewed, merged, and live." />
     </section>
 
     {
@@ -96,8 +93,8 @@ const stats = [
           Free, forever, for us.
         </h3>
         <p class="text-base lg:text-[17px] leading-[1.65] text-brand-dark/70 m-0">
-          Builder Nights, workshops, and career labs. You show up, you pair with someone, you leave
-          having made a thing. No application, no fee, no prerequisite.
+          Labs, workshops, and career sessions. You show up, you pair with someone, you leave having
+          made a thing. No application, no fee, no prerequisite.
         </p>
         <a
           href="/join"

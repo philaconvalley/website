@@ -46,7 +46,7 @@ Not sure what to write about? Here are some ideas grouped by type. Pick one that
 
 - Recap of a PhilaCon Valley event
 - Spotlight on a community member
-- A project we built together at Collab Lab
+- A project we built together at Lab
 - Why open source matters and how to start
 - Resources that helped me level up
 

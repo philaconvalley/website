@@ -33,8 +33,8 @@ Owned by the Brand Book's Voice & Tone section. Summarized here only where the s
 
 **Decided 08/09/2026.** The flagship hands-on event is a **Lab**. This settles a three-way split:
 
-- **"Collab Lab"** — what the site says today in 14+ places (README, Code of Conduct, Join, Events, Support, Projects, Arcade, `docs/writing-guide.md`). **Renames to "Lab".**
-- **"Builder Night"** — invented during the homepage redesign and never reconciled with anything. It exists only in `src/pages/index.astro`, `src/components/BuilderNightTrack.astro`, a `global.css` comment, two e2e specs, and these two docs. **Retired.**
+- **"Collab Lab"** — what the site said in 14+ places (README, Code of Conduct, Join, Events, Support, Projects, Arcade, `docs/writing-guide.md`). **Renamed to "Lab".**
+- **"Builder Night"** — invented during the homepage redesign and never reconciled with anything. **Retired.**
 - **"Lab"** — the winner, and it matches the taxonomy the team defined on 07/08/2026 in `community/events/patch-series/PATCH_SERIES.md`: _"Lab is for structured, skill-focused sessions with a single objective."_
 
 The rename is mechanical but wide, and it touches e2e selectors and a component name. It ships as **its own commit**, separate from any visual change, so a bisect can tell copy churn from design churn.
@@ -165,7 +165,7 @@ The strongest existing part of this system and the least documented outside code
 
 **Rules:**
 
-1. **Looping motion is reserved for the Lab narrative on the homepage** (`BuilderNightTrack.astro`, pending rename to `LabTrack.astro`). It is the page's only infinite motion. Do not add a second looping element anywhere without retiring this one — two competing loops destroy the narrative reading.
+1. **Looping motion is reserved for the Lab narrative on the homepage** (`src/components/LabTrack.astro`). It is the page's only infinite motion. Do not add a second looping element anywhere without retiring this one — two competing loops destroy the narrative reading.
 2. **Every looping element must be legible in its final state**, because `prefers-reduced-motion` freezes it exactly there.
 3. **The reduced-motion block is deliberately unlayered** (outside `@layer`) so it wins against Tailwind's cascade order regardless of layer sorting. Do not move it into a layer.
 4. **`.pcv-loop-track` needs an explicit `width: 100%` under reduced motion.** It draws itself by animating width from 0; freezing it without restoring width leaves a zero-width line and the timeline dots sit on nothing. This is the one element that is unsafe to freeze naively.

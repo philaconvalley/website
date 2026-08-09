@@ -9,7 +9,7 @@ status: 'active'
 date: 2025-09-01
 ---
 
-This is the open source website for PhilaCon Valley. It was built collaboratively at our Collab Labs and is a great first project to contribute to.
+This is the open source website for PhilaCon Valley. It was built collaboratively at our Labs and is a great first project to contribute to.
 
 ## How to Contribute
 

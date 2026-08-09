@@ -1,6 +1,6 @@
 ---
 /**
- * The Builder Night story, told as a horizontal timeline: one dot arrives alone,
+ * The Lab story, told as a horizontal timeline: one dot arrives alone,
  * two more pull up a chair, you leave with a thing.
  *
  * The left-to-right travel IS the argument, which is why this stays horizontal
@@ -10,7 +10,7 @@
  * stated in text for anyone who never sees the animation.
  */
 interface Props {
-  /** What the last Builder Night produced. */
+  /** What the last Lab produced. */
   outcome: string;
   /** One line on why that outcome matters. */
   outcomeDetail: string;
@@ -50,7 +50,7 @@ const dots = [
        mid-animation it reaches into this row no matter where the row sits, and a
        longer `outcome` string would grow the chip back into it. Text on top means
        the failure mode is at worst a crowded frame, never hidden words. Above
-       `lg` the chip sits clear on its own. e2e/builder-night-track.spec.ts. -->
+       `lg` the chip sits clear on its own. e2e/lab-track.spec.ts. -->
   <div
     class="absolute z-10 left-0 top-[102px] lg:top-[126px] font-mono text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.14em] text-brand-dark/45"
   >
@@ -82,6 +82,6 @@ const dots = [
 
 <!-- Same story, for screen readers and for anyone the animation never reaches. -->
 <p class="sr-only">
-  A Builder Night runs from 6:30pm, when you arrive alone, through 7:00pm, when two others pull up a
-  chair, to 9:41pm, when you leave with {outcome} — {outcomeDetail}
+  A Lab runs from 6:30pm, when you arrive alone, through 7:00pm, when two others pull up a chair, to
+  9:41pm, when you leave with {outcome} — {outcomeDetail}
 </p>
