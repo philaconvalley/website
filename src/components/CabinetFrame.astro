@@ -9,15 +9,24 @@
  *   2. Escape. Having taken the keyboard, we owe a documented way out, or the
  *      cabinet is a keyboard trap and a WCAG failure. Esc itself cannot do
  *      this: once the iframe holds focus, its keydown events never reach
- *      this window (verified — see the x-init comment below), so the
- *      documented route is Tab/Shift+Tab, which browsers already handle
- *      natively for moving focus out of an iframe.
- *   3. Consent to motion. Nothing animates until the overlay is dismissed,
- *      which is the only honest option for motion-sensitive visitors given the
- *      page cannot control animation inside the frame.
+ *      this window (verified — even a capture-phase window keydown listener
+ *      never fires while the iframe is focused), so the documented route is
+ *      Tab/Shift+Tab, which browsers already handle natively for moving
+ *      focus out of an iframe. There is deliberately no keydown.escape
+ *      handler on this page — it would never fire while the game has focus,
+ *      and leaving it in would just be dead code implying otherwise.
+ *   3. Consent to motion, actually enforced. The iframe's `src` is not set
+ *      until the visitor clicks — it sits in `data-src` until then — so the
+ *      game cannot start animating behind the overlay. "Nothing moves until
+ *      you do" describes what the code does, not just what the copy asks
+ *      for. This also means the game's JS (three.js, for one) is not
+ *      downloaded until someone actually asks to play.
  *
- * Fixed-size games (Pong is 860x500 with no resize handling) are scaled to fit
- * rather than clipped.
+ * Fixed-size games (Pong's document needs ~950x740 — the canvas is 860x500,
+ * but html/body are overflow:hidden with no resize handling, and the
+ * scoreboard/title/controls around the canvas need room too) are rendered at
+ * their true pixel size and scaled down with a CSS transform to fit the
+ * container, so nothing is clipped.
  */
 interface Props {
   slug: string;
@@ -37,13 +46,39 @@ const marqueeClass = {
 }[marqueeColor];
 
 const aspect = fixedSize ? `${fixedSize.w} / ${fixedSize.h}` : '4 / 3';
+const gameSrc = `/games/${slug}/`;
+
+// A fixed-size game is rendered at its true pixel dimensions and scaled down
+// with a CSS transform so the whole document is visible instead of clipped
+// by the container. The scale factor tracks the container's width, which
+// changes at responsive breakpoints and (via ResizeObserver) if it's ever
+// resized live. Non-fixed games resize themselves and skip all of this.
+const fixedSizeInit = fixedSize
+  ? `
+    /* $nextTick: x-init on this element runs during Alpine's initial tree
+       walk, before it has descended into the iframe below and registered
+       its x-ref — $refs.frame would be undefined without deferring past
+       that walk. */
+    $nextTick(() => {
+      const w = ${fixedSize.w}, h = ${fixedSize.h};
+      $refs.frame.style.width = w + 'px';
+      $refs.frame.style.height = h + 'px';
+      $refs.frame.style.transformOrigin = 'top left';
+      const fit = () => {
+        $refs.frame.style.transform = 'scale(' + ($refs.stage.clientWidth / w) + ')';
+      };
+      fit();
+      new ResizeObserver(fit).observe($refs.stage);
+    });
+  `
+  : '';
 ---
 
 <div
   class="mx-auto w-full max-w-3xl"
   x-data="{ playing: false }"
-  x-on:keydown.escape.window="if (playing) { playing = false; $refs.startBtn?.focus(); }"
-  x-init="
+  x-init={`
+    ${fixedSizeInit}
     /* A sandboxed iframe that holds keyboard focus receives its own keydown
        events directly — they never reach this window, so Esc pressed while
        the game has focus cannot be caught here (verified: even a
@@ -53,13 +88,15 @@ const aspect = fixedSize ? `${fixedSize.w} / ${fixedSize.h}` : '4 / 3';
        This poll keeps the UI honest with whichever escape route actually
        fired — Tab, a click elsewhere on the page, or (when focus happens to
        still be outside the iframe) Esc — by noticing focus has left the
-       frame and dropping back to the overlay. */
+       frame and dropping back to the overlay. The game itself is left
+       running rather than unloaded: returning to the overlay is "step away",
+       not "quit", so a rally or score in progress survives a stray Tab. */
     setInterval(() => {
       if (playing && document.activeElement !== $refs.frame) {
         playing = false;
       }
     }, 200)
-  "
+  `}
 >
   <div class={`${marqueeClass} rounded-t-3xl px-4 py-3 text-center`}>
     <p class="font-display text-xl font-extrabold text-brand-dark">{title}</p>
@@ -69,23 +106,25 @@ const aspect = fixedSize ? `${fixedSize.w} / ${fixedSize.h}` : '4 / 3';
     <div
       class="relative overflow-hidden rounded border-4 border-black bg-black"
       style={`aspect-ratio:${aspect}`}
+      x-ref="stage"
     >
       <iframe
         data-game-frame
-        src={`/games/${slug}/`}
+        data-src={gameSrc}
         title={`${title} — playable game`}
         sandbox="allow-scripts"
         allow="fullscreen"
         allowfullscreen
-        loading="lazy"
-        class="absolute inset-0 h-full w-full border-0"
+        class={fixedSize
+          ? 'absolute left-0 top-0 border-0'
+          : 'absolute inset-0 h-full w-full border-0'}
         x-ref="frame"></iframe>
 
       <button
         type="button"
         x-ref="startBtn"
         x-show="!playing"
-        x-on:click="playing = true; $refs.frame.focus()"
+        x-on:click="if (!$refs.frame.src) { $refs.frame.src = $refs.frame.dataset.src } playing = true; $refs.frame.focus()"
         class="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-brand-dark/85 font-display text-xl font-extrabold text-primary-100"
       >
         Click to play

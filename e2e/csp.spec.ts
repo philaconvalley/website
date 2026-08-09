@@ -149,19 +149,20 @@ test.describe('arcade /games/ header carve-out', () => {
     expect(headers['content-security-policy']).not.toContain("script-src 'unsafe-inline'");
   });
 
-  test('records whether a sibling script file loads in the sandbox', async ({ page }) => {
+  test('a sibling script file does not load in the sandbox opaque origin', async ({ page }) => {
     await page.goto('/arcade-probe-host.html');
     const loaded = await page
       .frameLocator('#probe')
       .locator('body')
-      .evaluate(
-        () =>
-          'external script marker' in window ||
-          Boolean((window as unknown as { __probeExternal?: boolean }).__probeExternal),
+      .evaluate(() =>
+        Boolean((window as unknown as { __probeExternal?: boolean }).__probeExternal),
       );
-    // Not an assertion of either outcome — this records the answer that decides
-    // whether games may ship sibling .js files. See the plan's Task 1.
-    console.log(`[arcade probe] external sibling script loaded: ${loaded}`);
-    expect(typeof loaded).toBe('boolean');
+    // This is the empirical guarantee the whole vendoring strategy rests on
+    // (Task 1): a sandboxed game document with no allow-same-origin gets an
+    // opaque origin, so a sibling <script src="./foo.js"> cannot load. Every
+    // game therefore ships as one self-contained HTML file. If this ever
+    // flips to true, that guarantee is gone and games may start shipping
+    // sibling .js files without anyone deciding that on purpose.
+    expect(loaded).toBe(false);
   });
 });

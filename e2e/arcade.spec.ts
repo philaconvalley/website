@@ -36,20 +36,41 @@ test.describe('arcade wall', () => {
 });
 
 test.describe('cabinet page', () => {
-  test('embeds the game in a sandbox without allow-same-origin', async ({ page }) => {
+  test('embeds the game in a sandbox without allow-same-origin, and defers loading it', async ({
+    page,
+  }) => {
     await page.goto('/arcade/flappy-philacon');
     const frame = page.locator('iframe[data-game-frame]');
-    await expect(frame).toHaveAttribute('src', '/games/flappy-philacon/');
+    // The game must not load before the visitor asks for it — see the next
+    // test for the empirical proof. Here: no `src` yet, only `data-src`.
+    await expect(frame).not.toHaveAttribute('src', /.+/);
+    await expect(frame).toHaveAttribute('data-src', '/games/flappy-philacon/');
     const sandbox = await frame.getAttribute('sandbox');
     expect(sandbox).toContain('allow-scripts');
     // allow-same-origin alongside allow-scripts would let the framed document
     // remove its own sandbox. Its absence is the whole isolation guarantee.
     expect(sandbox).not.toContain('allow-same-origin');
+
+    await page.getByRole('button', { name: /click to play/i }).click();
+    await expect(frame).toHaveAttribute('src', '/games/flappy-philacon/');
   });
 
   test('does not start the game until the visitor asks', async ({ page }) => {
     await page.goto('/arcade/flappy-philacon');
     await expect(page.getByRole('button', { name: /click to play/i })).toBeVisible();
+  });
+
+  test('nothing in the frame moves before the visitor clicks', async ({ page }) => {
+    // The overlay's copy ("Nothing moves until you do") is a promise about
+    // the running game, not just about a static screenshot never having
+    // loaded at all. Prove it the way it can be disproved: two screenshots
+    // of the frame area a beat apart, with no click, must be byte-identical.
+    await page.goto('/arcade/flappy-philacon');
+    const stage = page.locator('iframe[data-game-frame]').locator('..');
+    const first = await stage.screenshot();
+    await page.waitForTimeout(1200);
+    const second = await stage.screenshot();
+    expect(second.equals(first)).toBe(true);
   });
 
   test('tells keyboard users how to get out, and Tab actually gets them out', async ({ page }) => {
@@ -92,8 +113,11 @@ test.describe('cabinet page', () => {
     await expect(page.getByText(/needs a keyboard/i)).toBeVisible();
     await expect(page.getByRole('link', { name: /flappy/i })).toBeVisible();
     // The frame is hidden by CSS rather than absent — Astro builds statically and
-    // cannot know the viewport. `display: none` also stops a lazy iframe from
-    // loading, so the phone visitor pays nothing for a game they cannot play.
-    await expect(page.locator('iframe[data-game-frame]')).toBeHidden();
+    // cannot know the viewport. Its `src` is never set unless the (hidden,
+    // unreachable) "Click to play" button is clicked, so the phone visitor
+    // pays nothing for a game they cannot play.
+    const frame = page.locator('iframe[data-game-frame]');
+    await expect(frame).toBeHidden();
+    await expect(frame).not.toHaveAttribute('src', /.+/);
   });
 });

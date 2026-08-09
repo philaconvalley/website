@@ -15,7 +15,13 @@ ogImage: '/images/arcade/keyboard-pong-og.webp'
 marqueeColor: 'purple'
 kind: 'game'
 input: ['keyboard']
-fixedSize: { w: 860, h: 500 }
+# The game's canvas is 860x500, but the canvas is not the whole document —
+# title, scoreboard and the controls legend surround it, and html/body are
+# overflow:hidden with no resize handling. This is the *document's* real
+# size (measured with Playwright against the standalone game file, viewport
+# wide enough not to constrain it), which is what CabinetFrame.astro scales
+# to fit. Using the canvas size here clips both paddles and the scoreboard.
+fixedSize: { w: 950, h: 740 }
 controls:
   - keys: ['W', 'S']
     label: 'Left paddle'
