@@ -131,7 +131,8 @@ const GAMES = [
       const movingRight = s2.x > s1.x;
       const targetSide = movingRight ? 'right' : 'left';
       const otherSide = movingRight ? 'left' : 'right';
-      const keysFor = (side) => (side === 'left' ? { up: 'w', down: 's' } : { up: 'ArrowUp', down: 'ArrowDown' });
+      const keysFor = (side) =>
+        side === 'left' ? { up: 'w', down: 's' } : { up: 'ArrowUp', down: 'ArrowDown' };
       const targetKeys = keysFor(targetSide);
       const otherKeys = keysFor(otherSide);
 

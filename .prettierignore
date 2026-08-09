@@ -2,3 +2,9 @@ dist/
 node_modules/
 .astro/
 package-lock.json
+
+# Vendored arcade games — contributed single-file games, not our source (one has
+# three.js inlined into it). Prettier would rewrite a contributor's own code and
+# reflow a minified library: a huge meaningless diff, and not ours to make.
+# Treated like any other vendored artifact.
+public/games/
