@@ -27,15 +27,18 @@ function relativeLuminance([r, g, b]: number[]): number {
 }
 
 function parseRgba(value: string): { rgb: number[]; a: number } {
-  const nums = value.match(/[\d.]+/g);
+  const nums = value.match(/[\d.]+%?/g);
   if (!nums || nums.length < 3) throw new Error(`cannot parse colour "${value}"`);
-  const parts = nums.map(Number);
-  return { rgb: parts.slice(0, 3), a: parts.length > 3 ? parts[3] : 1 };
-}
-
-/** Opaque parse kept for any call sites that only need RGB triples. */
-function parseRgb(value: string): number[] {
-  return parseRgba(value).rgb;
+  const parts = nums.map((n) => {
+    if (n.endsWith('%')) return Number(n.slice(0, -1)) / 100;
+    return Number(n);
+  });
+  const a = parts.length > 3 ? parts[3] : 1;
+  // Guard modern `rgb(... / 85%)` so percentage alpha is not treated as 85.
+  if (!Number.isFinite(a) || a < 0 || a > 1) {
+    throw new Error(`unsupported alpha in colour "${value}"`);
+  }
+  return { rgb: parts.slice(0, 3), a };
 }
 
 /**
@@ -46,9 +49,7 @@ function contrastRatio(fg: string, bg: string): number {
   const f = parseRgba(fg);
   const b = parseRgba(bg);
   const composited = f.rgb.map((v, i) => f.a * v + (1 - f.a) * b.rgb[i]);
-  const [hi, lo] = [relativeLuminance(composited), relativeLuminance(b.rgb)].sort(
-    (a, b) => b - a,
-  );
+  const [hi, lo] = [relativeLuminance(composited), relativeLuminance(b.rgb)].sort((a, b) => b - a);
   return (hi + 0.05) / (lo + 0.05);
 }
 
@@ -72,13 +73,10 @@ async function effectiveColours(locator: Locator) {
   });
 }
 
-
 test.describe('contrast helper alpha compositing', () => {
-  // ponytail: pure unit asserts; no browser needed for the math bug in #117
+  // Pure math assertions — no browser needed for the bug in #117.
   test('opaque colours match previous luminance math', () => {
-    const opaque = contrastRatio('rgb(26, 26, 26)', 'rgb(255, 102, 168)');
-    const opaqueRgba = contrastRatio('rgba(26, 26, 26, 1)', 'rgb(255, 102, 168)');
-    expect(opaque).toBeCloseTo(opaqueRgba, 5);
+    expect(contrastRatio('rgb(26, 26, 26)', 'rgb(255, 102, 168)')).toBeCloseTo(6.3965, 3);
   });
 
   test('translucent white on coral is ~2.62:1, not the opaque ~3.07:1', () => {
