@@ -76,7 +76,7 @@ Community leaders have the right and responsibility to:
 This Code of Conduct applies:
 
 - In all PhilaCon Valley community spaces (online and in-person)
-- At official PhilaCon Valley events (workshops, Collab Labs, meetups)
+- At official PhilaCon Valley events (workshops, Labs, meetups)
 - In official communication channels (Slack, GitHub, social media)
 - When an individual is officially representing the community
 - When an individual's actions outside the community affect community safety

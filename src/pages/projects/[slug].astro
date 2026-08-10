@@ -55,11 +55,11 @@ const { title, description, techStack, githubUrl, liveUrl, contributors, status,
           <!-- Sidebar -->
           <div class="lg:col-span-1">
             <div class="bg-primary-100 rounded-lg p-6 sticky top-24">
-              <h3 class="text-xl font-bold mb-4">Project Info</h3>
+              <h3 class="text-xl font-bold mb-4">Project info</h3>
 
-              <!-- Tech Stack -->
+              <!-- Tech stack -->
               <div class="mb-6">
-                <h4 class="font-semibold text-brand-dark/70 mb-2">Tech Stack</h4>
+                <h4 class="font-semibold text-brand-dark/70 mb-2">Tech stack</h4>
                 <div class="flex flex-wrap gap-2">
                   {
                     techStack.map((tech) => (
@@ -85,7 +85,7 @@ const { title, description, techStack, githubUrl, liveUrl, contributors, status,
 
               <!-- Date -->
               <div class="mb-6">
-                <h4 class="font-semibold text-brand-dark/70 mb-2">Last Updated</h4>
+                <h4 class="font-semibold text-brand-dark/70 mb-2">Last updated</h4>
                 <p class="text-brand-dark/60">
                   {
                     date.toLocaleDateString('en-US', {
@@ -129,7 +129,7 @@ const { title, description, techStack, githubUrl, liveUrl, contributors, status,
                           d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                         />
                       </svg>
-                      Visit Live Site
+                      Visit live site
                     </Button>
                   )
                 }
@@ -144,14 +144,14 @@ const { title, description, techStack, githubUrl, liveUrl, contributors, status,
   <!-- CTA -->
   <section class="section-padding bg-primary-100">
     <div class="container-custom text-center">
-      <h2 class="text-3xl font-bold mb-4">Want to Contribute?</h2>
+      <h2 class="text-3xl font-bold mb-4">Want to contribute?</h2>
       <p class="text-lg text-brand-dark/60 mb-6 max-w-2xl mx-auto">
         All our projects are open source and welcome contributions. Check out the GitHub repo to see
         open issues and get started!
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <Button href="/join" variant="primary"> Join the Community </Button>
-        <Button href="/projects" variant="outline"> View All Projects </Button>
+        <Button href="/projects" variant="outline"> View all projects </Button>
       </div>
     </div>
   </section>

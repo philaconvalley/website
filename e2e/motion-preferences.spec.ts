@@ -17,9 +17,7 @@ test.describe('prefers-reduced-motion', () => {
     await expect(tagline).toHaveCSS('animation-name', 'pcvRise');
   });
 
-  test('the looping Builder Night track keeps its spine when motion is reduced', async ({
-    page,
-  }) => {
+  test('the looping Lab track keeps its spine when motion is reduced', async ({ page }) => {
     // The track draws itself by animating width from 0. Killing the animation
     // without restoring the width would leave a zero-width line and the dots
     // would sit on nothing — so assert the restored width, not just the absence

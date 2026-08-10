@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * The Builder Night timeline is absolutely positioned and deliberately stays
+ * The Lab timeline is absolutely positioned and deliberately stays
  * horizontal at every width — stacked, the left-to-right travel that IS the
  * argument becomes a bulleted list of times. The cost of that choice is that
  * nothing in the layout stops two boxes from occupying the same pixels: the
@@ -41,7 +41,7 @@ function overlap(a: Box, b: Box) {
   };
 }
 
-test.describe('Builder Night timeline', () => {
+test.describe('Lab timeline', () => {
   for (const width of PHONE_WIDTHS) {
     test(`outcome chip never covers a caption at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });

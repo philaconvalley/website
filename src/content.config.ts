@@ -55,6 +55,16 @@ const gallery = defineCollection({
     event: z.string(),
     date: z.date(),
     caption: z.string().optional(),
+    /**
+     * Whether this shot can carry the homepage's full-bleed band.
+     *
+     * That band renders up to ~1400px wide, so it needs a wide, high-resolution
+     * frame. The grid on /events only needs ~400px tiles and takes a phone
+     * portrait happily. Without this flag the homepage shows whichever photo is
+     * newest, which is how a soft 768px portrait becomes the largest image on
+     * the site. Opt-in, so the wrong default is "stays in the grid".
+     */
+    heroEligible: z.boolean().default(false),
   }),
 });
 
