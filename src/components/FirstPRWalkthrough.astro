@@ -1,0 +1,250 @@
+---
+/**
+ * "Your first pull request" — an operable object, not a description of one.
+ *
+ * Rung 1 of the evidence contract in DESIGN.md: the visitor drives it rather
+ * than reading about it. The steps and commands are the real ones for this
+ * repo, taken from src/content/resources/first-pull-request.md.
+ *
+ * Built on a radio group, deliberately, and with no JavaScript:
+ *   - arrow keys move between steps for free, because that is what radios do
+ *   - it works with JS blocked or still loading
+ *   - with CSS off, every panel is visible and it reads as a plain ordered list
+ *
+ * The radios, their labels, and the panels are all direct children of the
+ * fieldset because `~` cannot cross a parent boundary. Flex wrapping puts the
+ * chips in a row and breaks the panels onto their own line.
+ */
+
+const steps = [
+  {
+    id: 'fork',
+    title: 'Fork it',
+    lead: 'Your own copy, under your account. Nothing here touches the live site.',
+    code: null,
+    note: 'Click Fork, top right of the repo.',
+  },
+  {
+    id: 'clone',
+    title: 'Clone it',
+    lead: 'Pull it down to your machine so you can open the files.',
+    code: 'git clone https://github.com/YOUR-USERNAME/website.git\ncd website\nnpm install',
+    note: null,
+  },
+  {
+    id: 'branch',
+    title: 'Branch',
+    lead: 'Never work on main. Give your change its own shelf.',
+    code: 'git checkout -b fix/readme-typo',
+    note: null,
+  },
+  {
+    id: 'change',
+    title: 'Change something',
+    lead: 'A typo, a dead link, a stale line. Small is the point.',
+    code: 'npm run build',
+    note: 'Build before you commit, so you know nothing broke.',
+  },
+  {
+    id: 'push',
+    title: 'Commit and push',
+    lead: 'Say what changed, not how you changed it.',
+    code: 'git add .\ngit commit -m "Fix typo in README"\ngit push origin fix/readme-typo',
+    note: null,
+  },
+  {
+    id: 'open',
+    title: 'Open the PR',
+    lead: 'GitHub shows a Compare and pull request button. Base branch is main.',
+    code: null,
+    note: 'That is a real pull request, opened by you.',
+  },
+];
+---
+
+<fieldset class="pcv-pr" data-testid="first-pr-walkthrough">
+  <legend class="sr-only">Your first pull request, step by step</legend>
+
+  {
+    steps.map((step, i) => (
+      <>
+        <input
+          type="radio"
+          name="pcv-pr-step"
+          id={`pcv-pr-${step.id}`}
+          class="pcv-pr-radio"
+          checked={i === 0}
+        />
+        <label for={`pcv-pr-${step.id}`} class="pcv-pr-chip font-display">
+          <span class="pcv-pr-num">{i + 1}</span>
+          {step.title}
+        </label>
+      </>
+    ))
+  }
+
+  {
+    steps.map((step) => (
+      <div class="pcv-pr-panel" id={`pcv-pr-panel-${step.id}`}>
+        <p class="pcv-pr-lead">{step.lead}</p>
+        {step.code && (
+          <pre class="pcv-pr-code">
+            <code>{step.code}</code>
+          </pre>
+        )}
+        {step.note && <p class="pcv-pr-note">{step.note}</p>}
+      </div>
+    ))
+  }
+</fieldset>
+
+<p class="mt-6 text-brand-dark/70">
+  Stuck is normal — that is what we are for. Pick a real one from
+  <a
+    href="https://github.com/philaconvalley/website/issues"
+    class="font-display font-bold text-brand-dark no-underline border-b-2 border-brand-pink hover:text-accent-700"
+    >open issues labelled good first issue →</a
+  >, or read
+  <a
+    href="/resources/first-pull-request"
+    class="font-display font-bold text-brand-dark no-underline border-b-2 border-brand-pink hover:text-accent-700"
+    >the long version</a
+  >.
+</p>
+
+<style>
+  .pcv-pr {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  /* Off-screen, not display:none — the radios must stay focusable and
+     announced, or the keyboard affordance disappears with them. */
+  .pcv-pr-radio {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .pcv-pr-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: 2px solid rgb(26 26 26 / 0.12);
+    border-radius: 999px;
+    background: #fff;
+    font-weight: 700;
+    font-size: 15px;
+    color: rgb(26 26 26 / 0.62);
+    cursor: pointer;
+    transition:
+      transform 150ms cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 150ms cubic-bezier(0.22, 1, 0.36, 1),
+      color 150ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 150ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .pcv-pr-num {
+    display: inline-grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background: rgb(26 26 26 / 0.08);
+    font-size: 12px;
+    line-height: 1;
+  }
+
+  /* Feedback on press, not on release. */
+  .pcv-pr-chip:active {
+    transform: translateY(1px);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .pcv-pr-chip:hover {
+      border-color: rgb(26 26 26 / 0.3);
+      color: #1a1a1a;
+    }
+  }
+
+  .pcv-pr-radio:checked + .pcv-pr-chip {
+    background: #ff66a8;
+    border-color: #1a1a1a;
+    color: #1a1a1a;
+    box-shadow: 4px 4px 0 rgb(26 26 26 / 0.18);
+  }
+
+  .pcv-pr-radio:checked + .pcv-pr-chip .pcv-pr-num {
+    background: rgb(26 26 26 / 0.16);
+  }
+
+  .pcv-pr-radio:focus-visible + .pcv-pr-chip {
+    outline: 2px solid #1a1a1a;
+    outline-offset: 2px;
+  }
+
+  .pcv-pr-panel {
+    display: none;
+    flex-basis: 100%;
+    margin-top: 12px;
+    padding: 22px;
+    border: 2px solid rgb(26 26 26 / 0.1);
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 6px 6px 0 rgb(26 26 26 / 0.1);
+  }
+
+  .pcv-pr-radio#pcv-pr-fork:checked ~ #pcv-pr-panel-fork,
+  .pcv-pr-radio#pcv-pr-clone:checked ~ #pcv-pr-panel-clone,
+  .pcv-pr-radio#pcv-pr-branch:checked ~ #pcv-pr-panel-branch,
+  .pcv-pr-radio#pcv-pr-change:checked ~ #pcv-pr-panel-change,
+  .pcv-pr-radio#pcv-pr-push:checked ~ #pcv-pr-panel-push,
+  .pcv-pr-radio#pcv-pr-open:checked ~ #pcv-pr-panel-open {
+    display: block;
+  }
+
+  .pcv-pr-lead {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.55;
+    color: rgb(26 26 26 / 0.78);
+  }
+
+  .pcv-pr-code {
+    margin: 14px 0 0;
+    padding: 14px 16px;
+    overflow-x: auto;
+    border-radius: 12px;
+    background: #1a1a1a;
+    color: #ffeed0;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .pcv-pr-note {
+    margin: 12px 0 0;
+    font-size: 14px;
+    color: rgb(26 26 26 / 0.55);
+  }
+
+  /* No movement, but the chips must still read as selected — colour and
+     border carry that on their own. */
+  @media (prefers-reduced-motion: reduce) {
+    .pcv-pr-chip {
+      transition: none;
+    }
+
+    .pcv-pr-chip:active {
+      transform: none;
+    }
+  }
+</style>

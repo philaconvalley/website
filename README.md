@@ -32,7 +32,7 @@ Whether you're a first-time contributor, a seasoned developer, a designer, a wri
 
 ## What is PhilaCon Valley?
 
-A community-driven tech org centering Black, Brown, LGBTQIA+, and underrepresented folks in tech. We build together through Collab Labs, workshops, career support, and open source projects like this website.
+A community-driven tech org centering Black, Brown, LGBTQIA+, and underrepresented folks in tech. We build together through Labs, workshops, career support, and open source projects like this website.
 
 ---
 

@@ -12,13 +12,13 @@ Live: `philaconvalley.com` · Repo: `philaconvalley/website` (public, MIT)
 
 ## Who it serves
 
-| Audience                         | Arrives wanting                    | Leaves having                                    |
-| -------------------------------- | ---------------------------------- | ------------------------------------------------ |
-| **Prospective community member** | to know if this is for them        | RSVP'd to an event, or joined Slack              |
-| **Existing member**              | the next Builder Night, a resource | the date, the link, the thing                    |
-| **First-time OSS contributor**   | a safe place to make a PR          | a merged change and a labelled next issue        |
-| **Sponsor / partner / press**    | proof this is real and active      | live numbers, past events, a way to reach Waskar |
-| **Donor**                        | a reason and a route               | Open Collective                                  |
+| Audience                         | Arrives wanting               | Leaves having                                    |
+| -------------------------------- | ----------------------------- | ------------------------------------------------ |
+| **Prospective community member** | to know if this is for them   | RSVP'd to an event, or joined Slack              |
+| **Existing member**              | the next Lab, a resource      | the date, the link, the thing                    |
+| **First-time OSS contributor**   | a safe place to make a PR     | a merged change and a labelled next issue        |
+| **Sponsor / partner / press**    | proof this is real and active | live numbers, past events, a way to reach Waskar |
+| **Donor**                        | a reason and a route          | Open Collective                                  |
 
 ## Voice
 
@@ -53,7 +53,7 @@ These are real behaviors of the system. Designing against them produces work tha
 - **Three homepage numbers have three different owners.** Member count is hand-maintained in `src/config.ts` (Luma's calendar-wide total is behind a paid tier). Nights held and things shipped are fetched at build from Luma's public ICS feed and GitHub by `src/lib/community.ts`. A design that displays these must tolerate all three being absent or stale.
 - **Luma is the RSVP system of record.** The site links out; it does not own registration.
 - **Content is file-based collections** — `blog`, `gallery`, `projects`, `resources`. Non-technical contributors add content by adding files. Any design that requires new content types requires a schema change and a contributor-docs update.
-- **The homepage photo section renders only when a real Builder Night photo exists** in the gallery collection, and is absent rather than filled with brand illustration. This is deliberate; do not add a placeholder.
+- **The homepage photo section renders only when a real Lab photo exists** in the gallery collection, and is absent rather than filled with brand illustration. This is deliberate; do not add a placeholder.
 - **Interactivity is Alpine.js, self-hosted.** Mobile menu, contact form state, resources filter. There is no React.
 - **Contact form posts to Formspree.**
 
