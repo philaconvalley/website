@@ -45,6 +45,12 @@ jobs:
       - name: Check CSP script hashes match the build
         run: npm run csp:hash
 
+      # Prose budgets and sentence case, measured on the built pages. Both rules
+      # drifted twice before a human caught them by reading; a source-level grep
+      # cannot see labels that components generate or data arrays supply.
+      - name: Check the design contract
+        run: npm run check:design
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v7
         with:

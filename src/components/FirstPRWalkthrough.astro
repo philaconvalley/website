@@ -62,7 +62,12 @@ const steps = [
 ];
 ---
 
-<fieldset class="pcv-pr" data-testid="first-pr-walkthrough">
+<!--
+  `data-operable` marks this as a rung-1 object for scripts/check-design-contract.mjs:
+  its interior is counted against the 120-word object cap, not the page's prose
+  budget, per DESIGN.md rule 2.
+-->
+<fieldset class="pcv-pr" data-testid="first-pr-walkthrough" data-operable>
   <legend class="sr-only">Your first pull request, step by step</legend>
 
   {

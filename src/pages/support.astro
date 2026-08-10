@@ -2,226 +2,147 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Button from '../components/Button.astro';
 import { links } from '../config';
+
+/**
+ * Mode: Persuade. Budget: 250 body words (DESIGN.md).
+ *
+ * Was 320 words carried by four stock-icon cards — a building, a book, a
+ * globe, a group of people — the treatment the evidence contract bans. An
+ * icon of a building does not tell anyone the room costs money; the sentence
+ * does. So the cards became four lines that name real costs.
+ *
+ * The removed tax-deductibility claim is the important change here. See the
+ * comment on the Open Collective block below.
+ */
+
+const costs = [
+  { name: 'The room', line: 'Pennovation and the Braid Mill are rented, not lent.' },
+  {
+    name: 'The hardware',
+    line: 'NFC tags, boards, components — whatever people take home working.',
+  },
+  { name: 'This site', line: 'Domain, hosting, and the tools the community builds on.' },
+  { name: 'The invite', line: 'Reaching people who have never heard of us and should have.' },
+];
+
+const otherWays = [
+  {
+    name: 'Sponsor an event',
+    line: 'Cover a room and its materials, and meet the people in it.',
+    href: '/contact',
+    cta: 'Talk to us',
+  },
+  {
+    name: 'Mentor',
+    line: 'Sit at a table for an evening. That is the whole job.',
+    href: '/join',
+    cta: 'Get involved',
+  },
+  {
+    name: 'Offer space',
+    line: 'A room that holds thirty people is the single hardest thing to find.',
+    href: '/contact',
+    cta: 'Offer a space',
+  },
+  {
+    name: 'Share a job',
+    line: 'Hiring somewhere worth working? Our community should hear about it.',
+    href: '/contact',
+    cta: 'Send it over',
+  },
+];
 ---
 
 <BaseLayout
   title="Support PhilaCon Valley - Donate"
-  description="Support PhilaCon Valley's mission to make Philadelphia a tech hub by us, for us. Your donation keeps events free and accessible."
+  description="Free events cost money. See exactly where it goes, and chip in on Open Collective."
 >
-  <!-- Hero Section -->
   <section class="bg-brand-purple text-white py-20">
     <div class="container-custom">
       <div class="max-w-4xl mx-auto text-center">
         <h1 class="text-5xl md:text-6xl font-bold mb-6">Support our mission</h1>
-        <p class="text-2xl text-white/85">
-          Help keep PhilaCon Valley free and accessible for everyone
-        </p>
+        <p class="text-2xl text-white/85">Free events still cost money.</p>
       </div>
     </div>
   </section>
 
-  <!-- Why Support -->
   <section class="section-padding">
     <div class="container-custom">
-      <div class="max-w-4xl mx-auto">
-        <h2 class="text-4xl font-bold mb-8 text-center">Why your support matters</h2>
-        <p class="text-xl text-brand-dark/70 leading-relaxed mb-8 text-center">
-          PhilaCon Valley is committed to keeping all events free and accessible. We believe
-          financial barriers shouldn't prevent anyone from learning tech skills and building their
-          career. Your support makes this possible.
-        </p>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
-          <div class="bg-white p-6 rounded-retro border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-2xl font-bold mb-3 flex items-center">
-              <svg
-                class="w-6 h-6 text-primary-600 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                ></path>
-              </svg>
-              Event venues
-            </h3>
-            <p class="text-brand-dark/60">
-              Rent spaces like Pennovation Works that provide the infrastructure for hands-on
-              collaboration and workshops.
-            </p>
-          </div>
-
-          <div class="bg-white p-6 rounded-retro border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-2xl font-bold mb-3 flex items-center">
-              <svg
-                class="w-6 h-6 text-primary-600 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                ></path>
-              </svg>
-              Learning resources
-            </h3>
-            <p class="text-brand-dark/60">
-              Create and share free tutorials, workshops materials, and educational content for the
-              community.
-            </p>
-          </div>
-
-          <div class="bg-white p-6 rounded-retro border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-2xl font-bold mb-3 flex items-center">
-              <svg
-                class="w-6 h-6 text-primary-600 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-                ></path>
-              </svg>
-              Infrastructure
-            </h3>
-            <p class="text-brand-dark/60">
-              Maintain website, tools, and platforms that help the community connect, collaborate,
-              and grow.
-            </p>
-          </div>
-
-          <div class="bg-white p-6 rounded-retro border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-2xl font-bold mb-3 flex items-center">
-              <svg
-                class="w-6 h-6 text-primary-600 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                ></path>
-              </svg>
-              Community growth
-            </h3>
-            <p class="text-brand-dark/60">
-              Support outreach efforts to connect with more underrepresented folks in tech across
-              Philadelphia.
-            </p>
-          </div>
-        </div>
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-4xl font-bold mb-10">Where it goes</h2>
+        <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 m-0">
+          {
+            costs.map((cost) => (
+              <div>
+                <dt class="font-display text-2xl font-bold mb-1">{cost.name}</dt>
+                <dd class="m-0 text-brand-dark/70">{cost.line}</dd>
+              </div>
+            ))
+          }
+        </dl>
       </div>
     </div>
   </section>
 
-  <!-- Open Collective Section -->
+  <!--
+    No tax-deductibility claim here, deliberately.
+
+    This block used to read "Tax-deductible receipts available". That was not
+    true. PhilaCon Valley, Inc. has not filed its Articles, so it holds no
+    501(c)(3) determination; and Open Collective Foundation — evaluated and not
+    pursued — is a 501(c)(6), under which donations are explicitly not
+    deductible either. Telling a donor otherwise is a claim about their tax
+    return, so it does not go back on the page until a determination letter
+    exists to point at.
+  -->
   <section class="section-padding bg-brand-yellow border-t-[3px]">
     <div class="container-custom">
-      <div class="max-w-4xl mx-auto text-center">
-        <h2 class="text-4xl font-bold mb-8">Support via Open Collective</h2>
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-4xl font-bold mb-6">Read the ledger first</h2>
         <p class="text-lg text-brand-dark/70 mb-8">
-          We use Open Collective for transparent, community-driven financial management. You can see
-          exactly how every dollar is spent and the impact it makes.
+          Every dollar in and out is public on Open Collective. Look at what we spent last month
+          before you decide we are worth funding.
         </p>
-
-        <!-- Open Collective Embed -->
-        <div class="bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro-lg p-8 mb-8">
-          <div class="mb-6">
-            <h3 class="text-2xl font-bold mb-4">Make a contribution</h3>
-            <p class="text-brand-dark/60 mb-6">
-              One-time or recurring donations – every amount helps keep our events free and
-              accessible.
-            </p>
-          </div>
-
-          <!-- Open Collective Widget Placeholder -->
-          <div class="bg-primary-100 rounded-retro border-2 border-brand-dark/10 p-12 mb-6">
-            <p class="text-lg font-semibold mb-4">Support us on Open Collective</p>
-            <p class="text-brand-dark/60 mb-6">
-              Visit our Open Collective page to make a one-time or recurring contribution. All
-              transactions are transparent and publicly visible.
-            </p>
-            <Button href={links.openCollective} external variant="primary" size="lg">
-              Donate on Open Collective
-            </Button>
-          </div>
-
-          <div class="text-sm text-brand-dark/50">
-            <p class="mb-2">✓ Fully transparent – see how funds are used</p>
-            <p class="mb-2">✓ Secure payment processing</p>
-            <p>✓ Tax-deductible receipts available</p>
-          </div>
-        </div>
+        <Button href={links.openCollective} external variant="primary" size="lg">
+          Chip in on Open Collective
+        </Button>
+        <p class="text-sm text-brand-dark/50 mt-6 m-0">
+          One-time or recurring. We are not yet a registered charity, so donations are not
+          tax-deductible.
+        </p>
       </div>
     </div>
   </section>
 
-  <!-- Other ways to support -->
   <section class="section-padding">
     <div class="container-custom">
-      <div class="max-w-4xl mx-auto">
-        <h2 class="text-3xl font-bold mb-8 text-center">Other ways to support</h2>
-        <div class="space-y-6">
-          <div class="bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro p-6">
-            <h3 class="text-xl font-bold mb-2">Sponsor an event</h3>
-            <p class="text-brand-dark/60 mb-4">
-              Companies and organizations can sponsor specific events. Your support covers venue
-              costs, refreshments, and materials while gaining visibility with our community.
-            </p>
-            <Button href="/contact" variant="outline"> Inquire about sponsorship </Button>
-          </div>
-
-          <div class="bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro p-6">
-            <h3 class="text-xl font-bold mb-2">Volunteer as a mentor</h3>
-            <p class="text-brand-dark/60 mb-4">
-              Share your expertise by mentoring community members, leading workshops, or supporting
-              Lab sessions.
-            </p>
-            <Button href="/join" variant="outline"> Get involved </Button>
-          </div>
-
-          <div class="bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro p-6">
-            <h3 class="text-xl font-bold mb-2">Provide venue space</h3>
-            <p class="text-brand-dark/60 mb-4">
-              Do you have space we could use for events? Help us bring tech education to more people
-              across Philadelphia.
-            </p>
-            <Button href="/contact" variant="outline"> Offer venue space </Button>
-          </div>
-
-          <div class="bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro p-6">
-            <h3 class="text-xl font-bold mb-2">Share job opportunities</h3>
-            <p class="text-brand-dark/60 mb-4">
-              Hiring? Share inclusive job opportunities with our community. We especially welcome
-              roles from companies committed to diversity and equity.
-            </p>
-            <Button href="/contact" variant="outline"> Post a job </Button>
-          </div>
-        </div>
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl font-bold mb-10">If money is not the thing</h2>
+        <ul class="space-y-8 list-none p-0 m-0">
+          {
+            otherWays.map((way) => (
+              <li>
+                <h3 class="text-2xl font-bold mb-1">{way.name}</h3>
+                <p class="text-brand-dark/70 m-0">{way.line}</p>
+                <a
+                  href={way.href}
+                  class="inline-block font-display font-bold mt-2 text-brand-dark no-underline border-b-2 border-brand-pink hover:text-accent-700"
+                >
+                  {way.cta} →
+                </a>
+              </li>
+            ))
+          }
+        </ul>
       </div>
     </div>
   </section>
 
-  <!-- CTA -->
   <section class="section-padding bg-accent-400 text-white border-t-[3px]">
     <div class="container-custom text-center">
-      <h2 class="text-4xl font-bold mb-6">Ready to make an impact?</h2>
+      <h2 class="text-4xl font-bold mb-6">Keep it free</h2>
       <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-        Your support helps us build the Philadelphia tech community we want to see.
+        A pigeon flies alone. A flock goes much further.
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <Button href={links.openCollective} external variant="secondary" size="lg">

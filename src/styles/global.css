@@ -57,11 +57,6 @@
     @apply py-12 md:py-16 lg:py-24;
   }
 
-  /* Gradient text effect */
-  .gradient-text {
-    @apply bg-gradient-to-r from-accent-400 to-accent-600 bg-clip-text text-transparent;
-  }
-
   /* Card styles — retro offset shadow.
      Transition names its two properties: `all` would animate anything that
      happens to differ on hover, off the GPU. The hover lift is gated to

@@ -1,5 +1,5 @@
 ---
-title: 'How to Make Your First Pull Request'
+title: 'How to make your first pull request'
 description: 'A beginner-friendly, step-by-step walkthrough of forking, cloning, branching, committing, and opening your first pull request on this repo.'
 category: 'Tutorial'
 level: 'Beginner'
