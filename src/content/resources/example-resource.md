@@ -1,5 +1,5 @@
 ---
-title: 'Getting Started with Open Source'
+title: 'Getting started with open source'
 description: 'A beginner-friendly guide to making your first open source contribution.'
 category: 'Tutorial'
 level: 'Beginner'
