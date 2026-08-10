@@ -14,10 +14,14 @@ const { nextEvent, nightsHeld, thingsShipped } = await getCommunityData();
  * room full of people, and cropping it full-bleed would read as a placeholder.
  * So the section renders only when a real photo exists in the gallery
  * collection, and is absent rather than wrong until one is added.
+ *
+ * `heroEligible` gates it rather than "newest wins". The band is ~1400px wide;
+ * the PATCH 002 set tops out at 768px portrait, which the /events grid can use
+ * but this cannot without visible upscaling. An absent band beats a soft one.
  */
-const photo = (await getCollection('gallery')).sort(
-  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
-)[0];
+const photo = (await getCollection('gallery'))
+  .filter((entry) => entry.data.heroEligible)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())[0];
 
 const stats = [
   { value: community.memberCount, label: 'people, not users' },
