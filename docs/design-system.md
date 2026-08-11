@@ -100,11 +100,13 @@ Fonts are loaded via Google Fonts in `src/layouts/BaseLayout.astro` with `precon
 
 Three variants, all pill-shaped:
 
-| Variant     | Look                         | Usage                              |
-| ----------- | ---------------------------- | ---------------------------------- |
-| `primary`   | Pink background, white text  | Main CTAs ("Join", "Donate")       |
-| `secondary` | Yellow background, dark text | Secondary actions                  |
-| `outline`   | Transparent with border      | Tertiary actions, dark backgrounds |
+| Variant     | Look                             | Usage                              |
+| ----------- | -------------------------------- | ---------------------------------- |
+| Variant     | Look                             | Usage                              |
+| ----------- | -------------------------------- | ---------------------------------- |
+| `primary`   | Pink background, brand-dark text | Main CTAs ("Join", "Donate")       |
+| `secondary` | Yellow background, dark text     | Secondary actions                  |
+| `outline`   | Transparent with border          | Tertiary actions, dark backgrounds |
 
 ```astro
 <Button href="/join" variant="primary" size="lg">Join Us</Button>
