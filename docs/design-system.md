@@ -148,7 +148,7 @@ Ratios measured in the Book, not estimated here.
 
 White on yellow is the one that looks acceptable on a bright laptop and is unreadable everywhere else. The homepage hero is yellow, so it uses **dark** text — that is the reason, not a stylistic preference.
 
-Primary pink (ccent-400 / brand pink) CTAs use **brand-dark** text, not white — white-on-pink fails AA for normal text (about 2.7:1). Ink-on-pink clears AA (5.4:1 in the table above). Header RSVP already follows this; the shared Button primary variant matches.
+Primary pink (`accent-400` / brand pink) CTAs use **brand-dark** text, not white — white-on-pink fails AA for normal text (about 2.7:1). Ink-on-pink clears AA (5.4:1 in the table above). Header RSVP already follows this; the shared `Button` primary variant matches.
 
 ### Focus states
 
