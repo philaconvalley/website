@@ -2,6 +2,66 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---------------------------------------------------------------------------
+   Brand Book §09 — the agency surface.
+
+   One brand, two dials. The community surface is the default: cream, loud,
+   mascot-forward, 2px ink stroke, hard offset shadows. The agency surface keeps
+   every shape and drops the volume for nonprofits and community orgs.
+
+   Wrap a page or a section in [data-surface="agency"] to switch. Shapes do not
+   change — pills stay pills, 20px radii stay 20px. Only the volume moves.
+   --------------------------------------------------------------------------- */
+[data-surface='agency'] {
+  /* Page background: off-cream, calmer than the community cream. */
+  --surface-bg: #fff9f0;
+  /* Ink stroke: still present, less assertive. */
+  --surface-stroke: 1.5px;
+  /* Shadows: soft offset only. The loud ink-stamp variant is community-only. */
+  --surface-shadow: 4px 4px 0 rgba(26, 26, 26, 0.08);
+  --surface-shadow-lg: 6px 6px 0 rgba(26, 26, 26, 0.08);
+
+  background-color: var(--surface-bg);
+}
+
+/* Type steps down. Baloo 2 sits at 700 rather than 800, and Nunito does more
+   of the work. Display sizes do not go large on this surface. */
+[data-surface='agency'] h1,
+[data-surface='agency'] h2,
+[data-surface='agency'] h3,
+[data-surface='agency'] h4 {
+  @apply font-semibold;
+}
+
+[data-surface='agency'] h1 {
+  @apply text-3xl md:text-4xl lg:text-5xl;
+}
+
+[data-surface='agency'] h2 {
+  @apply text-2xl md:text-3xl;
+}
+
+/* Borders drop from 2px to 1.5px across cards, inputs, and buttons. */
+[data-surface='agency'] .border-2 {
+  border-width: var(--surface-stroke);
+}
+
+/* Shadows soften. No ink-stamp on this surface. */
+[data-surface='agency'] .shadow-retro {
+  box-shadow: var(--surface-shadow);
+}
+
+[data-surface='agency'] .shadow-retro-lg {
+  box-shadow: var(--surface-shadow-lg);
+}
+
+/* NOTE: the Book §05 names three shadows — retro, retro-lg, retro-ink. The live
+   config ships retro, retro-lg, retro-hover. There is no retro-ink utility to
+   soften here. See Addendum 01 Part 4. */
+[data-surface='agency'] .shadow-retro-hover {
+  box-shadow: var(--surface-shadow-lg);
+}
+
 @layer base {
   html {
     @apply scroll-smooth;
