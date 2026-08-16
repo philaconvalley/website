@@ -18,7 +18,7 @@ For detailed guides, see our docs:
 
 ## Questions?
 
-- **Slack**: Join and ask in the #website channel
+- **Discord**: Join and ask in the #website channel
 - **Email**: waskar@philaconvalley.com
 - **GitHub**: Open a discussion or comment on an issue
 

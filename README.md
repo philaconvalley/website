@@ -38,7 +38,7 @@ A community-driven tech org centering Black, Brown, LGBTQIA+, and underrepresent
 
 ## Connect With Us
 
-[Events](https://lu.ma/philaconvalley) | [Slack](https://philaconvalley.com/contact) | [Instagram](https://www.instagram.com/phlconvalley/) | [LinkedIn](https://www.linkedin.com/company/philaconvalley/) | [Twitter/X](https://x.com/PhlConValley) | [GitHub](https://github.com/philaconvalley) | waskar@philaconvalley.com
+[Events](https://lu.ma/philaconvalley) | [Discord](https://discord.gg/5haHYh5xcx) | [Instagram](https://www.instagram.com/phlconvalley/) | [LinkedIn](https://www.linkedin.com/company/philaconvalley/) | [Twitter/X](https://x.com/PhlConValley) | [GitHub](https://github.com/philaconvalley) | waskar@philaconvalley.com
 
 Please read our [Code of Conduct](./CODE_OF_CONDUCT.md) before participating.
 

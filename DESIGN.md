@@ -49,7 +49,7 @@ The rename was mechanical but wide, touching a component name and two e2e spec f
 
 **Hard rules, all currently violated or at risk:**
 
-1. **Sentence case. Always. Never title case.** The rule covers headings _and_ buttons. **Swept sitewide 08/09/2026 in its own commit** — 104 replacements across 12 pages, 83 in headings and 21 in button and CTA labels — before the redesign, so the redesign cannot be blamed for copy churn. Program and surface names stay capitalized as proper nouns: PhilaCon Valley, Philly, Slack, Open Collective, The Arcade, Lab, PATCH.
+1. **Sentence case. Always. Never title case.** The rule covers headings _and_ buttons. **Swept sitewide 08/09/2026 in its own commit** — 104 replacements across 12 pages, 83 in headings and 21 in button and CTA labels — before the redesign, so the redesign cannot be blamed for copy churn. Program and surface names stay capitalized as proper nouns: PhilaCon Valley, Philly, Discord, Open Collective, The Arcade, Lab, PATCH.
 2. **"By us, for us." is never capitalized as "By Us, For Us."** The Book calls this out by name. About violated it until the 08/09/2026 sweep; watch for it returning.
 3. **Banned vocabulary:** leverage, elevate, synergy, unlock, 10x, ecosystem. Currently clean — keep it that way. Use build language: ship, make, show up, pair up.
 4. **Singular they. "Everyone", "y'all", "folks". Never "guys."**

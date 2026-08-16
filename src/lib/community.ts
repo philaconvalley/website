@@ -44,12 +44,25 @@ export interface CommunityEvent {
   url: string;
 }
 
+export interface DiscordPreview {
+  name: string;
+  iconUrl: string | null;
+  memberCount: number;
+  onlineCount: number;
+}
+
 export interface CommunityData {
   nextEvent: CommunityEvent | null;
   /** Events on the calendar whose start time has already passed. */
   nightsHeld: number;
   /** Public org repos with a live deployed URL. */
   thingsShipped: number;
+  /**
+   * What to show on the join page so a visitor sees a real room, not a blind
+   * link. Never null — unlike the other fields there is always a snapshot to
+   * fall back to, since `discord` is a required key on `CommunitySnapshot`.
+   */
+  discord: DiscordPreview;
   /** True when every number came from a live fetch. */
   fresh: boolean;
 }
@@ -70,6 +83,7 @@ interface CommunitySnapshot {
   nextEvent: CommunityEvent | null;
   nightsHeld: number;
   thingsShipped: number;
+  discord: DiscordPreview;
 }
 
 const snapshot: CommunitySnapshot = snapshotJson;
@@ -226,6 +240,65 @@ async function fetchShipped(): Promise<number | null> {
 }
 
 /**
+ * The invite code is the one stable identifier in a Discord invite URL — the
+ * server ID and icon hash both come back from the API response itself, so
+ * only the code needs to be pulled out of `links.discord` here.
+ */
+const DISCORD_INVITE_CODE = links.discord.split('/').pop() ?? '';
+
+/**
+ * A live member/online count for the join page, pulled from Discord's public
+ * invite endpoint — no bot token, no auth, no server-side "widget" toggle
+ * required, unlike the guild widget API. Requires only that the invite code
+ * in `links.discord` still resolves.
+ */
+async function fetchDiscord(): Promise<DiscordPreview | null> {
+  if (!DISCORD_INVITE_CODE) return null;
+
+  const body = await fetchText(
+    `https://discord.com/api/v10/invites/${DISCORD_INVITE_CODE}?with_counts=true`,
+    'Discord invite API',
+  );
+  if (!body) return null;
+
+  try {
+    const data: unknown = JSON.parse(body);
+    if (typeof data !== 'object' || data === null) return null;
+    const d = data as {
+      guild?: { id?: unknown; name?: unknown; icon?: unknown };
+      approximate_member_count?: unknown;
+      approximate_presence_count?: unknown;
+    };
+    const guildId = d.guild?.id;
+    const name = d.guild?.name;
+    const icon = d.guild?.icon;
+    const memberCount = d.approximate_member_count;
+    const onlineCount = d.approximate_presence_count;
+
+    if (
+      typeof guildId !== 'string' ||
+      typeof name !== 'string' ||
+      typeof memberCount !== 'number' ||
+      typeof onlineCount !== 'number'
+    ) {
+      console.warn('[community] Discord invite API returned an unexpected shape — using snapshot.');
+      return null;
+    }
+
+    return {
+      name,
+      iconUrl:
+        typeof icon === 'string' ? `https://cdn.discordapp.com/icons/${guildId}/${icon}.png` : null,
+      memberCount,
+      onlineCount,
+    };
+  } catch {
+    console.warn('[community] Discord invite API returned unparseable JSON — using snapshot.');
+    return null;
+  }
+}
+
+/**
  * Memoised for the lifetime of the build. The header renders on all ~13 pages,
  * so without this a single `astro build` would make 26 outbound requests for one
  * set of numbers — enough to matter against GitHub's 60/hour unauthenticated
@@ -265,7 +338,11 @@ function atLeastSnapshot(live: number | null, fallback: number, label: string): 
  * only the shipped count goes stale.
  */
 async function resolveCommunityData(now: Date): Promise<CommunityData> {
-  const [luma, shipped] = await Promise.all([fetchLuma(now), fetchShipped()]);
+  const [luma, shipped, discord] = await Promise.all([
+    fetchLuma(now),
+    fetchShipped(),
+    fetchDiscord(),
+  ]);
 
   // A stale next-event date is worse than none: an RSVP bar advertising a night
   // that already happened actively misinforms. Counts age gracefully; a date
@@ -275,11 +352,23 @@ async function resolveCommunityData(now: Date): Promise<CommunityData> {
       ? snapshot.nextEvent
       : null;
 
+  // Same zero-regression guard as nights held and things shipped: a live 0
+  // against a snapshot with real members means the invite broke or the API
+  // shape changed upstream, not that the server emptied out overnight.
+  const discordMemberCount = atLeastSnapshot(
+    discord?.memberCount ?? null,
+    snapshot.discord.memberCount,
+    'Discord member count',
+  );
+  const resolvedDiscord =
+    discord && discordMemberCount === discord.memberCount ? discord : snapshot.discord;
+
   return {
     nextEvent: luma ? luma.nextEvent : snapshotEvent,
     nightsHeld: atLeastSnapshot(luma ? luma.nightsHeld : null, snapshot.nightsHeld, 'nights held'),
     thingsShipped: atLeastSnapshot(shipped, snapshot.thingsShipped, 'things shipped'),
-    fresh: luma !== null && shipped !== null,
+    discord: resolvedDiscord,
+    fresh: luma !== null && shipped !== null && discord !== null,
   };
 }
 

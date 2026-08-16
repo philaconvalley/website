@@ -10,7 +10,7 @@ tags: ['git', 'github', 'open-source', 'beginner', 'pull-request']
 
 Never opened a pull request before? By the end of this page, you will have opened a real one. We will use this website's own repo as the example, and we will explain every term the first time it shows up. Nothing here assumes you have used Git before.
 
-Stuck at any point? Comment on the [issue you're working on](https://github.com/philaconvalley/website/issues) or ask in Slack. That is what we are there for.
+Stuck at any point? Comment on the [issue you're working on](https://github.com/philaconvalley/website/issues) or ask in [Discord](https://discord.gg/5haHYh5xcx). That is what we are there for.
 
 ## Two Words Worth Knowing
 
