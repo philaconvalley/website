@@ -103,7 +103,7 @@ Every claim gets made at the highest rung it can reach. Rungs, strongest first:
    | Mode     | Budget | Today                                                         |
    | -------- | ------ | ------------------------------------------------------------- |
    | Persuade | ≤ 250  | Home **183** ✓ · Join 307 · Support 321                       |
-   | Read     | ≤ 550  | About **776**                                                 |
+   | Read     | ≤ 550  | About **317** ✓ (rewritten in #131; figure was stale)         |
    | Operate  | ≤ 200  | Events 198 ✓ · Projects 176 ✓ · Resources 150 ✓ · Contact 208 |
 
    The homepage already lives inside its budget while making the strongest argument on the site. It is the proof the budget is achievable, not an aspiration.

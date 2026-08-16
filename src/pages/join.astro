@@ -53,24 +53,22 @@ const secondaryRoutes = [
         <p class="text-2xl text-white/85 mb-10">Show up before you feel ready.</p>
 
         <!-- The front door. One decision, no cost, shown rather than described:
-             a visitor sees the real server — its name, icon, and who's already
-             in it — before being asked to click into it blind. -->
+             a visitor sees the real server — its name and who's already in
+             it, live from Discord — before being asked to click into it
+             blind. The icon is the org's own mascot, a static asset, not
+             the live server icon. -->
         <div
           class="bg-white text-brand-dark rounded-retro p-6 md:p-8 shadow-retro border-2 border-brand-dark/10 text-left max-w-md mx-auto"
         >
           <div class="flex items-center gap-4">
-            {
-              discord.iconUrl && (
-                <img
-                  src={discord.iconUrl}
-                  alt=""
-                  width="56"
-                  height="56"
-                  loading="lazy"
-                  class="w-14 h-14 rounded-full flex-shrink-0"
-                />
-              )
-            }
+            <img
+              src="/images/discord-mascot.webp"
+              alt=""
+              width="56"
+              height="56"
+              loading="lazy"
+              class="w-14 h-14 rounded-full flex-shrink-0"
+            />
             <div>
               <p class="font-display font-bold text-lg leading-tight m-0">{discord.name}</p>
               <p class="text-sm text-brand-dark/60 m-0">
