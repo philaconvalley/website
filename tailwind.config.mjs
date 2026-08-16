@@ -51,6 +51,11 @@ export default {
       fontFamily: {
         sans: ['"Nunito"', 'system-ui', 'sans-serif'],
         display: ['"Baloo 2"', 'cursive', 'system-ui', 'sans-serif'],
+        // Brand Book §04 — the sanctioned companion. Code samples, metadata
+        // rows, captions, and the small technical labels. §11 specifies it for
+        // the IG handle, flyer event meta, carousel pagination, deck footer
+        // meta, and badge pronouns.
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       boxShadow: {
         retro: '4px 4px 0 rgba(26,26,26,0.15)',
