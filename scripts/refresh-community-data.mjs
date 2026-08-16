@@ -21,6 +21,7 @@ import { writeFile, readFile } from 'node:fs/promises';
 
 const ICS_URL = 'https://api.lu.ma/ics/get?entity=calendar&id=cal-KkQjuykLZNrSChl';
 const REPOS_URL = 'https://api.github.com/orgs/philaconvalley/repos?per_page=100&type=public';
+const DISCORD_INVITE_URL = 'https://discord.com/api/v10/invites/5haHYh5xcx?with_counts=true';
 const OUT = 'src/data/community-snapshot.json';
 const LUMA_FALLBACK = 'https://lu.ma/philaconvalley';
 
@@ -69,9 +70,10 @@ function parseIcs(ics) {
 
 const now = new Date();
 
-const [ics, reposBody] = await Promise.all([
+const [ics, reposBody, discordBody] = await Promise.all([
   get(ICS_URL, 'Luma ICS'),
   get(REPOS_URL, 'GitHub org API'),
+  get(DISCORD_INVITE_URL, 'Discord invite API'),
 ]);
 
 const events = parseIcs(ics);
@@ -80,6 +82,25 @@ if (events.length === 0) throw new Error('Luma ICS parsed to zero events — ref
 const upcoming = events.find((event) => event.start > now) ?? null;
 const repos = JSON.parse(reposBody);
 if (!Array.isArray(repos)) throw new Error('GitHub API did not return an array');
+
+const discordData = JSON.parse(discordBody);
+if (
+  typeof discordData.guild?.id !== 'string' ||
+  typeof discordData.guild?.name !== 'string' ||
+  typeof discordData.approximate_member_count !== 'number' ||
+  typeof discordData.approximate_presence_count !== 'number'
+) {
+  throw new Error('Discord invite API did not return the expected shape');
+}
+const discord = {
+  name: discordData.guild.name,
+  iconUrl:
+    typeof discordData.guild.icon === 'string'
+      ? `https://cdn.discordapp.com/icons/${discordData.guild.id}/${discordData.guild.icon}.png`
+      : null,
+  memberCount: discordData.approximate_member_count,
+  onlineCount: discordData.approximate_presence_count,
+};
 
 const snapshot = {
   _comment:
@@ -102,6 +123,7 @@ const snapshot = {
     (repo) =>
       typeof repo.name === 'string' && !repo.name.startsWith('.') && !repo.archived && !repo.fork,
   ).length,
+  discord,
 };
 
 const previous = await readFile(OUT, 'utf8').catch(() => null);
@@ -124,6 +146,12 @@ if (priorCounts) {
       );
     }
   }
+  if (snapshot.discord.memberCount === 0 && priorCounts.discord?.memberCount > 0) {
+    throw new Error(
+      `Discord member count computed as 0 against a snapshot of ${priorCounts.discord.memberCount} — ` +
+        'refusing to write. Check the invite link before rerunning.',
+    );
+  }
 }
 
 if (previous === next) {
@@ -134,4 +162,7 @@ if (previous === next) {
   console.log(`  next event   ${snapshot.nextEvent?.title ?? '(none scheduled)'}`);
   console.log(`  nights held  ${snapshot.nightsHeld}`);
   console.log(`  shipped      ${snapshot.thingsShipped}`);
+  console.log(
+    `  discord      ${snapshot.discord.memberCount} members, ${snapshot.discord.onlineCount} online`,
+  );
 }

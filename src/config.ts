@@ -31,6 +31,8 @@ export const community = {
 } as const;
 
 export const links = {
+  /** Main community channel. Slack stays up only for international members. */
+  discord: 'https://discord.gg/5haHYh5xcx',
   luma: 'https://lu.ma/philaconvalley',
   lumaEmbed: 'https://luma.com/embed/calendar/cal-KkQjuykLZNrSChl/events',
   /** Public, unauthenticated calendar feed — the source for events and nights held. */

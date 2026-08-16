@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Button from '../components/Button.astro';
 import FirstPRWalkthrough from '../components/FirstPRWalkthrough.astro';
 import { links } from '../config';
+import { getCommunityData } from '../lib/community';
 
 /**
  * Mode: Persuade. Budget: 250 body words (DESIGN.md).
@@ -14,20 +15,22 @@ import { links } from '../config';
  * that we help people open them.
  */
 
-const routes = [
+const { discord } = await getCommunityData();
+
+/**
+ * Discord is the front door — one decision, no cost. The Lab and the Open
+ * Collective ask are a different kind of decision entirely, so they no
+ * longer share a three-item list with equal visual weight. They stay here
+ * as a secondary row because they are still real ways in, just not the
+ * first one.
+ */
+const secondaryRoutes = [
   {
     label: 'Come to a Lab',
     detail: 'Free, in person, no experience assumed.',
     href: links.luma,
     cta: 'See the next one',
     external: true,
-  },
-  {
-    label: 'Get on Slack',
-    detail: 'Where pairing gets arranged and questions get answered.',
-    href: '/contact',
-    cta: 'Ask for an invite',
-    external: false,
   },
   {
     label: 'Keep it free',
@@ -41,13 +44,47 @@ const routes = [
 
 <BaseLayout
   title="Join PhilaCon Valley - Get involved"
-  description="Show up before you feel ready. Open your first pull request, come to a Lab, or get on Slack."
+  description="Show up before you feel ready. Open your first pull request, come to a Lab, or get on Discord."
 >
   <section class="bg-accent-400 text-white py-20">
     <div class="container-custom">
-      <div class="max-w-4xl mx-auto text-center">
+      <div class="max-w-3xl mx-auto text-center">
         <h1 class="text-5xl md:text-6xl font-bold mb-6">Join the community</h1>
-        <p class="text-2xl text-white/85">Show up before you feel ready.</p>
+        <p class="text-2xl text-white/85 mb-10">Show up before you feel ready.</p>
+
+        <!-- The front door. One decision, no cost, shown rather than described:
+             a visitor sees the real server — its name, icon, and who's already
+             in it — before being asked to click into it blind. -->
+        <div
+          class="bg-white text-brand-dark rounded-retro p-6 md:p-8 shadow-retro border-2 border-brand-dark/10 text-left max-w-md mx-auto"
+        >
+          <div class="flex items-center gap-4">
+            {
+              discord.iconUrl && (
+                <img
+                  src={discord.iconUrl}
+                  alt=""
+                  width="56"
+                  height="56"
+                  loading="lazy"
+                  class="w-14 h-14 rounded-full flex-shrink-0"
+                />
+              )
+            }
+            <div>
+              <p class="font-display font-bold text-lg leading-tight m-0">{discord.name}</p>
+              <p class="text-sm text-brand-dark/60 m-0">
+                {discord.memberCount} members · {discord.onlineCount} online now
+              </p>
+            </div>
+          </div>
+          <Button href={links.discord} external variant="primary" size="lg" class="w-full mt-6">
+            Join the Discord →
+          </Button>
+          <p class="text-xs text-brand-dark/50 mt-3 mb-0 text-center">
+            Discord's blocked in some countries — email us for a Slack invite if that's you.
+          </p>
+        </div>
       </div>
     </div>
   </section>
@@ -68,10 +105,10 @@ const routes = [
   <section class="section-padding bg-primary-100">
     <div class="container-custom">
       <div class="max-w-3xl mx-auto">
-        <h2 class="text-4xl font-bold mb-10">Three other ways in</h2>
+        <h2 class="text-4xl font-bold mb-10">Two other ways in</h2>
         <ul class="space-y-9 list-none p-0 m-0">
           {
-            routes.map((route) => (
+            secondaryRoutes.map((route) => (
               <li>
                 <h3 class="text-2xl font-bold mb-2">{route.label}</h3>
                 <p class="text-brand-dark/70 m-0">{route.detail}</p>

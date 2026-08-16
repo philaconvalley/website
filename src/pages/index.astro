@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import EventBar from '../components/EventBar.astro';
 import LabTrack from '../components/LabTrack.astro';
 import { getCommunityData } from '../lib/community';
-import { community } from '../config';
+import { community, links } from '../config';
 import { getCollection } from 'astro:content';
 
 const { nextEvent, nightsHeld, thingsShipped } = await getCommunityData();
@@ -101,7 +101,9 @@ const stats = [
           made a thing. No application, no fee, no prerequisite.
         </p>
         <a
-          href="/join"
+          href={links.discord}
+          target="_blank"
+          rel="noopener noreferrer"
           class="inline-block font-display font-bold text-base mt-3.5 lg:mt-5 py-3 lg:py-0 lg:pb-0.5 text-brand-dark no-underline border-b-2 border-brand-pink hover:text-accent-700 transition-colors"
         >
           Join {community.memberCount} of us →

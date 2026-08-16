@@ -10,9 +10,11 @@ const currentYear = new Date().getFullYear();
  *
  * Kept as real links rather than the design's plain text — the design renders
  * "Slack · Luma · Instagram · GitHub" unlinked because a static mock has nowhere
- * to go, not because these should be dead.
+ * to go, not because these should be dead. Slack in that mock is now Discord —
+ * the main community channel, per the 2026-08 move away from Slack.
  */
 const connect = [
+  { name: 'Discord', href: links.discord },
   { name: 'Luma', href: links.luma },
   { name: 'Instagram', href: links.social.instagram },
   { name: 'LinkedIn', href: links.social.linkedin },

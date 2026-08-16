@@ -154,7 +154,7 @@ Links to their social media, portfolio, or projects.
 
 1. **Easiest**: [Open a blog submission issue](https://github.com/philaconvalley/website/issues/new?template=blog_submission.md) with your link or draft
 2. **If you write code**: Create a `.md` file in `src/content/blog/` and open a PR (see [Adding Content](adding-content.md))
-3. **Not sure?** Email waskar@philaconvalley.com or reach out on Slack
+3. **Not sure?** Email waskar@philaconvalley.com or reach out on Discord
 
 ## Questions?
 

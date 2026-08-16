@@ -14,7 +14,7 @@ Live: `philaconvalley.com` · Repo: `philaconvalley/website` (public, MIT)
 
 | Audience                         | Arrives wanting               | Leaves having                                    |
 | -------------------------------- | ----------------------------- | ------------------------------------------------ |
-| **Prospective community member** | to know if this is for them   | RSVP'd to an event, or joined Slack              |
+| **Prospective community member** | to know if this is for them   | RSVP'd to an event, or joined Discord            |
 | **Existing member**              | the next Lab, a resource      | the date, the link, the thing                    |
 | **First-time OSS contributor**   | a safe place to make a PR     | a merged change and a labelled next issue        |
 | **Sponsor / partner / press**    | proof this is real and active | live numbers, past events, a way to reach Waskar |
