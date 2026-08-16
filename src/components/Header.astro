@@ -50,12 +50,24 @@ const rsvpHref = nextEvent?.url ?? '/events';
       </a>
 
       <!-- Desktop Navigation -->
+      <!--
+        Baloo 2 loads remotely with `display=swap` (BaseLayout.astro), so the
+        browser paints these links in a fallback font first, then swaps in
+        the real one — which changes every link's rendered width. x-init
+        measures the pill's initial position/width from offsetLeft/offsetWidth
+        before that swap is guaranteed to have happened, and nothing else
+        re-measures it: the pill would sit wherever the fallback font put it,
+        wrong and permanent, until the visitor's first hover/focus on the
+        nav. The `document.fonts.ready` correction below re-measures once the
+        real font is in, skipped only while the visitor is already hovering
+        (their own mouseenter measurement is already correct by then).
+      -->
       <div class="hidden lg:block">
         <div
           data-testid="desktop-nav"
           class="relative flex items-center space-x-0.5"
           x-data="{ pos: { left: 0, width: 0 } }"
-          x-init="const current = $el.querySelector('[aria-current=page]'); if (current) pos = { left: current.offsetLeft, width: current.offsetWidth }"
+          x-init="const current = $el.querySelector('[aria-current=page]'); if (current) pos = { left: current.offsetLeft, width: current.offsetWidth }; if (document.fonts) document.fonts.ready.then(() => { if (!$el.matches(':hover')) { const c = $el.querySelector('[aria-current=page]'); if (c) pos = { left: c.offsetLeft, width: c.offsetWidth } } })"
           @mouseleave="const current = $el.querySelector('[aria-current=page]'); if (current) pos = { left: current.offsetLeft, width: current.offsetWidth }"
           @focusout="if (!$el.contains($event.relatedTarget)) { const current = $el.querySelector('[aria-current=page]'); if (current) pos = { left: current.offsetLeft, width: current.offsetWidth } }"
         >
