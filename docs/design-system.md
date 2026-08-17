@@ -102,8 +102,6 @@ Three variants, all pill-shaped:
 
 | Variant     | Look                             | Usage                              |
 | ----------- | -------------------------------- | ---------------------------------- |
-| Variant     | Look                             | Usage                              |
-| ----------- | -------------------------------- | ---------------------------------- |
 | `primary`   | Pink background, brand-dark text | Main CTAs ("Join", "Donate")       |
 | `secondary` | Yellow background, dark text     | Secondary actions                  |
 | `outline`   | Transparent with border          | Tertiary actions, dark backgrounds |
