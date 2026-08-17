@@ -27,29 +27,49 @@ function relativeLuminance([r, g, b]: number[]): number {
 }
 
 function parseRgba(value: string): { rgb: number[]; a: number } {
+  // Only legacy rgb()/rgba() computed styles — reject colour()/oklch()/etc. loudly.
+  if (!/^\s*rgba?\(/i.test(value)) {
+    throw new Error(`unsupported colour function "${value}"`);
+  }
   const nums = value.match(/[\d.]+%?/g);
   if (!nums || nums.length < 3) throw new Error(`cannot parse colour "${value}"`);
-  const parts = nums.map((n) => {
-    if (n.endsWith('%')) return Number(n.slice(0, -1)) / 100;
-    return Number(n);
-  });
-  const a = parts.length > 3 ? parts[3] : 1;
-  // Guard modern `rgb(... / 85%)` so percentage alpha is not treated as 85.
+  // RGB channels are 0–255 in legacy serializations; `%` on them silently misparses.
+  for (let i = 0; i < 3; i++) {
+    if (nums[i].endsWith('%')) {
+      throw new Error(`percentage RGB channels unsupported "${value}"`);
+    }
+  }
+  const rgb = nums.slice(0, 3).map(Number);
+  let a = 1;
+  if (nums.length > 3) {
+    const raw = nums[3];
+    // Modern `rgb(... / 85%)` — convert percentage alpha; leave unitless 0–1 alone.
+    a = raw.endsWith('%') ? Number(raw.slice(0, -1)) / 100 : Number(raw);
+  }
+  if (rgb.some((n) => !Number.isFinite(n))) {
+    throw new Error(`cannot parse colour "${value}"`);
+  }
   if (!Number.isFinite(a) || a < 0 || a > 1) {
     throw new Error(`unsupported alpha in colour "${value}"`);
   }
-  return { rgb: parts.slice(0, 3), a };
+  return { rgb, a };
 }
 
 /**
  * Composites a (possibly translucent) foreground over its background before
  * measuring luminance — matches what a visitor actually sees.
+ * Translucent backgrounds are composited over page white; fully transparent
+ * backgrounds throw instead of reporting a false 21:1 pass.
  */
 function contrastRatio(fg: string, bg: string): number {
   const f = parseRgba(fg);
   const b = parseRgba(bg);
-  const composited = f.rgb.map((v, i) => f.a * v + (1 - f.a) * b.rgb[i]);
-  const [hi, lo] = [relativeLuminance(composited), relativeLuminance(b.rgb)].sort((a, b) => b - a);
+  if (b.a === 0) {
+    throw new Error(`transparent background "${bg}"`);
+  }
+  const bgRgb = b.a < 1 ? b.rgb.map((v) => b.a * v + (1 - b.a) * 255) : b.rgb;
+  const composited = f.rgb.map((v, i) => f.a * v + (1 - f.a) * bgRgb[i]);
+  const [hi, lo] = [relativeLuminance(composited), relativeLuminance(bgRgb)].sort((a, b) => b - a);
   return (hi + 0.05) / (lo + 0.05);
 }
 
@@ -83,6 +103,23 @@ test.describe('contrast helper alpha compositing', () => {
     const ratio = contrastRatio('rgba(255, 255, 255, 0.85)', 'rgb(239, 101, 127)');
     expect(ratio).toBeCloseTo(2.62, 1);
     expect(ratio).toBeLessThan(3.0);
+  });
+
+  test('percentage alpha in modern rgb() syntax is not treated as 85', () => {
+    const ratio = contrastRatio('rgb(255 255 255 / 85%)', 'rgb(239, 101, 127)');
+    expect(ratio).toBeCloseTo(2.62, 1);
+  });
+
+  test('rejects percentage RGB channels and non-rgb() functions', () => {
+    expect(() => parseRgba('rgb(100%, 40%, 66%)')).toThrow(/percentage RGB/);
+    expect(() => parseRgba('oklch(0.7 0.15 20)')).toThrow(/unsupported colour function/);
+  });
+
+  test('translucent backgrounds composite over white; transparent throws', () => {
+    // Dark text on brand-dark/5 over white should remain high-contrast, not ~1:1.
+    const ratio = contrastRatio('rgb(26, 26, 26)', 'rgba(26, 26, 26, 0.05)');
+    expect(ratio).toBeGreaterThan(10);
+    expect(() => contrastRatio('rgb(26, 26, 26)', 'rgba(0, 0, 0, 0)')).toThrow(/transparent/);
   });
 });
 
