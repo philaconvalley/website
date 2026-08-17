@@ -55,6 +55,41 @@ const gallery = defineCollection({
     event: z.string(),
     date: z.date(),
     caption: z.string().optional(),
+    /**
+     * Whether this shot can carry the homepage's full-bleed band.
+     *
+     * That band renders up to ~1400px wide, so it needs a wide, high-resolution
+     * frame. The grid on /events only needs ~400px tiles and takes a phone
+     * portrait happily. Without this flag the homepage shows whichever photo is
+     * newest, which is how a soft 768px portrait becomes the largest image on
+     * the site. Opt-in, so the wrong default is "stays in the grid".
+     */
+    heroEligible: z.boolean().default(false),
+  }),
+});
+
+const arcade = defineCollection({
+  loader: glob({ pattern: '**/[^_]*.md', base: './src/content/arcade' }),
+  schema: z.object({
+    title: z.string(),
+    contributors: z.array(z.string()),
+    description: z.string(),
+    // Required, and required to be real prose: canvas games are opaque to
+    // screen readers and no amount of page markup fixes that. This is the
+    // description of the game for someone who cannot see or play it.
+    longDescription: z.string(),
+    slug: z.string(),
+    thumbnail: z.string(),
+    // Authored, never generated. The capture script can produce the image; it
+    // cannot describe it. Mirrors the required `alt` on the gallery collection.
+    thumbnailAlt: z.string(),
+    ogImage: z.string(),
+    marqueeColor: z.enum(['pink', 'purple', 'yellow', 'coral']),
+    kind: z.enum(['game', 'demo']),
+    input: z.array(z.enum(['keyboard', 'pointer', 'touch'])).nonempty(),
+    fixedSize: z.object({ w: z.number(), h: z.number() }).optional(),
+    controls: z.array(z.object({ keys: z.array(z.string()), label: z.string() })),
+    date: z.date(),
   }),
 });
 
@@ -63,4 +98,5 @@ export const collections = {
   resources,
   blog,
   gallery,
+  arcade,
 };

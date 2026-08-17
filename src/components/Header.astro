@@ -11,6 +11,7 @@ const navItems = [
   { name: 'About', href: '/about' },
   { name: 'Events', href: '/events' },
   { name: 'Projects', href: '/projects' },
+  { name: 'Arcade', href: '/arcade' },
   { name: 'Resources', href: '/resources' },
   // Blog is hidden until an editorial procedure exists — see src/pages/_blog/.
   // { name: 'Blog', href: '/blog' },
@@ -26,7 +27,18 @@ const eventDate = nextEvent ? formatEventDate(nextEvent.start) : null;
 const rsvpHref = nextEvent?.url ?? '/events';
 ---
 
-<header class="sticky top-0 z-50 bg-primary-100/95 backdrop-blur-sm border-b border-brand-dark/10">
+<!--
+  Fully opaque, deliberately. This bar was bg-primary-100/95 with a blur, which
+  went unnoticed for as long as every page scrolled cream-on-cream underneath
+  it. The arcade sends a dark cabinet and a saturated marquee beneath it, and at
+  95% you could read a game's title through the nav links. A heavier blur turned
+  that into a soft tint, but a sticky bar that still smudges whatever passes
+  under it is a bar that keeps getting revisited every time the site gains a
+  high-contrast page. Opaque ends the class of bug rather than this instance.
+  The mobile menu below keeps its translucency — it sits over a dimmed page it
+  controls, not over arbitrary scrolling content.
+-->
+<header class="sticky top-0 z-50 bg-primary-100 border-b border-brand-dark/10">
   <nav class="container-custom" x-data="{ mobileMenuOpen: false }">
     <div class="flex items-center justify-between h-[68px]">
       <!-- Wordmark -->
@@ -38,19 +50,31 @@ const rsvpHref = nextEvent?.url ?? '/events';
       </a>
 
       <!-- Desktop Navigation -->
+      <!--
+        Baloo 2 loads remotely with `display=swap` (BaseLayout.astro), so the
+        browser paints these links in a fallback font first, then swaps in
+        the real one — which changes every link's rendered width. x-init
+        measures the pill's initial position/width from offsetLeft/offsetWidth
+        before that swap is guaranteed to have happened, and nothing else
+        re-measures it: the pill would sit wherever the fallback font put it,
+        wrong and permanent, until the visitor's first hover/focus on the
+        nav. The `document.fonts.ready` correction below re-measures once the
+        real font is in, skipped only while the visitor is already hovering
+        (their own mouseenter measurement is already correct by then).
+      -->
       <div class="hidden lg:block">
         <div
           data-testid="desktop-nav"
           class="relative flex items-center space-x-0.5"
           x-data="{ pos: { left: 0, width: 0 } }"
-          x-init="const current = $el.querySelector('[aria-current=page]'); if (current) pos = { left: current.offsetLeft, width: current.offsetWidth }"
+          x-init="const current = $el.querySelector('[aria-current=page]'); if (current) pos = { left: current.offsetLeft, width: current.offsetWidth }; if (document.fonts) document.fonts.ready.then(() => { if (!$el.matches(':hover')) { const c = $el.querySelector('[aria-current=page]'); if (c) pos = { left: c.offsetLeft, width: c.offsetWidth } } })"
           @mouseleave="const current = $el.querySelector('[aria-current=page]'); if (current) pos = { left: current.offsetLeft, width: current.offsetWidth }"
           @focusout="if (!$el.contains($event.relatedTarget)) { const current = $el.querySelector('[aria-current=page]'); if (current) pos = { left: current.offsetLeft, width: current.offsetWidth } }"
         >
           <div
             x-cloak
             data-testid="nav-pill"
-            class="absolute inset-y-1 left-0 rounded-full bg-accent-400 transition-[transform,width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none"
+            class="absolute inset-y-1 left-0 rounded-full bg-accent-400 transition-[transform,width] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
             :style="`transform: translateX(${pos.left}px); width: ${pos.width}px;`"
           >
           </div>
@@ -88,7 +112,7 @@ const rsvpHref = nextEvent?.url ?? '/events';
           eventDate && (
             <span
               data-pcv-event-start={nextEvent!.start}
-              class="hidden xl:inline font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-brand-dark/50 animate-fade-in"
+              class="hidden xl:inline font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-brand-dark/50"
             >
               {eventDate}
             </span>
@@ -109,7 +133,7 @@ const rsvpHref = nextEvent?.url ?? '/events';
               }
             : {}}
           data-testid="hero-cta"
-          class="font-display font-bold text-[15px] px-6 py-3 rounded-full bg-brand-pink text-brand-dark transition-all duration-150 ease-out hover:-translate-x-px hover:-translate-y-px hover:shadow-[6px_6px_0_rgba(26,26,26,0.18)] motion-safe:active:scale-[0.97] motion-reduce:active:opacity-80 motion-reduce:transition-none"
+          class="font-display font-bold text-[15px] px-6 py-3 rounded-full bg-brand-pink text-brand-dark transition-[transform,box-shadow] duration-150 ease-out hover:-translate-x-px hover:-translate-y-px hover:shadow-[6px_6px_0_rgba(26,26,26,0.18)] motion-safe:active:scale-[0.97] motion-reduce:active:opacity-80 motion-reduce:transition-none"
         >
           RSVP →
         </a>
@@ -162,7 +186,7 @@ const rsvpHref = nextEvent?.url ?? '/events';
       x-transition:enter="transition ease-out duration-200 motion-reduce:duration-0"
       x-transition:enter-start="opacity-0 -translate-y-2"
       x-transition:enter-end="opacity-100 translate-y-0"
-      x-transition:leave="transition ease-in duration-150 motion-reduce:duration-0"
+      x-transition:leave="transition ease-out duration-150 motion-reduce:duration-0"
       x-transition:leave-start="opacity-100 translate-y-0"
       x-transition:leave-end="opacity-0 -translate-y-2"
       class="lg:hidden bg-brand-dark/90 backdrop-blur-lg border-t border-white/10"

@@ -2,6 +2,66 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---------------------------------------------------------------------------
+   Brand Book §09 — the agency surface.
+
+   One brand, two dials. The community surface is the default: cream, loud,
+   mascot-forward, 2px ink stroke, hard offset shadows. The agency surface keeps
+   every shape and drops the volume for nonprofits and community orgs.
+
+   Wrap a page or a section in [data-surface="agency"] to switch. Shapes do not
+   change — pills stay pills, 20px radii stay 20px. Only the volume moves.
+   --------------------------------------------------------------------------- */
+[data-surface='agency'] {
+  /* Page background: off-cream, calmer than the community cream. */
+  --surface-bg: #fff9f0;
+  /* Ink stroke: still present, less assertive. */
+  --surface-stroke: 1.5px;
+  /* Shadows: soft offset only. The loud ink-stamp variant is community-only. */
+  --surface-shadow: 4px 4px 0 rgba(26, 26, 26, 0.08);
+  --surface-shadow-lg: 6px 6px 0 rgba(26, 26, 26, 0.08);
+
+  background-color: var(--surface-bg);
+}
+
+/* Type steps down. Baloo 2 sits at 700 rather than 800, and Nunito does more
+   of the work. Display sizes do not go large on this surface. */
+[data-surface='agency'] h1,
+[data-surface='agency'] h2,
+[data-surface='agency'] h3,
+[data-surface='agency'] h4 {
+  @apply font-semibold;
+}
+
+[data-surface='agency'] h1 {
+  @apply text-3xl md:text-4xl lg:text-5xl;
+}
+
+[data-surface='agency'] h2 {
+  @apply text-2xl md:text-3xl;
+}
+
+/* Borders drop from 2px to 1.5px across cards, inputs, and buttons. */
+[data-surface='agency'] .border-2 {
+  border-width: var(--surface-stroke);
+}
+
+/* Shadows soften. No ink-stamp on this surface. */
+[data-surface='agency'] .shadow-retro {
+  box-shadow: var(--surface-shadow);
+}
+
+[data-surface='agency'] .shadow-retro-lg {
+  box-shadow: var(--surface-shadow-lg);
+}
+
+/* NOTE: the Book §05 names three shadows — retro, retro-lg, retro-ink. The live
+   config ships retro, retro-lg, retro-hover. There is no retro-ink utility to
+   soften here. See Addendum 01 Part 4. */
+[data-surface='agency'] .shadow-retro-hover {
+  box-shadow: var(--surface-shadow-lg);
+}
+
 @layer base {
   html {
     @apply scroll-smooth;
@@ -62,31 +122,25 @@
     @apply bg-gradient-to-r from-accent-400 to-accent-600 bg-clip-text text-transparent;
   }
 
-  /* Card styles — retro offset shadow */
+  /* Card styles — retro offset shadow.
+     Transition names its two properties: `all` would animate anything that
+     happens to differ on hover, off the GPU. The hover lift is gated to
+     real pointers by `hoverOnlyWhenSupported` in tailwind.config.mjs. */
   .card {
     @apply bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro
-           transition-all duration-200 hover:-translate-y-1
-           hover:shadow-retro-hover;
+           transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]
+           hover:-translate-y-1 hover:shadow-retro-hover;
   }
 }
 
 @layer utilities {
-  /* Custom animations */
-  .animate-fade-in {
-    animation: fadeIn 0.5s ease-in;
-  }
-
-  .animate-slide-up {
-    animation: slideUp 0.6s ease-out;
-  }
-
   /*
    * Homepage motion.
    *
    * Two distinct families, and the distinction matters for accessibility:
    *
    *   .pcv-enter-*  run ONCE on load. Entrances.
-   *   .pcv-loop-*   run forever. These narrate the Builder Night story — a dot
+   *   .pcv-loop-*   run forever. These narrate the Lab story — a dot
    *                 arrives alone, two more join, you leave with a thing — so
    *                 they are the page's only infinite motion and the first
    *                 thing killed under prefers-reduced-motion.
@@ -110,7 +164,14 @@
     animation: pcvBarUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 1.1s both;
   }
 
+  /*
+   * Draws itself with scaleX, not width. Animating width relayouts the page on
+   * every frame, forever; scaleX is composited. The line is a childless 1px rule
+   * with no border-radius, so horizontal scaling has nothing to distort.
+   */
   .pcv-loop-track {
+    width: 100%;
+    transform-origin: left;
     animation: pcvTrack 8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   }
 
@@ -132,10 +193,6 @@
 
   .pcv-loop-chip {
     animation: pcvChip 8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
-  }
-
-  .pcv-loop-bob {
-    animation: pcvBob 5s ease-in-out infinite;
   }
 
   @keyframes pcvWord {
@@ -183,11 +240,11 @@
   @keyframes pcvTrack {
     0%,
     12% {
-      width: 0;
+      transform: scaleX(0);
     }
     58%,
     100% {
-      width: 100%;
+      transform: scaleX(1);
     }
   }
 
@@ -252,36 +309,6 @@
       transform: translateY(0) scale(1);
     }
   }
-
-  @keyframes pcvBob {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-7px);
-    }
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes slideUp {
-    from {
-      transform: translateY(20px);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  }
 }
 
 /*
@@ -293,8 +320,6 @@
     scroll-behavior: auto;
   }
 
-  .animate-fade-in,
-  .animate-slide-up,
   .pcv-enter-word,
   .pcv-enter-rise,
   .pcv-enter-stat,
@@ -304,21 +329,26 @@
   .pcv-loop-join-right,
   .pcv-loop-label,
   .pcv-loop-chip,
-  .pcv-loop-bob {
+  .pcv-loop-track {
     animation: none;
     opacity: 1;
     transform: none;
   }
 
   /*
-   * The track draws itself by animating width from 0. Killing the animation
-   * without restoring the width would leave a zero-width line — the timeline
-   * would lose its spine and the dots would sit on nothing. Everything else
-   * above is safe to freeze at its natural state; this one is not.
+   * `.pcv-loop-track` needs no special case any more. It used to animate width
+   * from 0, so freezing it left a zero-width line and the timeline dots sat on
+   * nothing. Now that it scales, `transform: none` above resolves to scaleX(1)
+   * against its `width: 100%` base and the spine restores itself.
    */
-  .pcv-loop-track {
-    animation: none;
-    width: 100%;
+
+  /* Cards keep their shadow and colour, and stop moving. */
+  .card {
+    transition: none;
+  }
+
+  .card:hover {
+    transform: none;
   }
 }
 

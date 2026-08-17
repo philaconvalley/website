@@ -6,7 +6,9 @@
         "http://localhost/",
         "http://localhost/about/",
         "http://localhost/events/",
-        "http://localhost/projects/"
+        "http://localhost/projects/",
+        "http://localhost/arcade/",
+        "http://localhost/arcade/flappy-philacon/"
       ]
     },
     "assert": {

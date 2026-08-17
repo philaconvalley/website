@@ -8,5 +8,11 @@
     "url": "https://luma.com/p30z896q"
   },
   "nightsHeld": 12,
-  "thingsShipped": 6
+  "thingsShipped": 6,
+  "discord": {
+    "name": "PhilaCon Valley",
+    "iconUrl": "https://cdn.discordapp.com/icons/1515336429306122331/40f91fefb08d779255346a88050a2cf2.png",
+    "memberCount": 48,
+    "onlineCount": 10
+  }
 }

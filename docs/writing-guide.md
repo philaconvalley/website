@@ -46,7 +46,7 @@ Not sure what to write about? Here are some ideas grouped by type. Pick one that
 
 - Recap of a PhilaCon Valley event
 - Spotlight on a community member
-- A project we built together at Collab Lab
+- A project we built together at Lab
 - Why open source matters and how to start
 - Resources that helped me level up
 
@@ -154,7 +154,7 @@ Links to their social media, portfolio, or projects.
 
 1. **Easiest**: [Open a blog submission issue](https://github.com/philaconvalley/website/issues/new?template=blog_submission.md) with your link or draft
 2. **If you write code**: Create a `.md` file in `src/content/blog/` and open a PR (see [Adding Content](adding-content.md))
-3. **Not sure?** Email waskar@philaconvalley.com or reach out on Slack
+3. **Not sure?** Email waskar@philaconvalley.com or reach out on Discord
 
 ## Questions?
 

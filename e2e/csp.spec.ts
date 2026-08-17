@@ -115,3 +115,54 @@ test.describe('Content-Security-Policy-Report-Only (the strict experiment)', () 
     ).toBeGreaterThan(0);
   });
 });
+
+/**
+ * The arcade embeds self-hosted games in sandboxed iframes. That requires a
+ * scoped exception to the site-wide headers: pages are X-Frame-Options: DENY
+ * and frame-ancestors 'none', which forbid framing even same-origin, and
+ * script-src has no 'unsafe-inline', which would stop every game from running.
+ *
+ * These tests guard the exception's blast radius as much as its function: the
+ * looser policy must apply to /games/ and nowhere else.
+ */
+test.describe('arcade /games/ header carve-out', () => {
+  test('a game document is framable and its inline script runs', async ({ page }) => {
+    // The frame host lives outside /games/ on purpose — see
+    // public/arcade-probe-host.html for why.
+    await page.goto('/arcade-probe-host.html');
+    const frame = page.frameLocator('#probe');
+    await expect(frame.locator('#status')).toHaveText('inline ok');
+  });
+
+  test('game responses are noindex', async ({ page }) => {
+    const response = await page.goto('/games/_probe/');
+    expect(response?.status()).toBe(200);
+    expect(response?.headers()['x-robots-tag']).toContain('noindex');
+  });
+
+  test('real pages keep the strict policy', async ({ page }) => {
+    const response = await page.goto('/about');
+    const headers = response?.headers() ?? {};
+    expect(headers['x-frame-options']).toBe('DENY');
+    expect(headers['content-security-policy']).toContain("frame-ancestors 'none'");
+    // The carve-out must not leak: pages never get 'unsafe-inline' scripts.
+    expect(headers['content-security-policy']).not.toContain("script-src 'unsafe-inline'");
+  });
+
+  test('a sibling script file does not load in the sandbox opaque origin', async ({ page }) => {
+    await page.goto('/arcade-probe-host.html');
+    const loaded = await page
+      .frameLocator('#probe')
+      .locator('body')
+      .evaluate(() =>
+        Boolean((window as unknown as { __probeExternal?: boolean }).__probeExternal),
+      );
+    // This is the empirical guarantee the whole vendoring strategy rests on
+    // (Task 1): a sandboxed game document with no allow-same-origin gets an
+    // opaque origin, so a sibling <script src="./foo.js"> cannot load. Every
+    // game therefore ships as one self-contained HTML file. If this ever
+    // flips to true, that guarantee is gone and games may start shipping
+    // sibling .js files without anyone deciding that on purpose.
+    expect(loaded).toBe(false);
+  });
+});

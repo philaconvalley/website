@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Arcade CSP probe</title>
+    <!--
+      Not a game. This is a permanent canary: it fails loudly if the /games/
+      header carve-out in vercel.json ever regresses, which would otherwise
+      only show up as three silently blank cabinets in production.
+      Guarded by e2e/csp.spec.ts. See docs/superpowers/specs/2026-08-08-philacon-arcade-design.md.
+    -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@800&display=swap"
+    />
+    <style>
+      body {
+        font-family: 'Baloo 2', sans-serif;
+        background: #1a1a1a;
+        color: #ffeed0;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="c" width="120" height="60"></canvas>
+    <p id="status">probe running</p>
+    <script>
+      // Inline script: every launch game is inline-script driven.
+      const ctx = document.getElementById('c').getContext('2d');
+      ctx.fillStyle = '#FF66A8';
+      ctx.fillRect(0, 0, 120, 60);
+      window.__probeInline = true;
+      document.getElementById('status').textContent = 'inline ok';
+    </script>
+    <script src="./probe-external.js"></script>
+  </body>
+</html>

@@ -1,6 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
+  future: {
+    // Compiles every `hover:` utility inside `@media (hover: hover)`. Without
+    // it, tapping a card or button on a phone leaves the hover transform stuck
+    // until you tap elsewhere. One flag instead of gating ~30 utilities by hand.
+    hoverOnlyWhenSupported: true,
+  },
   theme: {
     extend: {
       colors: {
@@ -45,6 +51,11 @@ export default {
       fontFamily: {
         sans: ['"Nunito"', 'system-ui', 'sans-serif'],
         display: ['"Baloo 2"', 'cursive', 'system-ui', 'sans-serif'],
+        // Brand Book §04 — the sanctioned companion. Code samples, metadata
+        // rows, captions, and the small technical labels. §11 specifies it for
+        // the IG handle, flyer event meta, carousel pagination, deck footer
+        // meta, and badge pronouns.
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       boxShadow: {
         retro: '4px 4px 0 rgba(26,26,26,0.15)',
