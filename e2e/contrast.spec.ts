@@ -11,9 +11,9 @@ import { test, expect, type Locator } from '@playwright/test';
  * that changes tokens, swaps a component, or introduces a hover state that inverts
  * the pairing gets caught, not just a literal `text-white` reappearing.
  *
- * Scope is deliberately the elements this branch redesigned. The same pairing still
- * exists on the shared Button component and on several page-level CTA sections that
- * predate this work — tracked separately rather than silently restyled here.
+ * Header / event-bar RSVP and the shared `Button` primary variant (pink on
+ * brand-dark) are both gated here. `/about` has no primary Button — the
+ * regression target is `/support` `data-testid="primary-cta"`.
  */
 
 const AA_NORMAL_TEXT = 4.5;
@@ -110,6 +110,21 @@ test.describe('primary CTA colour contrast', () => {
     expect(
       ratio,
       `current nav label is ${ratio.toFixed(2)}:1 (${color} on ${pill}), needs ${AA_NORMAL_TEXT}:1`,
+    ).toBeGreaterThanOrEqual(AA_NORMAL_TEXT);
+  });
+
+  test('the shared primary Button meets WCAG AA for normal text', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/support');
+
+    const cta = page.getByTestId('primary-cta');
+    await expect(cta).toBeVisible();
+
+    const { color, background } = await effectiveColours(cta);
+    const ratio = contrastRatio(color, background);
+    expect(
+      ratio,
+      `primary Button is ${ratio.toFixed(2)}:1 (${color} on ${background}), needs ${AA_NORMAL_TEXT}:1`,
     ).toBeGreaterThanOrEqual(AA_NORMAL_TEXT);
   });
 });
