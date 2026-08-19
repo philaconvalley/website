@@ -155,7 +155,13 @@ import { links } from '../config';
               Visit our Open Collective page to make a one-time or recurring contribution. All
               transactions are transparent and publicly visible.
             </p>
-            <Button href={links.openCollective} external variant="primary" size="lg">
+            <Button
+              href={links.openCollective}
+              external
+              variant="primary"
+              size="lg"
+              data-testid="primary-cta"
+            >
               Donate on Open Collective
             </Button>
           </div>
