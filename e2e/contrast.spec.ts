@@ -55,11 +55,17 @@ function parseRgba(value: string): { rgb: number[]; a: number } {
   return { rgb, a };
 }
 
+function compositeOver(fg: { rgb: number[]; a: number }, bgRgb: number[]): number[] {
+  return fg.rgb.map((v, i) => fg.a * v + (1 - fg.a) * bgRgb[i]);
+}
+
 /**
  * Composites a (possibly translucent) foreground over its background before
  * measuring luminance — matches what a visitor actually sees.
- * Translucent backgrounds are composited over page white; fully transparent
- * backgrounds throw instead of reporting a false 21:1 pass.
+ * Translucent backgrounds passed directly (unit tests) composite over page white;
+ * fully transparent backgrounds throw instead of reporting a false 21:1 pass.
+ * Browser call sites should pass an already-flattened opaque background from
+ * `effectiveColours`.
  */
 function contrastRatio(fg: string, bg: string): number {
   const f = parseRgba(fg);
@@ -67,29 +73,58 @@ function contrastRatio(fg: string, bg: string): number {
   if (b.a === 0) {
     throw new Error(`transparent background "${bg}"`);
   }
-  const bgRgb = b.a < 1 ? b.rgb.map((v) => b.a * v + (1 - b.a) * 255) : b.rgb;
-  const composited = f.rgb.map((v, i) => f.a * v + (1 - f.a) * bgRgb[i]);
+  const bgRgb = b.a < 1 ? compositeOver(b, [255, 255, 255]) : b.rgb;
+  const composited = compositeOver({ rgb: f.rgb, a: f.a }, bgRgb);
   const [hi, lo] = [relativeLuminance(composited), relativeLuminance(bgRgb)].sort((a, b) => b - a);
   return (hi + 0.05) / (lo + 0.05);
 }
 
 /**
- * Walks up for a non-transparent background: a button's own background may be set
- * on itself or inherited visually from an ancestor, and `rgba(0, 0, 0, 0)` compared
- * against text would silently produce a passing ratio against nothing.
+ * Walks up compositing each non-transparent background over its ancestor
+ * (then page white). Stops at the first opaque layer. A translucent CTA on a
+ * navy section therefore measures against navy, not against a white fallback.
  */
 async function effectiveColours(locator: Locator) {
   return locator.evaluate((el) => {
+    const parse = (value: string): { rgb: number[]; a: number } | null => {
+      if (!/^\s*rgba?\(/i.test(value)) return null;
+      const nums = value.match(/[\d.]+%?/g);
+      if (!nums || nums.length < 3) return null;
+      for (let i = 0; i < 3; i++) {
+        if (nums[i].endsWith('%')) return null;
+      }
+      const rgb = nums.slice(0, 3).map(Number);
+      let a = 1;
+      if (nums.length > 3) {
+        const raw = nums[3];
+        a = raw.endsWith('%') ? Number(raw.slice(0, -1)) / 100 : Number(raw);
+      }
+      if (rgb.some((n) => !Number.isFinite(n)) || !Number.isFinite(a) || a < 0 || a > 1) {
+        return null;
+      }
+      return { rgb, a };
+    };
+
     const color = getComputedStyle(el).color;
+    const layersTopDown: { rgb: number[]; a: number }[] = [];
     let node: HTMLElement | null = el as HTMLElement;
     while (node) {
-      const bg = getComputedStyle(node).backgroundColor;
-      const alpha = bg.match(/[\d.]+/g);
-      const isTransparent = !alpha || (alpha.length === 4 && Number(alpha[3]) === 0);
-      if (!isTransparent) return { color, background: bg, from: node.tagName };
+      const parsed = parse(getComputedStyle(node).backgroundColor);
+      if (parsed && parsed.a > 0) {
+        layersTopDown.push(parsed);
+        if (parsed.a >= 1) break;
+      }
       node = node.parentElement;
     }
-    return { color, background: 'rgb(255, 255, 255)', from: 'fallback' };
+
+    let bgRgb = [255, 255, 255];
+    for (let i = layersTopDown.length - 1; i >= 0; i--) {
+      const layer = layersTopDown[i];
+      bgRgb = layer.rgb.map((v, j) => layer.a * v + (1 - layer.a) * bgRgb[j]);
+    }
+
+    const background = `rgb(${bgRgb.map((n) => Math.round(n)).join(', ')})`;
+    return { color, background, from: layersTopDown.length ? 'composited' : 'fallback' };
   });
 }
 
@@ -120,6 +155,12 @@ test.describe('contrast helper alpha compositing', () => {
     const ratio = contrastRatio('rgb(26, 26, 26)', 'rgba(26, 26, 26, 0.05)');
     expect(ratio).toBeGreaterThan(10);
     expect(() => contrastRatio('rgb(26, 26, 26)', 'rgba(0, 0, 0, 0)')).toThrow(/transparent/);
+  });
+
+  test('translucent dark over white is not the same as over navy', () => {
+    const overWhite = compositeOver({ rgb: [20, 20, 20], a: 0.9 }, [255, 255, 255]);
+    const overNavy = compositeOver({ rgb: [20, 20, 20], a: 0.9 }, [10, 20, 80]);
+    expect(overWhite[2]).toBeGreaterThan(overNavy[2]);
   });
 });
 
