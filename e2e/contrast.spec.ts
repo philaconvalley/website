@@ -26,38 +26,143 @@ function relativeLuminance([r, g, b]: number[]): number {
   return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
 }
 
-function parseRgb(value: string): number[] {
-  const nums = value.match(/[\d.]+/g);
+function parseRgba(value: string): { rgb: number[]; a: number } {
+  // Only legacy rgb()/rgba() computed styles — reject colour()/oklch()/etc. loudly.
+  if (!/^\s*rgba?\(/i.test(value)) {
+    throw new Error(`unsupported colour function "${value}"`);
+  }
+  const nums = value.match(/[\d.]+%?/g);
   if (!nums || nums.length < 3) throw new Error(`cannot parse colour "${value}"`);
-  return nums.slice(0, 3).map(Number);
+  // RGB channels are 0–255 in legacy serializations; `%` on them silently misparses.
+  for (let i = 0; i < 3; i++) {
+    if (nums[i].endsWith('%')) {
+      throw new Error(`percentage RGB channels unsupported "${value}"`);
+    }
+  }
+  const rgb = nums.slice(0, 3).map(Number);
+  let a = 1;
+  if (nums.length > 3) {
+    const raw = nums[3];
+    // Modern `rgb(... / 85%)` — convert percentage alpha; leave unitless 0–1 alone.
+    a = raw.endsWith('%') ? Number(raw.slice(0, -1)) / 100 : Number(raw);
+  }
+  if (rgb.some((n) => !Number.isFinite(n))) {
+    throw new Error(`cannot parse colour "${value}"`);
+  }
+  if (!Number.isFinite(a) || a < 0 || a > 1) {
+    throw new Error(`unsupported alpha in colour "${value}"`);
+  }
+  return { rgb, a };
 }
 
+function compositeOver(fg: { rgb: number[]; a: number }, bgRgb: number[]): number[] {
+  return fg.rgb.map((v, i) => fg.a * v + (1 - fg.a) * bgRgb[i]);
+}
+
+/**
+ * Composites a (possibly translucent) foreground over its background before
+ * measuring luminance — matches what a visitor actually sees.
+ * Translucent backgrounds passed directly (unit tests) composite over page white;
+ * fully transparent backgrounds throw instead of reporting a false 21:1 pass.
+ * Browser call sites should pass an already-flattened opaque background from
+ * `effectiveColours`.
+ */
 function contrastRatio(fg: string, bg: string): number {
-  const [hi, lo] = [relativeLuminance(parseRgb(fg)), relativeLuminance(parseRgb(bg))].sort(
-    (a, b) => b - a,
-  );
+  const f = parseRgba(fg);
+  const b = parseRgba(bg);
+  if (b.a === 0) {
+    throw new Error(`transparent background "${bg}"`);
+  }
+  const bgRgb = b.a < 1 ? compositeOver(b, [255, 255, 255]) : b.rgb;
+  const composited = compositeOver({ rgb: f.rgb, a: f.a }, bgRgb);
+  const [hi, lo] = [relativeLuminance(composited), relativeLuminance(bgRgb)].sort((a, b) => b - a);
   return (hi + 0.05) / (lo + 0.05);
 }
 
 /**
- * Walks up for a non-transparent background: a button's own background may be set
- * on itself or inherited visually from an ancestor, and `rgba(0, 0, 0, 0)` compared
- * against text would silently produce a passing ratio against nothing.
+ * Walks up compositing each non-transparent background over its ancestor
+ * (then page white). Stops at the first opaque layer. A translucent CTA on a
+ * navy section therefore measures against navy, not against a white fallback.
  */
 async function effectiveColours(locator: Locator) {
   return locator.evaluate((el) => {
+    const parse = (value: string): { rgb: number[]; a: number } | null => {
+      if (!/^\s*rgba?\(/i.test(value)) return null;
+      const nums = value.match(/[\d.]+%?/g);
+      if (!nums || nums.length < 3) return null;
+      for (let i = 0; i < 3; i++) {
+        if (nums[i].endsWith('%')) return null;
+      }
+      const rgb = nums.slice(0, 3).map(Number);
+      let a = 1;
+      if (nums.length > 3) {
+        const raw = nums[3];
+        a = raw.endsWith('%') ? Number(raw.slice(0, -1)) / 100 : Number(raw);
+      }
+      if (rgb.some((n) => !Number.isFinite(n)) || !Number.isFinite(a) || a < 0 || a > 1) {
+        return null;
+      }
+      return { rgb, a };
+    };
+
     const color = getComputedStyle(el).color;
+    const layersTopDown: { rgb: number[]; a: number }[] = [];
     let node: HTMLElement | null = el as HTMLElement;
     while (node) {
-      const bg = getComputedStyle(node).backgroundColor;
-      const alpha = bg.match(/[\d.]+/g);
-      const isTransparent = !alpha || (alpha.length === 4 && Number(alpha[3]) === 0);
-      if (!isTransparent) return { color, background: bg, from: node.tagName };
+      const parsed = parse(getComputedStyle(node).backgroundColor);
+      if (parsed && parsed.a > 0) {
+        layersTopDown.push(parsed);
+        if (parsed.a >= 1) break;
+      }
       node = node.parentElement;
     }
-    return { color, background: 'rgb(255, 255, 255)', from: 'fallback' };
+
+    let bgRgb = [255, 255, 255];
+    for (let i = layersTopDown.length - 1; i >= 0; i--) {
+      const layer = layersTopDown[i];
+      bgRgb = layer.rgb.map((v, j) => layer.a * v + (1 - layer.a) * bgRgb[j]);
+    }
+
+    const background = `rgb(${bgRgb.map((n) => Math.round(n)).join(', ')})`;
+    return { color, background, from: layersTopDown.length ? 'composited' : 'fallback' };
   });
 }
+
+test.describe('contrast helper alpha compositing', () => {
+  // Pure math assertions — no browser needed for the bug in #117.
+  test('opaque colours match previous luminance math', () => {
+    expect(contrastRatio('rgb(26, 26, 26)', 'rgb(255, 102, 168)')).toBeCloseTo(6.3965, 3);
+  });
+
+  test('translucent white on coral is ~2.62:1, not the opaque ~3.07:1', () => {
+    const ratio = contrastRatio('rgba(255, 255, 255, 0.85)', 'rgb(239, 101, 127)');
+    expect(ratio).toBeCloseTo(2.62, 1);
+    expect(ratio).toBeLessThan(3.0);
+  });
+
+  test('percentage alpha in modern rgb() syntax is not treated as 85', () => {
+    const ratio = contrastRatio('rgb(255 255 255 / 85%)', 'rgb(239, 101, 127)');
+    expect(ratio).toBeCloseTo(2.62, 1);
+  });
+
+  test('rejects percentage RGB channels and non-rgb() functions', () => {
+    expect(() => parseRgba('rgb(100%, 40%, 66%)')).toThrow(/percentage RGB/);
+    expect(() => parseRgba('oklch(0.7 0.15 20)')).toThrow(/unsupported colour function/);
+  });
+
+  test('translucent backgrounds composite over white; transparent throws', () => {
+    // Dark text on brand-dark/5 over white should remain high-contrast, not ~1:1.
+    const ratio = contrastRatio('rgb(26, 26, 26)', 'rgba(26, 26, 26, 0.05)');
+    expect(ratio).toBeGreaterThan(10);
+    expect(() => contrastRatio('rgb(26, 26, 26)', 'rgba(0, 0, 0, 0)')).toThrow(/transparent/);
+  });
+
+  test('translucent dark over white is not the same as over navy', () => {
+    const overWhite = compositeOver({ rgb: [20, 20, 20], a: 0.9 }, [255, 255, 255]);
+    const overNavy = compositeOver({ rgb: [20, 20, 20], a: 0.9 }, [10, 20, 80]);
+    expect(overWhite[2]).toBeGreaterThan(overNavy[2]);
+  });
+});
 
 test.describe('primary CTA colour contrast', () => {
   test('the header RSVP button meets WCAG AA for normal text', async ({ page }) => {
