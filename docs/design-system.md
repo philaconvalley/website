@@ -100,11 +100,11 @@ Fonts are loaded via Google Fonts in `src/layouts/BaseLayout.astro` with `precon
 
 Three variants, all pill-shaped:
 
-| Variant     | Look                         | Usage                              |
-| ----------- | ---------------------------- | ---------------------------------- |
-| `primary`   | Pink background, white text  | Main CTAs ("Join", "Donate")       |
-| `secondary` | Yellow background, dark text | Secondary actions                  |
-| `outline`   | Transparent with border      | Tertiary actions, dark backgrounds |
+| Variant     | Look                             | Usage                              |
+| ----------- | -------------------------------- | ---------------------------------- |
+| `primary`   | Pink background, brand-dark text | Main CTAs ("Join", "Donate")       |
+| `secondary` | Yellow background, dark text     | Secondary actions                  |
+| `outline`   | Transparent with border          | Tertiary actions, dark backgrounds |
 
 ```astro
 <Button href="/join" variant="primary" size="lg">Join Us</Button>
@@ -145,6 +145,8 @@ Ratios measured in the Book, not estimated here.
 | White on yellow | **2.1**  | **FAILS. Never use this.** |
 
 White on yellow is the one that looks acceptable on a bright laptop and is unreadable everywhere else. The homepage hero is yellow, so it uses **dark** text — that is the reason, not a stylistic preference.
+
+Primary pink (`accent-400` / brand pink) CTAs use **brand-dark** text, not white — white-on-pink fails AA for normal text (about 2.7:1). Ink-on-pink clears AA (5.4:1 in the table above). Header RSVP already follows this; the shared `Button` primary variant matches.
 
 ### Focus states
 
