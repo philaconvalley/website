@@ -75,128 +75,126 @@ const displayNames: Record<string, string> = {
         </p>
       </div>
 
-      {
-        repos.length > 0 ? (
-          <div class="max-w-5xl mx-auto flex flex-col gap-4">
-            {repos.map((repo) => (
-              <a
-                href={repo.html_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="card px-6 py-5 flex flex-col sm:flex-row sm:items-center gap-4 group"
-              >
-                {/* Left: project info */}
-                <div class="flex-grow min-w-0">
-                  <div class="flex items-center gap-3 mb-1.5">
-                    <h3 class="text-lg font-display font-bold text-brand-dark group-hover:text-accent-600 transition-colors leading-tight">
-                      {displayNames[repo.name] || repo.name}
-                    </h3>
-                    {repo.language && (
-                      <span class="shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-dark/5 text-brand-dark/50">
-                        {repo.language}
-                      </span>
-                    )}
-                  </div>
-                  <p class="text-sm text-brand-dark/55 leading-relaxed line-clamp-2">
-                    {repo.description || 'Community project — check it out on GitHub.'}
-                  </p>
-                </div>
-
-                {/* Right: stats + arrow */}
-                <div class="flex items-center gap-5 shrink-0 sm:pl-4">
-                  <div class="flex items-center gap-3 text-xs text-brand-dark/40">
-                    <span class="flex items-center gap-1">
-                      <svg
-                        class="w-3.5 h-3.5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-                        />
-                      </svg>
-                      {repo.stargazers_count}
-                    </span>
-                    <span class="flex items-center gap-1">
-                      <svg
-                        class="w-3.5 h-3.5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-                        />
-                      </svg>
-                      {repo.forks_count}
-                    </span>
-                  </div>
-                  {repo.open_issues_count > 0 && (
-                    <span class="text-xs font-semibold text-green-600 whitespace-nowrap">
-                      {repo.open_issues_count} open{' '}
-                      {repo.open_issues_count === 1 ? 'issue' : 'issues'}
+      {repos.length > 0 ? (
+        <div class="max-w-5xl mx-auto flex flex-col gap-4">
+          {repos.map((repo) => (
+            <a
+              href={repo.html_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="card px-6 py-5 flex flex-col sm:flex-row sm:items-center gap-4 group"
+            >
+              {/* Left: project info */}
+              <div class="flex-grow min-w-0">
+                <div class="flex items-center gap-3 mb-1.5">
+                  <h3 class="text-lg font-display font-bold text-brand-dark group-hover:text-accent-600 transition-colors leading-tight">
+                    {displayNames[repo.name] || repo.name}
+                  </h3>
+                  {repo.language && (
+                    <span class="shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-dark/5 text-brand-dark/50">
+                      {repo.language}
                     </span>
                   )}
-                  <svg
-                    class="w-5 h-5 text-brand-dark/20 group-hover:text-accent-600 transition-colors shrink-0"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
                 </div>
-              </a>
-            ))}
-          </div>
-        ) : (
-          <div class="max-w-3xl mx-auto text-center">
-            <div class="bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro-lg p-12 md:p-16">
-              <svg
-                class="w-24 h-24 mx-auto mb-6 text-primary-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
-                />
-              </svg>
-              <h2 class="text-3xl md:text-4xl font-bold mb-4">Projects coming soon</h2>
-              <p class="text-xl text-brand-dark/60 mb-8 leading-relaxed">
-                We're building amazing projects at our Labs! Check back soon to see what the
-                community is creating, or join us at our next event to start building your own.
-              </p>
-              <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button href="/events" variant="primary" size="lg">
-                  Attend a Lab
-                </Button>
-                <Button href="/join" variant="outline" size="lg">
-                  Join the community
-                </Button>
+                <p class="text-sm text-brand-dark/55 leading-relaxed line-clamp-2">
+                  {repo.description || 'Community project — check it out on GitHub.'}
+                </p>
               </div>
+
+              {/* Right: stats + arrow */}
+              <div class="flex items-center gap-5 shrink-0 sm:pl-4">
+                <div class="flex items-center gap-3 text-xs text-brand-dark/40">
+                  <span class="flex items-center gap-1">
+                    <svg
+                      class="w-3.5 h-3.5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                      />
+                    </svg>
+                    {repo.stargazers_count}
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <svg
+                      class="w-3.5 h-3.5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+                      />
+                    </svg>
+                    {repo.forks_count}
+                  </span>
+                </div>
+                {repo.open_issues_count > 0 && (
+                  <span class="text-xs font-semibold text-green-600 whitespace-nowrap">
+                    {repo.open_issues_count} open{' '}
+                    {repo.open_issues_count === 1 ? 'issue' : 'issues'}
+                  </span>
+                )}
+                <svg
+                  class="w-5 h-5 text-brand-dark/20 group-hover:text-accent-600 transition-colors shrink-0"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </div>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <div class="max-w-3xl mx-auto text-center">
+          <div class="bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro-lg p-12 md:p-16">
+            <svg
+              class="w-24 h-24 mx-auto mb-6 text-primary-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+              />
+            </svg>
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">Projects coming soon</h2>
+            <p class="text-xl text-brand-dark/60 mb-8 leading-relaxed">
+              We're building amazing projects at our Labs! Check back soon to see what the community
+              is creating, or join us at our next event to start building your own.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button href="/events" variant="primary" size="lg">
+                Attend a Lab
+              </Button>
+              <Button href="/join" variant="outline" size="lg">
+                Join the community
+              </Button>
             </div>
           </div>
-        )
-      }
+        </div>
+      )}
     </div>
   </section>
 
@@ -209,7 +207,10 @@ const displayNames: Record<string, string> = {
         own, we'd love to showcase it.
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button href="/contact" variant="secondary" size="lg"> Submit your project </Button>
+        <Button href="/contact" variant="secondary" size="lg">
+          {' '}
+          Submit your project{' '}
+        </Button>
         <Button href={links.github.org} external variant="outline" size="lg">
           View on GitHub
         </Button>

@@ -71,9 +71,7 @@ const marqueeBg = empty ? 'bg-primary-200' : marqueeClass;
   data-cabinet={empty ? 'submit' : href?.split('/').pop()}
   style={`--cabinet-index:${index}`}
 >
-  <div
-    class="cabinet-housing overflow-hidden rounded-t-[26px] rounded-b-lg bg-brand-dark shadow-retro-lg ring-4 ring-transparent transition-shadow group-focus-visible:ring-accent-500"
-  >
+  <div class="cabinet-housing overflow-hidden rounded-t-[26px] rounded-b-lg bg-brand-dark shadow-retro-lg ring-4 ring-transparent transition-shadow group-focus-visible:ring-accent-500">
     <!-- Marquee crowns the cabinet — flush to the top edge, sharing its radius,
          so it reads as the machine's lit header rather than a label pinned
          inside a box. -->
@@ -84,23 +82,21 @@ const marqueeBg = empty ? 'bg-primary-200' : marqueeClass;
     </div>
 
     <div class="mx-2.5 mt-2.5 overflow-hidden rounded border-[3px] border-black bg-brand-dark">
-      {
-        empty ? (
-          <div class="flex aspect-[4/3] items-center justify-center">
-            <div class="h-1.5 w-12 rounded-full bg-primary-100/70" aria-hidden="true" />
-          </div>
-        ) : (
-          <img
-            src={thumbnail}
-            alt={thumbnailAlt}
-            width="800"
-            height="600"
-            loading="lazy"
-            decoding="async"
-            class="aspect-[4/3] w-full object-cover"
-          />
-        )
-      }
+      {empty ? (
+        <div class="flex aspect-[4/3] items-center justify-center">
+          <div class="h-1.5 w-12 rounded-full bg-primary-100/70" aria-hidden="true" />
+        </div>
+      ) : (
+        <img
+          src={thumbnail}
+          alt={thumbnailAlt}
+          width="800"
+          height="600"
+          loading="lazy"
+          decoding="async"
+          class="aspect-[4/3] w-full object-cover"
+        />
+      )}
     </div>
 
     <!-- The shoulder: a narrower, separately-rounded panel breaks the cabinet

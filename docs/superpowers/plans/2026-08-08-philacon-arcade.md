@@ -823,23 +823,21 @@ const desktopOnly = !empty && !input.includes('pointer') && !input.includes('tou
     </div>
 
     <div class="my-2 overflow-hidden rounded border-[3px] border-black bg-brand-dark">
-      {
-        empty ? (
-          <div class="flex aspect-[4/3] items-center justify-center">
-            <div class="h-1.5 w-12 rounded-full bg-primary-100/70" aria-hidden="true" />
-          </div>
-        ) : (
-          <img
-            src={thumbnail}
-            alt={thumbnailAlt}
-            width="800"
-            height="600"
-            loading="lazy"
-            decoding="async"
-            class="aspect-[4/3] w-full object-cover"
-          />
-        )
-      }
+      {empty ? (
+        <div class="flex aspect-[4/3] items-center justify-center">
+          <div class="h-1.5 w-12 rounded-full bg-primary-100/70" aria-hidden="true" />
+        </div>
+      ) : (
+        <img
+          src={thumbnail}
+          alt={thumbnailAlt}
+          width="800"
+          height="600"
+          loading="lazy"
+          decoding="async"
+          class="aspect-[4/3] w-full object-cover"
+        />
+      )}
     </div>
 
     <div class="flex h-7 items-center justify-center gap-2 rounded bg-brand-dark/60">
@@ -850,23 +848,18 @@ const desktopOnly = !empty && !input.includes('pointer') && !input.includes('tou
   </div>
 
   <div class="mt-2.5 text-center">
-    {
-      empty ? (
-        <a
-          href="https://github.com/philaconvalley/website/blob/main/docs/adding-content.md"
-          class="font-display font-bold text-brand-dark underline decoration-accent-600 decoration-2 underline-offset-4 hover:text-accent-600"
-        >
-          Add yours
-        </a>
-      ) : (
-        <a
-          href={href}
-          class="font-display text-base font-bold text-brand-dark hover:text-accent-600"
-        >
-          {title}
-        </a>
-      )
-    }
+    {empty ? (
+      <a
+        href="https://github.com/philaconvalley/website/blob/main/docs/adding-content.md"
+        class="font-display font-bold text-brand-dark underline decoration-accent-600 decoration-2 underline-offset-4 hover:text-accent-600"
+      >
+        Add yours
+      </a>
+    ) : (
+      <a href={href} class="font-display text-base font-bold text-brand-dark hover:text-accent-600">
+        {title}
+      </a>
+    )}
     <p class="text-xs text-brand-dark/60">
       {empty ? 'Built something? Open a pull request.' : contributors.join(', ')}
       {!empty && kind === 'demo' && <span class="block">Demo — no score</span>}
@@ -937,21 +930,19 @@ const games = (await getCollection('arcade')).sort(
   <section class="section-padding">
     <div class="container-custom">
       <div class="flex flex-wrap items-start justify-center gap-6 md:gap-8">
-        {
-          games.map((game, i) => (
-            <ArcadeCabinet
-              title={game.data.title}
-              href={`/arcade/${game.data.slug}`}
-              thumbnail={game.data.thumbnail}
-              thumbnailAlt={game.data.thumbnailAlt}
-              contributors={game.data.contributors}
-              marqueeColor={game.data.marqueeColor}
-              kind={game.data.kind}
-              input={game.data.input}
-              index={i}
-            />
-          ))
-        }
+        {games.map((game, i) => (
+          <ArcadeCabinet
+            title={game.data.title}
+            href={`/arcade/${game.data.slug}`}
+            thumbnail={game.data.thumbnail}
+            thumbnailAlt={game.data.thumbnailAlt}
+            contributors={game.data.contributors}
+            marqueeColor={game.data.marqueeColor}
+            kind={game.data.kind}
+            input={game.data.input}
+            index={i}
+          />
+        ))}
         <ArcadeCabinet title="Your game here" marqueeColor="coral" index={games.length} empty />
       </div>
     </div>
@@ -1125,7 +1116,8 @@ const aspect = fixedSize ? `${fixedSize.w} / ${fixedSize.h}` : '4 / 3';
         allowfullscreen
         loading="lazy"
         class="absolute inset-0 h-full w-full border-0"
-        x-ref="frame"></iframe>
+        x-ref="frame"
+      ></iframe>
 
       <button
         type="button"
@@ -1147,23 +1139,19 @@ const aspect = fixedSize ? `${fixedSize.w} / ${fixedSize.h}` : '4 / 3';
       </p>
     </div>
 
-    <dl
-      class="mt-3 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 rounded bg-brand-dark/60 px-4 py-3"
-    >
-      {
-        controls.map((control) => (
-          <div class="flex items-center gap-2">
-            <dt class="flex gap-1">
-              {control.keys.map((key) => (
-                <kbd class="rounded bg-primary-100 px-2 py-0.5 font-sans text-xs font-bold text-brand-dark shadow-[0_2px_0_rgba(0,0,0,0.45)]">
-                  {key}
-                </kbd>
-              ))}
-            </dt>
-            <dd class="text-xs text-primary-100/80">{control.label}</dd>
-          </div>
-        ))
-      }
+    <dl class="mt-3 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 rounded bg-brand-dark/60 px-4 py-3">
+      {controls.map((control) => (
+        <div class="flex items-center gap-2">
+          <dt class="flex gap-1">
+            {control.keys.map((key) => (
+              <kbd class="rounded bg-primary-100 px-2 py-0.5 font-sans text-xs font-bold text-brand-dark shadow-[0_2px_0_rgba(0,0,0,0.45)]">
+                {key}
+              </kbd>
+            ))}
+          </dt>
+          <dd class="text-xs text-primary-100/80">{control.label}</dd>
+        </div>
+      ))}
     </dl>
   </div>
 </div>
@@ -1216,10 +1204,13 @@ const phoneAlternative = games.find(
   <section class="bg-brand-coral text-white py-12">
     <div class="container-custom">
       <div class="max-w-3xl mx-auto">
-        <a href="/arcade" class="text-white/90 hover:text-white">← Back to the Arcade</a>
+        <a href="/arcade" class="text-white/90 hover:text-white">
+          ← Back to the Arcade
+        </a>
         <h1 class="mt-3 text-4xl md:text-5xl font-bold">{title}</h1>
         <p class="mt-2 text-lg text-white/85">
-          Built by {contributors.join(', ')}{kind === 'demo' ? ' · Demo, no score' : ''}
+          Built by {contributors.join(', ')}
+          {kind === 'demo' ? ' · Demo, no score' : ''}
         </p>
       </div>
     </div>
@@ -1227,56 +1218,52 @@ const phoneAlternative = games.find(
 
   <section class="section-padding">
     <div class="container-custom">
-      {
-        playableOnPhone ? (
-          <CabinetFrame
-            slug={slug}
-            title={title}
-            marqueeColor={marqueeColor}
-            controls={controls}
-            fixedSize={fixedSize}
-          />
-        ) : (
-          <>
-            {/* Keyboard-only games get the cabinet on anything wide enough for a
+      {playableOnPhone ? (
+        <CabinetFrame
+          slug={slug}
+          title={title}
+          marqueeColor={marqueeColor}
+          controls={controls}
+          fixedSize={fixedSize}
+        />
+      ) : (
+        <>
+          {/* Keyboard-only games get the cabinet on anything wide enough for a
                 keyboard, and an honest explanation on anything that is not.
                 Shipping a cabinet a phone visitor can tap but never play is the
                 worst outcome available here. */}
-            <div class="hidden md:block">
-              <CabinetFrame
-                slug={slug}
-                title={title}
-                marqueeColor={marqueeColor}
-                controls={controls}
-                fixedSize={fixedSize}
-              />
-            </div>
-            <div class="md:hidden mx-auto max-w-md rounded-retro bg-brand-dark p-8 text-center">
-              <p class="font-display text-2xl font-extrabold text-primary-100">
-                This one needs a keyboard
-              </p>
-              <p class="mt-3 text-sm text-primary-100/75">
-                {title} is played with two sets of keys, so it cannot run on a touchscreen. Come
-                back on a laptop.
-              </p>
-              {phoneAlternative && (
-                <div class="mt-6">
-                  <Button href={`/arcade/${phoneAlternative.data.slug}`} variant="primary">
-                    Play {phoneAlternative.data.title} instead
-                  </Button>
-                </div>
-              )}
-            </div>
-          </>
-        )
-      }
+          <div class="hidden md:block">
+            <CabinetFrame
+              slug={slug}
+              title={title}
+              marqueeColor={marqueeColor}
+              controls={controls}
+              fixedSize={fixedSize}
+            />
+          </div>
+          <div class="md:hidden mx-auto max-w-md rounded-retro bg-brand-dark p-8 text-center">
+            <p class="font-display text-2xl font-extrabold text-primary-100">
+              This one needs a keyboard
+            </p>
+            <p class="mt-3 text-sm text-primary-100/75">
+              {title} is played with two sets of keys, so it cannot run on a touchscreen. Come back
+              on a laptop.
+            </p>
+            {phoneAlternative && (
+              <div class="mt-6">
+                <Button href={`/arcade/${phoneAlternative.data.slug}`} variant="primary">
+                  Play {phoneAlternative.data.title} instead
+                </Button>
+              </div>
+            )}
+          </div>
+        </>
+      )}
 
       <div class="mx-auto mt-12 max-w-2xl">
         <h2 class="font-display text-2xl font-bold text-brand-dark">About this {kind}</h2>
-        {
-          /* Required prose, not decoration: a canvas game is invisible to a screen
-            reader, so this is the only description of it that some visitors get. */
-        }
+        {/* Required prose, not decoration: a canvas game is invisible to a screen
+            reader, so this is the only description of it that some visitors get. */}
         <p class="mt-3 text-lg leading-relaxed text-brand-dark/75">{longDescription}</p>
       </div>
     </div>

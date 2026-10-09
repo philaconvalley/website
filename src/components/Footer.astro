@@ -50,9 +50,7 @@ const secondary = [
       />
     </a>
 
-    <h2
-      class="font-display font-extrabold text-[32px] lg:text-[52px] leading-[1.1] lg:leading-[1.06] tracking-tight text-primary-100 max-w-[720px] m-0"
-    >
+    <h2 class="font-display font-extrabold text-[32px] lg:text-[52px] leading-[1.1] lg:leading-[1.06] tracking-tight text-primary-100 max-w-[720px] m-0">
       A pigeon flies alone. A flock goes much further.
     </h2>
 
@@ -62,35 +60,29 @@ const secondary = [
       aria-label="Footer"
       class="mt-10 lg:mt-14 flex flex-wrap gap-x-6 gap-y-3 font-display font-semibold text-sm"
     >
-      {
-        secondary.map((link) => (
-          <a href={link.href} class="text-primary-100/60 hover:text-accent-400 transition-colors">
-            {link.name}
-          </a>
-        ))
-      }
+      {secondary.map((link) => (
+        <a href={link.href} class="text-primary-100/60 hover:text-accent-400 transition-colors">
+          {link.name}
+        </a>
+      ))}
     </nav>
 
-    <div
-      class="mt-10 lg:mt-[60px] pt-5 lg:pt-6 border-t border-white/10 flex flex-col lg:flex-row lg:justify-between gap-2 font-mono text-[11px] lg:text-xs text-primary-100/45"
-    >
+    <div class="mt-10 lg:mt-[60px] pt-5 lg:pt-6 border-t border-white/10 flex flex-col lg:flex-row lg:justify-between gap-2 font-mono text-[11px] lg:text-xs text-primary-100/45">
       <span>{site.location}</span>
       <span class="flex flex-wrap gap-x-2">
-        {
-          connect.map((link, index) => (
-            <>
-              {index > 0 && <span aria-hidden="true">·</span>}
-              <a
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="hover:text-accent-400 transition-colors"
-              >
-                {link.name}
-              </a>
-            </>
-          ))
-        }
+        {connect.map((link, index) => (
+          <>
+            {index > 0 && <span aria-hidden="true">·</span>}
+            <a
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:text-accent-400 transition-colors"
+            >
+              {link.name}
+            </a>
+          </>
+        ))}
       </span>
       <span class="flex flex-wrap gap-x-2">
         <a href={`mailto:${site.email}`} class="hover:text-accent-400 transition-colors">
@@ -101,8 +93,10 @@ const secondary = [
           href={links.github.website}
           target="_blank"
           rel="noopener noreferrer"
-          class="hover:text-accent-400 transition-colors">Open source</a
+          class="hover:text-accent-400 transition-colors"
         >
+          Open source
+        </a>
         <span aria-hidden="true">·</span>
         <span>© {currentYear}</span>
       </span>

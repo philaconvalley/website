@@ -33,7 +33,8 @@ const { title, description, author, date, tags } = post.data;
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M15 19l-7-7 7-7"></path>
+              d="M15 19l-7-7 7-7"
+            ></path>
           </svg>
           Back to Blog
         </a>
@@ -43,13 +44,11 @@ const { title, description, author, date, tags } = post.data;
           <span>By {author}</span>
           <span class="mx-2">·</span>
           <time>
-            {
-              date.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })
-            }
+            {date.toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
           </time>
         </div>
       </div>
@@ -63,17 +62,15 @@ const { title, description, author, date, tags } = post.data;
           <Content />
         </div>
 
-        {
-          tags.length > 0 && (
-            <div class="flex flex-wrap gap-1.5 mt-8 pt-8 border-t border-brand-dark/5">
-              {tags.map((tag) => (
-                <span class="px-2 py-0.5 bg-primary-100 text-primary-800 text-xs font-display font-bold rounded-full">
-                  #{tag}
-                </span>
-              ))}
-            </div>
-          )
-        }
+        {tags.length > 0 && (
+          <div class="flex flex-wrap gap-1.5 mt-8 pt-8 border-t border-brand-dark/5">
+            {tags.map((tag) => (
+              <span class="px-2 py-0.5 bg-primary-100 text-primary-800 text-xs font-display font-bold rounded-full">
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   </section>
@@ -85,7 +82,9 @@ const { title, description, author, date, tags } = post.data;
         Follow us for more updates, event recaps, and community stories.
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button href="/blog" variant="primary">More posts</Button>
+        <Button href="/blog" variant="primary">
+          More posts
+        </Button>
         <Button
           href="/events"
           variant="outline"

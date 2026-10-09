@@ -124,14 +124,12 @@ const programs = [
       <div class="max-w-4xl mx-auto">
         <h2 class="text-4xl font-bold mb-12">What we hold to</h2>
         <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 m-0">
-          {
-            values.map((value) => (
-              <div>
-                <dt class="font-display text-2xl font-bold mb-1">{value.name}</dt>
-                <dd class="m-0 text-brand-dark/70">{value.line}</dd>
-              </div>
-            ))
-          }
+          {values.map((value) => (
+            <div>
+              <dt class="font-display text-2xl font-bold mb-1">{value.name}</dt>
+              <dd class="m-0 text-brand-dark/70">{value.line}</dd>
+            </div>
+          ))}
         </dl>
       </div>
     </div>
@@ -142,14 +140,12 @@ const programs = [
       <div class="max-w-4xl mx-auto">
         <h2 class="text-4xl font-bold mb-12">What we run</h2>
         <dl class="space-y-8 m-0">
-          {
-            programs.map((program) => (
-              <div>
-                <dt class="font-display text-2xl font-bold mb-1">{program.name}</dt>
-                <dd class="m-0 text-lg text-brand-dark/70">{program.line}</dd>
-              </div>
-            ))
-          }
+          {programs.map((program) => (
+            <div>
+              <dt class="font-display text-2xl font-bold mb-1">{program.name}</dt>
+              <dd class="m-0 text-lg text-brand-dark/70">{program.line}</dd>
+            </div>
+          ))}
         </dl>
       </div>
     </div>
@@ -160,8 +156,13 @@ const programs = [
       <h2 class="text-4xl font-bold mb-6">Come build with us</h2>
       <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">Show up before you feel ready.</p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button href="/join" variant="secondary" size="lg">Get involved</Button>
-        <Button href="/events" variant="outline" size="lg"> Attend an event </Button>
+        <Button href="/join" variant="secondary" size="lg">
+          Get involved
+        </Button>
+        <Button href="/events" variant="outline" size="lg">
+          {' '}
+          Attend an event{' '}
+        </Button>
       </div>
     </div>
   </section>

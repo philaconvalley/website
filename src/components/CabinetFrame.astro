@@ -123,10 +123,11 @@ const fixedSizeInit = fixedSize
         sandbox="allow-scripts"
         allow="fullscreen"
         allowfullscreen
-        class={fixedSize
-          ? 'absolute left-0 top-0 border-0'
-          : 'absolute inset-0 h-full w-full border-0'}
-        x-ref="frame"></iframe>
+        class={
+          fixedSize ? 'absolute left-0 top-0 border-0' : 'absolute inset-0 h-full w-full border-0'
+        }
+        x-ref="frame"
+      ></iframe>
 
       <button
         type="button"
@@ -136,11 +137,9 @@ const fixedSizeInit = fixedSize
         class="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-brand-dark/85 font-display text-xl font-extrabold text-primary-100"
       >
         <span x-text="started ? 'Click to resume' : 'Click to play'">Click to play</span>
-        {
-          /* Only true before the first start — once the game has been
+        {/* Only true before the first start — once the game has been
              started it keeps running behind the overlay on focus loss (see
-             the docstring), so this line must not reappear then. */
-        }
+             the docstring), so this line must not reappear then. */}
         <span x-show="!started" x-cloak class="text-sm font-normal text-primary-100/70">
           Nothing moves until you do
         </span>
@@ -155,23 +154,19 @@ const fixedSizeInit = fixedSize
       </p>
     </div>
 
-    <dl
-      class="mt-3 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 rounded bg-brand-dark/60 px-4 py-3"
-    >
-      {
-        controls.map((control) => (
-          <div class="flex items-center gap-2">
-            <dt class="flex gap-1">
-              {control.keys.map((key) => (
-                <kbd class="rounded bg-primary-100 px-2 py-0.5 font-sans text-xs font-bold text-brand-dark shadow-[0_2px_0_rgba(0,0,0,0.45)]">
-                  {key}
-                </kbd>
-              ))}
-            </dt>
-            <dd class="text-xs text-primary-100/80">{control.label}</dd>
-          </div>
-        ))
-      }
+    <dl class="mt-3 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 rounded bg-brand-dark/60 px-4 py-3">
+      {controls.map((control) => (
+        <div class="flex items-center gap-2">
+          <dt class="flex gap-1">
+            {control.keys.map((key) => (
+              <kbd class="rounded bg-primary-100 px-2 py-0.5 font-sans text-xs font-bold text-brand-dark shadow-[0_2px_0_rgba(0,0,0,0.45)]">
+                {key}
+              </kbd>
+            ))}
+          </dt>
+          <dd class="text-xs text-primary-100/80">{control.label}</dd>
+        </div>
+      ))}
     </dl>
   </div>
 </div>

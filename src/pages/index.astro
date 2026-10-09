@@ -40,9 +40,7 @@ const stats = [
   <div>
     <!-- Hero -->
     <section class="px-5 lg:px-[72px] pt-[76px] pb-[84px] lg:pt-[136px] lg:pb-[140px]">
-      <h1
-        class="font-display font-extrabold text-[44px] lg:text-[96px] leading-[1.02] lg:leading-[0.98] tracking-[-0.03em] lg:tracking-[-0.035em] m-0 max-w-[900px]"
-      >
+      <h1 class="font-display font-extrabold text-[44px] lg:text-[96px] leading-[1.02] lg:leading-[0.98] tracking-[-0.03em] lg:tracking-[-0.035em] m-0 max-w-[900px]">
         <span class="block overflow-hidden">
           <span class="inline-block pcv-enter-word [animation-delay:0.1s]">Come as you are.</span>
         </span>
@@ -62,38 +60,28 @@ const stats = [
     </section>
 
     <!-- What a Lab actually is -->
-    <section
-      class="px-5 lg:px-[72px] py-14 lg:py-[104px] border-t border-brand-dark/[0.11] bg-primary-50 lg:grid lg:grid-cols-2 lg:gap-24 lg:items-start"
-    >
-      <h2
-        class="font-display font-extrabold text-[30px] lg:text-[52px] leading-[1.08] lg:leading-[1.04] tracking-[-0.02em] lg:tracking-[-0.025em] m-0 mb-9 lg:mb-0 pcv-enter-rise"
-      >
+    <section class="px-5 lg:px-[72px] py-14 lg:py-[104px] border-t border-brand-dark/[0.11] bg-primary-50 lg:grid lg:grid-cols-2 lg:gap-24 lg:items-start">
+      <h2 class="font-display font-extrabold text-[30px] lg:text-[52px] leading-[1.08] lg:leading-[1.04] tracking-[-0.02em] lg:tracking-[-0.025em] m-0 mb-9 lg:mb-0 pcv-enter-rise">
         One night. Three hours. Something exists that didn't.
       </h2>
       <LabTrack outcome="Your first pull request" outcomeDetail="Reviewed, merged, and live." />
     </section>
 
-    {
-      photo && (
-        <section class="border-t border-brand-dark/[0.11]">
-          <img
-            src={photo.data.image}
-            alt={photo.data.alt}
-            loading="lazy"
-            class="w-full h-[300px] lg:h-[440px] object-cover block"
-          />
-        </section>
-      )
-    }
+    {photo && (
+      <section class="border-t border-brand-dark/[0.11]">
+        <img
+          src={photo.data.image}
+          alt={photo.data.alt}
+          loading="lazy"
+          class="w-full h-[300px] lg:h-[440px] object-cover block"
+        />
+      </section>
+    )}
 
     <!-- The two halves of the org -->
-    <section
-      class="px-5 lg:px-[72px] py-[60px] lg:py-[104px] border-t border-brand-dark/[0.11] lg:grid lg:grid-cols-2 lg:gap-24 lg:max-w-[1000px]"
-    >
+    <section class="px-5 lg:px-[72px] py-[60px] lg:py-[104px] border-t border-brand-dark/[0.11] lg:grid lg:grid-cols-2 lg:gap-24 lg:max-w-[1000px]">
       <div>
-        <h3
-          class="font-display font-extrabold text-[28px] lg:text-[38px] leading-[1.08] lg:leading-[1.05] tracking-[-0.02em] m-0 mb-3 lg:mb-3.5"
-        >
+        <h3 class="font-display font-extrabold text-[28px] lg:text-[38px] leading-[1.08] lg:leading-[1.05] tracking-[-0.02em] m-0 mb-3 lg:mb-3.5">
           Free, forever, for us.
         </h3>
         <p class="text-base lg:text-[17px] leading-[1.65] text-brand-dark/70 m-0">
@@ -110,9 +98,7 @@ const stats = [
         </a>
       </div>
       <div class="mt-[52px] lg:mt-0">
-        <h3
-          class="font-display font-extrabold text-[28px] lg:text-[38px] leading-[1.08] lg:leading-[1.05] tracking-[-0.02em] m-0 mb-3 lg:mb-3.5"
-        >
+        <h3 class="font-display font-extrabold text-[28px] lg:text-[38px] leading-[1.08] lg:leading-[1.05] tracking-[-0.02em] m-0 mb-3 lg:mb-3.5">
           Paid work that pays for it.
         </h3>
         <p class="text-base lg:text-[17px] leading-[1.65] text-brand-dark/70 m-0">
@@ -129,31 +115,25 @@ const stats = [
     </section>
 
     <!-- What it adds up to -->
-    <section
-      class="px-5 lg:px-[72px] py-14 lg:py-[84px] border-t border-brand-dark/[0.11] flex flex-col lg:flex-row gap-[30px] lg:gap-[88px] pcv-enter-stat"
-    >
-      {
-        stats.map((stat) => (
-          <div>
-            <div class="font-display font-extrabold text-[60px] lg:text-[84px] leading-[0.86] lg:leading-[0.9] tracking-[-0.04em]">
-              {stat.value}
-            </div>
-            <div class="font-mono text-[10px] lg:text-[11px] font-medium uppercase tracking-[0.18em] text-brand-dark/50 mt-2 lg:mt-3">
-              {stat.label}
-            </div>
+    <section class="px-5 lg:px-[72px] py-14 lg:py-[84px] border-t border-brand-dark/[0.11] flex flex-col lg:flex-row gap-[30px] lg:gap-[88px] pcv-enter-stat">
+      {stats.map((stat) => (
+        <div>
+          <div class="font-display font-extrabold text-[60px] lg:text-[84px] leading-[0.86] lg:leading-[0.9] tracking-[-0.04em]">
+            {stat.value}
           </div>
-        ))
-      }
+          <div class="font-mono text-[10px] lg:text-[11px] font-medium uppercase tracking-[0.18em] text-brand-dark/50 mt-2 lg:mt-3">
+            {stat.label}
+          </div>
+        </div>
+      ))}
     </section>
   </div>
 
   <!-- Clears the fixed bottom bar so the footer's last line is never trapped under
        it. Carries the same expiry as the bar: once the bar removes itself, this
        would otherwise leave 88px of dead space at the bottom of the page. -->
-  {
-    nextEvent && (
-      <div class="lg:hidden h-[88px]" data-pcv-event-start={nextEvent.start} aria-hidden="true" />
-    )
-  }
+  {nextEvent && (
+    <div class="lg:hidden h-[88px]" data-pcv-event-start={nextEvent.start} aria-hidden="true" />
+  )}
   <EventBar event={nextEvent} />
 </BaseLayout>
