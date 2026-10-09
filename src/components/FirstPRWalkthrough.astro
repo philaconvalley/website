@@ -65,37 +65,31 @@ const steps = [
 <fieldset class="pcv-pr" data-testid="first-pr-walkthrough">
   <legend class="sr-only">Your first pull request, step by step</legend>
 
-  {
-    steps.map((step, i) => (
-      <>
-        <input
-          type="radio"
-          name="pcv-pr-step"
-          id={`pcv-pr-${step.id}`}
-          class="pcv-pr-radio"
-          checked={i === 0}
-        />
-        <label for={`pcv-pr-${step.id}`} class="pcv-pr-chip font-display">
-          <span class="pcv-pr-num">{i + 1}</span>
-          {step.title}
-        </label>
-      </>
-    ))
-  }
+  {steps.map((step, i) => (
+    <>
+      <input
+        type="radio"
+        name="pcv-pr-step"
+        id={`pcv-pr-${step.id}`}
+        class="pcv-pr-radio"
+        checked={i === 0}
+      />
+      <label for={`pcv-pr-${step.id}`} class="pcv-pr-chip font-display">
+        <span class="pcv-pr-num">{i + 1}</span>
+        {step.title}
+      </label>
+    </>
+  ))}
 
-  {
-    steps.map((step) => (
-      <div class="pcv-pr-panel" id={`pcv-pr-panel-${step.id}`}>
-        <p class="pcv-pr-lead">{step.lead}</p>
-        {step.code && (
-          <pre class="pcv-pr-code">
+  {steps.map((step) => (
+    <div class="pcv-pr-panel" id={`pcv-pr-panel-${step.id}`}>
+      <p class="pcv-pr-lead">{step.lead}</p>
+      {step.code && <pre class="pcv-pr-code">
             <code>{step.code}</code>
-          </pre>
-        )}
-        {step.note && <p class="pcv-pr-note">{step.note}</p>}
-      </div>
-    ))
-  }
+          </pre>}
+      {step.note && <p class="pcv-pr-note">{step.note}</p>}
+    </div>
+  ))}
 </fieldset>
 
 <p class="mt-6 text-brand-dark/70">
@@ -103,13 +97,17 @@ const steps = [
   <a
     href="https://github.com/philaconvalley/website/issues"
     class="font-display font-bold text-brand-dark no-underline border-b-2 border-brand-pink hover:text-accent-700"
-    >open issues labelled good first issue →</a
-  >, or read
+  >
+    open issues labelled good first issue →
+  </a>
+  , or read
   <a
     href="/resources/first-pull-request"
     class="font-display font-bold text-brand-dark no-underline border-b-2 border-brand-pink hover:text-accent-700"
-    >the long version</a
-  >.
+  >
+    the long version
+  </a>
+  .
 </p>
 
 <style>

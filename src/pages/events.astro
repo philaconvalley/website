@@ -70,9 +70,7 @@ const photos = (await getCollection('gallery')).sort(
     <div class="container-custom">
       <h2 class="text-3xl font-bold mb-8 text-center">Event calendar</h2>
       <div class="max-w-4xl mx-auto">
-        <div
-          class="bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro-lg overflow-hidden flex justify-center p-4"
-        >
+        <div class="bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro-lg overflow-hidden flex justify-center p-4">
           <iframe
             src={links.lumaEmbed}
             title="PhilaCon Valley Event calendar"
@@ -81,15 +79,19 @@ const photos = (await getCollection('gallery')).sort(
             style="border: 1px solid #bfcbda88; border-radius: 4px; max-width: 800px;"
             allowfullscreen=""
             aria-hidden="false"
-            tabindex="0"></iframe>
+            tabindex="0"
+          ></iframe>
         </div>
         <p class="text-center mt-4 text-brand-dark/60">
-          Can't see the calendar? <a
+          Can't see the calendar?{' '}
+          <a
             href={links.luma}
             target="_blank"
             rel="noopener noreferrer"
-            class="text-primary-600 hover:text-primary-700 font-semibold">View on Luma</a
+            class="text-primary-600 hover:text-primary-700 font-semibold"
           >
+            View on Luma
+          </a>
         </p>
       </div>
     </div>
@@ -101,9 +103,7 @@ const photos = (await getCollection('gallery')).sort(
       <h2 class="text-3xl font-bold mb-8 text-center">Types of events</h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
         <div class="text-center">
-          <div
-            class="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4"
-          >
+          <div class="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg
               class="w-10 h-10 text-primary-600"
               fill="none"
@@ -114,7 +114,8 @@ const photos = (await getCollection('gallery')).sort(
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+              ></path>
             </svg>
           </div>
           <h3 class="text-xl font-bold mb-3">Lab</h3>
@@ -125,9 +126,7 @@ const photos = (await getCollection('gallery')).sort(
         </div>
 
         <div class="text-center">
-          <div
-            class="w-20 h-20 bg-accent-100 rounded-full flex items-center justify-center mx-auto mb-4"
-          >
+          <div class="w-20 h-20 bg-accent-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg
               class="w-10 h-10 text-accent-600"
               fill="none"
@@ -149,9 +148,7 @@ const photos = (await getCollection('gallery')).sort(
         </div>
 
         <div class="text-center">
-          <div
-            class="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4"
-          >
+          <div class="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg
               class="w-10 h-10 text-primary-600"
               fill="none"
@@ -204,7 +201,10 @@ const photos = (await getCollection('gallery')).sort(
         <Button href={links.luma} external variant="secondary" size="lg">
           View events on Luma
         </Button>
-        <Button href="/join" variant="outline" size="lg"> Join the Community </Button>
+        <Button href="/join" variant="outline" size="lg">
+          {' '}
+          Join the Community{' '}
+        </Button>
       </div>
     </div>
   </section>

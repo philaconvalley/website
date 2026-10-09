@@ -23,29 +23,27 @@ interface Props {
 const { event } = Astro.props;
 ---
 
-{
-  event && (
-    <div
-      data-pcv-event-start={event.start}
-      class="lg:hidden fixed inset-x-0 bottom-0 z-40 flex items-center gap-3.5 px-4 pt-3 pb-4 bg-primary-100/[0.96] backdrop-blur-sm border-t border-brand-dark/[0.14] pcv-enter-bar"
-      style="padding-bottom: calc(1rem + env(safe-area-inset-bottom));"
-    >
-      <div class="flex-1 min-w-0">
-        <div class="font-display font-bold text-[15px] leading-tight truncate">{event.title}</div>
-        <div class="font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-brand-dark/55 mt-[3px]">
-          {formatEventDate(event.start)}
-          {event.venue && ` · ${event.venue}`}
-        </div>
+{event && (
+  <div
+    data-pcv-event-start={event.start}
+    class="lg:hidden fixed inset-x-0 bottom-0 z-40 flex items-center gap-3.5 px-4 pt-3 pb-4 bg-primary-100/[0.96] backdrop-blur-sm border-t border-brand-dark/[0.14] pcv-enter-bar"
+    style="padding-bottom: calc(1rem + env(safe-area-inset-bottom));"
+  >
+    <div class="flex-1 min-w-0">
+      <div class="font-display font-bold text-[15px] leading-tight truncate">{event.title}</div>
+      <div class="font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-brand-dark/55 mt-[3px]">
+        {formatEventDate(event.start)}
+        {event.venue && ` · ${event.venue}`}
       </div>
-      <a
-        href={event.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        data-testid="event-bar-cta"
-        class="flex-shrink-0 font-display font-bold text-base px-6 py-3.5 rounded-full bg-brand-pink text-brand-dark whitespace-nowrap transition-transform duration-150 ease-out motion-safe:active:scale-[0.97] motion-reduce:active:opacity-80 motion-reduce:transition-none"
-      >
-        RSVP →
-      </a>
     </div>
-  )
-}
+    <a
+      href={event.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      data-testid="event-bar-cta"
+      class="flex-shrink-0 font-display font-bold text-base px-6 py-3.5 rounded-full bg-brand-pink text-brand-dark whitespace-nowrap transition-transform duration-150 ease-out motion-safe:active:scale-[0.97] motion-reduce:active:opacity-80 motion-reduce:transition-none"
+    >
+      RSVP →
+    </a>
+  </div>
+)}

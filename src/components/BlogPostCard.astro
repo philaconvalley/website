@@ -41,57 +41,49 @@ const Heading = size === 'lg' ? 'h2' : 'h3';
     <span>{author}</span>
     <span>·</span>
     <time>
-      {
-        date.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        })
-      }
+      {date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })}
     </time>
-    {
-      platform && (
-        <span class="px-2 py-0.5 bg-accent-100 text-accent-700 text-xs font-display font-bold rounded-full">
-          {platform}
-        </span>
-      )
-    }
+    {platform && (
+      <span class="px-2 py-0.5 bg-accent-100 text-accent-700 text-xs font-display font-bold rounded-full">
+        {platform}
+      </span>
+    )}
   </div>
 
   <Heading
     class={`font-display font-bold text-brand-dark group-hover:text-accent-600 transition-colors mb-2 ${size === 'lg' ? 'text-2xl' : 'text-xl'}`}
   >
     {title}
-    {
-      isExternal && (
-        <svg
-          class={`inline-block text-brand-dark/30 ${size === 'lg' ? 'w-5 h-5 ml-2' : 'w-4 h-4 ml-1'}`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-          />
-        </svg>
-      )
-    }
+    {isExternal && (
+      <svg
+        class={`inline-block text-brand-dark/30 ${size === 'lg' ? 'w-5 h-5 ml-2' : 'w-4 h-4 ml-1'}`}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+        />
+      </svg>
+    )}
   </Heading>
 
   <p class="text-brand-dark/60 mb-4 flex-1">{description}</p>
 
-  {
-    tags.length > 0 && (
-      <div class="flex flex-wrap gap-1.5 mt-auto">
-        {tags.map((tag) => (
-          <span class="px-2 py-0.5 bg-primary-100 text-primary-800 text-xs font-display font-bold rounded-full">
-            #{tag}
-          </span>
-        ))}
-      </div>
-    )
-  }
+  {tags.length > 0 && (
+    <div class="flex flex-wrap gap-1.5 mt-auto">
+      {tags.map((tag) => (
+        <span class="px-2 py-0.5 bg-primary-100 text-primary-800 text-xs font-display font-bold rounded-full">
+          #{tag}
+        </span>
+      ))}
+    </div>
+  )}
 </a>

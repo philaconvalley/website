@@ -57,9 +57,7 @@ const secondaryRoutes = [
              it, live from Discord — before being asked to click into it
              blind. The icon is the org's own mascot, a static asset, not
              the live server icon. -->
-        <div
-          class="bg-white text-brand-dark rounded-retro p-6 md:p-8 shadow-retro border-2 border-brand-dark/10 text-left max-w-md mx-auto"
-        >
+        <div class="bg-white text-brand-dark rounded-retro p-6 md:p-8 shadow-retro border-2 border-brand-dark/10 text-left max-w-md mx-auto">
           <div class="flex items-center gap-4">
             <img
               src="/images/discord-mascot.webp"
@@ -105,22 +103,20 @@ const secondaryRoutes = [
       <div class="max-w-3xl mx-auto">
         <h2 class="text-4xl font-bold mb-10">Two other ways in</h2>
         <ul class="space-y-9 list-none p-0 m-0">
-          {
-            secondaryRoutes.map((route) => (
-              <li>
-                <h3 class="text-2xl font-bold mb-2">{route.label}</h3>
-                <p class="text-brand-dark/70 m-0">{route.detail}</p>
-                <a
-                  href={route.href}
-                  target={route.external ? '_blank' : undefined}
-                  rel={route.external ? 'noopener noreferrer' : undefined}
-                  class="inline-block font-display font-bold mt-3 text-brand-dark no-underline border-b-2 border-brand-pink hover:text-accent-700"
-                >
-                  {route.cta} →
-                </a>
-              </li>
-            ))
-          }
+          {secondaryRoutes.map((route) => (
+            <li>
+              <h3 class="text-2xl font-bold mb-2">{route.label}</h3>
+              <p class="text-brand-dark/70 m-0">{route.detail}</p>
+              <a
+                href={route.href}
+                target={route.external ? '_blank' : undefined}
+                rel={route.external ? 'noopener noreferrer' : undefined}
+                class="inline-block font-display font-bold mt-3 text-brand-dark no-underline border-b-2 border-brand-pink hover:text-accent-700"
+              >
+                {route.cta} →
+              </a>
+            </li>
+          ))}
         </ul>
       </div>
     </div>
@@ -136,8 +132,10 @@ const secondaryRoutes = [
           <a
             href={`${links.github.website}/blob/main/CODE_OF_CONDUCT.md`}
             class="font-display font-bold text-brand-dark no-underline border-b-2 border-brand-pink hover:text-accent-700"
-            >read the code of conduct</a
-          >.
+          >
+            read the code of conduct
+          </a>
+          .
         </p>
       </div>
     </div>
@@ -150,7 +148,9 @@ const secondaryRoutes = [
         You find your people to build with you, not just for you.
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button href={links.luma} external variant="secondary" size="lg">Come to a Lab</Button>
+        <Button href={links.luma} external variant="secondary" size="lg">
+          Come to a Lab
+        </Button>
         <Button
           href="/contact"
           variant="outline"

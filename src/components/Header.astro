@@ -76,62 +76,56 @@ const rsvpHref = nextEvent?.url ?? '/events';
             data-testid="nav-pill"
             class="absolute inset-y-1 left-0 rounded-full bg-accent-400 transition-[transform,width] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
             :style="`transform: translateX(${pos.left}px); width: ${pos.width}px;`"
-          >
-          </div>
-          {
-            navItems.map((item) => {
-              const isCurrent =
-                currentPath === item.href || currentPath.startsWith(item.href + '/');
-              return (
-                <a
-                  href={item.href}
-                  aria-current={isCurrent ? 'page' : undefined}
-                  @mouseenter="pos = { left: $el.offsetLeft, width: $el.offsetWidth }"
-                  @focus="pos = { left: $el.offsetLeft, width: $el.offsetWidth }"
-                  class={`relative z-10 px-3 py-1.5 rounded-full text-sm font-display font-semibold transition-colors ${
-                    isCurrent
-                      ? // Dark, not white: the pill behind this is accent-400 (#FF66A8),
-                        // where white text measures 2.72:1 against a 4.5:1 requirement
-                        // at 14px. brand-dark on the same pink is 6.40:1.
-                        'text-brand-dark'
-                      : 'text-brand-dark/60 hover:text-brand-dark focus-visible:text-brand-dark'
-                  }`}
-                >
-                  {item.name}
-                </a>
-              );
-            })
-          }
+          ></div>
+          {navItems.map((item) => {
+            const isCurrent = currentPath === item.href || currentPath.startsWith(item.href + '/');
+            return (
+              <a
+                href={item.href}
+                aria-current={isCurrent ? 'page' : undefined}
+                @mouseenter="pos = { left: $el.offsetLeft, width: $el.offsetWidth }"
+                @focus="pos = { left: $el.offsetLeft, width: $el.offsetWidth }"
+                class={`relative z-10 px-3 py-1.5 rounded-full text-sm font-display font-semibold transition-colors ${
+                  isCurrent
+                    ? // Dark, not white: the pill behind this is accent-400 (#FF66A8),
+                      // where white text measures 2.72:1 against a 4.5:1 requirement
+                      // at 14px. brand-dark on the same pink is 6.40:1.
+                      'text-brand-dark'
+                    : 'text-brand-dark/60 hover:text-brand-dark focus-visible:text-brand-dark'
+                }`}
+              >
+                {item.name}
+              </a>
+            );
+          })}
         </div>
       </div>
 
       <!-- Next event + RSVP. The date is a quiet inline row on desktop; on phones
            it lives in the thumb-reachable bottom bar instead (see EventBar). -->
       <div class="hidden lg:flex items-center gap-4 flex-shrink-0">
-        {
-          eventDate && (
-            <span
-              data-pcv-event-start={nextEvent!.start}
-              class="hidden xl:inline font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-brand-dark/50"
-            >
-              {eventDate}
-            </span>
-          )
-        }
+        {eventDate && (
+          <span
+            data-pcv-event-start={nextEvent!.start}
+            class="hidden xl:inline font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-brand-dark/50"
+          >
+            {eventDate}
+          </span>
+        )}
         <!-- Both attributes are the static-build guard, continued client-side: once
              the visitor's clock passes the event, the date row removes itself and
              this CTA falls back to /events rather than deep-linking a closed Luma
              page. See BaseLayout.astro. -->
         <a
           href={rsvpHref}
-          {...nextEvent
+          {...(nextEvent
             ? {
                 target: '_blank',
                 rel: 'noopener noreferrer',
                 'data-pcv-event-start': nextEvent.start,
                 'data-pcv-event-fallback': '/events',
               }
-            : {}}
+            : {})}
           data-testid="hero-cta"
           class="font-display font-bold text-[15px] px-6 py-3 rounded-full bg-brand-pink text-brand-dark transition-[transform,box-shadow] duration-150 ease-out hover:-translate-x-px hover:-translate-y-px hover:shadow-[6px_6px_0_rgba(26,26,26,0.18)] motion-safe:active:scale-[0.97] motion-reduce:active:opacity-80 motion-reduce:transition-none"
         >
@@ -159,7 +153,8 @@ const rsvpHref = nextEvent?.url ?? '/events';
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M4 8h16M4 16h16"></path>
+              d="M4 8h16M4 16h16"
+            ></path>
           </svg>
           <svg
             class="h-6 w-6"
@@ -172,7 +167,8 @@ const rsvpHref = nextEvent?.url ?? '/events';
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"></path>
+              d="M6 18L18 6M6 6l12 12"
+            ></path>
           </svg>
         </button>
       </div>
@@ -194,24 +190,22 @@ const rsvpHref = nextEvent?.url ?? '/events';
       @keydown.escape.window="mobileMenuOpen = false"
     >
       <div class="px-2 pt-2 pb-3 space-y-1">
-        {
-          navItems.map((item) => {
-            const isCurrent = currentPath === item.href || currentPath.startsWith(item.href + '/');
-            return (
-              <a
-                href={item.href}
-                aria-current={isCurrent ? 'page' : undefined}
-                class={`block px-3 py-2 rounded-lg text-base font-display font-bold ${
-                  isCurrent
-                    ? 'bg-accent-400 text-brand-dark'
-                    : 'text-primary-100 hover:bg-accent-400 hover:text-brand-dark'
-                }`}
-              >
-                {item.name}
-              </a>
-            );
-          })
-        }
+        {navItems.map((item) => {
+          const isCurrent = currentPath === item.href || currentPath.startsWith(item.href + '/');
+          return (
+            <a
+              href={item.href}
+              aria-current={isCurrent ? 'page' : undefined}
+              class={`block px-3 py-2 rounded-lg text-base font-display font-bold ${
+                isCurrent
+                  ? 'bg-accent-400 text-brand-dark'
+                  : 'text-primary-100 hover:bg-accent-400 hover:text-brand-dark'
+              }`}
+            >
+              {item.name}
+            </a>
+          );
+        })}
       </div>
     </div>
   </nav>

@@ -43,7 +43,8 @@ const { title, date, time, location, description, eventUrl } = Astro.props;
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path>
           </svg>
           <span>{time}</span>
         </div>
@@ -64,7 +65,8 @@ const { title, date, time, location, description, eventUrl } = Astro.props;
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+            ></path>
           </svg>
           <span>{location}</span>
         </div>
@@ -74,19 +76,17 @@ const { title, date, time, location, description, eventUrl } = Astro.props;
 
   <p class="text-brand-dark/70 mb-4">{description}</p>
 
-  {
-    eventUrl && (
-      <a
-        href={eventUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="inline-flex items-center text-primary-600 font-semibold hover:text-primary-700 transition-colors"
-      >
-        RSVP Now
-        <svg class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </a>
-    )
-  }
+  {eventUrl && (
+    <a
+      href={eventUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-flex items-center text-primary-600 font-semibold hover:text-primary-700 transition-colors"
+    >
+      RSVP Now
+      <svg class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+    </a>
+  )}
 </div>

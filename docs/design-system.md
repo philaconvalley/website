@@ -107,8 +107,12 @@ Three variants, all pill-shaped:
 | `outline`   | Transparent with border          | Tertiary actions, dark backgrounds |
 
 ```astro
-<Button href="/join" variant="primary" size="lg">Join Us</Button>
-<Button href="/events" variant="outline">View Events</Button>
+<Button href="/join" variant="primary" size="lg">
+  Join Us
+</Button>
+<Button href="/events" variant="outline">
+  View Events
+</Button>
 ```
 
 ### Cards (`.card` class in `global.css`)

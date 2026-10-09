@@ -32,13 +32,11 @@ const dots = [
 
   <!-- The three people -->
   <div class="absolute left-[8%] lg:left-[6%] top-[44px] lg:top-[79px] flex gap-1.5 lg:gap-2">
-    {
-      dots.map((dot) => (
-        <span
-          class={`block w-[15px] h-[15px] lg:w-5 lg:h-5 rounded-full ${dot.color} ${dot.motion}`}
-        />
-      ))
-    }
+    {dots.map((dot) => (
+      <span
+        class={`block w-[15px] h-[15px] lg:w-5 lg:h-5 rounded-full ${dot.color} ${dot.motion}`}
+      />
+    ))}
   </div>
 
   <!-- Two defences, because absolute siblings have no idea the other exists.
@@ -51,24 +49,16 @@ const dots = [
        longer `outcome` string would grow the chip back into it. Text on top means
        the failure mode is at worst a crowded frame, never hidden words. Above
        `lg` the chip sits clear on its own. e2e/lab-track.spec.ts. -->
-  <div
-    class="absolute z-10 left-0 top-[102px] lg:top-[126px] font-mono text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.14em] text-brand-dark/45"
-  >
+  <div class="absolute z-10 left-0 top-[102px] lg:top-[126px] font-mono text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.14em] text-brand-dark/45">
     6:30pm · you arrive alone
   </div>
-  <div
-    class="absolute z-10 left-0 top-[120px] lg:top-[148px] font-mono text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.14em] text-brand-dark/45 pcv-loop-label"
-  >
+  <div class="absolute z-10 left-0 top-[120px] lg:top-[148px] font-mono text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.14em] text-brand-dark/45 pcv-loop-label">
     7:00pm · two others pull up a chair
   </div>
 
   <!-- What you leave with -->
-  <div
-    class="absolute right-0 top-0.5 lg:top-1.5 w-[214px] lg:w-[242px] bg-white rounded-[14px] px-4 py-3.5 lg:px-[18px] lg:py-4 shadow-retro pcv-loop-chip"
-  >
-    <div
-      class="font-mono text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.14em] text-accent-600"
-    >
+  <div class="absolute right-0 top-0.5 lg:top-1.5 w-[214px] lg:w-[242px] bg-white rounded-[14px] px-4 py-3.5 lg:px-[18px] lg:py-4 shadow-retro pcv-loop-chip">
+    <div class="font-mono text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.14em] text-accent-600">
       9:41pm · you leave with
     </div>
     <div class="font-display font-bold text-[17px] lg:text-[19px] leading-tight mt-1.5">

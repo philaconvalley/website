@@ -31,7 +31,8 @@ const categoryColor = 'bg-white/20 text-white';
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M15 19l-7-7 7-7"></path>
+              d="M15 19l-7-7 7-7"
+            ></path>
           </svg>
           Back to Resources
         </a>
@@ -39,9 +40,7 @@ const categoryColor = 'bg-white/20 text-white';
           <span class={`px-3 py-1 text-sm font-display font-bold rounded-full ${categoryColor}`}>
             {category}
           </span>
-          <span
-            class="px-3 py-1 text-sm font-display font-bold rounded-full bg-white/20 text-white"
-          >
+          <span class="px-3 py-1 text-sm font-display font-bold rounded-full bg-white/20 text-white">
             {level}
           </span>
         </div>
@@ -51,13 +50,11 @@ const categoryColor = 'bg-white/20 text-white';
           <span>By {author}</span>
           <span class="mx-2">·</span>
           <span>
-            {
-              date.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })
-            }
+            {date.toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
           </span>
         </div>
       </div>
@@ -75,18 +72,14 @@ const categoryColor = 'bg-white/20 text-white';
           </div>
 
           <div class="lg:col-span-1">
-            <div
-              class="bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro p-6 sticky top-24"
-            >
+            <div class="bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro p-6 sticky top-24">
               <h3 class="font-display font-bold text-brand-dark mb-3">Tags</h3>
               <div class="flex flex-wrap gap-1.5">
-                {
-                  tags.map((tag) => (
-                    <span class="px-2 py-0.5 bg-primary-100 text-primary-800 text-xs font-display font-bold rounded-full">
-                      #{tag}
-                    </span>
-                  ))
-                }
+                {tags.map((tag) => (
+                  <span class="px-2 py-0.5 bg-primary-100 text-primary-800 text-xs font-display font-bold rounded-full">
+                    #{tag}
+                  </span>
+                ))}
               </div>
 
               <hr class="my-5 border-brand-dark/5" />
@@ -100,9 +93,7 @@ const categoryColor = 'bg-white/20 text-white';
                   class="flex items-center gap-2 text-sm text-brand-dark/50 hover:text-accent-600 transition-colors"
                 >
                   <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                      d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
-                    ></path>
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
                   </svg>
                   Share on X
                 </a>
@@ -113,9 +104,7 @@ const categoryColor = 'bg-white/20 text-white';
                   class="flex items-center gap-2 text-sm text-brand-dark/50 hover:text-accent-600 transition-colors"
                 >
                   <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                      d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"
-                    ></path>
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path>
                   </svg>
                   Share on LinkedIn
                 </a>
@@ -134,7 +123,10 @@ const categoryColor = 'bg-white/20 text-white';
         Join us at our workshops and Labs to practice these skills with the community.
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button href="/events" variant="primary"> View events </Button>
+        <Button href="/events" variant="primary">
+          {' '}
+          View events{' '}
+        </Button>
         <Button
           href="/resources"
           variant="outline"
