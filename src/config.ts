@@ -26,8 +26,8 @@ export const site = {
  * staleness is visible in the diff rather than invisible on the page.
  */
 export const community = {
-  memberCount: 425,
-  memberCountUpdated: '2026-07-28',
+  memberCount: 493,
+  memberCountUpdated: '2026-10-11',
 } as const;
 
 export const links = {
