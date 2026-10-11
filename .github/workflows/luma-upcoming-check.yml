@@ -1,0 +1,41 @@
+name: Luma upcoming events check
+
+# Opens one issue when the Luma calendar has no event in the next 21 days, and
+# closes it once one is scheduled. The site reads its events from Luma, so an
+# empty calendar means an empty /events page and no RSVP target. See the script
+# header for the full reasoning.
+
+on:
+  schedule:
+    # Mondays 13:00 UTC (9 AM New York in summer, 8 AM in winter), the same slot
+    # as the dependency rollup, so the weekly maintenance signals land together.
+    - cron: '0 13 * * 1'
+  # Re-check on demand after publishing an event, instead of waiting a week.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: luma-upcoming-check
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      - name: Check the Luma calendar
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: node .github/scripts/luma-upcoming-check.mjs
