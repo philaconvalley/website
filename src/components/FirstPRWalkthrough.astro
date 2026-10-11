@@ -75,8 +75,7 @@ const steps = [
         checked={i === 0}
       />
       <label for={`pcv-pr-${step.id}`} class="pcv-pr-chip font-display">
-        <span class="pcv-pr-num">{i + 1}</span>
-        {step.title}
+        <span class="pcv-pr-num">{i + 1}</span> {step.title}
       </label>
     </>
   ))}
@@ -93,14 +92,14 @@ const steps = [
 </fieldset>
 
 <p class="mt-6 text-brand-dark/70">
-  Stuck is normal — that is what we are for. Pick a real one from
+  Stuck is normal — that is what we are for. Pick a real one from{' '}
   <a
-    href="https://github.com/philaconvalley/website/issues"
+    href="https://github.com/philaconvalley/website/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22"
     class="font-display font-bold text-brand-dark no-underline border-b-2 border-brand-pink hover:text-accent-700"
   >
     open issues labelled good first issue →
   </a>
-  , or read
+  , or read{' '}
   <a
     href="/resources/first-pull-request"
     class="font-display font-bold text-brand-dark no-underline border-b-2 border-brand-pink hover:text-accent-700"

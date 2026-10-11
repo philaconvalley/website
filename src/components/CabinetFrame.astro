@@ -136,7 +136,7 @@ const fixedSizeInit = fixedSize
         x-on:click="if (!$refs.frame.src) { $refs.frame.src = $refs.frame.dataset.src } started = true; playing = true; $refs.frame.focus()"
         class="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-brand-dark/85 font-display text-xl font-extrabold text-primary-100"
       >
-        <span x-text="started ? 'Click to resume' : 'Click to play'">Click to play</span>
+        <span x-text="started ? 'Click to resume' : 'Click to play'">Click to play</span>{' '}
         {/* Only true before the first start — once the game has been
              started it keeps running behind the overlay on focus loss (see
              the docstring), so this line must not reappear then. */}

@@ -79,8 +79,7 @@ const marqueeBg = empty ? 'bg-primary-200' : marqueeClass;
       class={`${marqueeBg} px-3 py-3 text-center font-display text-sm font-extrabold leading-tight text-brand-dark`}
     >
       {empty ? 'YOUR GAME HERE' : title}
-    </div>
-
+    </div>{' '}
     <div class="mx-2.5 mt-2.5 overflow-hidden rounded border-[3px] border-black bg-brand-dark">
       {empty ? (
         <div class="flex aspect-[4/3] items-center justify-center">
@@ -98,7 +97,6 @@ const marqueeBg = empty ? 'bg-primary-200' : marqueeClass;
         />
       )}
     </div>
-
     <!-- The shoulder: a narrower, separately-rounded panel breaks the cabinet
          into head (marquee + screen) and base (controls) instead of one
          uniform rectangle. -->
@@ -121,11 +119,11 @@ const marqueeBg = empty ? 'bg-primary-200' : marqueeClass;
   <div class="mt-2.5 text-center">
     <p class="font-display text-base font-bold text-brand-dark group-hover:text-accent-600">
       {empty ? 'Add yours' : title}
-    </p>
+    </p>{' '}
     <p class="text-xs text-brand-dark/60">
       {empty ? 'Built something? Open a pull request.' : contributors.join(', ')}
-      {!empty && kind === 'demo' && <span class="block">Demo — no score</span>}
-      {desktopOnly && <span class="block font-semibold">Desktop only</span>}
+      {!empty && kind === 'demo' && <span class="block"> Demo — no score</span>}
+      {desktopOnly && <span class="block font-semibold"> Desktop only</span>}
     </p>
   </div>
 </a>
