@@ -38,7 +38,21 @@ const read = (page: Page) => page.evaluate(() => window.__cspViolations);
 
 // `/blog` is absent because the blog no longer routes (src/pages/_blog/). Add it
 // back when the routes return — see src/pages/rss.xml.ts for the full checklist.
-const PAGES = ['/', '/about', '/contact', '/resources', '/projects'];
+// Every page that embeds something belongs here: /events frames the Luma
+// calendar, and the arcade pages frame the games. Leaving /events out is how a
+// CSP with no frame-src shipped a blank calendar to production.
+const PAGES = [
+  '/',
+  '/about',
+  '/contact',
+  '/resources',
+  '/projects',
+  '/events',
+  '/join',
+  '/support',
+  '/arcade',
+  '/arcade/flappy-philacon',
+];
 
 test.describe('Content-Security-Policy (enforcing)', () => {
   for (const path of PAGES) {

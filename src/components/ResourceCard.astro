@@ -32,7 +32,7 @@ const lvl = levelConfig[level] || levelConfig.Beginner;
   <div class="flex items-center gap-2 mb-3">
     <span class={`px-2.5 py-1 text-xs font-display font-bold rounded-full ${cat.color}`}>
       {category}
-    </span>
+    </span>{' '}
     <span class="flex items-center gap-1 text-xs font-display font-bold text-brand-dark/50">
       {Array.from({ length: 3 }).map((_, i) => (
         <span
@@ -41,24 +41,22 @@ const lvl = levelConfig[level] || levelConfig.Beginner;
       ))}
       {level}
     </span>
-  </div>
-
+  </div>{' '}
   <h3 class="text-lg font-display font-bold text-brand-dark group-hover:text-accent-600 transition-colors mb-2">
     {title}
-  </h3>
-
-  <p class="text-sm text-brand-dark/60 leading-relaxed mb-4 flex-1">{description}</p>
-
+  </h3>{' '}
+  <p class="text-sm text-brand-dark/60 leading-relaxed mb-4 flex-1">{description}</p>{' '}
   <div class="flex flex-wrap gap-1.5 mb-4">
     {tags.map((tag) => (
-      <span class="px-2 py-0.5 bg-primary-100 text-primary-800 text-xs font-display font-bold rounded-full">
-        #{tag}
-      </span>
+      <>
+        <span class="px-2 py-0.5 bg-primary-100 text-primary-800 text-xs font-display font-bold rounded-full">
+          #{tag}
+        </span>{' '}
+      </>
     ))}
-  </div>
-
+  </div>{' '}
   <div class="flex items-center justify-between mt-auto pt-3 border-t border-brand-dark/5">
-    <span class="text-sm text-brand-dark/40">By {author}</span>
+    <span class="text-sm text-brand-dark/40">By {author}</span>{' '}
     <span class="text-sm font-display font-bold text-accent-600 group-hover:text-accent-700 transition-colors">
       Read More →
     </span>
