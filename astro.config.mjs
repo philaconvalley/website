@@ -14,5 +14,8 @@ process.env.PUBLIC_VERCEL_OBSERVABILITY_CLIENT_CONFIG ??=
 // https://astro.build/config
 export default defineConfig({
   integrations: [sitemap()],
-  site: 'https://philaconvalley.com',
+  // The www host is the one Vercel serves; the bare domain redirects to it.
+  // Canonical URLs, the sitemap, and og:url all come from this value, so it
+  // must name the host that answers 200, not the one that redirects.
+  site: 'https://www.philaconvalley.com',
 });
