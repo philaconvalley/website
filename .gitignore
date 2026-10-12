@@ -163,6 +163,12 @@ playwright/.cache/
 # Superpowers brainstorming session artifacts
 .superpowers/
 
+# Internal AI tooling: maintainer plans, specs, and agent skills. They hold
+# working notes that are not for a public repo, and contributors cannot use
+# the tools they assume. They stay on maintainers' disks, untracked.
+docs/superpowers/
+.claude/
+
 # macOS finder metadata
 .DS_Store
 
