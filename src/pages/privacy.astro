@@ -1,0 +1,146 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site, links } from '../config';
+
+/**
+ * Mode: Read. Budget: 400 body words (DESIGN.md — the 550 ceiling is About's,
+ * bought for its values statement, not general headroom).
+ *
+ * The page describes what the code actually does, and nothing more. Each row in
+ * `services` matches one thing a visitor's browser talks to:
+ *   - Vercel Analytics  -> <Analytics /> in src/layouts/BaseLayout.astro
+ *   - Google Fonts      -> the fonts.googleapis.com stylesheet, same file
+ *   - Formspree         -> the form on src/pages/contact.astro
+ *   - Luma              -> the calendar iframe on src/pages/events.astro
+ *
+ * If you add a script, an embed, or a form, add its row here in the same PR.
+ * The CSP in vercel.json is the backstop: a third-party script that is not
+ * allowed there cannot load, so a new tracker cannot appear without a diff to
+ * that file. Treat a change to script-src, connect-src, or frame-src as a
+ * change to this page too.
+ */
+
+const updated = 'October 12, 2026';
+
+const services = [
+  {
+    name: 'Vercel Analytics',
+    where: 'Every page',
+    what: 'The page you visit, the site that sent you, your country, and your browser and device type. It sets no cookies. It does not store your IP address, and it cannot follow you across days or to other sites.',
+    policy: 'https://vercel.com/docs/analytics/privacy-policy',
+  },
+  {
+    name: 'Google Fonts',
+    where: 'Every page',
+    what: 'Your browser downloads our typefaces from Google, so Google receives your IP address and browser type. We send Google nothing else.',
+    policy: 'https://developers.google.com/fonts/faq/privacy',
+  },
+  {
+    name: 'Formspree',
+    where: 'Contact page',
+    what: 'The name, email, and message you type into the contact form, only when you press send. Formspree delivers it to our inbox. We use it to reply to you. We do not add you to a mailing list.',
+    policy: 'https://formspree.io/legal/privacy-policy/',
+  },
+  {
+    name: 'Luma',
+    where: 'Events page',
+    what: 'The events calendar is a Luma window inside our page. Luma runs it, and Luma may set its own cookies. When you RSVP, you do so on Luma, under its terms.',
+    policy: 'https://luma.com/privacy-policy',
+  },
+];
+---
+
+<BaseLayout
+  title="Privacy - PhilaCon Valley"
+  description="What this website collects, who receives it, and what we never do with it."
+>
+  <section class="bg-brand-coral text-white py-20">
+    <div class="container-custom">
+      <div class="max-w-4xl mx-auto text-center">
+        <h1 class="text-5xl md:text-6xl font-bold mb-6">Privacy</h1>
+        <p class="text-2xl text-white/85">No ad trackers. No data sales. Here is the full list.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-padding bg-brand-cream">
+    <div class="container-custom">
+      <div class="max-w-3xl mx-auto">
+        <p class="text-lg mb-4">
+          This website runs no advertising pixels, no session recording, and no social media
+          trackers. We do not sell or share your personal information, and we do not build profiles
+          of visitors.
+        </p>
+        <p class="text-lg text-brand-dark/70">
+          Four outside services touch your visit. Each one is listed below, with what it receives.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-padding">
+    <div class="container-custom">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-4xl font-bold mb-12">What leaves your browser</h2>
+        <dl class="space-y-10 m-0">
+          {services.map((service) => (
+            <div>
+              <dt class="font-display text-2xl font-bold mb-1">
+                {service.name}
+                <span class="block font-mono text-xs font-normal uppercase tracking-wide text-brand-dark/70 mt-1">
+                  {service.where}
+                </span>
+              </dt>
+              <dd class="m-0 text-lg text-brand-dark/70">
+                {service.what}{' '}
+                <a
+                  href={service.policy}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="underline text-primary-600 hover:text-primary-700"
+                >
+                  {service.name} privacy policy
+                </a>
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-padding bg-brand-yellow border-t-[3px]">
+    <div class="container-custom">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-4xl font-bold mb-8">Your choices</h2>
+        <ul class="space-y-4 text-lg m-0 pl-5 list-disc">
+          <li>
+            Email{' '}
+            <a href={`mailto:${site.email}`} class="underline font-semibold">
+              {site.email}
+            </a>{' '}
+            to ask what we hold about you, or to ask us to delete it.
+          </li>
+          <li>
+            Links to Discord, Instagram, LinkedIn, and GitHub leave this site. Their own privacy
+            policies apply there.
+          </li>
+          <li>This site is not directed at children under 13.</li>
+          <li>
+            When this page changes, the date below changes. The full history is public in our{' '}
+            <a
+              href={links.github.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="underline font-semibold"
+            >
+              source code
+            </a>
+            .
+          </li>
+        </ul>
+        <p class="mt-10 font-mono text-sm text-brand-dark/70">Last updated {updated}</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
