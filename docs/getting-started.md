@@ -4,7 +4,7 @@ This guide will help you get the PhilaCon Valley website running on your own com
 
 ## What You'll Need
 
-- **[Node.js](https://nodejs.org)** version 20 or higher — download it from the link, it's free. Pick the "LTS" version.
+- **[Node.js](https://nodejs.org)** version 22.12 or higher — download it from the link, it's free. Pick the "LTS" version. Check what you have with `node --version`. If you use [nvm](https://github.com/nvm-sh/nvm), run `nvm use` in the project folder; it reads `.nvmrc`.
 - **[Git](https://git-scm.com)** — this is how we manage code. If you're on a Mac, you may already have it. Try typing `git --version` in your terminal.
 - **A code editor** — we recommend [VS Code](https://code.visualstudio.com/) (free). Any text editor works.
 
@@ -57,6 +57,8 @@ Press `Ctrl + C` in the terminal to stop the server.
 ## Common Issues
 
 **"command not found: node"** — Node.js isn't installed. Download it from [nodejs.org](https://nodejs.org).
+
+**`npm warn EBADENGINE` during install, then `npm run dev` fails** — your Node.js is older than 22.12. Run `node --version` to check. Install the current LTS from [nodejs.org](https://nodejs.org), or run `nvm use`, then run `npm install` again.
 
 **"command not found: git"** — Git isn't installed. Download it from [git-scm.com](https://git-scm.com).
 
