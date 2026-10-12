@@ -11,10 +11,23 @@ const CANONICAL_HOST = 'https://www.philaconvalley.com';
 test.describe('placeholder content', () => {
   // The files stay in the repo as `_example-*.md` templates. The content
   // loaders skip names that start with `_`, so they never become pages.
-  for (const path of ['/projects/example-project', '/resources/example-resource']) {
+  //
+  // Two right answers, depending on the server. `astro preview` ignores
+  // vercel.json, so the page is a plain 404. Vercel applies the redirect in
+  // vercel.json, so the browser lands on the index page. Either proves the
+  // placeholder is gone; the placeholder page itself answering 200 is the fail.
+  const retired = [
+    { path: '/projects/example-project', index: '/projects' },
+    { path: '/resources/example-resource', index: '/resources' },
+  ];
+  for (const { path, index } of retired) {
     test(`${path} is not published`, async ({ page }) => {
       const response = await page.goto(path);
-      expect(response?.status()).toBe(404);
+      const landed = new URL(page.url()).pathname.replace(/\/$/, '');
+
+      if (response?.status() === 404) return;
+      expect(landed, `${path} should 404 or redirect to ${index}`).toBe(index);
+      expect(response?.status()).toBe(200);
     });
   }
 
