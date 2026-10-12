@@ -22,7 +22,7 @@ Stuck at any point? Comment on the [issue you're working on](https://github.com/
 
 - A free [GitHub account](https://github.com/signup)
 - [Git](https://git-scm.com) installed — open a terminal and type `git --version`. If you see a version number, you're set.
-- [Node.js](https://nodejs.org) version 20 or higher — download the "LTS" version
+- [Node.js](https://nodejs.org) version 22.12 or higher — download the "LTS" version. Type `node --version` to check what you have.
 - A code editor, like [VS Code](https://code.visualstudio.com/) (free)
 
 One more thing, and it's easy to miss: Git needs to know your name and email before it will let you save a change. If this is a brand-new computer, run this once:
