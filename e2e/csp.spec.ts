@@ -163,6 +163,35 @@ test.describe('arcade /games/ header carve-out', () => {
     expect(headers['content-security-policy']).not.toContain("script-src 'unsafe-inline'");
   });
 
+  test('no policy allows Google Fonts', async ({ page }) => {
+    // Pages self-host their fonts (@fontsource, bundled by Astro) and games
+    // embed theirs as data: URIs. /privacy lists every outside service a
+    // visitor's browser talks to; re-allowing Google here would make that page
+    // wrong. Checks both header blocks in vercel.json: pages and /games/.
+    for (const path of ['/about', '/games/_probe/']) {
+      const response = await page.goto(path);
+      const headers = response?.headers() ?? {};
+      for (const name of ['content-security-policy', 'content-security-policy-report-only']) {
+        expect(headers[name] ?? '', `${name} on ${path}`).not.toMatch(
+          /fonts\.googleapis\.com|fonts\.gstatic\.com/,
+        );
+      }
+    }
+  });
+
+  test('a game can load its embedded data: fonts under the /games/ policy', async ({ page }) => {
+    // Flappy Philacon embeds Bowlby One and Fredoka as data: URIs. If
+    // font-src ever loses data:, the game silently falls back to system fonts
+    // and this is the only thing that notices.
+    await page.goto('/games/flappy-philacon/');
+    const statuses = await page.evaluate(async () => {
+      const specs = ['400 20px "Bowlby One"', '500 20px Fredoka', '700 20px Fredoka'];
+      const loaded = await Promise.all(specs.map((spec) => document.fonts.load(spec)));
+      return loaded.map((faces) => faces.map((face) => face.status));
+    });
+    for (const faces of statuses) expect(faces).toEqual(['loaded']);
+  });
+
   test('a sibling script file does not load in the sandbox opaque origin', async ({ page }) => {
     await page.goto('/arcade-probe-host.html');
     const loaded = await page
