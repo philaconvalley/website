@@ -59,6 +59,43 @@ test.describe('contact form', () => {
     await expect(page.getByRole('alert')).toContainText('did not send');
   });
 
+  test('gives up after 15 seconds when Formspree never answers', async ({ page }) => {
+    // The route never fulfills, like a server that accepts the connection and
+    // hangs. The fake clock lets the test skip the 15 real seconds.
+    await page.clock.install();
+    await page.route('https://formspree.io/**', () => {});
+    await fill(page);
+    await page.getByRole('button', { name: 'Send message' }).click();
+    await expect(page.getByRole('button', { name: 'Sending...' })).toBeDisabled();
+
+    await page.clock.runFor(14_000);
+    await expect(page.getByRole('alert')).toBeHidden();
+
+    await page.clock.runFor(1_000);
+    await expect(page.getByRole('alert')).toContainText('did not send');
+    await expect(page.getByRole('button', { name: 'Send message' })).toBeEnabled();
+  });
+
+  test('sends the spam trap empty and lets browsers autofill', async ({ page }) => {
+    let posted = '';
+    await page.route('https://formspree.io/**', (route) => {
+      posted = route.request().postData() ?? '';
+      return route.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' });
+    });
+    await fill(page);
+
+    const trap = page.locator('input[name="_gotcha"]');
+    await expect(trap).toBeHidden();
+    await expect(trap).toHaveAttribute('tabindex', '-1');
+    await expect(page.getByLabel('Name *')).toHaveAttribute('autocomplete', 'name');
+    await expect(page.getByLabel('Email *')).toHaveAttribute('autocomplete', 'email');
+
+    await page.getByRole('button', { name: 'Send message' }).click();
+    await expect(page.getByText('Message sent!')).toBeVisible();
+    // Multipart body: the field must be present, and its value empty.
+    expect(posted).toMatch(/name="_gotcha"\r\n\r\n\r\n/);
+  });
+
   test('disables the button while sending, then confirms', async ({ page }) => {
     let release!: () => void;
     const held = new Promise<void>((resolve) => (release = resolve));

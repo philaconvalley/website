@@ -5,11 +5,12 @@ import { defineConfig, devices } from '@playwright/test';
  * `vercel.json` only exist when the build is served through
  * `scripts/serve-with-headers.mjs`. The main e2e config uses `astro preview`,
  * which ignores vercel.json entirely — running these specs there would pass
- * vacuously against a site with no CSP at all.
+ * vacuously against a site with no CSP at all. The redirect spec lives here
+ * for the same reason: only this server applies vercel.json redirects.
  */
 export default defineConfig({
   testDir: './e2e',
-  testMatch: 'csp.spec.ts',
+  testMatch: ['csp.spec.ts', 'redirects.spec.ts'],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,

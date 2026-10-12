@@ -179,15 +179,28 @@ import { site, links } from '../config';
             method="POST"
             class="space-y-6"
             x-data="{ status: 'idle' }"
-            @submit.prevent="status = 'sending'; fetch($el.action, { method: 'POST', body: new FormData($el), headers: { 'Accept': 'application/json' } }).then((res) => { if (!res.ok) throw new Error(res.status); status = 'sent'; $el.reset(); }).catch(() => { status = 'error'; })"
+            @submit.prevent="status = 'sending'; const stop = new AbortController(); const timer = setTimeout(() => stop.abort(), 15000); fetch($el.action, { method: 'POST', body: new FormData($el), headers: { 'Accept': 'application/json' }, signal: stop.signal }).then((res) => { if (!res.ok) throw new Error(res.status); status = 'sent'; $el.reset(); }).catch(() => { status = 'error'; }).finally(() => clearTimeout(timer))"
           >
             <!--
               fetch() only rejects on a network failure. Formspree answers a rejected
               submission (spam filter, bad form ID, quota) with a 4xx, which still
               resolves. Without the res.ok check, those showed "Message sent!" and the
-              message was lost.
+              message was lost. The 15-second abort covers the other silent failure: a
+              request that never answers, which left the button on "Sending..." forever.
             -->
             <div x-show="status !== 'sent'" class="space-y-6">
+              <!--
+                Spam trap. Formspree drops any submission that fills `_gotcha`. People
+                never see the field; bots that fill every input do.
+              -->
+              <input
+                type="text"
+                name="_gotcha"
+                class="hidden"
+                tabindex="-1"
+                autocomplete="off"
+                aria-hidden="true"
+              />
               <div>
                 <label for="name" class="block text-sm font-semibold text-brand-dark/70 mb-2">
                   Name *
@@ -196,6 +209,7 @@ import { site, links } from '../config';
                   type="text"
                   id="name"
                   name="name"
+                  autocomplete="name"
                   required
                   class="w-full px-4 py-3 border-2 border-brand-dark/10 rounded-xl bg-primary-100 focus:ring-2 focus:ring-accent-400 focus:border-accent-400 focus:bg-white"
                   placeholder="Your name"
@@ -210,6 +224,7 @@ import { site, links } from '../config';
                   type="email"
                   id="email"
                   name="email"
+                  autocomplete="email"
                   required
                   class="w-full px-4 py-3 border-2 border-brand-dark/10 rounded-xl bg-primary-100 focus:ring-2 focus:ring-accent-400 focus:border-accent-400 focus:bg-white"
                   placeholder="your.email@example.com"
