@@ -9,14 +9,17 @@ import { site, links } from '../config';
  * The page describes what the code actually does, and nothing more. Each row in
  * `services` matches one thing a visitor's browser talks to:
  *   - Vercel Analytics  -> <Analytics /> in src/layouts/BaseLayout.astro
- *   - Google Fonts      -> the fonts.googleapis.com stylesheet, same file
  *   - Formspree         -> the form on src/pages/contact.astro
  *   - Luma              -> the calendar iframe on src/pages/events.astro
+ *
+ * No font service is listed because there is none: pages self-host their fonts
+ * from @fontsource and games embed theirs as data: URIs (#179). e2e/csp.spec.ts
+ * fails if any policy allows Google Fonts again.
  *
  * If you add a script, an embed, or a form, add its row here in the same PR.
  * The CSP in vercel.json is the backstop: a third-party script that is not
  * allowed there cannot load, so a new tracker cannot appear without a diff to
- * that file. Treat a change to script-src, connect-src, or frame-src as a
+ * that file. Treat a change to script-src, connect-src, frame-src, or font-src as a
  * change to this page too.
  */
 
@@ -50,13 +53,6 @@ const services = [
     where: 'Every page',
     what: 'The page you visit, the site that sent you, your country, and your browser and device type. It sets no cookies. It does not store your IP address, and it cannot follow you across days or to other sites.',
     policy: 'https://vercel.com/docs/analytics/privacy-policy',
-    code: 'src/layouts/BaseLayout.astro',
-  },
-  {
-    name: 'Google Fonts',
-    where: 'Every page',
-    what: 'Your browser downloads our typefaces from Google, so Google receives your IP address and browser type. We send Google nothing else.',
-    policy: 'https://developers.google.com/fonts/faq/privacy',
     code: 'src/layouts/BaseLayout.astro',
   },
   {
@@ -98,7 +94,7 @@ const services = [
           of visitors.
         </p>
         <p class="text-lg text-brand-dark/70">
-          Four outside services touch your visit. Each one is listed below, with what it receives.
+          Three outside services touch your visit. Each one is listed below, with what it receives.
         </p>
       </div>
     </div>
