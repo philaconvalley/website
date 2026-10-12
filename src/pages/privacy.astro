@@ -22,30 +22,56 @@ import { site, links } from '../config';
 
 const updated = 'October 12, 2026';
 
+/** Source files are linked on GitHub, so every claim below can be checked. */
+const source = (path: string) => `${links.github.website}/blob/main/${path}`;
+const history = `${links.github.website}/commits/main/src/pages/privacy.astro`;
+
+/**
+ * Every outside site this one links to, with that site's own policy. Keep in
+ * step with the outbound links in Footer.astro, contact.astro, and support.astro.
+ */
+const linkedSites = [
+  { name: 'Discord', policy: 'https://discord.com/privacy' },
+  {
+    name: 'GitHub',
+    policy:
+      'https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement',
+  },
+  { name: 'Instagram', policy: 'https://privacycenter.instagram.com/policy' },
+  { name: 'LinkedIn', policy: 'https://www.linkedin.com/legal/privacy-policy' },
+  { name: 'Luma', policy: 'https://luma.com/privacy-policy' },
+  { name: 'Open Collective', policy: 'https://opencollective.com/privacypolicy' },
+  { name: 'X (Twitter)', policy: 'https://x.com/en/privacy' },
+];
+
 const services = [
   {
     name: 'Vercel Analytics',
     where: 'Every page',
     what: 'The page you visit, the site that sent you, your country, and your browser and device type. It sets no cookies. It does not store your IP address, and it cannot follow you across days or to other sites.',
     policy: 'https://vercel.com/docs/analytics/privacy-policy',
+    code: 'src/layouts/BaseLayout.astro',
   },
   {
     name: 'Google Fonts',
     where: 'Every page',
     what: 'Your browser downloads our typefaces from Google, so Google receives your IP address and browser type. We send Google nothing else.',
     policy: 'https://developers.google.com/fonts/faq/privacy',
+    code: 'src/layouts/BaseLayout.astro',
   },
   {
     name: 'Formspree',
     where: 'Contact page',
     what: 'The name, email, and message you type into the contact form, only when you press send. Formspree delivers it to our inbox. We use it to reply to you. We do not add you to a mailing list.',
     policy: 'https://formspree.io/legal/privacy-policy/',
+    code: 'src/pages/contact.astro',
   },
   {
     name: 'Luma',
     where: 'Events page',
     what: 'The events calendar is a Luma window inside our page. Luma runs it, and Luma may set its own cookies. When you RSVP, you do so on Luma, under its terms.',
     policy: 'https://luma.com/privacy-policy',
+    code: 'src/pages/events.astro',
   },
 ];
 ---
@@ -101,6 +127,15 @@ const services = [
                 >
                   {service.name} privacy policy
                 </a>
+                {' · '}
+                <a
+                  href={source(service.code)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="underline text-primary-600 hover:text-primary-700"
+                >
+                  See the code
+                </a>
               </dd>
             </div>
           ))}
@@ -112,33 +147,71 @@ const services = [
   <section class="section-padding bg-brand-yellow border-t-[3px]">
     <div class="container-custom">
       <div class="max-w-3xl mx-auto">
-        <h2 class="text-4xl font-bold mb-8">Your choices</h2>
-        <ul class="space-y-4 text-lg m-0 pl-5 list-disc">
-          <li>
-            Email{' '}
-            <a href={`mailto:${site.email}`} class="underline font-semibold">
-              {site.email}
-            </a>{' '}
-            to ask what we hold about you, or to ask us to delete it.
-          </li>
-          <li>
-            Links to Discord, Instagram, LinkedIn, and GitHub leave this site. Their own privacy
-            policies apply there.
-          </li>
-          <li>This site is not directed at children under 13.</li>
-          <li>
-            When this page changes, the date below changes. The full history is public in our{' '}
-            <a
-              href={links.github.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="underline font-semibold"
-            >
-              source code
-            </a>
-            .
-          </li>
-        </ul>
+        <h2 class="text-4xl font-bold mb-10">Your choices</h2>
+        <dl class="space-y-10 m-0 text-lg">
+          <div>
+            <dt class="font-display text-2xl font-bold mb-1">See or delete your data</dt>
+            <dd class="m-0">
+              The only personal data we hold from this site is what you send through the contact
+              form. Email{' '}
+              <a href={`mailto:${site.email}`} class="underline font-semibold">
+                {site.email}
+              </a>{' '}
+              to see it or to have it deleted.
+            </dd>
+          </div>
+          <div>
+            <dt class="font-display text-2xl font-bold mb-1">Sites we link to</dt>
+            <dd class="m-0">
+              <p class="mb-3">
+                These links leave our site. Each one opens that site's own privacy policy.
+              </p>
+              <ul class="flex flex-wrap gap-x-5 gap-y-2 m-0 p-0 list-none">
+                {linkedSites.map((linked) => (
+                  <li>
+                    <a
+                      href={linked.policy}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="underline font-semibold"
+                    >
+                      {linked.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </dd>
+          </div>
+          <div>
+            <dt class="font-display text-2xl font-bold mb-1">Check our work</dt>
+            <dd class="m-0">
+              Our{' '}
+              <a
+                href={source('vercel.json')}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="underline font-semibold"
+              >
+                security policy
+              </a>{' '}
+              tells your browser to block any service not listed on this page. Every change to this
+              page is public in its{' '}
+              <a
+                href={history}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="underline font-semibold"
+              >
+                change history
+              </a>
+              .
+            </dd>
+          </div>
+          <div>
+            <dt class="font-display text-2xl font-bold mb-1">Children</dt>
+            <dd class="m-0">This site is not directed at children under 13.</dd>
+          </div>
+        </dl>
         <p class="mt-10 font-mono text-sm text-brand-dark/70">Last updated {updated}</p>
       </div>
     </div>
