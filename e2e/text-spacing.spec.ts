@@ -21,6 +21,7 @@ const PAGES = [
   '/contact',
   '/events',
   '/events/patch-002',
+  '/events/patch-003',
   '/join',
   '/support',
   '/projects',
