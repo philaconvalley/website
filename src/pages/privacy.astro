@@ -10,7 +10,7 @@ import { site, links } from '../config';
  * `services` matches one thing a visitor's browser talks to:
  *   - Vercel Analytics  -> <Analytics /> in src/layouts/BaseLayout.astro
  *   - Formspree         -> the form on src/pages/contact.astro
- *   - Luma              -> the calendar iframe on src/pages/events.astro
+ *   - Luma              -> the calendar iframe on src/pages/events/index.astro
  *
  * No font service is listed because there is none: pages self-host their fonts
  * from @fontsource and games embed theirs as data: URIs (#179). e2e/csp.spec.ts
@@ -67,7 +67,7 @@ const services = [
     where: 'Events page',
     what: 'The events calendar is a Luma window inside our page. Luma runs it, and Luma may set its own cookies. When you RSVP, you do so on Luma, under its terms.',
     policy: 'https://luma.com/privacy-policy',
-    code: 'src/pages/events.astro',
+    code: 'src/pages/events/index.astro',
   },
 ];
 ---
