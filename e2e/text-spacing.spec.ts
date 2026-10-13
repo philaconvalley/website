@@ -20,6 +20,7 @@ const PAGES = [
   '/about',
   '/contact',
   '/events',
+  '/events/patch-002',
   '/join',
   '/support',
   '/projects',

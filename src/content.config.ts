@@ -1,4 +1,4 @@
-import { defineCollection } from 'astro:content';
+import { defineCollection, reference } from 'astro:content';
 import { glob } from 'astro/loaders';
 // Astro 7 deprecates re-exporting `z` from astro:content; import it from astro/zod
 // so this does not become an error in the next major.
@@ -47,12 +47,44 @@ const blog = defineCollection({
   }),
 });
 
+/**
+ * Recaps of events that already happened, one file per event.
+ *
+ * Title, date, and venue are copied from Luma once, when the recap is written,
+ * instead of being looked up from the ICS feed on every build. That is safe only
+ * because a past event cannot change: the copy can never drift from Luma, and the
+ * old pages keep building when Luma is down. Upcoming events still come live from
+ * Luma (src/lib/community.ts) — do not add them here, because a rescheduled date
+ * would leave this copy wrong.
+ */
+const events = defineCollection({
+  loader: glob({ pattern: '**/[^_]*.md', base: './src/content/events' }),
+  schema: z.object({
+    title: z.string(),
+    date: z.date(),
+    venue: z.string(),
+    lumaUrl: z.url().optional(),
+    // One sentence for cards and the meta description. Written by a person:
+    // no feed knows what people left the room with.
+    summary: z.string(),
+  }),
+});
+
 const gallery = defineCollection({
   loader: glob({ pattern: '**/*.{json,yaml,yml}', base: './src/content/gallery' }),
   schema: z.object({
     image: z.string(),
     alt: z.string(),
-    event: z.string(),
+    /**
+     * The event file this photo belongs to: the filename of an entry in
+     * src/content/events/, without `.md`.
+     *
+     * A missing file does not fail the build on its own. Astro 7 notices it, but
+     * only logs "[ERROR] [content] Invalid content reference" and exits 0, so a
+     * typo would deploy with the photo's event silently gone. resolvePhotoEvents()
+     * in src/lib/events.ts turns it into a real build failure.
+     */
+    event: reference('events'),
     date: z.date(),
     caption: z.string().optional(),
     /**
@@ -97,6 +129,7 @@ export const collections = {
   projects,
   resources,
   blog,
+  events,
   gallery,
   arcade,
 };
