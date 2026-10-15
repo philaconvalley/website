@@ -97,7 +97,15 @@ All three are **self-hosted** from `@fontsource` packages, imported in `src/layo
 
 ### Buttons (`src/components/Button.astro`)
 
-Pill-shaped, a 2px ink outline, a hard ink shadow, ink text on every warm fill. Every size is at least 44px tall.
+Pill-shaped, a 2px ink outline, a hard ink shadow, ink text on every warm fill. Baloo 2 at 800, as Book §05 sets for buttons. Decided 10/15/2026: the Book wins over the mockup on font (the mockup used Nunito 900) and on the main fill (the mockup used ink; the Book says "Hot Pink or Golden Yellow fill").
+
+| Size | Height | Side padding | Text |
+| ---- | ------ | ------------ | ---- |
+| `sm` | 44px   | 22px         | 15px |
+| `md` | 50px   | 24px         | 16px |
+| `lg` | 55px   | 28px         | 17px |
+
+The heights match the mockup, and every size clears the 44px touch target. A raw `<button>` that cannot use the component (the Contact form's submit, which Alpine disables while sending) copies the `lg` primary classes.
 
 | Variant     | Fill          | Use it for                                                                        |
 | ----------- | ------------- | --------------------------------------------------------------------------------- |

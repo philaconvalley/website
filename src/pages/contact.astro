@@ -274,10 +274,12 @@ import { site, links } from '../config';
                 </p>
               </div>
 
+              <!-- Same classes as a large primary Button (src/components/Button.astro).
+                   It is a raw <button> because Alpine binds :disabled to it. -->
               <button
                 type="submit"
                 :disabled="status === 'sending'"
-                class="disabled:opacity-60 disabled:cursor-wait w-full px-6 py-3 bg-accent-400 text-brand-dark font-display font-bold rounded-full hover:bg-accent-500 transition-[transform,background-color,box-shadow] duration-150 ease-out shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                class="disabled:opacity-60 disabled:cursor-wait w-full inline-flex items-center justify-center min-h-[55px] px-7 py-2.5 border-2 border-brand-dark bg-brand-pink text-brand-dark font-display font-extrabold text-[17px] rounded-full shadow-retro hover:shadow-retro-lg hover:-translate-y-0.5 transition-[transform,background-color,box-shadow] duration-150 ease-out motion-safe:active:scale-[0.97] motion-reduce:active:opacity-80"
               >
                 <span x-text="status === 'sending' ? 'Sending...' : 'Send message'">
                   Send message
