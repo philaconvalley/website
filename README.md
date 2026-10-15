@@ -10,6 +10,9 @@ The official website for **PhilaCon Valley** — Philadelphia's tech community b
 
 Built with [Astro](https://astro.build), [Tailwind CSS](https://tailwindcss.com), and [Alpine.js](https://alpinejs.dev), hosted on [Vercel](https://vercel.com). See [Architecture](docs/architecture.md) for the full breakdown.
 
+<!-- Captured October 12, 2026 from a production build (npm run build, then astro preview) at
+     1440x900 with reduced motion. Retake it when the homepage hero or the nav changes. -->
+
 ![PhilaCon Valley homepage](docs/screenshots/homepage.png)
 
 ---

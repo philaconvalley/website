@@ -1,11 +1,18 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Button from '../components/Button.astro';
-import PhotoGrid from '../components/PhotoGrid.astro';
-import { links } from '../config';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Button from '../../components/Button.astro';
+import PhotoGrid from '../../components/PhotoGrid.astro';
+import { links } from '../../config';
 import { getCollection } from 'astro:content';
+import { formatRecapDate, resolvePhotoEvents } from '../../lib/events';
 
-const photos = (await getCollection('gallery')).sort(
+// Every photo is resolved here, so a gallery entry that names a missing event
+// file fails the build. See src/lib/events.ts for why reference() alone does not.
+const photos = await resolvePhotoEvents(
+  (await getCollection('gallery')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime()),
+);
+
+const recaps = (await getCollection('events')).sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime(),
 );
 ---
@@ -172,16 +179,41 @@ const photos = (await getCollection('gallery')).sort(
     </div>
   </section>
 
+  <!-- Past events -->
+  {recaps.length > 0 && (
+    <section class="section-padding bg-primary-100">
+      <div class="container-custom">
+        <h2 class="text-3xl font-bold mb-8 text-center">Past events</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto list-none p-0">
+          {recaps.map((recap) => (
+            <li>
+              <a
+                href={`/events/${recap.id}`}
+                class="block h-full bg-white p-6 rounded-retro border-2 border-brand-dark/10 shadow-retro hover:border-primary-600 transition-colors"
+              >
+                <p class="text-sm text-brand-dark/60 mb-2">
+                  {formatRecapDate(recap.data.date)} · {recap.data.venue}
+                </p>{' '}
+                <h3 class="text-xl font-bold mb-3">{recap.data.title}</h3>{' '}
+                <p class="text-brand-dark/60">{recap.data.summary}</p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
   <!-- Community Photos -->
   <section class="section-padding">
     <div class="container-custom">
       <h2 class="text-3xl font-bold mb-8 text-center">The community, in person</h2>
       <div class="max-w-5xl mx-auto">
         <PhotoGrid
-          photos={photos.map((photo) => ({
+          photos={photos.map(({ photo, event }) => ({
             image: photo.data.image,
             alt: photo.data.alt,
-            event: photo.data.event,
+            event: event.data.title,
             date: photo.data.date,
             caption: photo.data.caption,
           }))}

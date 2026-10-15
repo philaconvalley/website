@@ -1,6 +1,6 @@
 # Adding Content
 
-You can add projects and resources to the site by creating simple text files. No coding experience needed — just some text with a few fields at the top.
+You can add projects, resources, and event recaps to the site by creating simple text files. No coding experience needed — just some text with a few fields at the top.
 
 ## Two Ways to Add Content
 
@@ -141,9 +141,13 @@ the only thing that works.
 - **No network calls.** The `/games/` Content-Security-Policy sets
   `connect-src 'none'`, so there is no `fetch`, no `XHR`, no `WebSocket`, and
   no analytics of any kind, even same-origin.
-- **No CDN links.** Google Fonts (`fonts.googleapis.com` /
-  `fonts.gstatic.com`) is the only external origin the policy allows through
-  `style-src`/`font-src`. Everything else must be inlined or omitted.
+- **No CDN links, including Google Fonts.** The policy allows no external
+  origin at all. Embed a font as a `data:` URI in an `@font-face` rule
+  (`font-src data:`), or use a system font stack. A sandboxed game has an
+  opaque origin, so it cannot load the site's own font files either. Flappy
+  Philacon shows the pattern: latin subsets from the `@fontsource` packages,
+  base64-encoded, with the license credit in a comment. Use only fonts whose
+  license allows embedding (SIL Open Font License fonts do).
 - **No storage you can rely on.** The opaque sandbox origin means
   `localStorage` **throws** rather than silently failing. Wrap any access in
   `try`/`catch` and degrade to something session-only — Flappy Philacon does
@@ -153,9 +157,8 @@ the only thing that works.
   applied under `/games/` is:
 
   ```
-  default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'
-  fonts.googleapis.com; font-src fonts.gstatic.com; img-src data: blob:;
-  connect-src 'none'; frame-ancestors 'self'
+  default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline';
+  font-src data:; img-src data: blob:; connect-src 'none'; frame-ancestors 'self'
   ```
 
   Images and fonts you need must be `data:`/`blob:` URIs baked into the
@@ -187,6 +190,52 @@ irrevocably. If the game wasn't written by you personally for this repo (for
 example, work done under a contractor agreement), make sure the agreement
 assigns the work to PhilaCon Valley, or attach written sign-off from the
 author on the pull request. A maintainer will ask for this before merging.
+
+## Adding an Event Recap and Photos
+
+Upcoming events live on [Luma](https://lu.ma/philaconvalley), not in this repo. The site reads them from Luma. Add a recap here only **after** an event ends.
+
+### 1. Write the recap
+
+Create `src/content/events/<event-slug>.md`. The filename becomes the URL: `patch-002.md` becomes `/events/patch-002`.
+
+```markdown
+---
+title: 'PATCH 002: Tap in NFC Lab'
+date: 2026-07-30
+venue: 'Pennovation Center'
+lumaUrl: 'https://luma.com/p30z896q'
+summary: 'One sentence: what people did or left with.'
+---
+
+What happened, in a few short paragraphs.
+```
+
+Copy `title`, `date`, and `venue` from the Luma page. A past event does not change, so the copy cannot go out of date. Write only what happened. Do not add numbers or times that nobody recorded.
+
+| Field     | Required? | What it is                             |
+| --------- | --------- | -------------------------------------- |
+| `title`   | Yes       | The event name, as published on Luma   |
+| `date`    | Yes       | The event date (YYYY-MM-DD)            |
+| `venue`   | Yes       | Where it happened                      |
+| `lumaUrl` | No        | Link to the Luma event page            |
+| `summary` | Yes       | One sentence, used on cards and search |
+
+### 2. Add photos
+
+1. Put each image in `public/images/gallery/<event-slug>/`.
+2. Add one YAML file per photo in `src/content/gallery/`:
+
+```yaml
+image: /images/gallery/patch-002/room-building.jpg
+alt: 'Describe what is in the photo for someone who cannot see it.'
+event: patch-002 # the recap filename, without .md
+date: 2026-07-30
+caption: Mid-session # optional
+heroEligible: false # true only for wide, high-resolution shots (homepage band)
+```
+
+The recap file must exist before its photos. If `event` names a file that does not exist, the build fails and names the photo. Photos appear on `/events` and on the recap page.
 
 ## What About GitHub Repos?
 
