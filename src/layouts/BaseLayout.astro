@@ -1,4 +1,21 @@
 ---
+// Self-hosted fonts, bundled from node_modules — not loaded from Google Fonts.
+// Every page view used to send the visitor's IP address to Google, which the
+// privacy page then had to disclose. Served from our own origin they fall under
+// `font-src 'self'`, and Dependabot sees version bumps. Each file covers one
+// weight, split by unicode-range, so a browser downloads only the scripts a page
+// uses. Baloo 2 stops at 800: `font-black` (900) renders as 800, as it always has.
+import '@fontsource/baloo-2/400.css';
+import '@fontsource/baloo-2/600.css';
+import '@fontsource/baloo-2/700.css';
+import '@fontsource/baloo-2/800.css';
+import '@fontsource/nunito/400.css';
+import '@fontsource/nunito/600.css';
+import '@fontsource/nunito/600-italic.css';
+import '@fontsource/nunito/700.css';
+import '@fontsource/nunito/800.css';
+import '@fontsource/jetbrains-mono/400.css';
+import '@fontsource/jetbrains-mono/500.css';
 import '../styles/global.css';
 import SEO from '../components/SEO.astro';
 import Header from '../components/Header.astro';
@@ -35,14 +52,6 @@ const {
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#1A1A1A" />
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&display=swap"
-    />
-
     <SEO title={title} description={description} image={image} type={type} />
 
     <!-- Alpine.js — bundled from node_modules rather than loaded from a CDN.
@@ -70,8 +79,8 @@ const {
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": "PhilaCon Valley",
-        "url": "https://philaconvalley.com",
-        "logo": "https://philaconvalley.com/images/sunset philacon valley logo.webp",
+        "url": "https://www.philaconvalley.com",
+        "logo": "https://www.philaconvalley.com/images/sunset-philacon-valley-logo-264.webp",
         "description": "Philadelphia's tech community by us, for us. Centering Black, Brown, LGBTQIA+, and underrepresented folks in tech.",
         "sameAs": [
           "https://github.com/philaconvalley",

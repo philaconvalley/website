@@ -178,10 +178,29 @@ import { site, links } from '../config';
             action={links.formspree}
             method="POST"
             class="space-y-6"
-            x-data="{ submitted: false }"
-            @submit.prevent="fetch($el.action, { method: 'POST', body: new FormData($el), headers: { 'Accept': 'application/json' } }).then(() => { submitted = true; $el.reset(); }).catch(() => alert('Oops! There was a problem submitting your form'))"
+            x-data="{ status: 'idle' }"
+            @submit.prevent="status = 'sending'; const stop = new AbortController(); const timer = setTimeout(() => stop.abort(), 15000); fetch($el.action, { method: 'POST', body: new FormData($el), headers: { 'Accept': 'application/json' }, signal: stop.signal }).then((res) => { if (!res.ok) throw new Error(res.status); status = 'sent'; $el.reset(); }).catch(() => { status = 'error'; }).finally(() => clearTimeout(timer))"
           >
-            <div x-show="!submitted">
+            <!--
+              fetch() only rejects on a network failure. Formspree answers a rejected
+              submission (spam filter, bad form ID, quota) with a 4xx, which still
+              resolves. Without the res.ok check, those showed "Message sent!" and the
+              message was lost. The 15-second abort covers the other silent failure: a
+              request that never answers, which left the button on "Sending..." forever.
+            -->
+            <div x-show="status !== 'sent'" class="space-y-6">
+              <!--
+                Spam trap. Formspree drops any submission that fills `_gotcha`. People
+                never see the field; bots that fill every input do.
+              -->
+              <input
+                type="text"
+                name="_gotcha"
+                class="hidden"
+                tabindex="-1"
+                autocomplete="off"
+                aria-hidden="true"
+              />
               <div>
                 <label for="name" class="block text-sm font-semibold text-brand-dark/70 mb-2">
                   Name *
@@ -190,6 +209,7 @@ import { site, links } from '../config';
                   type="text"
                   id="name"
                   name="name"
+                  autocomplete="name"
                   required
                   class="w-full px-4 py-3 border-2 border-brand-dark/10 rounded-xl bg-primary-100 focus:ring-2 focus:ring-accent-400 focus:border-accent-400 focus:bg-white"
                   placeholder="Your name"
@@ -204,6 +224,7 @@ import { site, links } from '../config';
                   type="email"
                   id="email"
                   name="email"
+                  autocomplete="email"
                   required
                   class="w-full px-4 py-3 border-2 border-brand-dark/10 rounded-xl bg-primary-100 focus:ring-2 focus:ring-accent-400 focus:border-accent-400 focus:bg-white"
                   placeholder="your.email@example.com"
@@ -237,18 +258,38 @@ import { site, links } from '../config';
                 ></textarea>
               </div>
 
+              <div
+                x-show="status === 'error'"
+                x-cloak
+                role="alert"
+                class="bg-red-50 border border-red-200 rounded-lg p-4 text-red-900"
+              >
+                <p class="font-semibold">Your message did not send.</p>
+                <p class="text-sm mt-1">
+                  Your text is still here. Try again, or email us at{' '}
+                  <a href={`mailto:${site.email}`} class="underline font-semibold">
+                    {site.email}
+                  </a>
+                  .
+                </p>
+              </div>
+
               <button
                 type="submit"
-                class="w-full px-6 py-3 bg-accent-400 text-brand-dark font-display font-bold rounded-full hover:bg-accent-500 transition-[transform,background-color,box-shadow] duration-150 ease-out shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                :disabled="status === 'sending'"
+                class="disabled:opacity-60 disabled:cursor-wait w-full px-6 py-3 bg-accent-400 text-brand-dark font-display font-bold rounded-full hover:bg-accent-500 transition-[transform,background-color,box-shadow] duration-150 ease-out shadow-md hover:shadow-lg hover:-translate-y-0.5"
               >
-                Send message
+                <span x-text="status === 'sending' ? 'Sending...' : 'Send message'">
+                  Send message
+                </span>
               </button>
             </div>
 
             <!-- Success Message -->
             <div
-              x-show="submitted"
+              x-show="status === 'sent'"
               x-cloak
+              role="status"
               class="bg-green-50 border border-green-200 rounded-lg p-6 text-center"
             >
               <svg

@@ -14,12 +14,13 @@ test.describe('desktop nav sliding pill indicator', () => {
   });
 
   test('corrects itself once the webfont swaps in, even without any hover', async ({ page }) => {
-    // Baloo 2 loads remotely with `display=swap`: the browser paints nav
-    // links in a fallback font first, then swaps in the real one, which
-    // changes every link's rendered width. x-init measures the pill's
-    // position before that swap can be guaranteed to have happened. Delay
-    // the webfont request to force that race deterministically.
-    await page.route('https://fonts.googleapis.com/**', async (route) => {
+    // Baloo 2 loads with `font-display: swap` (Fontsource's default): the
+    // browser paints nav links in a fallback font first, then swaps in the
+    // real one, which changes every link's rendered width. x-init measures
+    // the pill's position before that swap can be guaranteed to have
+    // happened. Delay the self-hosted font files to force that race
+    // deterministically.
+    await page.route('**/*.woff2', async (route) => {
       await page.waitForTimeout(600);
       await route.continue();
     });
