@@ -4,14 +4,15 @@ This doc explains how the site is built and how the pieces fit together. It's fo
 
 ## Tech Stack
 
-| Tool                                             | What it does                                                                       |
-| ------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| [Astro 7.x](https://astro.build)                 | Generates all the HTML pages at build time (no server needed at runtime)           |
-| [Tailwind CSS 3](https://tailwindcss.com)        | Utility-first CSS framework — styles are written as class names directly in HTML   |
-| [Alpine.js 3.15](https://alpinejs.dev)           | Tiny JavaScript library for interactive bits (mobile menu, form handling, filters) |
-| [TypeScript](https://www.typescriptlang.org)     | Adds type checking to catch bugs before they ship                                  |
-| [Vercel](https://vercel.com)                     | Hosts the site and auto-deploys when code is pushed to `main`                      |
-| [Vercel Analytics](https://vercel.com/analytics) | Privacy-friendly usage analytics                                                   |
+| Tool                                                    | What it does                                                                                                            |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| [Astro 7.x](https://astro.build)                        | Generates all the HTML pages at build time (no server needed at runtime)                                                |
+| [Tailwind CSS 3](https://tailwindcss.com)               | Utility-first CSS framework — styles are written as class names directly in HTML                                        |
+| [Alpine.js 3.15](https://alpinejs.dev)                  | Tiny JavaScript library for interactive bits (mobile menu, form handling, filters)                                      |
+| [TypeScript](https://www.typescriptlang.org)            | Adds type checking to catch bugs before they ship                                                                       |
+| [Vercel](https://vercel.com)                            | Hosts the site and auto-deploys when code is pushed to `main`                                                           |
+| [Vercel Analytics](https://vercel.com/analytics)        | Privacy-friendly usage analytics                                                                                        |
+| [@astrojs/rss](https://docs.astro.build/en/guides/rss/) | Generates the RSS feed (`src/pages/rss.xml.ts`) from the projects + resources collections (blog excluded while offline) |
 
 ### Why Astro?
 
@@ -36,9 +37,10 @@ src/
 ├── content.config.ts      # Collection schemas + glob loaders (uses Zod)
 │                          # Lives here, not in content/, since Astro 6
 │
-├── content/               # Markdown content (projects & resources)
+├── content/               # Markdown content (projects, resources & blog)
 │   ├── projects/          # One .md file per project write-up
-│   └── resources/         # One .md file per resource/tutorial
+│   ├── resources/         # One .md file per resource/tutorial
+│   └── blog/              # Blog posts (currently offline — see `_blog/` below)
 │
 ├── layouts/
 │   └── BaseLayout.astro   # The HTML shell every page shares
@@ -58,6 +60,11 @@ src/
 │   └── resources/
 │       ├── index.astro    # /resources
 │       └── [slug].astro   # /resources/my-tutorial (renders Markdown content)
+│
+│   Directory names starting with `_` are excluded from routing by Astro.
+│   `pages/_blog/` holds the parked blog routes (`index.astro`, `[slug].astro`)
+│   until the blog has an editorial procedure and goes back on the air.
+│   `src/pages/rss.xml.ts` serves `/rss.xml` (projects + resources only).
 │
 └── styles/
     └── global.css         # Tailwind base/component/utility layers, custom classes
