@@ -30,7 +30,6 @@ src/
 │   ├── Hero.astro         # Homepage hero (only used on index)
 │   ├── SEO.astro          # Meta tags, Open Graph, Twitter cards
 │   ├── Button.astro       # Reusable button/link (3 variants: primary, secondary, outline)
-│   ├── EventCard.astro    # Event card component
 │   ├── ProjectCard.astro  # Project card component
 │   └── ResourceCard.astro # Resource card component
 │
