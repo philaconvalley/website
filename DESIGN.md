@@ -52,7 +52,7 @@ The rename was mechanical but wide, touching a component name and two e2e spec f
 **Hard rules, all currently violated or at risk:**
 
 1. **Sentence case. Always. Never title case.** The rule covers headings _and_ buttons. **Swept sitewide 08/09/2026 in its own commit** — 104 replacements across 12 pages, 83 in headings and 21 in button and CTA labels — before the redesign, so the redesign cannot be blamed for copy churn. Program and surface names stay capitalized as proper nouns: PhilaCon Valley, Philly, Discord, Open Collective, The Arcade, Lab, PATCH.
-   **Amended 10/15/2026: display type renders uppercase.** `h1`–`h3`, the hero stickers, and the marquee band use `text-transform: uppercase`, as Edition 1.2 sets its own headlines. **The source text stays in sentence case.** The uppercase is a presentation layer only, so the copy still reads correctly in search results, link previews, and when CSS fails. Buttons, body copy, labels, and nav stay in sentence case on screen too. Never type a heading in capitals in the source. Headings inside `.prose` article bodies keep sentence case on screen: they are reading aids on Read surfaces, not display type.
+   **Amended 10/15/2026: display type renders uppercase.** `h1`–`h3`, the hero stickers, and the marquee band use `text-transform: uppercase`, as Edition 1.2 sets its own headlines. **The source text stays in sentence case.** **Exception, 10/15/2026: a heading that holds a project or game name keeps the name's own case** (`normal-case`), as the mockup does on Projects and Arcade. Capitals would turn `projectionMapper` into PROJECTIONMAPPER and erase the word breaks. Event and guide titles stay uppercase, also as the mockup does. The uppercase is a presentation layer only, so the copy still reads correctly in search results, link previews, and when CSS fails. Buttons, body copy, labels, and nav stay in sentence case on screen too. Never type a heading in capitals in the source. Headings inside `.prose` article bodies keep sentence case on screen: they are reading aids on Read surfaces, not display type.
 2. **"By us, for us." is never capitalized as "By Us, For Us."** The Book calls this out by name. About violated it until the 08/09/2026 sweep; watch for it returning.
 3. **Banned vocabulary:** leverage, elevate, synergy, unlock, 10x, ecosystem. Currently clean — keep it that way. Use build language: ship, make, show up, pair up.
 4. **Singular they. "Everyone", "y'all", "folks". Never "guys."**
@@ -172,18 +172,17 @@ Beyond the token table in `docs/design-system.md`, one systemic rule: **each pag
 
 ## Type scale
 
-Defined in `src/styles/global.css` `@layer base`, fluid across three breakpoints:
+Defined in `src/styles/global.css` `@layer base` as fluid `clamp()` steps in `rem`, so the visitor's text-size setting still scales them (`apple-design` §15). Matched to Diego's mockup at 1440px on 10/15/2026:
 
-| Level | Mobile → Desktop                     |
-| ----- | ------------------------------------ |
-| h1    | `text-4xl` → `text-5xl` → `text-6xl` |
-| h2    | `text-3xl` → `text-4xl` → `text-5xl` |
-| h3    | `text-2xl` → `text-3xl` → `text-4xl` |
-| h4    | `text-xl` → `text-2xl`               |
+| Level | 390px phone | 1440px desktop | Line height | Tracking | Mockup at 1440px   |
+| ----- | ----------- | -------------- | ----------- | -------- | ------------------ |
+| h1    | 44px        | 115px          | 0.9         | -0.02em  | 115px (Home 121px) |
+| h2    | 36px        | 80px           | 0.95        | -0.015em | 80px               |
+| h3    | 24px        | 34px           | 1.0         | 0        | 28–34px            |
 
-The homepage hero opts out with explicit pixel sizes because it is a display element, not a heading in the scale. That exception is deliberate and should stay rare — a second opt-out is a signal the scale is wrong.
+Every heading is Baloo 2 at 800, uppercase through CSS. On 10/15/2026 the 89 `font-bold` classes on `h1`–`h3` tags were removed sitewide, so no heading renders at 700 any more.
 
-**Changes in the foundation PR.** The mockup sets display type much larger than this scale: section `h2`s reach about 80px, and the Home `h1` reaches about 124px. The scale above gets re-tuned to fluid `clamp()` steps with tight leading, instead of each page opting out. The rule against a second opt-out still holds, so the fix is a new scale, not nine local overrides. Sizes stay in `rem` so the user's text-size setting still scales the page (`apple-design` §15).
+**Pages still override the sizes.** About 80 size classes (`text-3xl`, `text-5xl`, and similar) remain on page headings from the old design. Each page PR removes its own, so the scale above takes over page by page. The rule against opt-outs still holds: a page that needs a size the scale does not give is a signal the scale is wrong, not a reason for a local override. The Arcade `h1` (144px in the mockup) is the one candidate exception; decide it in the Arcade PR.
 
 ## Motion contract
 

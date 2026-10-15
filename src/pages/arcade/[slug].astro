@@ -43,7 +43,8 @@ const phoneAlternative = games.find(
         <a href="/arcade" class="text-white/90 hover:text-white">
           ← Back to the Arcade
         </a>
-        <h1 class="mt-3 text-4xl md:text-5xl font-bold">{title}</h1>
+        <!-- normal-case: a game name keeps its own case (DESIGN.md, voice rule 1). -->
+        <h1 class="mt-3 text-4xl md:text-5xl normal-case">{title}</h1>
         <p class="mt-2 text-lg text-white/85">
           Built by {contributors.join(', ')}
           {kind === 'demo' ? ' · Demo, no score' : ''}
@@ -97,7 +98,7 @@ const phoneAlternative = games.find(
       )}
 
       <div class="mx-auto mt-12 max-w-2xl">
-        <h2 class="font-display text-2xl font-bold text-brand-dark">About this {kind}</h2>
+        <h2 class="font-display text-2xl text-brand-dark">About this {kind}</h2>
         {/* Required prose, not decoration: a canvas game is invisible to a screen
             reader, so this is the only description of it that some visitors get. */}
         <p class="mt-3 text-lg leading-relaxed text-brand-dark/75">{longDescription}</p>

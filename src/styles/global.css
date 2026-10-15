@@ -98,9 +98,10 @@
     @apply uppercase;
   }
 
+  /* h1 matches the mockup: 44px on a 390px phone, 115px at 1440px. */
   h1 {
-    font-size: clamp(2.75rem, 1.6rem + 4.8vw, 6rem);
-    line-height: 0.92;
+    font-size: clamp(2.75rem, 1.1rem + 6.76vw, 7.2rem);
+    line-height: 0.9;
     letter-spacing: -0.02em;
   }
 

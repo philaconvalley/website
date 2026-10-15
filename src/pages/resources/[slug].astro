@@ -44,7 +44,7 @@ const categoryColor = 'bg-white/20 text-white';
             {level}
           </span>
         </div>
-        <h1 class="text-4xl md:text-5xl font-bold mb-4">{title}</h1>
+        <h1 class="text-4xl md:text-5xl mb-4">{title}</h1>
         <p class="text-xl text-white/85 mb-6">{description}</p>
         <div class="flex items-center text-sm text-white/60">
           <span>By {author}</span>
@@ -73,7 +73,7 @@ const categoryColor = 'bg-white/20 text-white';
 
           <div class="lg:col-span-1">
             <div class="bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro p-6 sticky top-24">
-              <h3 class="font-display font-bold text-brand-dark mb-3">Tags</h3>
+              <h3 class="font-display text-brand-dark mb-3">Tags</h3>
               <div class="flex flex-wrap gap-1.5">
                 {tags.map((tag) => (
                   <span class="px-2 py-0.5 bg-primary-100 text-primary-800 text-xs font-display font-bold rounded-full">
@@ -84,7 +84,7 @@ const categoryColor = 'bg-white/20 text-white';
 
               <hr class="my-5 border-brand-dark/5" />
 
-              <h3 class="font-display font-bold text-brand-dark mb-3">Share</h3>
+              <h3 class="font-display text-brand-dark mb-3">Share</h3>
               <div class="space-y-2">
                 <a
                   href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(Astro.url.href)}&via=PhlConValley`}
@@ -118,7 +118,7 @@ const categoryColor = 'bg-white/20 text-white';
 
   <section class="section-padding bg-brand-purple text-white">
     <div class="container-custom text-center">
-      <h2 class="text-3xl font-bold mb-4">Want to learn more?</h2>
+      <h2 class="text-3xl mb-4">Want to learn more?</h2>
       <p class="text-lg text-white/80 mb-6 max-w-2xl mx-auto">
         Join us at our workshops and Labs to practice these skills with the community.
       </p>

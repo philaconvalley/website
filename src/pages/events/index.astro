@@ -25,7 +25,7 @@ const recaps = (await getCollection('events')).sort(
   <section class="bg-brand-purple text-white py-20">
     <div class="container-custom">
       <div class="max-w-4xl mx-auto text-center">
-        <h1 class="text-5xl md:text-6xl font-bold mb-6">Events</h1>
+        <h1 class="text-5xl md:text-6xl mb-6">Events</h1>
         <p class="text-2xl text-white/85">
           Join us for hands-on collaboration, workshops, and community building
         </p>
@@ -37,31 +37,31 @@ const recaps = (await getCollection('events')).sort(
   <section class="section-padding bg-primary-100">
     <div class="container-custom">
       <div class="max-w-4xl mx-auto">
-        <h2 class="text-3xl font-bold mb-8 text-center">What to expect</h2>
+        <h2 class="text-3xl mb-8 text-center">What to expect</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="bg-white p-6 rounded-retro border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-xl font-bold mb-3">Collaborative environment</h3>
+            <h3 class="text-xl mb-3">Collaborative environment</h3>
             <p class="text-brand-dark/60">
               Work on projects together through pair programming and group collaboration. Everyone
               contributes, everyone learns.
             </p>
           </div>
           <div class="bg-white p-6 rounded-retro border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-xl font-bold mb-3">Hands-on learning</h3>
+            <h3 class="text-xl mb-3">Hands-on learning</h3>
             <p class="text-brand-dark/60">
               No passive lectures. You'll be coding, building, and creating from day one. Bring your
               laptop and get ready to build.
             </p>
           </div>
           <div class="bg-white p-6 rounded-retro border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-xl font-bold mb-3">Supportive community</h3>
+            <h3 class="text-xl mb-3">Supportive community</h3>
             <p class="text-brand-dark/60">
               Everyone is welcome, regardless of experience level. Ask questions, share knowledge,
               and support each other.
             </p>
           </div>
           <div class="bg-white p-6 rounded-retro border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-xl font-bold mb-3">Real projects</h3>
+            <h3 class="text-xl mb-3">Real projects</h3>
             <p class="text-brand-dark/60">
               Work on projects that matter – community tools, portfolio pieces, and open source
               contributions you can showcase.
@@ -75,7 +75,7 @@ const recaps = (await getCollection('events')).sort(
   <!-- Luma Calendar Embed -->
   <section class="section-padding bg-primary-100">
     <div class="container-custom">
-      <h2 class="text-3xl font-bold mb-8 text-center">Event calendar</h2>
+      <h2 class="text-3xl mb-8 text-center">Event calendar</h2>
       <div class="max-w-4xl mx-auto">
         <div class="bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro-lg overflow-hidden flex justify-center p-4">
           <iframe
@@ -107,7 +107,7 @@ const recaps = (await getCollection('events')).sort(
   <!-- Event Types -->
   <section class="section-padding">
     <div class="container-custom">
-      <h2 class="text-3xl font-bold mb-8 text-center">Types of events</h2>
+      <h2 class="text-3xl mb-8 text-center">Types of events</h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
         <div class="text-center">
           <div class="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -125,7 +125,7 @@ const recaps = (await getCollection('events')).sort(
               ></path>
             </svg>
           </div>
-          <h3 class="text-xl font-bold mb-3">Lab</h3>
+          <h3 class="text-xl mb-3">Lab</h3>
           <p class="text-brand-dark/60">
             Monthly hands-on build sessions. Pair program, get code reviews, and work on real
             projects together.
@@ -148,7 +148,7 @@ const recaps = (await getCollection('events')).sort(
               ></path>
             </svg>
           </div>
-          <h3 class="text-xl font-bold mb-3">Workshops</h3>
+          <h3 class="text-xl mb-3">Workshops</h3>
           <p class="text-brand-dark/60">
             Focused technical workshops on specific topics like Git, APIs, React, and more.
           </p>
@@ -170,7 +170,7 @@ const recaps = (await getCollection('events')).sort(
               ></path>
             </svg>
           </div>
-          <h3 class="text-xl font-bold mb-3">Career sessions</h3>
+          <h3 class="text-xl mb-3">Career sessions</h3>
           <p class="text-brand-dark/60">
             Resume reviews, interview prep, job search strategies, and networking opportunities.
           </p>
@@ -183,7 +183,7 @@ const recaps = (await getCollection('events')).sort(
   {recaps.length > 0 && (
     <section class="section-padding bg-primary-100">
       <div class="container-custom">
-        <h2 class="text-3xl font-bold mb-8 text-center">Past events</h2>
+        <h2 class="text-3xl mb-8 text-center">Past events</h2>
         <ul class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto list-none p-0">
           {recaps.map((recap) => (
             <li>
@@ -194,7 +194,7 @@ const recaps = (await getCollection('events')).sort(
                 <p class="text-sm text-brand-dark/60 mb-2">
                   {formatRecapDate(recap.data.date)} · {recap.data.venue}
                 </p>{' '}
-                <h3 class="text-xl font-bold mb-3">{recap.data.title}</h3>{' '}
+                <h3 class="text-xl mb-3">{recap.data.title}</h3>{' '}
                 <p class="text-brand-dark/60">{recap.data.summary}</p>
               </a>
             </li>
@@ -207,7 +207,7 @@ const recaps = (await getCollection('events')).sort(
   <!-- Community Photos -->
   <section class="section-padding">
     <div class="container-custom">
-      <h2 class="text-3xl font-bold mb-8 text-center">The community, in person</h2>
+      <h2 class="text-3xl mb-8 text-center">The community, in person</h2>
       <div class="max-w-5xl mx-auto">
         <PhotoGrid
           photos={photos.map(({ photo, event }) => ({
@@ -225,7 +225,7 @@ const recaps = (await getCollection('events')).sort(
   <!-- CTA -->
   <section class="section-padding bg-accent-400 text-brand-dark border-t-[3px]">
     <div class="container-custom text-center">
-      <h2 class="text-4xl font-bold mb-6">Ready to join us?</h2>
+      <h2 class="text-4xl mb-6">Ready to join us?</h2>
       <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">
         RSVP for our next event and become part of Philadelphia's thriving tech community.
       </p>

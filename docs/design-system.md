@@ -91,7 +91,7 @@ All three are **self-hosted** from `@fontsource` packages, imported in `src/layo
 
 ### Headings
 
-`h1`, `h2`, and `h3` render **uppercase** in Baloo 2 at 800. The capitals come from CSS — **type the source in sentence case**, never in capitals. The sizes are fluid `clamp()` values in `rem`, set in `src/styles/global.css`, with tighter tracking as type grows. Headings inside `.prose` (resource guides) keep sentence case on screen, because they are reading aids, not display type.
+`h1`, `h2`, and `h3` render **uppercase** in Baloo 2 at 800. Do not add `font-bold` to a heading: it drops the weight to 700. Do not add a size class either: the scale in `DESIGN.md` ("Type scale") sets the size. The capitals come from CSS — **type the source in sentence case**, never in capitals. The sizes are fluid `clamp()` values in `rem`, set in `src/styles/global.css`, with tighter tracking as type grows. Headings inside `.prose` (resource guides) keep sentence case on screen, because they are reading aids, not display type.
 
 ## Components
 
