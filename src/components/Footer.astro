@@ -8,9 +8,11 @@ const currentYear = new Date().getFullYear();
  * links, after the redesign mockup. Text is white, not white at reduced alpha —
  * the Book has no greys, and 45% white on ink read as grey.
  *
- * The motto stays here as the footer statement until the closing pigeon section
- * lands on each page (DESIGN.md, "Color rhythm"). Then it moves there, and this
- * statement becomes the homepage line.
+ * Left block (decided in the 10/15/2026 footer review): the yellow wordmark
+ * and one line, as in the mockup. Brand Book §07 puts the wordmark, not the
+ * mascot, in footers, and the header already carries the mascot. The motto
+ * lives in ClosingFlock, the section above the footer, once each page PR
+ * places it. Privacy sits in the bottom row with the other site-level links.
  *
  * Social links stay real links, and Slack in the old mock is Discord — the main
  * community channel since the 2026-08 move away from Slack.
@@ -33,7 +35,7 @@ const columns = [
       { name: 'Join', href: '/join' },
       { name: 'Support', href: '/support' },
       { name: 'Contact', href: '/contact' },
-      { name: 'Privacy', href: '/privacy' },
+      // The mockup adds "Start a project". It returns when a real page exists.
     ],
   },
   {
@@ -54,23 +56,21 @@ const columns = [
   <div class="container-custom py-[60px] lg:py-[96px] lg:pb-10">
     <div class="flex flex-col lg:flex-row lg:justify-between gap-12">
       <div class="max-w-[560px]">
-        <!-- The logo is the footer's only route home: the columns deliberately do
-             not repeat Home, and clicking the mark is the convention a visitor
+        <!-- The wordmark is the footer's only route home: the columns deliberately
+             do not repeat Home, and clicking the name is the convention a visitor
              who has read to the bottom of a long page will reach for first. -->
-        <a href="/" aria-label="PhilaCon Valley home" class="inline-block mb-6 lg:mb-8">
-          <img
-            src="/images/sunset-philacon-valley-logo-264.webp"
-            alt="PhilaCon Valley — a pigeon on a keyboard with the Philadelphia skyline"
-            width="132"
-            height="176"
-            loading="lazy"
-            class="w-[96px] lg:w-[120px] h-auto block"
-          />
+        <a
+          href="/"
+          class="inline-block font-display font-extrabold uppercase text-brand-yellow text-[2.5rem] lg:text-[4rem] leading-[0.95] tracking-[-0.015em] hover:underline decoration-4 underline-offset-8"
+        >
+          PhilaCon Valley
         </a>
-
-        <h2 class="text-brand-yellow text-[2rem] lg:text-[3.25rem] m-0">
-          A pigeon flies alone. A flock goes much further.
-        </h2>
+        <!-- Non-breaking hyphen and space, so "in-person" and "Philadelphia, PA"
+             never split across lines. -->
+        <p class="mt-5 mb-0 max-w-[26rem] font-sans text-lg text-white">
+          Come as you are. Leave with a flock. A free, in&#8209;person tech community in{' '}
+          {site.location.replace(' ', '\u00a0')}.
+        </p>
       </div>
 
       <div class="flex flex-wrap gap-x-14 gap-y-10">
@@ -111,6 +111,9 @@ const columns = [
           class="hover:text-brand-yellow hover:underline underline-offset-4"
         >
           This site is open source
+        </a>
+        <a href="/privacy" class="hover:text-brand-yellow hover:underline underline-offset-4">
+          Privacy
         </a>
         <span>© {currentYear} PhilaCon Valley</span>
       </span>

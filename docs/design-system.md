@@ -143,6 +143,15 @@ White fill, 20px corners, a 2px ink outline, and a hard 6px ink shadow that grow
 
 All shadows are solid ink with zero blur. `shadow-retro-sm` (3px), `shadow-retro` (4px), `shadow-retro-lg` (6px), `shadow-retro-hover` (9px), `shadow-retro-xl` (10px). **A blurred shadow anywhere breaks the system** — never use Tailwind's `shadow-md` or `shadow-lg`.
 
+### Footer (`src/components/Footer.astro`)
+
+Chosen in the 10/15/2026 footer review, after the mockup.
+
+- **Left block:** the yellow wordmark "PhilaCon Valley" (Baloo 2, uppercase through CSS) and one line: "Come as you are. Leave with a flock. A free, in-person tech community in Philadelphia, PA." The wordmark is the footer's only link home. Book §07 puts the wordmark, not the mascot, in footers.
+- **Columns:** Explore, Get involved, Find us, with amber labels and white links. The mockup's "Start a project" link waits until a real page exists.
+- **Bottom row:** location and email on the left; "This site is open source", Privacy, and the copyright on the right. All text is full white, because the Book has no greys.
+- **The motto** is not in the footer. It lives in `ClosingFlock`, the section above it.
+
 ### Closing section (`src/components/ClosingFlock.astro`)
 
 The section every page ends on: the motto on Golden Yellow, the pigeon, and an ink skyline that runs into the footer. Place it as the last element inside `<main>`, and remove the page's own closing call to action. Pass `lede` to change the line under the motto.
