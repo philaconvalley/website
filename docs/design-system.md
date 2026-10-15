@@ -6,170 +6,179 @@ This doc covers the visual identity of the PhilaCon Valley website — colors, f
 
 Three layers, in order of authority. When they disagree, the one above wins.
 
-| Layer                                       | Holds                                         | Where                                       |
-| ------------------------------------------- | --------------------------------------------- | ------------------------------------------- |
-| **PhilaCon Valley Brand Book, Edition 1.0** | What the brand _is_. Canonical.               | Private, held by the org — not in this repo |
-| `tailwind.config.mjs`                       | The Book's values as code. The implementation | This repo                                   |
-| This doc                                    | What the values are for, and how to use them  | This repo                                   |
+| Layer                                                     | Holds                                         | Where                                       |
+| --------------------------------------------------------- | --------------------------------------------- | ------------------------------------------- |
+| **PhilaCon Valley Brand Identity Guidebook, Edition 1.2** | What the brand _is_. Canonical.               | Private, held by the org — not in this repo |
+| `tailwind.config.mjs`                                     | The Book's values as code. The implementation | This repo                                   |
+| This doc                                                  | What the values are for, and how to use them  | This repo                                   |
 
-The Book states its eight color tokens "mirror the live `TAILWIND.CONFIG.MJS`," so the config is the implementation of record — but it mirrors the Book, not the other way around. **Do not invent a token here.** If the site needs a value the Book does not have, that is a conversation with the brand team, not a config edit.
-
-This doc previously listed six brand tokens when the Book defines eight, and split single colors across multiple tables under different names. Both are fixed below. If you find another gap, fix it here rather than working around it.
+Edition 1.2 (08/21/2026) replaced Edition 1.0. The site moved to its values on 10/15/2026. **The Edition 1.3 draft is not canonical** — do not take values from it, even where it looks newer. **Do not invent a token here.** If the site needs a value the Book does not have, that is a conversation with the brand team, not a config edit.
 
 ## Brand Colors
 
-All colors are defined in `tailwind.config.mjs`. You use them with Tailwind classes like `bg-accent-400` or `text-brand-dark`.
+All colors are defined in `tailwind.config.mjs`. You use them with Tailwind classes like `bg-brand-yellow` or `text-brand-dark`.
 
-### The eight canonical tokens
+### The eight Book colors
 
-The Book: _"Eight named tokens carry the brand. The palette was voted on by the community, which gives it ownership weight beyond aesthetics."_ That vote is why these are not casually re-picked.
+The Book: _"Seven colors. One system. Sampled from the official mascot and logo artwork."_ (Seven accents plus White.)
 
-| Token          | Hex       | Also reachable as | Role (per the Book)                               |
-| -------------- | --------- | ----------------- | ------------------------------------------------- |
-| `brand-yellow` | `#FDC873` | `primary-300`     | Homepage hero. The welcome.                       |
-| `brand-cream`  | `#FFEED0` | `primary-100`     | The page body. Not white — cream signals warmth.  |
-| `brand-pink`   | `#FF66A8` | `accent-400`      | Primary CTA. Active nav. The pop.                 |
-| `brand-coral`  | `#EF657F` | `accent-600`      | Links. About / Resources / Contact heroes.        |
-| `brand-salmon` | `#F37188` | —                 | Mascot belly band. **Decorative only.**           |
-| `brand-purple` | `#B383C3` | —                 | Events / Projects / Support heroes; the keyboard. |
-| `brand-amber`  | `#FCBC68` | `primary-400`     | Hover state for yellow surfaces.                  |
-| `brand-dark`   | `#1A1A1A` | —                 | Ink. Header, footer, body text, the 2px outline.  |
+| Token          | Hex       | Also reachable as | Role (per the Book)                                       |
+| -------------- | --------- | ----------------- | --------------------------------------------------------- |
+| `brand-yellow` | `#FCD66A` | `primary-300`     | Golden Yellow. Carries most surfaces. The header bar.     |
+| `brand-amber`  | `#FDBD69` | `primary-400`     | Accent field. Footer column labels.                       |
+| `brand-pink`   | `#EA71AC` | `accent-400`      | Hot Pink. Primary CTA, the focus ring, the nav pill.      |
+| `brand-coral`  | `#EE657E` | `accent-600`      | Coral Pink. Accent field.                                 |
+| `brand-purple` | `#9B7CAF` | —                 | Belongs to the keyboard. **Not a hero or section color.** |
+| `brand-sky`    | `#028DFF` | —                 | A deliberate exception. **Never a background.**           |
+| `brand-dark`   | `#1A1A1A` | —                 | Ink. Text, the 2px outline, shadows, dark sections.       |
+| `white`        | `#FFFFFF` | —                 | The light neutral. The page body.                         |
 
-**Five of the eight are aliases of scale steps.** `bg-brand-pink` and `bg-accent-400` paint the identical color. Prefer the `brand-*` name when you mean the role ("this is the CTA"), and the scale step when you mean a position in a ramp ("one step darker on hover"). Never document the same hex twice under two names as if they were different decisions — that is how a page ends up with `accent-600` links next to a `brand-coral` hero and nobody noticing they match.
+Prefer the `brand-*` name when you mean the role ("this is the CTA"), and the scale step when you mean a position in a ramp ("one step darker on hover").
+
+**Two tokens are on their way out.** `brand-cream` (`#FFEED0`) was the 1.0 page body; Edition 1.2 replaced it with White. `brand-salmon` (`#F37188`) is not in Edition 1.2; only `LabTrack` uses it. Both stay defined until the pages that use them are rebuilt. **Do not use either in new work.**
 
 ### The scales
 
-Eleven steps each. **Primary** is the welcome — cream climbing to burnt amber. **Accent** is the pop — blush deepening to wine. Step 400 is the workhorse on both. Full values in `tailwind.config.mjs`; the steps in routine use are the aliases above plus `accent-500` (`#F07AAC`, button hover) and `primary-50` (`#FFF9F0`, off-cream — see The Dial).
+`primary-*` (yellow to burnt amber) and `accent-*` (blush to wine) have eleven steps each. The Book defines colors, not ramps, so only four steps carry Book values: `primary-300`, `primary-400`, `accent-400`, and `accent-600`. The other steps are the older 1.0 ramp, kept so existing hover and tint classes still resolve. Full values in `tailwind.config.mjs`.
 
 ### Out of system
 
-The Book is explicit: **cold blues, flat greys, and anything that reads corporate are out of system.** This is a real constraint, not a preference. It rules out the default blue focus ring, grey placeholder fills, and most third-party component defaults — expect to restyle them rather than accept them.
+The Book is explicit: **cold blues, flat greys, gradients, blurred shadows, and frosted glass are out of system.** That rules out the default blue focus ring, grey text and placeholder fills, `backdrop-blur`, and most third-party component defaults — expect to restyle them rather than accept them. **Secondary text is never grey.** Use full ink on light fields and full white on ink. Do not lower the text opacity to make it "quieter".
 
 ### The Dial
 
-The brand runs warmer for community work and calmer for agency work. Same palette, different setting.
+The brand runs louder for community work and quieter for agency work. Same palette, different setting (Book section 07).
 
-| Dial            | Community                                       | Agency / services                           |
-| --------------- | ----------------------------------------------- | ------------------------------------------- |
-| Page background | Cream `#FFEED0` — the welcome                   | Off-cream `#FFF9F0` (`primary-50`) — calmer |
-| Hero fills      | Yellow / coral / purple / pink — all four, loud | One signature color — lean coral or ink     |
-| Mascot          | Front and center — homepage, social, stickers   | Smaller — header / footer only              |
+| Dial    | Community             | Agency / services                       |
+| ------- | --------------------- | --------------------------------------- |
+| Ground  | Golden Yellow + White | Same palette                            |
+| Outline | Full 2–3px ink        | 1.5px ink                               |
+| Shadows | Hard ink offset       | Softer: a smaller offset, still no blur |
+| Mascot  | Front and center      | Smaller — header / footer only          |
+| Type    | As specified          | Steps down one notch                    |
 
-**This site is the community end of the dial.** Cream body, all four hero colors, mascot present. If a page ever needs the agency setting, it is a deliberate move down the dial, not a one-off palette choice.
+**This site is the community end of the dial.** Wrap a page or section in `[data-surface="agency"]` to switch (see `src/styles/global.css`).
 
 ### Page hero colors
 
-Each page has a distinct hero background:
+Each page owns one hero color (_"Hero color rotates by page"_). Decided 10/15/2026, applied as each page is rebuilt for Edition 1.2:
 
-| Page      | Color  | Class             |
-| --------- | ------ | ----------------- |
-| Home      | Yellow | `bg-brand-yellow` |
-| About     | Coral  | `bg-brand-coral`  |
-| Events    | Purple | `bg-brand-purple` |
-| Projects  | Purple | `bg-brand-purple` |
-| Resources | Coral  | `bg-brand-coral`  |
-| Join      | Pink   | `bg-accent-400`   |
-| Support   | Purple | `bg-brand-purple` |
-| Contact   | Coral  | `bg-brand-coral`  |
-| Arcade    | Coral  | `bg-brand-coral`  |
+| Page      | Hero          | Class             |
+| --------- | ------------- | ----------------- |
+| Home      | Golden Yellow | `bg-brand-yellow` |
+| About     | Golden Yellow | `bg-brand-yellow` |
+| Join      | Golden Yellow | `bg-brand-yellow` |
+| Events    | Hot Pink      | `bg-brand-pink`   |
+| Projects  | Amber         | `bg-brand-amber`  |
+| Contact   | Amber         | `bg-brand-amber`  |
+| Support   | Coral Pink    | `bg-brand-coral`  |
+| Arcade    | Ink           | `bg-brand-dark`   |
+| Resources | White         | `bg-white`        |
 
-These follow the Book's role assignments: coral heroes for About / Resources / Contact, purple for Events / Projects / Support.
+Every hero takes **ink text**, except the Arcade's ink hero, which takes white. Until a page is rebuilt it still shows its 1.0 hero.
 
 ## Fonts
 
-| Font                                                 | Tailwind class | Usage                                | Weights in use                              |
-| ---------------------------------------------------- | -------------- | ------------------------------------ | ------------------------------------------- |
-| [Baloo 2](https://fonts.google.com/specimen/Baloo+2) | `font-display` | Headings, buttons, nav links, tags   | **700 Bold, 800 Extra-bold**                |
-| [Nunito](https://fonts.google.com/specimen/Nunito)   | `font-sans`    | Body text, descriptions, form labels | **400 Regular, 600 Semibold**, 700 emphasis |
+| Font                                                 | Tailwind class | Usage                                   | Weights in use              |
+| ---------------------------------------------------- | -------------- | --------------------------------------- | --------------------------- |
+| [Baloo 2](https://fonts.google.com/specimen/Baloo+2) | `font-display` | Headings, buttons, nav links            | **800**, 700, 600           |
+| [Nunito](https://fonts.google.com/specimen/Nunito)   | `font-sans`    | Body, labels, pills, form fields        | 400, 600, 700, 800, **900** |
+| [JetBrains Mono](https://www.jetbrains.com/lp/mono/) | `font-mono`    | Code samples, metadata rows, event date | 400, 500                    |
 
-Baloo 2 carries the personality — round, friendly, almost always heavy. Nunito carries the substance, sitting under Baloo without competing.
+The `font-display` stack falls back to `system-ui`, never to `cursive`: on macOS, `cursive` is a script face (Apple Chancery) that makes a failed font load look broken.
 
-**Baloo light weights almost never appear.** The Book is direct about this: at display sizes the brand goes heavy. A thin heading is off-brand even when it looks fine in isolation.
+All three are **self-hosted** from `@fontsource` packages, imported in `src/layouts/BaseLayout.astro`. Nothing loads from Google Fonts, so a page view sends nothing to Google. To add a weight, add its `@fontsource/<font>/<weight>.css` import there.
 
-### JetBrains Mono — specified, not shipped
+### Headings
 
-The Book names [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono) as the sanctioned companion for code samples, metadata rows, and small technical labels. **The repo does not ship it today** — the Book says so itself, and it remains true. Code blocks currently inherit the browser default monospace.
-
-That gap is already visible: `/resources/first-pull-request` renders seven code blocks of real terminal commands in whatever mono the visitor's browser picks. Adding the font is a deliberate change — a third webfont costs load time — so it is called out here rather than quietly done. But if you are wondering whether mono type is on-brand, it is, and this is the one to use.
-
-Fonts are loaded via Google Fonts in `src/layouts/BaseLayout.astro` with `preconnect` hints for performance.
+`h1`, `h2`, and `h3` render **uppercase** in Baloo 2 at 800. The capitals come from CSS — **type the source in sentence case**, never in capitals. The sizes are fluid `clamp()` values in `rem`, set in `src/styles/global.css`, with tighter tracking as type grows. Headings inside `.prose` (resource guides) keep sentence case on screen, because they are reading aids, not display type.
 
 ## Components
 
 ### Buttons (`src/components/Button.astro`)
 
-Three variants, all pill-shaped:
+Pill-shaped, a 2px ink outline, a hard ink shadow, ink text on every warm fill. Every size is at least 44px tall.
 
-| Variant     | Look                             | Usage                              |
-| ----------- | -------------------------------- | ---------------------------------- |
-| `primary`   | Pink background, brand-dark text | Main CTAs ("Join", "Donate")       |
-| `secondary` | Yellow background, dark text     | Secondary actions                  |
-| `outline`   | Transparent with border          | Tertiary actions, dark backgrounds |
+| Variant     | Fill          | Use it for                                                                        |
+| ----------- | ------------- | --------------------------------------------------------------------------------- |
+| `primary`   | Hot Pink      | The main call to action                                                           |
+| `secondary` | Golden Yellow | A second action on a white or ink section                                         |
+| `light`     | White         | A second action on a yellow or saturated section                                  |
+| `ink`       | Ink           | The strongest action on a yellow or saturated section                             |
+| `outline`   | None          | Tertiary actions. Takes the text color it sits on, so it works on dark fields too |
 
 ```astro
 <Button href="/join" variant="primary" size="lg">
-  Join Us
+  Join us →
 </Button>
-<Button href="/events" variant="outline">
-  View Events
+<Button href="/events" variant="light">
+  See events
 </Button>
 ```
 
-### Cards (`.card` class in `global.css`)
+### Header (`src/components/Header.astro`)
 
-Cards use a soft offset shadow that lifts on hover:
+Chosen in the 10/15/2026 header prototype.
+
+- **Bar:** opaque Golden Yellow with a 2px ink bottom edge. 64px tall on phones, 74px from `lg`.
+- **Mark + wordmark:** the Book's primary lockup, "Mascot + wordmark". The pigeon head (`public/images/pigeon-head-mark-160.webp`) hangs over the ink edge at the top of the page and tucks inside the bar once the visitor scrolls or opens the phone menu. See `DESIGN.md`, motion rule 13 and known tension 12.
+- **Nav links:** Baloo 2 at 800, 15px at `lg` and 16px from `xl`, full ink. The Hot Pink pill marks the current page and follows the pointer.
+- **RSVP:** Book p14 button — Hot Pink fill, ink text, 2px ink outline, ink offset shadow. Hover lifts it and grows the shadow from 3px to 6px. The old ink fill hid its own ink shadow, so its hover was invisible.
+- **Phone menu:** a solid ink panel, edge to edge, with links aligned to the mark.
+
+### Cards (`.card` in `global.css`)
+
+White fill, 20px corners, a 2px ink outline, and a hard 6px ink shadow that grows on hover (Book section 10).
 
 ```html
 <div class="card p-6">Card content here</div>
 ```
 
-The `.card` class applies: white background, rounded corners, subtle border, offset shadow, and hover animation.
+### Pills (`.pill`) and stickers (`.sticker`)
 
-### Section Backgrounds
+- `.pill` — a small flat label: stadium radius, 2px ink outline, uppercase Nunito 900. Set the fill with a color utility: `<span class="pill bg-brand-yellow">Free</span>`.
+- `.sticker` — one highlighted word inside a display heading: white fill, 3px ink outline, hard shadow, a slight tilt. One per heading at most.
 
-Alternate between cream and brand colors to create visual rhythm:
+### Shadows
 
-- Default page background: `bg-brand-cream`
-- Alternate sections: `bg-primary-100` (lighter cream)
-- Colored sections: `bg-brand-yellow`, `bg-brand-purple`, `bg-brand-coral`, `bg-accent-400`
+All shadows are solid ink with zero blur. `shadow-retro-sm` (3px), `shadow-retro` (4px), `shadow-retro-lg` (6px), `shadow-retro-hover` (9px), `shadow-retro-xl` (10px). **A blurred shadow anywhere breaks the system** — never use Tailwind's `shadow-md` or `shadow-lg`.
+
+### Closing section (`src/components/ClosingFlock.astro`)
+
+The section every page ends on: the motto on Golden Yellow, the pigeon, and an ink skyline that runs into the footer. Place it as the last element inside `<main>`, and remove the page's own closing call to action. Pass `lede` to change the line under the motto.
+
+### Section backgrounds
+
+Sections alternate **White → Ink → one saturated field** (Golden Yellow, Amber, Hot Pink, or Coral Pink). Every section edge is a 2px ink line.
 
 ## Accessibility
 
 The Book's framing, worth keeping: _"Accessibility is not a checklist run at the end. It's a default designed from."_
 
-### Contrast — the four combinations that come up
+### Contrast
 
-Ratios measured in the Book, not estimated here.
+Ratios computed from the Edition 1.2 values (WCAG 2.x). AA needs **4.5** for normal text and **3.0** for large text (24px and up, or 18.66px bold).
 
-| Combination     | Ratio    | Verdict                    |
-| --------------- | -------- | -------------------------- |
-| Ink on cream    | **17.2** | AAA — body text lives here |
-| Ink on pink     | **5.4**  | AA — headline weight works |
-| White on coral  | **4.9**  | AA — hero text only        |
-| White on yellow | **2.1**  | **FAILS. Never use this.** |
+| Text on…      | Ink      | White                         |
+| ------------- | -------- | ----------------------------- |
+| White         | **17.4** | —                             |
+| Golden Yellow | **12.4** | 1.4 — never                   |
+| Amber         | **10.5** | 1.7 — never                   |
+| Hot Pink      | **6.2**  | 2.8 — never                   |
+| Coral Pink    | **5.6**  | 3.1 — large display text only |
+| Purple        | **4.9**  | 3.6 — large display text only |
+| Ink           | —        | **17.4**                      |
 
-White on yellow is the one that looks acceptable on a bright laptop and is unreadable everywhere else. The homepage hero is yellow, so it uses **dark** text — that is the reason, not a stylistic preference.
-
-Primary pink (`accent-400` / brand pink) CTAs use **brand-dark** text, not white — white-on-pink fails AA for normal text (about 2.7:1). Ink-on-pink clears AA (5.4:1 in the table above). Header RSVP already follows this; the shared `Button` primary variant matches.
+**Ink text is the default on every color.** White text goes on Ink. The 1.0 version of this table listed white on coral at 4.9:1; the real figure is 3.1:1, which is why the 1.0 heroes are moving to ink text. Hot Pink as text on white is 2.8:1, so pink is a fill, never a text color.
 
 ### Focus states
 
-The Book specifies: **pink ring (`#FF66A8`), 2px outline, 2px offset — identical across buttons, inputs and links.** Never blue. Never hover-only for navigation. The default browser focus ring is blue, which is out of system, so it gets replaced rather than suppressed.
-
-What `global.css:41` actually applies is:
-
-```css
-*:focus-visible {
-  @apply outline-2 outline-offset-2 outline-accent-400 ring-2 ring-accent-400 ring-offset-2;
-}
-```
-
-That is the Book's outline **plus** a second `ring-2` drawn on top of it — the spec asks for one ring and the site draws two, with a default-white `ring-offset` that sits oddly on cream. The color and geometry are right; the duplication is not. Left as-is here because changing focus styling site-wide is a visual change that deserves its own review, not a rider on a docs pass. Flagged so the next person doesn't read this section and assume the code already matches.
+The Book specifies: **Hot Pink ring, 2px outline, 2px offset — identical across buttons, inputs, and links. Always visible, never hover-only.** `global.css` applies exactly that through one `*:focus-visible` rule. Do not add `focus:ring-*` utilities to components; they draw a second ring.
 
 ### Beyond contrast
 
 - **Alt text on every image**, the mascot included. A pigeon with no description is invisible to a screen reader.
-- **Never set body below 14px**; keep line-height 1.5+ on long copy. Baloo 2 and Nunito are open-lettered by design — don't undo that with sizing.
+- **Never set body below 14px**; keep line-height 1.5+ on long copy.
 - **Plain language.** No jargon a beginner can't follow, no idioms that exclude non-native speakers. Spell out acronyms on first use.
 - **Captions on every video** — burned in for social, separate file for archive.
 
@@ -224,7 +233,7 @@ whole treatment. A third typeface would cost contrast at small sizes and buy
 nothing.
 
 **Dark as an object, not a theme.** The cabinet is dark the way `Header` and
-`Footer` are dark. The page stays cream. The site has no dark mode, and the
+`Footer` are dark. The page stays white. The site has no dark mode, and the
 arcade does not introduce one.
 
 ### Arcade Player (`src/components/CabinetFrame.astro`)
@@ -246,7 +255,7 @@ behavior, say "press Tab," not "press Esc."
 ## Making Changes
 
 - **Colors**: the palette is the Book's, not this repo's. Adding or changing a token is a brand-team conversation first; `tailwind.config.mjs` is where the agreed value lands, not where it gets decided.
-- **Fonts**: update the `fontFamily` in `tailwind.config.mjs` and the Google Fonts `<link>` in `src/layouts/BaseLayout.astro`. Same rule — the Book names the three faces.
+- **Fonts**: update the `fontFamily` in `tailwind.config.mjs` and the `@fontsource` imports in `src/layouts/BaseLayout.astro`. Same rule — the Book names the faces.
 - **Card style**: Edit the `.card` class in `src/styles/global.css`
 - **Button variants**: Edit `src/components/Button.astro`
 

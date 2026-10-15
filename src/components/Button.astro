@@ -1,7 +1,7 @@
 ---
 interface Props {
   href?: string;
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?: 'primary' | 'secondary' | 'light' | 'ink' | 'outline';
   size?: 'sm' | 'md' | 'lg';
   class?: string;
   external?: boolean;
@@ -17,22 +17,36 @@ const {
   'data-testid': testId,
 } = Astro.props;
 
+// Book section 10: a flat fill, a 2px ink outline, stadium radius, and a hard
+// ink shadow. The focus ring comes from the global `:focus-visible` rule, so
+// buttons, links, and inputs all share one ring. The transition and press
+// classes are motion; the `animate` skill owns them (DESIGN.md, motion rule 9).
 const baseClasses =
-  'inline-flex items-center justify-center font-display font-bold rounded-full transition-[transform,background-color,box-shadow] duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 motion-safe:active:scale-[0.97] motion-reduce:active:opacity-80';
+  'inline-flex items-center justify-center gap-2 font-display font-extrabold rounded-full transition-[transform,background-color,box-shadow] duration-150 ease-out motion-safe:active:scale-[0.97] motion-reduce:active:opacity-80';
+
+// Every filled variant has ink text: ink reads on all the warm fills, and
+// white on Hot Pink fails AA (Book section 04, "Contrast").
+const filled =
+  'border-2 border-brand-dark shadow-retro hover:shadow-retro-lg hover:-translate-y-0.5';
 
 const variantClasses = {
-  primary:
-    'bg-accent-400 text-brand-dark hover:bg-accent-500 focus:ring-accent-400 shadow-md hover:shadow-lg hover:-translate-y-0.5',
-  secondary:
-    'bg-primary-300 text-brand-dark hover:bg-primary-400 focus:ring-primary-400 shadow-md hover:shadow-lg hover:-translate-y-0.5',
-  outline:
-    'border-2 border-current bg-transparent text-brand-dark hover:bg-brand-dark/5 focus:ring-accent-400',
+  // Main call to action.
+  primary: `${filled} bg-brand-pink text-brand-dark`,
+  // Second action on a white or ink section.
+  secondary: `${filled} bg-brand-yellow text-brand-dark`,
+  // Second action on a yellow or saturated section, where secondary would vanish.
+  light: `${filled} bg-white text-brand-dark`,
+  // Strongest action on a yellow or saturated section.
+  ink: `${filled} bg-brand-dark text-white`,
+  // Tertiary. Takes the text color it sits on, so it also works on dark fields.
+  outline: 'border-2 border-current bg-transparent text-brand-dark hover:bg-brand-dark/5',
 };
 
+// Every size clears the 44px touch target.
 const sizeClasses = {
-  sm: 'px-4 py-2 text-sm',
-  md: 'px-6 py-3 text-base',
-  lg: 'px-8 py-4 text-lg',
+  sm: 'min-h-[44px] px-5 py-2 text-sm',
+  md: 'min-h-[48px] px-6 py-3 text-base',
+  lg: 'min-h-[52px] px-8 py-3.5 text-lg',
 };
 
 const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;

@@ -67,8 +67,14 @@
     @apply scroll-smooth;
   }
 
+  /* Edition 1.2: White is the light neutral. Cream is retired. */
   body {
-    @apply font-sans text-brand-dark bg-brand-cream antialiased;
+    @apply font-sans text-brand-dark bg-white antialiased;
+  }
+
+  /* Text selection is a browser surface too. Golden Yellow, like a highlighter. */
+  ::selection {
+    @apply bg-brand-yellow text-brand-dark;
   }
 
   h1,
@@ -77,28 +83,57 @@
   h4,
   h5,
   h6 {
-    @apply font-display font-bold;
+    @apply font-display font-extrabold;
+  }
+
+  /*
+   * Display type renders uppercase (DESIGN.md, voice rule 1). The source text
+   * stays in sentence case — never type a heading in capitals. Sizes are fluid
+   * and in rem, so the visitor's text-size setting still scales them. Tracking
+   * is size-specific: tighter as type grows, zero by h3.
+   */
+  h1,
+  h2,
+  h3 {
+    @apply uppercase;
   }
 
   h1 {
-    @apply text-4xl md:text-5xl lg:text-6xl;
+    font-size: clamp(2.75rem, 1.6rem + 4.8vw, 6rem);
+    line-height: 0.92;
+    letter-spacing: -0.02em;
   }
 
   h2 {
-    @apply text-3xl md:text-4xl lg:text-5xl;
+    font-size: clamp(2.25rem, 1.4rem + 3.6vw, 5rem);
+    line-height: 0.95;
+    letter-spacing: -0.015em;
   }
 
   h3 {
-    @apply text-2xl md:text-3xl lg:text-4xl;
+    font-size: clamp(1.5rem, 1.15rem + 1.4vw, 2.125rem);
+    line-height: 1;
+    letter-spacing: 0;
   }
 
   h4 {
     @apply text-xl md:text-2xl;
   }
 
-  /* Focus styles for accessibility */
+  /*
+   * Long-form headings inside articles are reading aids, not display type.
+   * Inside `.prose` (resource guides) they keep sentence case on screen and
+   * the typography plugin's sizes.
+   */
+  .prose :where(h1, h2, h3) {
+    text-transform: none;
+    letter-spacing: normal;
+  }
+
+  /* One focus ring everywhere: Hot Pink, 2px, 2px offset (Book section 10).
+     It used to draw an outline and a ring on top of it. */
   *:focus-visible {
-    @apply outline-2 outline-offset-2 outline-accent-400 ring-2 ring-accent-400 ring-offset-2;
+    @apply outline outline-2 outline-offset-2 outline-accent-400;
   }
 
   /* Alpine.js cloak — hides elements until Alpine initialises */
@@ -117,19 +152,28 @@
     @apply py-12 md:py-16 lg:py-24;
   }
 
-  /* Gradient text effect */
-  .gradient-text {
-    @apply bg-gradient-to-r from-accent-400 to-accent-600 bg-clip-text text-transparent;
-  }
-
-  /* Card styles — retro offset shadow.
+  /* Card styles — solid ink outline and hard ink shadow.
      Transition names its two properties: `all` would animate anything that
      happens to differ on hover, off the GPU. The hover lift is gated to
      real pointers by `hoverOnlyWhenSupported` in tailwind.config.mjs. */
   .card {
-    @apply bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro
+    @apply bg-white rounded-retro border-2 border-brand-dark shadow-retro-lg
            transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]
            hover:-translate-y-1 hover:shadow-retro-hover;
+  }
+
+  /* A highlighted word inside a display heading, set like a sticker slapped on
+     the line: white fill, 3px ink outline, hard shadow, a slight tilt. One per
+     heading at most. Override the fill with a color utility. */
+  .sticker {
+    @apply inline-block rounded-[18px] border-[3px] border-brand-dark bg-white px-3.5 shadow-retro-lg -rotate-2;
+  }
+
+  /* A small flat label: one color, stadium radius, ink outline (Book section
+     10, "Tags + pills"). Set the background with a color utility. */
+  .pill {
+    @apply inline-flex items-center rounded-full border-2 border-brand-dark bg-white px-3 py-0.5
+           font-sans text-xs font-black uppercase tracking-[0.14em] text-brand-dark;
   }
 }
 
@@ -349,11 +393,5 @@
 
   .card:hover {
     transform: none;
-  }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  [data-testid='mobile-menu'] {
-    @apply backdrop-blur-none bg-brand-dark;
   }
 }
