@@ -22,8 +22,8 @@ Fixes # (issue number)
 
 Please describe the tests you ran to verify your changes.
 
-- [ ] Tested locally with `pnpm run dev`
-- [ ] Built successfully with `pnpm run build`
+- [ ] Tested locally with `npm run dev`
+- [ ] Built successfully with `npm run build`
 - [ ] Tested on mobile/responsive views
 - [ ] Checked for accessibility issues
 
