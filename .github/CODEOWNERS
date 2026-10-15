@@ -1,14 +1,14 @@
-# Default owners for everything in the repo
-* @philaconvalley/maintainers
+# Code owners: GitHub asks these people to review every PR that touches
+# a matching path. The last matching line wins.
+#
+# Each owner must be a person or a team with write access. An unknown owner
+# fails silently: GitHub requests no one. Check after any edit at
+# https://github.com/philaconvalley/website/blob/main/.github/CODEOWNERS
+# (GitHub marks a broken line there) or with:
+#   gh api repos/philaconvalley/website/codeowners/errors
+#
+# The org has no maintainers team yet. When it does, replace @traksaw with
+# @philaconvalley/maintainers and give the team write access first.
 
-# Website code
-/src/ @philaconvalley/maintainers
-
-# Content can be reviewed by a broader group
-/src/content/ @philaconvalley/maintainers
-
-# CI/CD and config changes need maintainer review
-/.github/ @philaconvalley/maintainers
-/astro.config.mjs @philaconvalley/maintainers
-/tailwind.config.mjs @philaconvalley/maintainers
-/package.json @philaconvalley/maintainers
+# Default owner for everything in the repo
+* @traksaw
