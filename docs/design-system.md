@@ -121,8 +121,8 @@ Pill-shaped, a 2px ink outline, a hard ink shadow, ink text on every warm fill. 
 Chosen in the 10/15/2026 header prototype.
 
 - **Bar:** opaque Golden Yellow with a 2px ink bottom edge. 64px tall on phones, 74px from `lg`.
-- **Mark + wordmark:** the Book's primary lockup, "Mascot + wordmark". The pigeon head (`public/images/pigeon-head-mark-160.webp`) hangs over the ink edge at the top of the page and tucks inside the bar once the visitor scrolls or opens the phone menu. See `DESIGN.md`, motion rule 13 and known tension 12.
-- **Nav links:** Baloo 2 at 800, 15px at `lg` and 16px from `xl`, full ink. The Hot Pink pill marks the current page and follows the pointer.
+- **Mark + wordmark:** the Book's primary lockup, "Mascot + wordmark". The wordmark is the official file `public/images/philacon-wordmark-horizontal.svg`, copied unchanged from the brand logo library. Its built-in ink outline meets the Book's rule for pink on yellow. The pigeon head (`public/images/pigeon-head-mark-160.webp`) hangs over the ink edge at the top of the page and tucks inside the bar once the visitor scrolls or opens the phone menu. See `DESIGN.md`, motion rule 13 and known tension 12.
+- **Nav links:** Baloo 2 at 800, 15px at `lg` and 16px from `xl`, full ink. The header row keeps at least 25px between the wordmark, the links, and the date or RSVP at every width from 1024px. The Hot Pink pill marks the current page and follows the pointer.
 - **RSVP:** Book p14 button — Hot Pink fill, ink text, 2px ink outline, ink offset shadow. Hover lifts it and grows the shadow from 3px to 6px. The old ink fill hid its own ink shadow, so its hover was invisible.
 - **Phone menu:** a solid ink panel, edge to edge, with links aligned to the mark.
 
@@ -147,7 +147,7 @@ All shadows are solid ink with zero blur. `shadow-retro-sm` (3px), `shadow-retro
 
 Chosen in the 10/15/2026 footer review, after the mockup.
 
-- **Left block:** the yellow wordmark "PhilaCon Valley" (Baloo 2, uppercase through CSS) and one line: "Come as you are. Leave with a flock. A free, in-person tech community in Philadelphia, PA." The wordmark is the footer's only link home. Book §07 puts the wordmark, not the mascot, in footers.
+- **Left block:** the official wordmark (`public/images/philacon-wordmark-horizontal.svg`, the same file as the header) and one line: "Come as you are. Leave with a flock. A free, in-person tech community in Philadelphia, PA." The wordmark is the footer's only link home. Book §07 puts the wordmark, not the mascot, in footers, and says the mark is pulled from the library, never rebuilt. Diego's mockup typed the name in Baloo 2 instead.
 - **Columns:** Explore, Get involved, Find us, with amber labels and white links. The mockup's "Start a project" link waits until a real page exists.
 - **Bottom row:** location and email on the left; "This site is open source", Privacy, and the copyright on the right. All text is full white, because the Book has no greys.
 - **The motto** is not in the footer. It lives in `ClosingFlock`, the section above it.

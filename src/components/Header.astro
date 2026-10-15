@@ -73,7 +73,15 @@ const rsvpHref = nextEvent?.url ?? '/events';
           class="block transition-transform duration-[240ms] ease-[cubic-bezier(0.77,0,0.175,1)] motion-reduce:transition-none translate-x-4"
           :class="{ 'translate-x-4': !(scrolled || mobileMenuOpen) }"
         >
-          PhilaCon Valley
+          <!-- The official wordmark, unchanged from the brand logo library. Its
+               built-in ink outline is what the Book asks for on pink-on-yellow. -->
+          <img
+            src="/images/philacon-wordmark-horizontal.svg"
+            alt="PhilaCon Valley"
+            width="216"
+            height="20"
+            class="block h-4 xl:h-[18px] w-auto"
+          />
         </span>
       </a>
 
@@ -117,7 +125,7 @@ const rsvpHref = nextEvent?.url ?? '/events';
                 aria-current={isCurrent ? 'page' : undefined}
                 @mouseenter="pos = { left: $el.offsetLeft, width: $el.offsetWidth }"
                 @focus="pos = { left: $el.offsetLeft, width: $el.offsetWidth }"
-                class="relative z-10 px-2.5 xl:px-3 py-1.5 rounded-full text-[15px] xl:text-base font-display font-extrabold text-brand-dark"
+                class="relative z-10 px-2 xl:px-2.5 py-1.5 rounded-full text-[15px] xl:text-base font-display font-extrabold text-brand-dark"
               >
                 {item.name}
               </a>

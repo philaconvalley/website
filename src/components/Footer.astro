@@ -8,7 +8,7 @@ const currentYear = new Date().getFullYear();
  * links, after the redesign mockup. Text is white, not white at reduced alpha —
  * the Book has no greys, and 45% white on ink read as grey.
  *
- * Left block (decided in the 10/15/2026 footer review): the yellow wordmark
+ * Left block (decided in the 10/15/2026 footer review): the official wordmark
  * and one line, as in the mockup. Brand Book §07 puts the wordmark, not the
  * mascot, in footers, and the header already carries the mascot. The motto
  * lives in ClosingFlock, the section above the footer, once each page PR
@@ -55,15 +55,23 @@ const columns = [
 <footer class="bg-brand-dark text-white">
   <div class="container-custom py-[60px] lg:py-[96px] lg:pb-10">
     <div class="flex flex-col lg:flex-row lg:justify-between gap-12">
-      <div class="max-w-[560px]">
-        <!-- The wordmark is the footer's only route home: the columns deliberately
+      <div class="w-full max-w-[560px] lg:w-[440px] xl:w-[560px]">
+        <!-- The official wordmark from the brand logo library
+             (company/brand/character/logos/philacon-wordmark-horizontal.svg),
+             copied unchanged: Brand Book §07 says the mark is pulled from the
+             library, never rebuilt. The mockup typed it in Baloo 2 instead.
+             The wordmark is the footer's only route home: the columns deliberately
              do not repeat Home, and clicking the name is the convention a visitor
              who has read to the bottom of a long page will reach for first. -->
-        <a
-          href="/"
-          class="inline-block font-display font-extrabold uppercase text-brand-yellow text-[2.5rem] lg:text-[4rem] leading-[0.95] tracking-[-0.015em] hover:underline decoration-4 underline-offset-8"
-        >
-          PhilaCon Valley
+        <a href="/" class="inline-block w-full max-w-[560px]">
+          <img
+            src="/images/philacon-wordmark-horizontal.svg"
+            alt="PhilaCon Valley home"
+            width="560"
+            height="52"
+            loading="lazy"
+            class="block w-full h-auto"
+          />
         </a>
         <!-- Non-breaking hyphen and space, so "in-person" and "Philadelphia, PA"
              never split across lines. -->
