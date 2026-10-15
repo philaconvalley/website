@@ -1,7 +1,7 @@
 /**
- * Serves the production build (`dist/`) with the response headers defined in
- * `vercel.json`, so security headers can be tested locally against the real
- * built output.
+ * Serves the production build (`dist/`) with the response headers and
+ * redirects defined in `vercel.json`, so both can be tested locally against
+ * the real built output.
  *
  * `astro preview` serves dist/ but knows nothing about vercel.json, and
  * `vercel dev` applies vercel.json but runs the *dev* server underneath —
@@ -35,6 +35,20 @@ const MIME = {
   '.woff2': 'font/woff2',
   '.txt': 'text/plain; charset=utf-8',
 };
+
+/**
+ * Redirects from vercel.json, matched exactly. Every redirect in the file today
+ * is a literal path. A pattern (`:slug`, `(.*)`) would need path-to-regexp to
+ * match the way Vercel does, so fail loudly instead of silently skipping it.
+ */
+const redirects = new Map();
+for (const rule of config.redirects ?? []) {
+  if (/[:(*]/.test(rule.source)) {
+    throw new Error(`serve-with-headers: redirect patterns are not supported: ${rule.source}`);
+  }
+  // Vercel answers `permanent: true` with 308 and `false` with 307.
+  redirects.set(rule.source, { location: rule.destination, status: rule.permanent ? 308 : 307 });
+}
 
 /** Headers from vercel.json whose `source` pattern matches this path. */
 function headersFor(pathname) {
@@ -73,6 +87,14 @@ async function resolveFile(pathname) {
 const server = createServer(async (req, res) => {
   const { pathname } = new URL(req.url, `http://localhost:${PORT}`);
   const headers = headersFor(pathname);
+
+  const redirect = redirects.get(pathname);
+  if (redirect) {
+    res.writeHead(redirect.status, { ...headers, Location: redirect.location });
+    res.end();
+    return;
+  }
+
   const file = (await resolveFile(pathname)) ?? (await resolveFile('/404'));
 
   if (!file) {

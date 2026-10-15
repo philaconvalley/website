@@ -1,0 +1,99 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Button from '../../components/Button.astro';
+import PhotoGrid from '../../components/PhotoGrid.astro';
+import { links } from '../../config';
+import { formatRecapDate } from '../../lib/events';
+
+export async function getStaticPaths() {
+  const recaps = await getCollection('events');
+  const photos = await getCollection('gallery');
+  return recaps.map((recap) => ({
+    params: { slug: recap.id },
+    props: {
+      recap,
+      // Missing event files are caught on /events, which resolves every photo.
+      // Here a photo only needs to know whether it belongs to this recap.
+      photos: photos
+        .filter((photo) => photo.data.event.id === recap.id)
+        .sort((a, b) => a.data.date.getTime() - b.data.date.getTime()),
+    },
+  }));
+}
+
+const { recap, photos } = Astro.props;
+const { Content } = await render(recap);
+const { title, date, venue, lumaUrl, summary } = recap.data;
+---
+
+<BaseLayout title={`${title} - PhilaCon Valley Events`} description={summary}>
+  <section class="bg-brand-purple text-white py-16">
+    <div class="container-custom">
+      <div class="max-w-4xl mx-auto">
+        <a
+          href="/events"
+          class="inline-flex items-center gap-1 text-sm text-white/70 hover:text-white transition-colors mb-6"
+        >
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"
+            ></path>
+          </svg>
+          Back to Events
+        </a>
+        <p class="text-sm text-white/70 mb-3">
+          {formatRecapDate(date)} · {venue}
+        </p>
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">{title}</h1>{' '}
+        <p class="text-xl text-white/85">{summary}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-padding">
+    <div class="container-custom">
+      <div class="max-w-3xl mx-auto prose prose-lg">
+        <Content />
+      </div>
+    </div>
+  </section>
+
+  {photos.length > 0 && (
+    <section class="section-padding bg-primary-100">
+      <div class="container-custom">
+        <h2 class="text-3xl font-bold mb-8 text-center">Photos</h2>
+        <div class="max-w-5xl mx-auto">
+          <PhotoGrid
+            photos={photos.map((photo) => ({
+              image: photo.data.image,
+              alt: photo.data.alt,
+              event: title,
+              date: photo.data.date,
+              caption: photo.data.caption,
+            }))}
+          />
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section-padding">
+    <div class="container-custom text-center">
+      <h2 class="text-3xl font-bold mb-4">Come to the next one</h2>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <Button href={links.luma} external variant="primary" size="lg">
+          See upcoming events
+        </Button>
+        {lumaUrl && (
+          <Button href={lumaUrl} external variant="outline" size="lg">
+            This event on Luma
+          </Button>
+        )}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

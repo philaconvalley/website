@@ -14,5 +14,18 @@ process.env.PUBLIC_VERCEL_OBSERVABILITY_CLIENT_CONFIG ??=
 // https://astro.build/config
 export default defineConfig({
   integrations: [sitemap()],
-  site: 'https://philaconvalley.com',
+  // The www host is the one Vercel serves; the bare domain redirects to it.
+  // Canonical URLs, the sitemap, and og:url all come from this value, so it
+  // must name the host that answers 200, not the one that redirects.
+  site: 'https://www.philaconvalley.com',
+  vite: {
+    build: {
+      // Vite inlines any asset under 4 KB as a data: URI. A few @fontsource
+      // subsets are that small, and page CSP is `font-src 'self'`, so an
+      // inlined font is blocked. Keep fonts as files rather than loosen the
+      // policy to allow data:. `undefined` leaves every other asset on the
+      // default rule. Guarded by e2e/csp.spec.ts ("blocks nothing on …").
+      assetsInlineLimit: (filePath) => (/\.woff2?$/.test(filePath) ? false : undefined),
+    },
+  },
 });

@@ -24,7 +24,7 @@ function builtRoutes(): string[] {
       // Games under /games/ are embedded artifacts, not pages of the site: they
       // are bare canvas documents with no Header, <main> or Footer by design, and
       // they are noindex. Including them would fail this suite the moment the
-      // arcade lands. See docs/superpowers/specs/2026-08-08-philacon-arcade-design.md.
+      // arcade lands. The /games/ header carve-out lives in vercel.json.
       .filter((f) => !f.startsWith('games/') && !f.includes('/games/'))
       // arcade-probe-host.html is a permanent test fixture (Task 1), not a site
       // page: it exists solely to frame /games/_probe/ under a real HTTP origin
