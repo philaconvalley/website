@@ -195,7 +195,22 @@ Ratios computed from the Edition 1.2 values (WCAG 2.x). AA needs **4.5** for nor
 
 ### Focus states
 
-The Book specifies: **Hot Pink ring, 2px outline, 2px offset — identical across buttons, inputs, and links. Always visible, never hover-only.** `global.css` applies exactly that through one `*:focus-visible` rule. Do not add `focus:ring-*` utilities to components; they draw a second ring.
+**A two-tone ring, decided 10/15/2026:** a 2px Hot Pink outline at a 2px offset, inside a 6px ink edge. One `*:focus-visible` rule in `global.css` applies it to every button, input, and link.
+
+| Background    | What carries the contrast | Ratio  |
+| ------------- | ------------------------- | ------ |
+| Golden Yellow | the ink edge              | 12.4:1 |
+| White         | the ink edge              | 17.4:1 |
+| Ink           | the pink                  | 6.2:1  |
+
+**Why two tones:** the Book asks for a "visible Hot Pink focus outline" and "WCAG AA contrast" (p11, p14). Pink alone fails the 3:1 rule on yellow (1.9:1) and white (2.8:1). The two-tone ring keeps the pink and passes everywhere, so it needs no brand exception.
+
+**Rules:**
+
+- Do not add `focus:ring-*` or `focus:border-*` utilities. They replace the ink edge. The ink edge uses `--tw-ring-shadow`, so Tailwind shadow utilities still compose with it, and a button keeps its offset shadow while it has focus.
+- An element that hides its own outline must draw the same pattern itself. The Arcade cabinet does: pink, then ink, on its housing.
+- `html` has `scroll-padding-top: 6rem`, so tabbing never scrolls a focused element under the sticky header (WCAG 2.4.11).
+- The skip link is white on ink (17.4:1).
 
 ### Beyond contrast
 

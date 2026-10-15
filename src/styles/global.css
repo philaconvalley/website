@@ -65,6 +65,10 @@
 @layer base {
   html {
     @apply scroll-smooth;
+    /* Keep a focused element clear of the sticky header (76px). Without
+       this, tabbing scrolls a field to the very top, under the bar
+       (WCAG 2.4.11, Focus Not Obscured). */
+    scroll-padding-top: 6rem;
   }
 
   /* Edition 1.2: White is the light neutral. Cream is retired. */
@@ -131,10 +135,20 @@
     letter-spacing: normal;
   }
 
-  /* One focus ring everywhere: Hot Pink, 2px, 2px offset (Book section 10).
-     It used to draw an outline and a ring on top of it. */
+  /* One focus ring everywhere, decided 10/15/2026: a two-tone ring. The Book
+     asks for a "visible Hot Pink focus outline" and "WCAG AA contrast" (p11,
+     p14). Hot Pink alone fails 3:1 on Golden Yellow (1.9:1) and White (2.8:1).
+     So the 2px pink outline sits inside a 6px ink box-shadow: the ink shows as
+     a thin edge on both sides of the pink and carries the contrast on light
+     backgrounds (12.4:1, 17.4:1); on ink backgrounds the pink alone passes
+     (6.2:1). The ink edge goes through --tw-ring-shadow, so Tailwind's shadow
+     utilities keep composing with it: a button keeps its offset shadow while
+     it has focus. */
   *:focus-visible {
     @apply outline outline-2 outline-offset-2 outline-accent-400;
+    --tw-ring-shadow: 0 0 0 6px #1a1a1a;
+    box-shadow:
+      var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
   }
 
   /* Alpine.js cloak — hides elements until Alpine initialises */
