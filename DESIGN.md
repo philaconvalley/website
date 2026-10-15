@@ -47,6 +47,8 @@ The rename was mechanical but wide, touching a component name and two e2e spec f
 
 **"Come as you are. Leave with a flock."** is not one of the Book's four taglines — it is a site invention riffing on the motto. **Decided 08/09/2026: it stays, and it should be promoted to a documented line in the Book** rather than left as undocumented drift. It does a job none of the four cover: the homepage hook.
 
+**The line under it must say what happens at PhilaCon. Decided 10/15/2026, from Diego's review.** A first-time visitor has no idea what the org does. The current line says who it is for and what it costs ("Free, in person, and open before you feel ready"), but not what you do there. The Home PR rewrites it to name the activity, for example hands-on nights where people build real tech together. Every fact in it must be confirmed by Waskar (evidence contract).
+
 > **Open action, not a website task.** The Book is maintained outside this repo by the brand team. Adding a fifth line is their call and their file. Until it lands there, this is a recorded exception, not a precedent for inventing more lines.
 
 **Hard rules, all currently violated or at risk:**
@@ -83,13 +85,13 @@ PhilaCon Valley's claim about itself is that it is hands-on: _"No lectures. No p
 
 Every claim gets made at the highest rung it can reach. Rungs, strongest first:
 
-| Rung                | Form                                                                                      | What makes it strong                                     |
-| ------------------- | ----------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| 1 · **Playable**    | The visitor does the thing. Arcade cabinets.                                              | The claim is not asserted, it is experienced.            |
-| 2 · **Live**        | Build-time real data — Luma events, GitHub PRs, the three homepage numbers.               | It can be wrong or empty, which is why it reads as true. |
-| 3 · **Documentary** | Real photographs of real nights and real faces.                                           | Unfakeable. Requires cleared assets.                     |
-| 4 · **Enacted**     | Motion that performs the claim rather than decorating it — the Lab track on the homepage. | The argument happens in time, not in a sentence.         |
-| 5 · **Prose**       | Words.                                                                                    | Last resort.                                             |
+| Rung                | Form                                                                                         | What makes it strong                                     |
+| ------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| 1 · **Playable**    | The visitor does the thing. Arcade cabinets.                                                 | The claim is not asserted, it is experienced.            |
+| 2 · **Live**        | Build-time real data — Luma events, GitHub PRs, the three homepage numbers.                  | It can be wrong or empty, which is why it reads as true. |
+| 3 · **Documentary** | Real photographs of real nights and real faces.                                              | Unfakeable. Requires cleared assets.                     |
+| 4 · **Enacted**     | Motion that performs the claim rather than decorating it — the Lab track on the Events page. | The argument happens in time, not in a sentence.         |
+| 5 · **Prose**       | Words.                                                                                       | Last resort.                                             |
 
 **One argument, one rung, one place.** If a section's point is already carried above, its prose is _deleted_, not shortened. About currently argues "tech excluded us and this is the room where it doesn't" in three separate sections plus the founder's note. That is one argument, and it gets one home.
 
@@ -195,7 +197,7 @@ The strongest existing part of this system and the least documented outside code
 
 **Rules:**
 
-1. **Looping motion is reserved for the Lab narrative on the homepage** (`src/components/LabTrack.astro`). It is the page's only infinite motion. Do not add a second looping element anywhere without retiring this one — two competing loops destroy the narrative reading.
+1. **Looping motion is reserved for the Lab narrative on the Events page** (`src/components/LabTrack.astro`). It is the site's only infinite motion. **Moved from Home on 10/15/2026, from Diego's review:** on Home, with no context, "One night. Three hours." made PhilaCon read as a one-night event. On Events the visitor already knows they are reading about one night, so the timeline explains it. Home gets a section that shows everything the org does (Labs, PATCH workshops, open-source projects, the Arcade) in its place. Do not add a second looping element anywhere without retiring this one — two competing loops destroy the narrative reading.
 2. **Every looping element must be legible in its final state**, because `prefers-reduced-motion` freezes it exactly there.
 3. **The reduced-motion block is deliberately unlayered** (outside `@layer`) so it wins against Tailwind's cascade order regardless of layer sorting. Do not move it into a layer.
 4. **Animate `transform` and `opacity`, never layout properties.** `.pcv-loop-track` used to draw itself by animating `width` from 0 — a relayout every frame, forever, and a footgun that needed its own reduced-motion special case to avoid freezing at zero width. It now scales (`transform-origin: left`, `scaleX(0) → scaleX(1)`), which composites and needs no special case. **`scaleX` is only safe on the track because it is a childless 1px line with no border-radius.** It is the wrong fix for the nav pill — see rule 5.
@@ -235,7 +237,7 @@ Real conflicts between the current build and the tooling now installed. Each nee
 
 1. **Foundation.** Edition 1.2 tokens in `tailwind.config.mjs`, the re-tuned type scale, `Button`, `.card`, the single focus ring, `Header`, `Footer`, the closing pigeon section, and `docs/design-system.md` updated in the same PR. Delete `.gradient-text` here (tension 1).
 2. **Content.** The nine project files (tension 5). No visual change.
-3. **Pages, one PR each.** Home first, because it is the proof the system works. Then Join, Support, Events, About, Projects, Arcade, Resources, and Contact.
+3. **Pages, one PR each.** Home first, because it is the proof the system works. The Home PR removes LabTrack and adds the "everything we do" section; the Events PR adds LabTrack (motion rule 1). Then Join, Support, Events, About, Projects, Arcade, Resources, and Contact.
 
 **Rules for every page PR:**
 
