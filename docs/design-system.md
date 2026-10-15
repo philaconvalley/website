@@ -210,7 +210,9 @@ Ratios computed from the Edition 1.2 values (WCAG 2.x). AA needs **4.5** for nor
 - Do not add `focus:ring-*` or `focus:border-*` utilities. They replace the ink edge. The ink edge uses `--tw-ring-shadow`, so Tailwind shadow utilities still compose with it, and a button keeps its offset shadow while it has focus.
 - An element that hides its own outline must draw the same pattern itself. The Arcade cabinet does: pink, then ink, on its housing.
 - `html` has `scroll-padding-top: 6rem`, so tabbing never scrolls a focused element under the sticky header (WCAG 2.4.11).
-- The skip link is white on ink (17.4:1).
+- The skip link is white on ink (17.4:1). While it has focus it is a full-width strip above the header, so it covers nothing.
+- The site has no smooth scrolling. With it, Chrome ignored `scroll-padding-top` on keyboard focus and parked fields under the header.
+- `e2e/focus-ring.spec.ts` guards all of this: the ring on yellow, white, and ink; button shadows; the logo ring; the skip link; fields under the header; and a source check that fails on any `focus:ring-*` or `focus:border-*` class.
 
 ### Beyond contrast
 

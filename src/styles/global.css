@@ -64,8 +64,13 @@
 
 @layer base {
   html {
-    @apply scroll-smooth;
-    /* Keep a focused element clear of the sticky header (76px). Without
+    /* No scroll-behavior: smooth. Decided 10/15/2026: with smooth scrolling,
+       Chrome's keyboard focus scroll ignored scroll-padding-top and parked a
+       tabbed-to form field under the sticky header (e2e/focus-ring.spec.ts).
+       The only in-page jump on the site is the skip link, so smooth scrolling
+       gave almost nothing. Stage 5 (animate) may revisit it, but not at the
+       cost of focus visibility.
+       Keep a focused element clear of the sticky header (76px). Without
        this, tabbing scrolls a field to the very top, under the bar
        (WCAG 2.4.11, Focus Not Obscured). */
     scroll-padding-top: 6rem;

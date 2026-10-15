@@ -100,11 +100,15 @@ const {
     </script>
   </head>
   <body>
-    <!-- White on ink (17.4:1). It was white on #D98E1C, about 2.6:1, which
-         failed the 4.5:1 text rule and was not a Book color. -->
+    <!-- While it has focus, the skip link is a full-width ink strip above the
+         header, in the page flow, so it pushes the header down instead of
+         covering the logo (it used to float over the top-left corner). The
+         pink outline sits inside the strip (negative offset), because the ink
+         edge of the focus ring is invisible on an ink strip. White on ink is
+         17.4:1; it was white on #D98E1C, about 2.6:1, and off palette. -->
     <a
       href="#main-content"
-      class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-5 focus:py-2.5 focus:bg-brand-dark focus:text-white focus:font-display focus:font-extrabold focus:rounded-full"
+      class="sr-only focus:not-sr-only focus:block focus:w-full focus:py-3 focus:text-center focus:bg-brand-dark focus:text-white focus:font-display focus:font-extrabold focus:outline-offset-[-6px]"
     >
       Skip to main content
     </a>

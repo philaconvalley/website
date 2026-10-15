@@ -50,14 +50,15 @@ const rsvpHref = nextEvent?.url ?? '/events';
   >
     <div class="flex items-center justify-between h-[64px] lg:h-[74px]">
       <!-- Mark + wordmark. The mark's box keeps the tucked size, so the layout
-           never shifts; only the image and the name transform. mr-4 reserves the
-           room the name shifts into, so it never meets the first nav link. "Hang" scales
+           never shifts; only the image and the name transform. pr-4 reserves the
+           room the name shifts into, inside the link's box, so the focus ring
+           wraps the whole wordmark and the name never meets the first nav link. "Hang" scales
            the head up from its top-left corner, tilts it, and drops it 8px over
            the edge. Hang is the server-rendered default, so a page that loads at the
            top never moves. Under reduced motion the states swap with no movement. -->
       <a
         href="/"
-        class="flex-shrink-0 flex items-center gap-1 mr-4 font-display font-extrabold text-xl md:text-2xl lg:text-xl xl:text-2xl leading-none tracking-[-0.01em] text-brand-dark"
+        class="flex-shrink-0 flex items-center gap-1 pr-4 rounded-2xl font-display font-extrabold text-xl md:text-2xl lg:text-xl xl:text-2xl leading-none tracking-[-0.01em] text-brand-dark"
       >
         <span class="relative block w-12 h-12 lg:w-14 lg:h-14 mr-2" aria-hidden="true">
           <img
