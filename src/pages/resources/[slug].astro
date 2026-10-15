@@ -2,6 +2,8 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Button from '../../components/Button.astro';
+import BackLink from '../../components/BackLink.astro';
+import TagList from '../../components/TagList.astro';
 
 export async function getStaticPaths() {
   const resources = await getCollection('resources');
@@ -22,20 +24,7 @@ const categoryColor = 'bg-white/20 text-white';
   <section class="bg-brand-coral text-white py-16">
     <div class="container-custom">
       <div class="max-w-4xl mx-auto">
-        <a
-          href="/resources"
-          class="inline-flex items-center gap-1 text-sm text-white/70 hover:text-white transition-colors mb-6"
-        >
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 19l-7-7 7-7"
-            ></path>
-          </svg>
-          Back to Resources
-        </a>
+        <BackLink href="/resources" label="Back to Resources" />
         <div class="flex flex-wrap gap-2 mb-4">
           <span class={`px-3 py-1 text-sm font-display font-bold rounded-full ${categoryColor}`}>
             {category}
@@ -75,11 +64,7 @@ const categoryColor = 'bg-white/20 text-white';
             <div class="bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro p-6 sticky top-24">
               <h3 class="font-display font-bold text-brand-dark mb-3">Tags</h3>
               <div class="flex flex-wrap gap-1.5">
-                {tags.map((tag) => (
-                  <span class="px-2 py-0.5 bg-primary-100 text-primary-800 text-xs font-display font-bold rounded-full">
-                    #{tag}
-                  </span>
-                ))}
+                <TagList tags={tags} />
               </div>
 
               <hr class="my-5 border-brand-dark/5" />
