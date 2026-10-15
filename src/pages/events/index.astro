@@ -39,28 +39,28 @@ const recaps = (await getCollection('events')).sort(
       <div class="max-w-4xl mx-auto">
         <h2 class="text-3xl mb-8 text-center">What to expect</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="bg-white p-6 rounded-retro border-2 border-brand-dark/10 shadow-retro">
+          <div class="bg-white p-6 rounded-retro border-2 border-brand-dark shadow-retro-lg">
             <h3 class="text-xl mb-3">Collaborative environment</h3>
             <p class="text-brand-dark/60">
               Work on projects together through pair programming and group collaboration. Everyone
               contributes, everyone learns.
             </p>
           </div>
-          <div class="bg-white p-6 rounded-retro border-2 border-brand-dark/10 shadow-retro">
+          <div class="bg-white p-6 rounded-retro border-2 border-brand-dark shadow-retro-lg">
             <h3 class="text-xl mb-3">Hands-on learning</h3>
             <p class="text-brand-dark/60">
               No passive lectures. You'll be coding, building, and creating from day one. Bring your
               laptop and get ready to build.
             </p>
           </div>
-          <div class="bg-white p-6 rounded-retro border-2 border-brand-dark/10 shadow-retro">
+          <div class="bg-white p-6 rounded-retro border-2 border-brand-dark shadow-retro-lg">
             <h3 class="text-xl mb-3">Supportive community</h3>
             <p class="text-brand-dark/60">
               Everyone is welcome, regardless of experience level. Ask questions, share knowledge,
               and support each other.
             </p>
           </div>
-          <div class="bg-white p-6 rounded-retro border-2 border-brand-dark/10 shadow-retro">
+          <div class="bg-white p-6 rounded-retro border-2 border-brand-dark shadow-retro-lg">
             <h3 class="text-xl mb-3">Real projects</h3>
             <p class="text-brand-dark/60">
               Work on projects that matter – community tools, portfolio pieces, and open source
@@ -77,7 +77,7 @@ const recaps = (await getCollection('events')).sort(
     <div class="container-custom">
       <h2 class="text-3xl mb-8 text-center">Event calendar</h2>
       <div class="max-w-4xl mx-auto">
-        <div class="bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro-lg overflow-hidden flex justify-center p-4">
+        <div class="bg-white rounded-retro border-2 border-brand-dark shadow-retro-lg overflow-hidden flex justify-center p-4">
           <iframe
             src={links.lumaEmbed}
             title="PhilaCon Valley Event calendar"
@@ -189,7 +189,7 @@ const recaps = (await getCollection('events')).sort(
             <li>
               <a
                 href={`/events/${recap.id}`}
-                class="block h-full bg-white p-6 rounded-retro border-2 border-brand-dark/10 shadow-retro hover:border-primary-600 transition-colors"
+                class="block h-full bg-white p-6 rounded-retro border-2 border-brand-dark shadow-retro-lg hover:border-primary-600 transition-colors"
               >
                 <p class="text-sm text-brand-dark/60 mb-2">
                   {formatRecapDate(recap.data.date)} · {recap.data.venue}

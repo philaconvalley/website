@@ -81,7 +81,8 @@ export default {
         'retro-xl': '10px 10px 0 #1A1A1A',
       },
       borderRadius: {
-        retro: '20px',
+        // Card radius. Book §06: 18-24px; the mockup's standard card is 24px.
+        retro: '24px',
       },
     },
   },

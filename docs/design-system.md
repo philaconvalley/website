@@ -136,7 +136,12 @@ Chosen in the 10/15/2026 header prototype.
 
 ### Cards (`.card` in `global.css`)
 
-White fill, 20px corners, a 2px ink outline, and a hard 6px ink shadow that grows on hover (Book section 10).
+White fill, 24px corners (`rounded-retro`), a 2px solid ink outline, and a hard 6px ink shadow that grows on hover (Book §06 and p14).
+
+- **Outline is solid ink, never faded.** `border-brand-dark/10` reads as grey, and the Book has no greys. On 10/15/2026, 28 hand-built cards moved from 10% ink to solid ink.
+- **Radius is 24px for every card.** The Book allows 18–24px. The mockup's large feature cards use 28px, which is outside that range, so they also use 24px.
+- **Form fields** match: a 2px solid ink border, a white fill, and 14px corners, as in the mockup.
+- **Accent fills** (one yellow, pink, coral, or ink card per group, as in the mockup) are a layout choice. Each page PR decides them.
 
 ```html
 <div class="card p-6">Card content here</div>
