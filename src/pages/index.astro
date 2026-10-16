@@ -15,7 +15,8 @@ const { nextEvent, nightsHeld, thingsShipped } = await getCommunityData();
  * - The Lab timeline (LabTrack) moved to Events. On Home, with no context,
  *   "One night. Three hours." read as a one-night event (Diego, 10/15/2026).
  * - The hero line says what happens here, not only who it is for.
- * - No eyebrow labels and no 01/02/03 numbers: headings carry each section.
+ * - No 01/02/03 numbers. One label above a heading ("Why we exist"), because
+ *   that section matches the mockup exactly (Waskar, 10/15/2026).
  *
  * Every claim is confirmed (DESIGN.md, evidence contract). The hero photo is a
  * real PATCH 003 photo; the next-event section renders only for a real event.
@@ -46,18 +47,56 @@ const heroPhotos = (await getCollection('gallery'))
   }));
 const photo = heroPhotos[0];
 
+// The mockup's four formats, its copy exactly (Waskar, 10/15/2026). Stoop is
+// confirmed as a real program (Waskar, 10/15/2026).
 const programs = [
   {
     name: 'PATCH',
-    kind: 'Workshop Lab',
-    body: 'Multi-disciplinary nights where design, code, and creative tech share a room. Recent PATCHes covered NFC tags and projection mapping.',
+    kind: 'Workshop lab',
+    body: 'Multi-disciplinary nights where design, code and creative tech share a room. Recent PATCHes covered NFC tags and projection mapping.',
     fill: 'bg-brand-yellow',
+    tag: 'bg-white',
   },
   {
     name: 'Lab',
     kind: 'Single topic',
     body: 'One subject, one night, start to finish. You show up curious and leave having shipped something.',
     fill: 'bg-white',
+    tag: 'bg-brand-amber',
+  },
+  {
+    name: 'Stoop',
+    kind: 'The social one',
+    body: "Less building, more talking. The easiest night to meet the flock if you've never been before.",
+    fill: 'bg-white',
+    tag: 'bg-brand-pink',
+  },
+];
+
+// How a Lab night works. The times and the outcome are confirmed claims
+// (DESIGN.md, "The 1.2 redesign"). The numbers stay: the order matters.
+const labNight = [
+  {
+    time: '6:30 PM',
+    title: 'Walk in alone.',
+    body: "Nobody asks for a résumé at the door. Find a seat, say hi, and you're already part of it.",
+    fill: 'bg-white',
+    tag: 'bg-brand-yellow',
+  },
+  {
+    time: '7:00 PM',
+    title: 'Two others join you.',
+    body: "By seven you're on a small team, building something real with people you met half an hour ago.",
+    fill: 'bg-white',
+    tag: 'bg-brand-amber',
+  },
+  {
+    time: '9:41 PM',
+    title: 'Leave with it live.',
+    body: "Your first pull request, reviewed, merged and live. You walk out with something that didn't exist when you walked in.",
+    fill: 'bg-brand-pink',
+    tag: 'bg-white',
+    edge: 'border-brand-pink',
   },
 ];
 
@@ -150,6 +189,28 @@ const stats = [
             Join the community
           </Button>
         </div>
+        <!-- The same live numbers as the pink band below, at a glance. Static:
+             only the band counts up (one count-up per page).
+             Each slash sits in its item's left padding, and the list is pulled
+             left by that padding. A slash that starts a line falls outside the
+             wrapper and is clipped, so a wrapped line never opens with "/". -->
+        <div class="mt-10 overflow-hidden">
+          <ul
+            class="-ml-10 my-0 p-0 list-none flex flex-wrap items-baseline gap-y-2 font-display font-extrabold text-lg lg:text-xl"
+            aria-label="PhilaCon Valley in numbers"
+            data-testid="hero-stats"
+          >
+            {stats.map((stat) => (
+              <li class="relative pl-10">
+                <span aria-hidden="true" class="absolute left-4 bottom-0">
+                  /
+                </span>
+                <span class="text-2xl lg:text-3xl tabular-nums">{stat.value}</span>{' '}
+                {stat.label.replace(/\.$/, '')}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
       {photo && (
@@ -179,6 +240,10 @@ const stats = [
           <span class="sticker bg-brand-pink absolute -top-4 -right-2 lg:-right-4 rotate-[4deg] text-lg lg:text-2xl">
             Free. Forever.
           </span>
+          <!-- Confirmed claim: the site already says no one needs to know how to code. -->
+          <span class="sticker bg-white absolute -bottom-5 left-2 lg:-left-4 -rotate-[3deg] text-base lg:text-xl">
+            No experience needed.
+          </span>
         </figure>
       )}
       {/* Parser-blocking on purpose (no defer): it must set the photo before
@@ -188,53 +253,130 @@ const stats = [
   </section>
 
   <!-- Why we exist -->
+  <!-- Matches the mockup's mission section exactly (Waskar, 10/15/2026),
+       including its label above the heading. Two columns that wrap (600px and
+       380px bases) and sit on a shared bottom line. -->
   <section class="bg-white border-t-2 border-brand-dark">
-    <div class="container-custom py-20 lg:py-28 grid gap-8 lg:grid-cols-2 lg:gap-16 lg:items-start">
-      <h2 class="m-0">Nobody handed us a way in. So we built the room.</h2>
-      <div class="lg:pt-3">
-        <p class="m-0 text-lg lg:text-xl leading-relaxed max-w-[38rem]">
-          PhilaCon Valley is where Philly learns tech together, in the same room, at no cost. There
-          is no application, no fee, and no prerequisite. You don't need to know how to code, and
-          you don't need to feel ready. You just need to be curious enough to walk in.
+    <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-wrap items-end gap-[clamp(32px,5vw,80px)]">
+      <div class="grow shrink basis-[600px] min-w-0 flex flex-col gap-6">
+        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">Why we exist</p>
+        <h2 class="m-0">Nobody handed us a way in. So we built the room.</h2>
+      </div>
+      <div class="grow shrink basis-[380px] min-w-0 flex flex-col gap-[22px]">
+        <!-- Mockup grey #3A3A3A, as ink at 85% (about #3B3B3B on white). -->
+        <p class="m-0 text-[19px] leading-[1.6] text-brand-dark/85">
+          PhilaCon Valley is where Philly learns tech together, in the same room, at no cost.
+          There's no application, no fee and no prerequisite. You don't need to know how to code,
+          and you don't need to feel ready. You just need to be curious enough to walk in.
         </p>
-        <div class="mt-8">
-          <Button href="/about" variant="light">
-            Read our story
-          </Button>
-        </div>
+        <!-- min-h-11: a 44px tap target on phones (e2e/tap-targets.spec.ts). -->
+        <a
+          href="/about"
+          class="self-start inline-flex items-center min-h-11 font-black text-[17px] text-brand-dark underline underline-offset-[6px] decoration-[3px]"
+        >
+          Read our story
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- What happens here: ink takes the slot the Lab timeline held, so the page
-       keeps the White -> Ink -> saturated rhythm (DESIGN.md, "Color rhythm"). -->
-  <section class="bg-brand-dark text-white border-t-2 border-brand-dark">
-    <div class="container-custom py-20 lg:py-28">
-      <h2 class="m-0 max-w-[16ch]">Different nights. Same open door.</h2>
-      <p class="mt-6 mb-0 text-lg lg:text-xl max-w-[38rem]">
-        Every program is free. Labs, workshops, and career sessions, with nothing to apply for.
-      </p>
-      <ul class="mt-12 grid gap-6 md:grid-cols-3 m-0 p-0 list-none">
+  <!-- What happens here: matches the mockup exactly (Waskar, 10/15/2026). -->
+  <section class="bg-white border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
+      <div class="flex flex-wrap justify-between items-end gap-6">
+        <div class="flex flex-col gap-[22px] max-w-[760px]">
+          <p class="m-0 self-start pill bg-brand-pink font-black text-[13px] tracking-[0.2em] uppercase">
+            What happens here
+          </p>
+          <h2 class="m-0">Different nights. Same open door.</h2>
+        </div>
+        <p class="m-0 max-w-[380px] text-lg leading-[1.55] text-brand-dark/85">
+          <strong class="text-brand-dark">Every program is free of charge.</strong> Labs, workshops
+          and career sessions, with nothing to apply for.
+        </p>
+      </div>
+      <ul class="m-0 p-0 list-none grid gap-6 grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
         {programs.map((program) => (
-          <li
-            class={`rounded-retro border-2 border-brand-dark shadow-retro-lg ${program.fill} text-brand-dark p-7 flex flex-col`}
-          >
-            <span class="pill bg-white self-start">{program.kind}</span>
-            <h3 class="mt-5 mb-3">{program.name}</h3>
-            <p class="m-0 text-base leading-relaxed flex-1">{program.body}</p>
-            <p class="mt-6 mb-0 font-display font-extrabold">Free · No experience needed</p>
+          <li class="flex">
+            <a
+              href="/events"
+              class={`card ${program.fill} text-brand-dark no-underline p-7 flex flex-col gap-4 w-full`}
+            >
+              <span
+                class={`self-start rounded-full border-2 border-brand-dark ${program.tag} px-3 py-[3px] font-black text-xs tracking-[0.14em] uppercase`}
+              >
+                {program.kind}
+              </span>{' '}
+              <h3 class="m-0 normal-case text-5xl leading-[0.95]">{program.name}</h3>{' '}
+              <p class="m-0 text-base leading-[1.55]">{program.body}</p>{' '}
+              <p class="mt-auto mb-0 border-t-2 border-brand-dark pt-3.5 flex flex-col gap-1.5 text-sm font-bold">
+                <span>
+                  <strong>Cost:</strong> Free
+                </span>{' '}
+                <span>
+                  <strong>Experience:</strong> None needed
+                </span>
+              </p>
+            </a>
           </li>
         ))}
-        <!-- Not a card: nothing to click yet. Outlined, no fill, no shadow. -->
-        <li class="rounded-retro border-2 border-dashed border-white p-7 flex flex-col">
-          <span class="pill bg-brand-dark text-white border-white self-start">Coming soon</span>
-          <h3 class="mt-5 mb-3">Career support</h3>
-          <p class="m-0 text-base leading-relaxed">
+        <!-- Not a card: nothing to click yet. Dashed outline, no shadow. -->
+        <li class="rounded-retro border-2 border-dashed border-brand-dark bg-white p-7 flex flex-col gap-4">
+          <span class="self-start rounded-full border-2 border-brand-dark bg-brand-dark text-white px-3 py-[3px] font-black text-xs tracking-[0.14em] uppercase">
+            Coming soon
+          </span>
+          <h3 class="m-0 normal-case text-[2.5rem] leading-[0.95]">Career Support</h3>
+          <p class="m-0 text-base leading-[1.55] text-brand-dark/85">
             Sessions for the next step after your first project. We'll share more once the first one
             is on the calendar.
           </p>
         </li>
       </ul>
+    </div>
+  </section>
+
+  <!-- How a Lab night works: the mockup's timeline, placed after the programs
+       so visitors first see that PhilaCon runs several kinds of nights. On its
+       own it read as a one-night event (Diego, 10/15/2026). Static cards; the
+       animated LabTrack stays on Events (motion rule 1). -->
+  <section class="bg-brand-dark text-white border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
+      <div class="flex flex-wrap justify-between items-end gap-6">
+        <div class="flex flex-col gap-[22px] max-w-[820px]">
+          <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">How a Lab night works</p>
+          <h2 class="m-0">
+            One night. Three hours.{' '}
+            <span class="text-brand-yellow">Something exists that didn't.</span>
+          </h2>
+        </div>
+        <Button href="/events" variant="secondary">
+          See upcoming nights
+        </Button>
+      </div>
+      <ol class="m-0 p-0 list-none grid gap-6 grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
+        {labNight.map((step, i) => (
+          <li
+            class={`rounded-retro border-2 ${step.edge ?? 'border-white'} ${step.fill} text-brand-dark p-8 flex flex-col gap-[18px]`}
+          >
+            <div class="flex justify-between items-center">
+              <span class="font-black text-[13px] tracking-[0.2em]" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span
+                class={`rounded-full border-2 border-brand-dark ${step.tag} px-3 py-1 font-black text-[13px]`}
+              >
+                {step.time}
+              </span>
+            </div>
+            <h3 class="m-0 text-[34px] leading-none">{step.title}</h3>
+            <p
+              class={`m-0 text-[17px] leading-[1.55] ${step.fill === 'bg-white' ? 'text-brand-dark/85' : ''}`}
+            >
+              {step.body}
+            </p>
+          </li>
+        ))}
+      </ol>
     </div>
   </section>
 

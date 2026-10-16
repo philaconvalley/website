@@ -242,14 +242,15 @@ Real conflicts between the current build and the tooling now installed. Each nee
 
 1. **Foundation.** Edition 1.2 tokens in `tailwind.config.mjs`, the re-tuned type scale, `Button`, `.card`, the single focus ring, `Header`, `Footer`, the closing pigeon section, and `docs/design-system.md` updated in the same PR. Delete `.gradient-text` here (tension 1).
 2. **Content.** The nine project files (tension 5). No visual change.
-3. **Pages, one PR each.** Home first, because it is the proof the system works (**built 10/15/2026** on branch `home/redesign`). The Home PR removes LabTrack and adds the "everything we do" section; the Events PR adds LabTrack (motion rule 1). Then Join, Support, Events, About, Projects, Arcade, Resources, and Contact.
+3. **Pages, one PR each.** Home first, because it is the proof the system works (**built 10/15/2026** on branch `home/redesign`). The Home PR moves the animated LabTrack to Events (motion rule 1) and adds the "everything we do" section. Home keeps a static "How a Lab night works" section, placed after the programs so a visitor first sees several kinds of nights (Waskar, 10/15/2026, answering Diego's one-night concern). Then Join, Support, Events, About, Projects, Arcade, Resources, and Contact.
 
 **Rules for every page PR:**
 
 - **Copy is decided per page, at that page's PR.** The mockup copy is a proposal. Waskar picks mockup copy or current copy for each page. The prose budget applies either way.
-- **Claims confirmed 10/15/2026, and safe to ship:** the Lab night timeline (doors at 6:30, teams by 7:00, a first pull request merged and live by the end), "Free. Forever.", and agency fees keeping programs free. Any other new factual claim needs a yes before it ships.
+- **Claims confirmed 10/15/2026, and safe to ship:** the Lab night timeline (doors at 6:30, teams by 7:00, a first pull request merged and live by the end), "Free. Forever.", agency fees keeping programs free, and Stoop as a real program (confirmed later on 10/15/2026). Any other new factual claim needs a yes before it ships.
 - **Placeholders never ship.** Each `[PHOTO]`, `[MASCOT]`, `[SCREENSHOT]`, `[DATE]`, and `[VENUE]` slot maps to a real source: the gallery collection, `public/images/`, `public/images/arcade/`, or build-time Luma data. With no source, the slot is absent.
 - **Live numbers stay live.** The mockup hard-codes 493 / 15 / 9. The build reads them from `src/config.ts` and `src/lib/community.ts`, and it tolerates each one being absent.
+- **Exact-match sections.** When Waskar asks for a section to match the mockup exactly, the mockup wins over the craft floor's no-label rule. Home's "Why we exist" section (10/15/2026) keeps its small label above the heading. Grey text stays out: the mockup's `#3A3A3A` ships as ink at 85%.
 - **Keep what works.** Routes, `data-testid` selectors, the Alpine.js mobile menu (the mockup's sideways-scrolling nav is not adopted), the Formspree form, and the CSP stay unchanged.
 
 ## How to change this system

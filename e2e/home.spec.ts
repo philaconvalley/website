@@ -52,7 +52,24 @@ test('the hero photo is one of the hero-eligible gallery photos, with its alt te
 test('a number already on screen at load never jumps back to 0', async ({ page }) => {
   // A window tall enough to show the numbers band at load (a tall monitor or
   // a zoomed-out page). The count may run or not; the value must never drop.
-  for (const height of [3300, 3527, 3700]) {
+  // The heights come from the band's real position, so new sections above it
+  // do not move it out of the test's windows.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  const band = await page
+    .locator('[data-count]')
+    .first()
+    .evaluate((el) => {
+      const box = el.getBoundingClientRect();
+      return { top: Math.round(box.top + scrollY), height: Math.round(box.height) };
+    });
+  // Just the top edge visible, about half visible, and fully visible.
+  const heights = [
+    band.top + 10,
+    band.top + Math.round(band.height / 2),
+    band.top + band.height + 50,
+  ];
+  for (const height of heights) {
     await page.setViewportSize({ width: 1440, height });
     await page.goto('/');
     const counter = page.locator('[data-count]').first();
@@ -74,4 +91,32 @@ test('Home downloads exactly one hero photo', async ({ page }) => {
   });
   await page.goto('/', { waitUntil: 'networkidle' });
   expect(gallery, gallery.join('\n')).toHaveLength(1);
+});
+
+test('the hero stat line shows the same live numbers as the band, and no wrapped line starts with a slash', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.goto('/');
+  const items = page.getByTestId('hero-stats').locator('li');
+  await expect(items).toHaveCount(3);
+  const values = await page
+    .locator('[data-count]')
+    .evaluateAll((els) => els.map((el) => el.getAttribute('data-count')));
+  for (const [i, item] of (await items.all()).entries()) {
+    await expect(item).toContainText(values[i]!);
+  }
+  // A slash is visible only when its item does not start a line: it must sit
+  // inside the clipping wrapper, to the right of the wrapper's left edge.
+  const wrapperLeft = await page
+    .getByTestId('hero-stats')
+    .evaluate((ul) => ul.parentElement!.getBoundingClientRect().left);
+  for (const item of await items.all()) {
+    const itemLeft = await item.evaluate((li) => li.getBoundingClientRect().left + 40);
+    const slashLeft = await item
+      .locator('[aria-hidden="true"]')
+      .evaluate((s) => s.getBoundingClientRect().left);
+    if (Math.abs(itemLeft - wrapperLeft) < 2) expect(slashLeft).toBeLessThan(wrapperLeft);
+    else expect(slashLeft).toBeGreaterThanOrEqual(wrapperLeft);
+  }
 });
