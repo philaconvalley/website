@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { community } from '../src/config';
+import { community, links } from '../src/config';
+import { parseValues } from '../src/lib/parse-handbook-values';
 
 /**
  * About, Edition 1.2. The page's facts must match the rest of the site:
@@ -39,10 +40,63 @@ test('"Join N of us" shows the live member count', async ({ page }) => {
   await expect(page.getByTestId('join-count')).toHaveAttribute('href', '/join');
 });
 
-test('About lists six values, in order', async ({ page }) => {
+test('About shows every handbook value, with its source links', async ({ page }) => {
   await page.goto('/about');
-  const values = page.locator('ol > li h3');
-  await expect(values).toHaveCount(6);
-  await expect(values.first()).toHaveText('Centering the margins');
-  await expect(values.last()).toHaveText('Radical welcome');
+  const values = page.getByTestId('values').locator('li');
+  const count = await values.count();
+  expect(count).toBeGreaterThan(0);
+  for (const value of await values.all()) {
+    await expect(value.locator('h3')).not.toBeEmpty();
+    await expect(value.locator('p')).not.toBeEmpty();
+  }
+  // The headline count follows the handbook ("Six things" for six values).
+  const words = [
+    'Zero',
+    'One',
+    'Two',
+    'Three',
+    'Four',
+    'Five',
+    'Six',
+    'Seven',
+    'Eight',
+    'Nine',
+    'Ten',
+  ];
+  await expect(page.getByRole('heading', { level: 2, name: /don't bend on/i })).toContainText(
+    words[count] ?? String(count),
+  );
+  const source = page.getByTestId('values-source');
+  await expect(source.getByRole('link', { name: 'Read our values' })).toHaveAttribute(
+    'href',
+    links.handbook.values,
+  );
+  await expect(source.getByRole('link', { name: 'Read our community guidelines' })).toHaveAttribute(
+    'href',
+    links.handbook.guidelines,
+  );
+});
+
+test('the handbook parser reads each heading and its first sentence, and rejects a broken file', () => {
+  const markdown = [
+    '# Community Values',
+    '',
+    '> **Status:** Draft',
+    '',
+    'Intro paragraph that is not a value.',
+    '',
+    '---',
+    '',
+    '## Belonging',
+    'Everyone belongs here. We make **space** for people.',
+    '',
+    '## Joy',
+    'Tech can be [joyful](https://example.com)! More text.',
+  ].join('\n');
+  expect(parseValues(markdown)).toEqual([
+    { name: 'Belonging', line: 'Everyone belongs here.' },
+    { name: 'Joy', line: 'Tech can be joyful!' },
+  ]);
+  expect(parseValues('# Values\n\nNo headings here.')).toBeNull();
+  expect(parseValues('## Empty heading\n')).toBeNull();
 });

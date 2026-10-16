@@ -43,6 +43,15 @@ export const links = {
     org: 'https://github.com/philaconvalley',
     website: 'https://github.com/philaconvalley/website',
   },
+  /** The Community Handbook: the one source of truth for the values. */
+  handbook: {
+    values:
+      'https://github.com/philaconvalley/community-handbook/blob/main/foundation/community-values.md',
+    valuesRaw:
+      'https://raw.githubusercontent.com/philaconvalley/community-handbook/main/foundation/community-values.md',
+    guidelines:
+      'https://github.com/philaconvalley/community-handbook/blob/main/governance/community-guidelines.md',
+  },
   social: {
     instagram: 'https://www.instagram.com/phlconvalley/',
     linkedin: 'https://www.linkedin.com/company/philaconvalley/',

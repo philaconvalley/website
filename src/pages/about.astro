@@ -3,7 +3,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Button from '../components/Button.astro';
 import ClosingFlock from '../components/ClosingFlock.astro';
 import ProgramCards from '../components/ProgramCards.astro';
-import { community } from '../config';
+import { community, links } from '../config';
+import { getHandbookValues } from '../lib/handbook';
 
 /**
  * About, Edition 1.2 (DESIGN.md, "The 1.2 redesign"). Mode: Read. Sections
@@ -17,45 +18,33 @@ import { community } from '../config';
  *   (src/config.ts), so the two pages always show one number.
  * - The closing section is the shared ClosingFlock, as on every page.
  *
- * Every claim here is already live or confirmed: the story and the six values
- * shipped on the old About page; the programs and the agency model are in
- * DESIGN.md's confirmed claims.
+ * - The values come from the Community Handbook at build time
+ *   (src/lib/handbook.ts), so About follows the handbook on every deploy.
+ *
+ * Every claim here is already live or confirmed: the story shipped on the old
+ * About page; the values are the handbook's own words; the programs and the
+ * agency model are in DESIGN.md's confirmed claims.
  */
 
-// The mockup's copy. Fills follow the mockup: 03 yellow, 06 pink, the rest
-// white, all on ink.
-const values = [
-  {
-    name: 'Centering the margins',
-    line: 'Black, Brown, LGBTQIA+ and underrepresented people lead this community, not just attend it.',
-    fill: 'bg-white',
-  },
-  {
-    name: 'Hands-on learning',
-    line: 'We build instead of watching slides, so you leave every session with something that works.',
-    fill: 'bg-white',
-  },
-  {
-    name: 'Community over competition',
-    line: 'Your win is our win. We help each other get there instead of racing each other.',
-    fill: 'bg-brand-yellow',
-  },
-  {
-    name: 'Philly pride',
-    line: 'Built in Philadelphia, by Philadelphians, on purpose.',
-    fill: 'bg-white',
-  },
-  {
-    name: 'Open knowledge',
-    line: 'Our projects are open source and our resources are free. Take them, use them, improve them.',
-    fill: 'bg-white',
-  },
-  {
-    name: 'Radical welcome',
-    line: 'First-timers and seniors sit at the same table. Every experience level belongs here.',
-    fill: 'bg-brand-pink',
-  },
+// Every value in the Community Handbook, in its order: the one source of truth
+// (Waskar, 10/16/2026). The page keeps no list of its own.
+const values = await getHandbookValues();
+// The mockup's fill rhythm: every third card yellow, every sixth pink.
+const fills = ['bg-white', 'bg-white', 'bg-brand-yellow', 'bg-white', 'bg-white', 'bg-brand-pink'];
+const countWords = [
+  'Zero',
+  'One',
+  'Two',
+  'Three',
+  'Four',
+  'Five',
+  'Six',
+  'Seven',
+  'Eight',
+  'Nine',
+  'Ten',
 ];
+const valueCount = countWords[values.length] ?? String(values.length);
 ---
 
 <BaseLayout
@@ -135,19 +124,24 @@ const values = [
     </div>
   </section>
 
-  <!-- What we hold to: six numbered values on ink (mockup). The numbers stay
-       for the exact mockup match, as on Home's "Four ways in". -->
+  <!-- What we hold to: every handbook value on ink, numbered (mockup layout).
+       Name and first sentence only; the handbook holds the full text. -->
   <section class="bg-brand-dark text-white border-t-2 border-brand-dark">
     <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
       <div class="flex flex-col gap-[22px] max-w-[820px]">
         <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">What we hold to</p>
         <h2 class="m-0">
-          Six things we <span class="text-brand-yellow">don't bend on.</span>
+          {valueCount} things we <span class="text-brand-yellow">don't bend on.</span>
         </h2>
       </div>
-      <ol class="m-0 p-0 list-none grid gap-5 grid-cols-[repeat(auto-fit,minmax(300px,1fr))]">
+      <ol
+        class="m-0 p-0 list-none grid gap-5 grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))]"
+        data-testid="values"
+      >
         {values.map((value, i) => (
-          <li class={`${value.fill} text-brand-dark rounded-retro p-[30px] flex flex-col gap-3.5`}>
+          <li
+            class={`${fills[i % fills.length]} text-brand-dark rounded-retro p-[30px] flex flex-col gap-3.5`}
+          >
             <span class="font-black text-[13px] tracking-[0.2em]" aria-hidden="true">
               {String(i + 1).padStart(2, '0')}
             </span>
@@ -156,6 +150,31 @@ const values = [
           </li>
         ))}
       </ol>
+      <!-- Where the values come from. The claim is the handbook's own
+           (CONTRIBUTING.md): it belongs to the community, and anyone can
+           suggest a change. -->
+      <div class="flex flex-wrap items-center gap-x-8 gap-y-3" data-testid="values-source">
+        <p class="m-0 basis-full text-lg leading-[1.55] text-white/85">
+          <strong class="text-white">These come from our Community Handbook.</strong> It belongs to
+          the community, and anyone can suggest a change.
+        </p>
+        <a
+          href={links.handbook.values}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center min-h-11 font-black text-white underline underline-offset-[6px] decoration-[3px] decoration-brand-yellow"
+        >
+          Read our values
+        </a>
+        <a
+          href={links.handbook.guidelines}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center min-h-11 font-black text-white underline underline-offset-[6px] decoration-[3px] decoration-brand-yellow"
+        >
+          Read our community guidelines
+        </a>
+      </div>
     </div>
   </section>
 

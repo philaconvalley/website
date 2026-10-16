@@ -1,0 +1,30 @@
+{
+  "_comment": "Last-known-good community values from the Community Handbook (foundation/community-values.md). Used ONLY when GitHub fails to answer during a build. Regenerate with `npm run data:refresh` and commit the diff.",
+  "_generated": "2026-10-16",
+  "values": [
+    {
+      "name": "Belonging",
+      "line": "Everyone who walks through the door belongs here."
+    },
+    {
+      "name": "Curiosity",
+      "line": "We ask questions without shame and explore ideas without needing all the answers first."
+    },
+    {
+      "name": "Craft",
+      "line": "We care about the quality of what we make."
+    },
+    {
+      "name": "Generosity",
+      "line": "We share what we know."
+    },
+    {
+      "name": "Accountability",
+      "line": "We own our mistakes."
+    },
+    {
+      "name": "Joy",
+      "line": "Tech can be joyful."
+    }
+  ]
+}
