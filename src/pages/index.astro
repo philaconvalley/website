@@ -154,21 +154,36 @@ const stats = [
 
       {photo && (
         <figure class="relative m-0" data-hero-photos={JSON.stringify(heroPhotos)}>
+          <!-- No src in the HTML: the script right after this figure picks the
+               photo first, so the browser loads one photo and paints it once
+               (no swap after load). Width and height reserve the space. -->
           <img
-            src={photo.src}
-            srcset={photo.srcset}
+            data-hero-img
             sizes="(min-width: 1024px) 40vw, 100vw"
-            alt={photo.alt}
-            fetchpriority="high"
+            alt=""
             width="1600"
             height="1067"
             class="block w-full h-auto aspect-[4/3] object-cover rounded-retro border-2 border-brand-dark shadow-retro-xl"
           />
+          <noscript>
+            <img
+              src={photo.src}
+              srcset={photo.srcset}
+              sizes="(min-width: 1024px) 40vw, 100vw"
+              alt={photo.alt}
+              width="1600"
+              height="1067"
+              class="block w-full h-auto aspect-[4/3] object-cover rounded-retro border-2 border-brand-dark shadow-retro-xl"
+            />
+          </noscript>
           <span class="sticker bg-brand-pink absolute -top-4 -right-2 lg:-right-4 rotate-[4deg] text-lg lg:text-2xl">
             Free. Forever.
           </span>
         </figure>
       )}
+      {/* Parser-blocking on purpose (no defer): it must set the photo before
+          the page paints. It is tiny and cached. */}
+      {photo && <script is:inline src="/js/hero-photo.js"></script>}
     </div>
   </section>
 
@@ -260,7 +275,7 @@ const stats = [
   >
     <dl class="container-custom py-16 lg:py-20 grid gap-10 sm:grid-cols-3 my-0">
       {stats.map((stat) => (
-        <div class="pcv-enter-stat">
+        <div>
           <dt class="sr-only">{stat.label}</dt>
           <dd class="m-0">
             <!-- The HTML holds the real number (no-JS, search, screen readers).

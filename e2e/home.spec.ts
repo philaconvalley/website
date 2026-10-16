@@ -48,3 +48,30 @@ test('the hero photo is one of the hero-eligible gallery photos, with its alt te
   expect(match, `hero src ${src} is not in the eligible set`).toBeTruthy();
   await expect(img).toHaveAttribute('alt', match!.alt);
 });
+
+test('a number already on screen at load never jumps back to 0', async ({ page }) => {
+  // A window tall enough to show the numbers band at load (a tall monitor or
+  // a zoomed-out page). The count may run or not; the value must never drop.
+  for (const height of [3300, 3527, 3700]) {
+    await page.setViewportSize({ width: 1440, height });
+    await page.goto('/');
+    const counter = page.locator('[data-count]').first();
+    const values: number[] = [];
+    for (let i = 0; i < 8; i++) {
+      values.push(Number(await counter.textContent()));
+      await page.mouse.wheel(0, 120);
+      await page.waitForTimeout(150);
+    }
+    const dropped = values.some((value, i) => i > 0 && value < values[i - 1]);
+    expect(dropped, `values at ${height}px: ${values.join(' → ')}`).toBe(false);
+  }
+});
+
+test('Home downloads exactly one hero photo', async ({ page }) => {
+  const gallery: string[] = [];
+  page.on('request', (request) => {
+    if (request.url().includes('/images/gallery/')) gallery.push(request.url());
+  });
+  await page.goto('/', { waitUntil: 'networkidle' });
+  expect(gallery, gallery.join('\n')).toHaveLength(1);
+});

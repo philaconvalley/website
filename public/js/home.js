@@ -1,28 +1,9 @@
-// Home page behavior. Served as a file, not inlined, because the CSP allows
+// Home page: the number count-up. Served as a file, not inlined, because the CSP allows
 // scripts from this origin only (script-src 'self'); Astro inlines small
 // <script> blocks, which the CSP blocks. Same pattern as event-freshness.js.
+// The hero photo pick lives in hero-photo.js, which must run earlier.
 
-// 1. Hero photo: one hero-eligible gallery photo at random per visit, so
-//    returning visitors see more of the room. Runs once; no fade, no rotation
-//    (a timed rotation would be a second loop, DESIGN.md motion rule 1).
-(function shuffleHeroPhoto() {
-  var figure = document.querySelector('[data-hero-photos]');
-  var img = figure && figure.querySelector('img');
-  if (!figure || !img) return;
-  var photos;
-  try {
-    photos = JSON.parse(figure.getAttribute('data-hero-photos') || '[]');
-  } catch (e) {
-    return;
-  }
-  if (photos.length < 2) return;
-  var pick = photos[Math.floor(Math.random() * photos.length)];
-  img.srcset = pick.srcset;
-  img.src = pick.src;
-  img.alt = pick.alt;
-})();
-
-// 2. The live numbers count up once, when the band scrolls into view: 1.2s,
+// The live numbers count up once, when the band scrolls into view: 1.2s,
 //    decelerating. The HTML already holds the real values (no-JS, search) and
 //    an sr-only copy is what assistive tech reads. Skipped under reduced motion.
 (function countUp() {
@@ -47,20 +28,36 @@
     requestAnimationFrame(tick);
   }
 
+  // The observer's first report decides, not a measurement at script time
+  // (web fonts can still move the layout then). Fully off screen in that first
+  // report: reset to 0 and count once the number is 60% visible. Any part
+  // visible: keep the real value and never count, so a visible number can
+  // never jump back to 0.
+  var armed = new WeakSet();
+  var seen = new WeakSet();
   var io = new IntersectionObserver(
     function (entries) {
       entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        io.unobserve(entry.target);
-        run(entry.target);
+        var el = entry.target;
+        if (!seen.has(el)) {
+          seen.add(el);
+          if (entry.intersectionRatio === 0) {
+            el.textContent = '0';
+            armed.add(el);
+          } else {
+            io.unobserve(el);
+          }
+          return;
+        }
+        if (armed.has(el) && entry.intersectionRatio >= 0.6) {
+          io.unobserve(el);
+          run(el);
+        }
       });
     },
-    { threshold: 0.6 },
+    { threshold: [0, 0.6] },
   );
   counters.forEach(function (el) {
-    // Start from zero only for numbers not on screen yet, so nothing visible
-    // ever jumps backward.
-    if (el.getBoundingClientRect().top > window.innerHeight) el.textContent = '0';
     io.observe(el);
   });
 })();
