@@ -6,6 +6,7 @@ import EventBar from '../components/EventBar.astro';
 import { getCommunityData, formatEventDate } from '../lib/community';
 import { community, links } from '../config';
 import { getCollection } from 'astro:content';
+import { labNight } from '../data/lab-night';
 
 const { nextEvent, nightsHeld, thingsShipped } = await getCommunityData();
 
@@ -85,32 +86,18 @@ const programs = [
   },
 ];
 
-// How a Lab night works. The times and the outcome are confirmed claims
-// (DESIGN.md, "The 1.2 redesign"). The numbers stay: the order matters.
-const labNight = [
-  {
-    time: '6:30 PM',
-    title: 'Walk in alone.',
-    body: "Nobody asks for a résumé at the door. Find a seat, say hi, and you're already part of it.",
-    fill: 'bg-white',
-    tag: 'bg-brand-yellow',
-  },
-  {
-    time: '7:00 PM',
-    title: 'Two others join you.',
-    body: "By seven you're on a small team, building something real with people you met half an hour ago.",
-    fill: 'bg-white',
-    tag: 'bg-brand-amber',
-  },
-  {
-    time: '9:41 PM',
-    title: 'Leave with it live.',
-    body: "Your first pull request, reviewed, merged and live. You walk out with something that didn't exist when you walked in.",
-    fill: 'bg-brand-pink',
-    tag: 'bg-white',
-    edge: 'border-brand-pink',
-  },
-];
+// How a night goes: five steps from src/data/lab-night.ts, checked against
+// every past Luma event (Waskar, 10/16/2026). Card colors follow the mockup:
+// the last step, the one you leave with, is pink.
+const nightCards = labNight.map((step, i, all) => {
+  const last = i === all.length - 1;
+  return {
+    ...step,
+    fill: last ? 'bg-brand-pink' : 'bg-white',
+    tag: last ? 'bg-white' : ['bg-brand-yellow', 'bg-brand-amber'][i % 2],
+    edge: last ? 'border-brand-pink' : 'border-white',
+  };
+});
 
 // The mockup's "Four ways in", its copy and links exactly (Waskar, 10/15/2026).
 // Each whole card is one link to a page on this site.
@@ -376,26 +363,28 @@ const stats = [
           See upcoming nights
         </Button>
       </div>
-      <ol class="m-0 p-0 list-none grid gap-6 grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
-        {labNight.map((step, i) => (
+      <!-- Five across from 1280px; three per row from 1024px and two on
+           tablets, with the last step filling its row; one per row on phones. -->
+      <ol class="m-0 p-0 list-none grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        {nightCards.map((step, i) => (
           <li
-            class={`rounded-retro border-2 ${step.edge ?? 'border-white'} ${step.fill} text-brand-dark p-8 flex flex-col gap-[18px]`}
+            class={`rounded-retro border-2 ${step.edge} ${step.fill} text-brand-dark p-6 flex flex-col gap-4 ${i === nightCards.length - 1 ? 'sm:col-span-2 xl:col-span-1' : ''}`}
           >
-            <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center gap-3">
               <span class="font-black text-[13px] tracking-[0.2em]" aria-hidden="true">
                 {String(i + 1).padStart(2, '0')}
               </span>
               <span
-                class={`rounded-full border-2 border-brand-dark ${step.tag} px-3 py-1 font-black text-[13px]`}
+                class={`rounded-full border-2 border-brand-dark ${step.tag} px-3 py-1 font-black text-[13px] whitespace-nowrap`}
               >
                 {step.time}
               </span>
             </div>
-            <h3 class="m-0 text-[34px] leading-none">{step.title}</h3>
+            <h3 class="m-0 text-[28px] leading-none">{step.title}</h3>
             <p
-              class={`m-0 text-[17px] leading-[1.55] ${step.fill === 'bg-white' ? 'text-brand-dark/85' : ''}`}
+              class={`m-0 text-base leading-[1.55] ${step.fill === 'bg-white' ? 'text-brand-dark/85' : ''}`}
             >
-              {step.body}
+              {step.line}
             </p>
           </li>
         ))}

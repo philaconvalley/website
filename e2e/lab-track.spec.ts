@@ -25,7 +25,7 @@ import { test, expect } from '@playwright/test';
 
 const PHONE_WIDTHS = [320, 360, 375, 390, 414, 430];
 
-const CAPTIONS = ['6:30pm · you arrive alone', '7:00pm · two others pull up a chair'];
+const CAPTIONS = ['6:00pm · you arrive', '7:15pm · build together or solo'];
 
 interface Box {
   x: number;
