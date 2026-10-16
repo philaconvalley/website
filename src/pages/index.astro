@@ -151,6 +151,9 @@ const stats = [
 <BaseLayout title="PhilaCon Valley — Come as you are. Leave with a flock." description={tagline}>
   <!-- BaseLayout already wraps the page slot in <main id="main-content">. -->
 
+  {/* Parser-blocking on purpose: hides the stats before they paint, so the
+      odometer can play on every load without a flash (see the file). */}
+  <script is:inline src="/js/odo-arm.js"></script>
   <!-- Hero: Golden Yellow (DESIGN.md, hero table). -->
   <section class="bg-brand-yellow">
     <div class="container-custom pt-16 pb-20 lg:pt-24 lg:pb-28 grid gap-12 lg:grid-cols-[1.15fr_1fr] lg:items-center">
@@ -187,8 +190,9 @@ const stats = [
             Join the community
           </Button>
         </div>
-        <!-- The same live numbers as the pink band below, at a glance. Static:
-             only the band counts up (one count-up per page).
+        <!-- The same live numbers as the pink band below, at a glance. They roll
+             in like the band (public/js/home.js). The real number stays in the
+             text, so screen readers read it; the rolling copy is aria-hidden.
              Each slash sits in its item's left padding, and the list is pulled
              left by that padding. A slash that starts a line falls outside the
              wrapper and is clipped, so a wrapped line never opens with "/". -->
@@ -199,11 +203,13 @@ const stats = [
             data-testid="hero-stats"
           >
             {stats.map((stat) => (
-              <li class="relative pl-10">
+              <li class="relative pl-10" data-odo-item>
                 <span aria-hidden="true" class="absolute left-4 bottom-0">
                   /
                 </span>
-                <span class="text-2xl lg:text-3xl tabular-nums">{stat.value}</span>{' '}
+                <span data-count={stat.value} class="relative text-2xl lg:text-3xl tabular-nums">
+                  {stat.value}
+                </span>{' '}
                 {stat.label.replace(/\.$/, '')}
               </li>
             ))}
@@ -429,22 +435,34 @@ const stats = [
   >
     <dl class="container-custom py-[clamp(56px,7vw,96px)] my-0 grid gap-8 grid-cols-[repeat(auto-fit,minmax(240px,1fr))]">
       {stats.map((stat) => (
-        <div class="border-l-[3px] border-brand-dark pl-6">
+        <div class="relative pl-6" data-odo-item>
+          <!-- The ink rule is its own element so it can draw in with a
+               transform (an animated border would repaint). -->
+          <span
+            aria-hidden="true"
+            data-odo-rule
+            class="absolute left-0 inset-y-0 w-[3px] bg-brand-dark"
+          ></span>
           <dt class="sr-only">{stat.label}</dt>
           <dd class="m-0 flex flex-col gap-1.5">
             <!-- The HTML holds the real number (no-JS, search, screen readers).
-                 The visible copy counts up once on scroll; the sr-only copy
-                 is what assistive tech reads, so it never hears the count. -->
+                 The visible copy rolls in once on scroll (public/js/home.js);
+                 the sr-only copy is what assistive tech reads, so it never
+                 hears the roll. -->
             <span
               aria-hidden="true"
               data-count={stat.value}
-              class="font-display font-extrabold text-[clamp(80px,10vw,140px)] leading-[0.85] tabular-nums"
+              class="relative font-display font-extrabold text-[clamp(80px,10vw,140px)] leading-[0.85] tabular-nums"
             >
               {stat.value}
             </span>
             <span class="sr-only">{stat.value}</span>{' '}
-            <span class="font-black text-xl">{stat.label}</span>{' '}
-            <span class="font-bold text-base">{stat.note}</span>
+            <span data-odo-rise class="font-black text-xl">
+              {stat.label}
+            </span>{' '}
+            <span data-odo-rise class="font-bold text-base">
+              {stat.note}
+            </span>
           </dd>
         </div>
       ))}

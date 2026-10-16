@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test';
 
 /**
  * Home, Edition 1.2. Two behaviors added in the Home PR:
- * - The live numbers count up once on scroll, but the HTML and the screen
- *   reader copy always hold the real values.
+ * - The live numbers roll in like an odometer on every load, but the HTML and
+ *   the screen reader copy always hold the real values.
  * - The hero shows one hero-eligible gallery photo, picked at random per visit.
  */
 
@@ -11,7 +11,7 @@ test('the live numbers settle on their real values, and screen readers never hea
   page,
 }) => {
   await page.goto('/');
-  const counters = page.locator('[data-count]');
+  const counters = page.locator('section[aria-label="PhilaCon Valley in numbers"] [data-count]');
   await expect(counters).toHaveCount(3);
   await counters.first().scrollIntoViewIfNeeded();
 
@@ -24,9 +24,10 @@ test('the live numbers settle on their real values, and screen readers never hea
   }
 });
 
-test('under reduced motion the numbers never count', async ({ page }) => {
+test('under reduced motion the numbers never roll', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
+  // Band and hero stat line both settle; the hero number sits inside its label.
   for (const counter of await page.locator('[data-count]').all()) {
     await expect(counter).toHaveText((await counter.getAttribute('data-count'))!);
   }
@@ -49,39 +50,53 @@ test('the hero photo is one of the hero-eligible gallery photos, with its alt te
   await expect(img).toHaveAttribute('alt', match!.alt);
 });
 
-test('a number already on screen at load never jumps back to 0', async ({ page }) => {
-  // A window tall enough to show the numbers band at load (a tall monitor or
-  // a zoomed-out page). The count may run or not; the value must never drop.
-  // The heights come from the band's real position, so new sections above it
-  // do not move it out of the test's windows.
+test('a load with the numbers band in view plays the roll, with no real number shown first', async ({
+  page,
+}) => {
+  // A window tall enough to show the band at load (a refresh that restores
+  // the scroll position behaves the same). Hold home.js back for a moment to
+  // look at the page before the roll starts.
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
-  const band = await page
-    .locator('[data-count]')
+  const bandTop = await page
+    .locator('section[aria-label="PhilaCon Valley in numbers"] [data-count]')
     .first()
-    .evaluate((el) => {
-      const box = el.getBoundingClientRect();
-      return { top: Math.round(box.top + scrollY), height: Math.round(box.height) };
-    });
-  // Just the top edge visible, about half visible, and fully visible.
-  const heights = [
-    band.top + 10,
-    band.top + Math.round(band.height / 2),
-    band.top + band.height + 50,
-  ];
-  for (const height of heights) {
-    await page.setViewportSize({ width: 1440, height });
-    await page.goto('/');
-    const counter = page.locator('[data-count]').first();
-    const values: number[] = [];
-    for (let i = 0; i < 8; i++) {
-      values.push(Number(await counter.textContent()));
-      await page.mouse.wheel(0, 120);
-      await page.waitForTimeout(150);
-    }
-    const dropped = values.some((value, i) => i > 0 && value < values[i - 1]);
-    expect(dropped, `values at ${height}px: ${values.join(' → ')}`).toBe(false);
+    .evaluate((el) => Math.round(el.getBoundingClientRect().top + scrollY));
+  await page.setViewportSize({ width: 1440, height: bandTop + 400 });
+  let release!: () => void;
+  const held = new Promise<void>((resolve) => (release = resolve));
+  await page.route('**/js/home.js', async (route) => {
+    await held;
+    await route.continue();
+  });
+  const loading = page.goto('/');
+  await page.waitForSelector('[data-count]', { state: 'attached' });
+  // Before the roll: every number is hidden (transparent), never shown real.
+  for (const color of await page
+    .locator('[data-count]')
+    .evaluateAll((els) => els.map((el) => getComputedStyle(el).color))) {
+    expect(color).toBe('rgba(0, 0, 0, 0)');
   }
+  release();
+  await loading;
+  const items = page.locator('[data-odo-item]');
+  await expect(items.first()).toHaveAttribute('data-odo', 'play');
+  for (const item of await items.all()) {
+    await expect(item).toHaveAttribute('data-odo', 'done', { timeout: 4000 });
+  }
+  // Band and hero stat line both settle; the hero number sits inside its label.
+  for (const counter of await page.locator('[data-count]').all()) {
+    await expect(counter).toHaveText((await counter.getAttribute('data-count'))!);
+  }
+});
+
+test('if home.js never loads, the numbers still show after the safety timer', async ({ page }) => {
+  await page.route('**/js/home.js', (route) => route.abort());
+  await page.goto('/');
+  const counter = page.locator('[data-count]').first();
+  await expect
+    .poll(() => counter.evaluate((el) => getComputedStyle(el).color), { timeout: 5000 })
+    .toBe('rgb(26, 26, 26)');
 });
 
 test('Home downloads exactly one hero photo', async ({ page }) => {
@@ -101,7 +116,7 @@ test('the hero stat line shows the same live numbers as the band, and no wrapped
   const items = page.getByTestId('hero-stats').locator('li');
   await expect(items).toHaveCount(3);
   const values = await page
-    .locator('[data-count]')
+    .locator('section[aria-label="PhilaCon Valley in numbers"] [data-count]')
     .evaluateAll((els) => els.map((el) => el.getAttribute('data-count')));
   for (const [i, item] of (await items.all()).entries()) {
     await expect(item).toContainText(values[i]!);
@@ -114,7 +129,7 @@ test('the hero stat line shows the same live numbers as the band, and no wrapped
   for (const item of await items.all()) {
     const itemLeft = await item.evaluate((li) => li.getBoundingClientRect().left + 40);
     const slashLeft = await item
-      .locator('[aria-hidden="true"]')
+      .locator(':scope > [aria-hidden="true"]')
       .evaluate((s) => s.getBoundingClientRect().left);
     if (Math.abs(itemLeft - wrapperLeft) < 2) expect(slashLeft).toBeLessThan(wrapperLeft);
     else expect(slashLeft).toBeGreaterThanOrEqual(wrapperLeft);
