@@ -100,21 +100,21 @@ const labNight = [
   },
 ];
 
+// The mockup's "Four ways in", its copy and links exactly (Waskar, 10/15/2026).
+// Each whole card is one link to a page on this site.
 const waysIn = [
   {
     title: 'Come to a night.',
     body: "RSVP on Luma, bring a laptop if you have one, and walk in. That's it.",
     cta: 'See events',
     href: '/events',
-    external: false,
     fill: 'bg-white',
   },
   {
     title: 'Join the Discord.',
     body: "The flock lives there between events. Ask questions, share what you're building, find your people.",
     cta: 'Join the community',
-    href: links.discord,
-    external: true,
+    href: '/join',
     fill: 'bg-white',
   },
   {
@@ -122,15 +122,13 @@ const waysIn = [
     body: 'Everything we build is open source. Pick an issue on one of our projects and make your first contribution.',
     cta: 'Browse projects',
     href: '/projects',
-    external: false,
     fill: 'bg-white',
   },
   {
     title: 'Bring us a project.',
-    body: 'We build design, apps, and software for Philly nonprofits and community orgs. The fees keep every program free.',
+    body: 'We build design, apps and software for Philly nonprofits and community orgs. The fees keep every program free.',
     cta: 'Start a project',
     href: '/contact',
-    external: false,
     fill: 'bg-brand-coral',
   },
 ];
@@ -284,7 +282,7 @@ const stats = [
   <section class="bg-white border-t-2 border-brand-dark">
     <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
       <div class="flex flex-wrap justify-between items-end gap-6">
-        <div class="flex flex-col gap-[22px] max-w-[760px]">
+        <div class="grow basis-[600px] min-w-0 flex flex-col gap-[22px] max-w-[760px]">
           <p class="m-0 self-start pill bg-brand-pink font-black text-[13px] tracking-[0.2em] uppercase">
             What happens here
           </p>
@@ -342,7 +340,7 @@ const stats = [
   <section class="bg-brand-dark text-white border-t-2 border-brand-dark">
     <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
       <div class="flex flex-wrap justify-between items-end gap-6">
-        <div class="flex flex-col gap-[22px] max-w-[820px]">
+        <div class="grow basis-[600px] min-w-0 flex flex-col gap-[22px] max-w-[820px]">
           <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">How a Lab night works</p>
           <h2 class="m-0">
             One night. Three hours.{' '}
@@ -380,82 +378,103 @@ const stats = [
     </div>
   </section>
 
-  <!-- Four ways in -->
+  <!-- Four ways in: matches the mockup exactly (Waskar, 10/15/2026),
+       including its 01-04 numbers. -->
   <section class="bg-brand-yellow border-t-2 border-brand-dark">
-    <div class="container-custom py-20 lg:py-28">
-      <h2 class="m-0 max-w-[18ch]">Four ways in. Pick one tonight.</h2>
-      <p class="mt-6 mb-0 text-lg lg:text-xl max-w-[38rem]">
-        You don't have to do all of them. Most people start by showing up once and figure out the
-        rest from there.
-      </p>
-      <ul class="mt-12 grid gap-6 md:grid-cols-2 m-0 p-0 list-none">
-        {waysIn.map((way) => (
-          <li
-            class={`rounded-retro border-2 border-brand-dark shadow-retro-lg ${way.fill} p-7 flex flex-col`}
-          >
-            <h3 class="m-0">{way.title}</h3>
-            <p class="mt-3 mb-0 text-base leading-relaxed flex-1">{way.body}</p>
-            <div class="mt-6">
-              <Button
-                href={way.href}
-                external={way.external}
-                variant={way.fill === 'bg-white' ? 'primary' : 'light'}
+    <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
+      <div class="flex flex-wrap justify-between items-end gap-6">
+        <div class="grow basis-[600px] min-w-0 flex flex-col gap-[22px] max-w-[820px]">
+          <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">How to take part</p>
+          <h2 class="m-0">Four ways in. Pick one tonight.</h2>
+        </div>
+        <p class="m-0 max-w-[380px] text-lg leading-[1.55]">
+          You don't have to do all of them. Most people start by showing up once and figure out the
+          rest from there.
+        </p>
+      </div>
+      <ul class="m-0 p-0 list-none grid gap-6 grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
+        {waysIn.map((way, i) => (
+          <li class="flex">
+            <a
+              href={way.href}
+              class={`card ${way.fill} text-brand-dark no-underline p-7 flex flex-col gap-4 w-full min-h-[280px]`}
+            >
+              <span
+                aria-hidden="true"
+                class="font-display font-extrabold text-[56px] leading-[0.8]"
               >
+                {String(i + 1).padStart(2, '0')}
+              </span>{' '}
+              <h3 class="m-0 text-[30px] leading-none">{way.title}</h3>{' '}
+              <p
+                class={`m-0 text-base leading-[1.55] ${way.fill === 'bg-white' ? 'text-brand-dark/85' : ''}`}
+              >
+                {way.body}
+              </p>{' '}
+              <span class="mt-auto font-black text-base underline underline-offset-[5px] decoration-2">
                 {way.cta}
-              </Button>
-            </div>
+              </span>
+            </a>
           </li>
         ))}
       </ul>
     </div>
   </section>
 
-  <!-- The live numbers (evidence rung 2: build-time real data). -->
+  <!-- The live numbers (evidence rung 2: build-time real data). Layout matches
+       the mockup exactly (Waskar, 10/15/2026): an ink rule on the left of each. -->
   <section
     class="bg-brand-pink border-t-2 border-brand-dark"
     aria-label="PhilaCon Valley in numbers"
   >
-    <dl class="container-custom py-16 lg:py-20 grid gap-10 sm:grid-cols-3 my-0">
+    <dl class="container-custom py-[clamp(56px,7vw,96px)] my-0 grid gap-8 grid-cols-[repeat(auto-fit,minmax(240px,1fr))]">
       {stats.map((stat) => (
-        <div>
+        <div class="border-l-[3px] border-brand-dark pl-6">
           <dt class="sr-only">{stat.label}</dt>
-          <dd class="m-0">
+          <dd class="m-0 flex flex-col gap-1.5">
             <!-- The HTML holds the real number (no-JS, search, screen readers).
-                   The visible copy counts up once on scroll; the sr-only copy
-                   is what assistive tech reads, so it never hears the count. -->
+                 The visible copy counts up once on scroll; the sr-only copy
+                 is what assistive tech reads, so it never hears the count. -->
             <span
               aria-hidden="true"
               data-count={stat.value}
-              class="block font-display font-extrabold text-[4.5rem] lg:text-[6rem] leading-[0.9] tracking-[-0.03em] tabular-nums"
+              class="font-display font-extrabold text-[clamp(80px,10vw,140px)] leading-[0.85] tabular-nums"
             >
               {stat.value}
             </span>
-            <span class="sr-only">{stat.value}</span>
-            <span class="block mt-3 font-display font-extrabold text-xl lg:text-2xl">
-              {stat.label}
-            </span>
-            <span class="block text-lg font-semibold">{stat.note}</span>
+            <span class="sr-only">{stat.value}</span>{' '}
+            <span class="font-black text-xl">{stat.label}</span>{' '}
+            <span class="font-bold text-base">{stat.note}</span>
           </dd>
         </div>
       ))}
     </dl>
   </section>
 
-  <!-- Next up: only for a real scheduled event, never a placeholder. -->
+  <!-- Next up: only for a real scheduled event, never a placeholder. Layout
+       matches the mockup (Waskar, 10/15/2026). The mockup's description line
+       is left out: Luma gives the build no event description. -->
   {nextEvent && (
-    <section class="bg-white border-t-2 border-brand-dark" data-pcv-event-start={nextEvent.start}>
-      <div class="container-custom py-20 lg:py-28">
-        <div class="rounded-retro border-2 border-brand-dark bg-brand-dark text-white p-8 lg:p-14 shadow-retro-xl grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
-          <div>
-            <h2 class="m-0">
-              <span class="text-brand-yellow">Next up:</span> {nextEvent.title}
+    <section
+      class="bg-white border-t-2 border-brand-dark"
+      aria-label="Next event"
+      data-pcv-event-start={nextEvent.start}
+    >
+      <div class="container-custom py-[clamp(56px,7vw,96px)]">
+        <div class="bg-brand-dark text-white border-2 border-brand-dark rounded-[28px] shadow-[10px_10px_0_theme(colors.brand.pink)] p-[clamp(28px,4vw,56px)] flex flex-wrap gap-x-12 gap-y-7 items-center justify-between">
+          <div class="grow shrink basis-[520px] min-w-0 flex flex-col gap-4">
+            <p class="m-0 self-start rounded-full bg-brand-yellow text-brand-dark px-3 py-1 font-black text-xs tracking-[0.14em] uppercase">
+              Next up
+            </p>
+            <h2 class="m-0 text-brand-yellow text-[clamp(40px,5vw,72px)] leading-[0.92]">
+              {nextEvent.title}
             </h2>
-            <p class="mt-5 mb-0 font-mono text-sm uppercase tracking-[0.12em]">
+            <p class="m-0 font-black text-sm tracking-[0.14em] uppercase text-brand-amber">
               {formatEventDate(nextEvent.start)}
               {nextEvent.venue && ` · ${nextEvent.venue}`}
             </p>
           </div>
-          <div class="flex flex-wrap gap-4">
+          <div class="flex flex-wrap gap-3.5">
             <Button href={nextEvent.url} external variant="secondary" size="lg">
               RSVP on Luma
             </Button>

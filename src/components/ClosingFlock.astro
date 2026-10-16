@@ -4,13 +4,17 @@ import { links } from '../config';
 
 /**
  * The closing section every page ends on (DESIGN.md, "Color rhythm"): the motto
- * on Golden Yellow, type only (decided 10/15/2026). The lettered sunset logo,
- * the large pigeon head, and a generic block skyline were each tried and removed:
- * the logo and the head repeated a brand mark already in view (header, footer),
- * and the skyline was not Philadelphia. Real asset or absent.
+ * and the single ask, in the mockup's layout (Waskar, 10/15/2026).
  *
- * The redesign mockup drew this section in sky blue. The Book says Sky Blue is
- * never a background, so it is Golden Yellow (decided 10/15/2026).
+ * - Color: the mockup drew it in light blue (#85C9FF). That is off the
+ *   Edition 1.2 palette, and the Book says Sky Blue is never a background, so
+ *   it stays Golden Yellow.
+ * - Art: the real sunset logo from the asset library, with its lettering
+ *   removed (the wordmark already sits in the footer just below). The letters
+ *   are separate shapes in the source file; only those shapes were dropped,
+ *   so the art itself is unchanged.
+ * - The mockup's block skyline is left out: it was generic, not Philadelphia,
+ *   and the real skyline is already in the art. Real asset or absent.
  *
  * Page PRs place it as the last element inside <main>, and drop the page's own
  * closing call to action so the page does not ask twice.
@@ -28,13 +32,13 @@ const { lede = "Come to one night. That's the whole ask. We'll take it from ther
   data-testid="closing-flock"
   class="relative overflow-hidden bg-brand-yellow border-t-2 border-brand-dark"
 >
-  <div class="container-custom py-16 lg:py-28 flex flex-col gap-10">
-    <div class="flex-1 min-w-0 flex flex-col gap-7">
-      <h2 class="m-0">
+  <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-wrap items-center gap-[clamp(32px,5vw,72px)]">
+    <div class="grow shrink basis-[560px] min-w-0 flex flex-col gap-7">
+      <h2 class="m-0 text-[clamp(48px,7vw,104px)] leading-[0.9] tracking-[-0.02em]">
         A pigeon flies alone. <span class="sticker bg-white">A flock</span> goes much further.
       </h2>
-      <p class="m-0 max-w-[32rem] text-lg lg:text-xl font-semibold">{lede}</p>
-      <div class="flex flex-wrap gap-4">
+      <p class="m-0 max-w-[520px] text-[19px] leading-[1.55] font-semibold">{lede}</p>
+      <div class="flex flex-wrap gap-3.5">
         <!-- Book p14: on a yellow field the main button is Hot Pink. -->
         <Button href={links.luma} external variant="primary" size="lg">
           RSVP for the next night
@@ -42,6 +46,21 @@ const { lede = "Come to one night. That's the whole ask. We'll take it from ther
         <Button href="/support" variant="light" size="lg">
           Support the flock
         </Button>
+      </div>
+    </div>
+    <div class="grow shrink basis-[360px] min-w-0 flex justify-center">
+      <div class="w-full max-w-[420px] aspect-square rounded-full bg-white border-[3px] border-brand-dark shadow-retro-xl flex items-center justify-center p-[12%]">
+        <img
+          src="/images/pigeon-keyboard-skyline-420.webp"
+          srcset="/images/pigeon-keyboard-skyline-420.webp 317w, /images/pigeon-keyboard-skyline-840.webp 634w"
+          sizes="(min-width: 1024px) 320px, 70vw"
+          width="317"
+          height="420"
+          loading="lazy"
+          decoding="async"
+          alt="The PhilaCon Valley pigeon standing on a keyboard, with the Philadelphia skyline behind it"
+          class="block w-full h-full object-contain"
+        />
       </div>
     </div>
   </div>
