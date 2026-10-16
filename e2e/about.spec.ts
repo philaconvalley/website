@@ -129,3 +129,66 @@ test('About shows the five steps of a night, the same as Home', async ({ page })
   const homeTitles = await home.allTextContents();
   homeTitles.forEach((title, i) => expect(about[i]).toContain(title.trim()));
 });
+
+// The night timeline (public/js/night-arm.js, night.js).
+const settled = (page: import('@playwright/test').Page) =>
+  page.locator('[data-night-strip]').evaluate((strip) =>
+    [...strip.querySelectorAll('[data-night-dot], [data-night-rise], [data-night-seg]')].every(
+      (el) => {
+        const style = getComputedStyle(el);
+        return style.opacity === '1' && style.transform === 'none';
+      },
+    ),
+  );
+
+test('the night timeline draws in when scrolled into view and settles fully shown', async ({
+  page,
+}) => {
+  await page.goto('/about');
+  const strip = page.locator('[data-night-strip]');
+  // Hidden before it plays: the first dot starts transparent.
+  expect(
+    await strip
+      .locator('[data-night-dot]')
+      .first()
+      .evaluate((el) => getComputedStyle(el).opacity),
+  ).toBe('0');
+  await strip.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await expect(strip).toHaveAttribute('data-night', 'play');
+  await expect.poll(() => settled(page), { timeout: 4000 }).toBe(true);
+});
+
+test('the night timeline replays after scrolling fully away and back', async ({ page }) => {
+  await page.goto('/about');
+  const strip = page.locator('[data-night-strip]');
+  await strip.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await expect.poll(() => settled(page), { timeout: 4000 }).toBe(true);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect(strip).not.toHaveAttribute('data-night', 'play');
+  await expect(strip).toHaveAttribute('data-night-replay', '');
+  await strip.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await expect(strip).toHaveAttribute('data-night', 'play');
+  await expect.poll(() => settled(page), { timeout: 3000 }).toBe(true);
+});
+
+test('under reduced motion the night timeline never moves', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/about');
+  const strip = page.locator('[data-night-strip]');
+  const transforms = await strip.evaluate((el) =>
+    [...el.querySelectorAll('[data-night-dot], [data-night-rise], [data-night-seg]')].map(
+      (node) => getComputedStyle(node).transform,
+    ),
+  );
+  expect(transforms.every((t) => t === 'none')).toBe(true);
+  await strip.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await expect.poll(() => settled(page), { timeout: 3000 }).toBe(true);
+});
+
+test('if night.js never loads, the night steps still show after the safety timer', async ({
+  page,
+}) => {
+  await page.route('**/js/night.js', (route) => route.abort());
+  await page.goto('/about');
+  await expect.poll(() => settled(page), { timeout: 5000 }).toBe(true);
+});

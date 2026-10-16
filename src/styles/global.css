@@ -624,3 +624,85 @@
     color: inherit;
   }
 }
+
+/*
+ * The night timeline on About (public/js/night-arm.js, then night.js).
+ * Purpose: explanation. A segment draws from each step's dot to the next, like
+ * time passing; each dot pops in as the line reaches it and its text rises.
+ *
+ * States: html.night (set before paint) hides every step until night.js sets
+ * data-night="play" on the strip. Transitions live only on the play state, so
+ * a reset (strip fully off screen) snaps back unseen. No script: no
+ * html.night, and every rule below is inert.
+ *
+ * Timing is set per element by night.js: each delay, and each segment's
+ * duration (the gap to the next dot). Segments draw linear, because they show
+ * time passing (as the LabTrack spine does); dots and text use ease-out.
+ * Segments draw down below 1024px and across from 1024px.
+ */
+.night [data-night-strip]:not([data-night]) [data-night-dot] {
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+.night [data-night-strip]:not([data-night]) [data-night-rise] {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+[data-night-seg] {
+  transform-origin: top;
+}
+
+.night [data-night-strip]:not([data-night]) [data-night-seg] {
+  transform: scaleY(0);
+}
+
+@media (min-width: 1024px) {
+  [data-night-seg] {
+    transform-origin: left;
+  }
+
+  .night [data-night-strip]:not([data-night]) [data-night-seg] {
+    transform: scaleX(0);
+  }
+}
+
+[data-night='play'] [data-night-dot] {
+  transition:
+    opacity 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-night='play'] [data-night-rise] {
+  transition:
+    opacity 400ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-night='play'] [data-night-seg] {
+  transition-property: transform;
+  transition-timing-function: linear;
+}
+
+/* Reduced motion: nothing moves. The line is already drawn; the dots and
+   text fade in once, together. */
+@media (prefers-reduced-motion: reduce) {
+  .night [data-night-strip]:not([data-night]) [data-night-dot],
+  .night [data-night-strip]:not([data-night]) [data-night-rise] {
+    transform: none;
+  }
+
+  .night [data-night-strip]:not([data-night]) [data-night-seg] {
+    transform: none;
+  }
+
+  [data-night='play'] [data-night-dot],
+  [data-night='play'] [data-night-rise] {
+    transition: opacity 300ms ease;
+  }
+
+  [data-night='play'] [data-night-seg] {
+    transition: none;
+  }
+}
