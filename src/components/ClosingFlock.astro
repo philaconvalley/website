@@ -1,4 +1,5 @@
 ---
+import Button from './Button.astro';
 import { links } from '../config';
 
 /**
@@ -32,20 +33,13 @@ const { lede = "Come to one night. That's the whole ask. We'll take it from ther
       </h2>
       <p class="m-0 max-w-[32rem] text-lg lg:text-xl font-semibold">{lede}</p>
       <div class="flex flex-wrap gap-4">
-        <a
-          href={links.luma}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 min-h-[52px] px-7 py-3 rounded-full border-2 border-brand-dark bg-brand-dark text-white font-display font-extrabold text-lg shadow-retro transition-[transform,box-shadow] duration-150 ease-out hover:shadow-retro-lg active:shadow-retro-press motion-safe:hover:-translate-x-0.5 motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-x-0.5 motion-safe:active:translate-y-0.5"
-        >
-          RSVP for the next night →
-        </a>
-        <a
-          href="/support"
-          class="inline-flex items-center min-h-[52px] px-7 py-3 rounded-full border-2 border-brand-dark bg-white text-brand-dark font-display font-extrabold text-lg shadow-retro transition-[transform,box-shadow] duration-150 ease-out hover:shadow-retro-lg active:shadow-retro-press motion-safe:hover:-translate-x-0.5 motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-x-0.5 motion-safe:active:translate-y-0.5"
-        >
+        <!-- Book p14: on a yellow field the main button is Hot Pink. -->
+        <Button href={links.luma} external variant="primary" size="lg">
+          RSVP for the next night
+        </Button>
+        <Button href="/support" variant="light" size="lg">
           Support the flock
-        </a>
+        </Button>
       </div>
     </div>
 

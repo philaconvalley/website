@@ -40,4 +40,33 @@ test.describe('Button press feedback', () => {
     await expect(button).toHaveCSS('transform', 'none');
     await client.detach();
   });
+
+  test('the shared Button lifts on hover and pushes into its shadow on press', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto('/support');
+    const selector = '[data-testid="primary-cta"]';
+    const button = page.locator(selector);
+    await button.hover();
+    await expect(button).toHaveCSS('transform', 'matrix(1, 0, 0, 1, -2, -2)');
+    await expect(button).toHaveCSS('box-shadow', /rgb\(26, 26, 26\) 6px 6px 0px 0px/);
+
+    await page.mouse.move(0, 0);
+    const client = await forceActive(page, selector);
+    await expect(button).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 2, 2)');
+    await expect(button).toHaveCSS('box-shadow', /rgb\(26, 26, 26\) 2px 2px 0px 0px/);
+    await client.detach();
+  });
+
+  test('a link card pushes into its shadow on press', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto('/resources');
+    const selector = 'main a.card';
+    const card = page.locator(selector).first();
+    await expect(card).toHaveCSS('box-shadow', /rgb\(26, 26, 26\) 6px 6px 0px 0px/);
+
+    const client = await forceActive(page, selector);
+    await expect(card).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 2, 2)');
+    await expect(card).toHaveCSS('box-shadow', /rgb\(26, 26, 26\) 4px 4px 0px 0px/);
+    await client.detach();
+  });
 });

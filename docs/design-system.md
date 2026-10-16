@@ -107,13 +107,14 @@ Pill-shaped, a 2px ink outline, a hard ink shadow, ink text on every warm fill. 
 
 The heights match the mockup, and every size clears the 44px touch target. A raw `<button>` that cannot use the component (the Contact form's submit, which Alpine disables while sending) copies the `lg` primary classes.
 
-| Variant     | Fill          | Use it for                                                                        |
-| ----------- | ------------- | --------------------------------------------------------------------------------- |
-| `primary`   | Hot Pink      | The main call to action                                                           |
-| `secondary` | Golden Yellow | A second action on a white or ink section                                         |
-| `light`     | White         | A second action on a yellow or saturated section                                  |
-| `ink`       | Ink           | The strongest action on a yellow or saturated section                             |
-| `outline`   | None          | Tertiary actions. Takes the text color it sits on, so it works on dark fields too |
+| Variant         | Fill          | Use it for                                                                       |
+| --------------- | ------------- | -------------------------------------------------------------------------------- |
+| `primary`       | Hot Pink      | The main action on a white or ink section                                        |
+| `secondary`     | Golden Yellow | The main action on a pink or saturated section, where pink would vanish          |
+| `light`         | White         | The second action next to a main one: a white sticker, as in the mockup          |
+| `outline-light` | None          | The second action on an ink or purple section. White text and outline, no shadow |
+
+Every filled variant has the same outline, shadow, lift, and press, so a pair of buttons always reads as two stickers. Decided 10/15/2026: the old flat `outline` variant (no fill, no shadow) became `light`, and the `ink` variant was removed, because the Book's button fills are Hot Pink or Golden Yellow. `light` uses White, the Book's light neutral; that is noted for Diego (`DESIGN.md`, known tension 14). The `<button>` branch defaults to `type="button"`; pass `type="submit"` for a form.
 
 ```astro
 <Button href="/join" variant="primary" size="lg">
@@ -149,7 +150,7 @@ White fill, 24px corners (`rounded-retro`), a 2px solid ink outline, and a hard 
 
 ### Pills (`.pill`) and stickers (`.sticker`)
 
-- `.pill` — a small flat label: stadium radius, 2px ink outline, uppercase Nunito 900. Set the fill with a color utility: `<span class="pill bg-brand-yellow">Free</span>`.
+- `.pill` — a small flat label: stadium radius, 2px ink outline, uppercase Baloo 2 at 800 (Book §05 sets tags in Baloo 2). Set the fill with a color utility: `<span class="pill bg-brand-yellow">Free</span>`.
 - `.sticker` — one highlighted word inside a display heading: white fill, 3px ink outline, hard shadow, a slight tilt. One per heading at most.
 
 ### Shadows

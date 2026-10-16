@@ -1,7 +1,8 @@
 ---
 interface Props {
   href?: string;
-  variant?: 'primary' | 'secondary' | 'light' | 'ink' | 'outline';
+  variant?: 'primary' | 'secondary' | 'light' | 'outline-light';
+  type?: 'button' | 'submit';
   size?: 'sm' | 'md' | 'lg';
   class?: string;
   external?: boolean;
@@ -14,6 +15,7 @@ const {
   size = 'md',
   class: className = '',
   external = false,
+  type = 'button',
   'data-testid': testId,
 } = Astro.props;
 
@@ -23,7 +25,7 @@ const {
 // Motion (Stage 5, animate): hover lifts 2px up-left while the shadow grows;
 // press pushes 2px down-right into the shadow, which shrinks by 2px, so the
 // shadow's outer edge stays put. 150ms, strong ease-out. Under reduced motion
-// only the shadow changes (motion-safe gates the movement). The outline
+// only the shadow changes (motion-safe gates the movement). The outline-light
 // variant has no shadow to press into, so it keeps a 0.97 scale press.
 const baseClasses =
   'inline-flex items-center justify-center gap-2 font-display font-extrabold rounded-full transition-[transform,background-color,box-shadow] duration-150 ease-out';
@@ -34,17 +36,18 @@ const filled =
   'border-2 border-brand-dark shadow-retro hover:shadow-retro-lg active:shadow-retro-press motion-safe:hover:-translate-x-0.5 motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-x-0.5 motion-safe:active:translate-y-0.5';
 
 const variantClasses = {
-  // Main call to action.
+  // Main call to action on a white or ink section.
   primary: `${filled} bg-brand-pink text-brand-dark`,
-  // Second action on a white or ink section.
+  // Main call to action on a pink or saturated section, where pink would vanish.
   secondary: `${filled} bg-brand-yellow text-brand-dark`,
-  // Second action on a yellow or saturated section, where secondary would vanish.
+  // Second action next to a main one: a white sticker, as in the mockup.
+  // Decided 10/15/2026. The Book lists Hot Pink or Golden Yellow for button
+  // fills; White is its light neutral (noted for Diego, DESIGN.md tension 14).
   light: `${filled} bg-white text-brand-dark`,
-  // Strongest action on a yellow or saturated section.
-  ink: `${filled} bg-brand-dark text-white`,
-  // Tertiary. Takes the text color it sits on, so it also works on dark fields.
-  outline:
-    'border-2 border-current bg-transparent text-brand-dark hover:bg-brand-dark/5 motion-safe:active:scale-[0.97] motion-reduce:active:opacity-80',
+  // Second action on an ink or purple section, where an ink shadow cannot
+  // show. White text and outline, no fill, no shadow (as in the mockup).
+  'outline-light':
+    'border-2 border-white bg-transparent text-white hover:bg-white/10 motion-safe:active:scale-[0.97] motion-reduce:active:opacity-80',
 };
 
 // Heights, padding, and text sizes match the mockup (10/15/2026). Every size
@@ -64,7 +67,13 @@ const externalProps = external ? { target: '_blank', rel: 'noopener noreferrer' 
   <a href={href} class={classes} data-testid={testId} {...externalProps}>
     <slot />
     {external && (
-      <svg class="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg
+        class="w-4 h-4 ml-2"
+        aria-hidden="true"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
@@ -75,7 +84,7 @@ const externalProps = external ? { target: '_blank', rel: 'noopener noreferrer' 
     )}
   </a>
 ) : (
-  <button class={classes} data-testid={testId}>
+  <button type={type} class={classes} data-testid={testId}>
     <slot />
   </button>
 )}

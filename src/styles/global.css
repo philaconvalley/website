@@ -5,12 +5,12 @@
 /* ---------------------------------------------------------------------------
    Brand Book §09 — the agency surface.
 
-   One brand, two dials. The community surface is the default: cream, loud,
+   One brand, two dials. The community surface is the default: white and yellow, loud,
    mascot-forward, 2px ink stroke, hard offset shadows. The agency surface keeps
    every shape and drops the volume for nonprofits and community orgs.
 
    Wrap a page or a section in [data-surface="agency"] to switch. Shapes do not
-   change — pills stay pills, 20px radii stay 20px. Only the volume moves.
+   change — pills stay pills, 24px radii stay 24px. Only the volume moves.
    --------------------------------------------------------------------------- */
 [data-surface='agency'] {
   /* Page background: off-cream, calmer than the community cream. */
@@ -48,21 +48,32 @@
 
 /* Shadows soften. No ink-stamp on this surface. */
 [data-surface='agency'] .shadow-retro {
-  box-shadow: var(--surface-shadow);
+  --tw-shadow: var(--surface-shadow);
 }
 
 [data-surface='agency'] .shadow-retro-lg {
-  box-shadow: var(--surface-shadow-lg);
+  --tw-shadow: var(--surface-shadow-lg);
 }
 
 /* NOTE: the Book §05 names three shadows — retro, retro-lg, retro-ink. The live
    config ships retro, retro-lg, retro-hover. There is no retro-ink utility to
    soften here. See Addendum 01 Part 4. */
 [data-surface='agency'] .shadow-retro-hover {
-  box-shadow: var(--surface-shadow-lg);
+  --tw-shadow: var(--surface-shadow-lg);
 }
 
+/* These set --tw-shadow, not box-shadow, so Tailwind's shadow utilities and the
+   focus ring's ink edge (--tw-ring-shadow) still compose on this surface. */
+
 @layer base {
+  /* Placeholder text: ink at 62%, 4.7:1 on white. Tailwind's default was a
+     cool grey at 2.5:1, against the "no greys" thesis. */
+  input::placeholder,
+  textarea::placeholder {
+    color: rgb(26 26 26 / 0.62);
+    opacity: 1;
+  }
+
   html {
     /* No scroll-behavior: smooth. Decided 10/15/2026: with smooth scrolling,
        Chrome's keyboard focus scroll ignored scroll-padding-top and parked a
@@ -115,7 +126,7 @@
   }
 
   h2 {
-    font-size: clamp(2.25rem, 1.4rem + 3.6vw, 5rem);
+    font-size: clamp(2.25rem, 1.23rem + 4.19vw, 5rem);
     line-height: 0.95;
     letter-spacing: -0.015em;
   }
@@ -197,7 +208,7 @@
      10, "Tags + pills"). Set the background with a color utility. */
   .pill {
     @apply inline-flex items-center rounded-full border-2 border-brand-dark bg-white px-3 py-0.5
-           font-sans text-xs font-black uppercase tracking-[0.14em] text-brand-dark;
+           font-display text-xs font-extrabold uppercase tracking-[0.14em] text-brand-dark;
   }
 }
 
@@ -383,6 +394,20 @@
  * Deliberately unlayered (outside @layer) so these accessibility overrides win
  * against @layer utilities regardless of Tailwind's cascade-layer ordering.
  */
+/* The phone event bar is fixed to the bottom. While it exists, pad the page
+   and the scroll target area by its height, so the footer's last lines and any
+   focused element are never trapped under it (WCAG 2.4.11). :has() stops
+   matching the moment the bar removes itself after the event starts. */
+@media (max-width: 1023.98px) {
+  body:has([data-event-bar]) {
+    padding-bottom: 88px;
+  }
+
+  html:has([data-event-bar]) {
+    scroll-padding-bottom: 104px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

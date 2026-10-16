@@ -14,7 +14,11 @@ async function shortTargets(page: Page, scope: string) {
   return page.evaluate(
     ({ scope, min }) =>
       [...document.querySelectorAll(`${scope} a, ${scope} button`)]
-        .filter((el) => (el as HTMLElement).offsetParent !== null)
+        // getClientRects, not offsetParent: offsetParent is null for fixed
+        // elements, which would skip a fixed bar.
+        .filter(
+          (el) => el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden',
+        )
         // The skip link is visually hidden until it has focus.
         .filter((el) => !el.classList.contains('sr-only'))
         .map((el) => ({
@@ -40,10 +44,18 @@ for (const width of [390, 360]) {
       await page.goto('/about');
     });
 
-    test('header and footer links are at least 44px tall', async ({ page }) => {
-      expect(await shortTargets(page, 'header'), 'header targets under 44px').toEqual([]);
-      expect(await shortTargets(page, 'footer'), 'footer targets under 44px').toEqual([]);
-    });
+    for (const route of ['/about', '/contact', '/support', '/']) {
+      test(`header and footer links on ${route} are at least 44px tall`, async ({ page }) => {
+        await page.goto(route);
+        expect(await shortTargets(page, 'header'), 'header targets under 44px').toEqual([]);
+        expect(await shortTargets(page, 'footer'), 'footer targets under 44px').toEqual([]);
+        // The phone event bar, when an event is scheduled.
+        expect(
+          await shortTargets(page, '[data-event-bar]'),
+          'event bar targets under 44px',
+        ).toEqual([]);
+      });
+    }
 
     test('phone menu links are at least 44px tall', async ({ page }) => {
       await page.locator('header button[aria-expanded]').click();

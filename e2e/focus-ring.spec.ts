@@ -165,8 +165,10 @@ test.describe('focus is never hidden under the sticky header', () => {
   }
 });
 
-test('no component adds its own focus ring or focus border', () => {
-  // A `focus:ring-*` or `focus:border-*` class replaces the shared ink edge.
+test('no component adds its own focus ring, border, shadow, or outline', () => {
+  // A focus:ring-*, focus:border-*, focus:shadow-*, focus:outline-* or
+  // outline-none class replaces or hides the shared two-tone ring.
+  // focus:outline-offset-* is allowed: it moves the ring, it does not replace it.
   // The one sanctioned exception draws the same two-tone pattern itself.
   const allowed = new Set(['src/components/ArcadeCabinet.astro']);
   const offenders: string[] = [];
@@ -176,11 +178,44 @@ test('no component adds its own focus ring or focus border', () => {
       if (statSync(path).isDirectory()) walk(path);
       else if (path.endsWith('.astro') && !allowed.has(path)) {
         const source = readFileSync(path, 'utf8');
-        const hits = source.match(/\bfocus(?:-visible)?:(?:ring|border)-[\w[\]#-]+/g);
+        const hits = source.match(
+          /\bfocus(?:-visible)?:(?:ring|border|shadow|outline(?!-offset))-[\w[\]#-]+|\boutline-none\b/g,
+        );
         if (hits) offenders.push(`${path}: ${[...new Set(hits)].join(', ')}`);
       }
     }
   };
   walk('src');
   expect(offenders, 'remove these; the global *:focus-visible rule draws the ring').toEqual([]);
+});
+
+test('closing the phone menu with Escape returns focus to the menu button', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/about');
+  const button = page.locator('header button[aria-controls="mobile-menu"]');
+  await button.focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#mobile-menu')).toBeVisible();
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#mobile-menu')).toBeHidden();
+  await expect(button).toBeFocused();
+});
+
+test('the phone event bar never hides the footer or a focused link', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  const bar = page.locator('[data-event-bar]');
+  // Renders only when an event is scheduled; skip loudly rather than pass empty.
+  test.skip((await bar.count()) === 0, 'no upcoming event in this build — no bar to check');
+
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  const overlap = await page.evaluate(() => {
+    const barTop = document.querySelector('[data-event-bar]')!.getBoundingClientRect().top;
+    const last = [...document.querySelectorAll('footer a, footer span')]
+      .pop()!
+      .getBoundingClientRect();
+    return last.bottom - barTop;
+  });
+  expect(overlap, "the footer's last line is under the event bar").toBeLessThanOrEqual(0);
 });
