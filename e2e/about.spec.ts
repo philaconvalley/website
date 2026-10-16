@@ -114,3 +114,18 @@ test('About program cards drop the Cost and Experience lines; Home keeps them', 
   const home = await cards('/');
   await expect(home.filter({ hasText: 'Cost:' })).toHaveCount(4);
 });
+
+test('About shows the five steps of a night, the same as Home', async ({ page }) => {
+  await page.goto('/about');
+  const steps = page.getByTestId('night-strip').locator('li');
+  await expect(steps).toHaveCount(5);
+  await expect(steps.first()).toContainText('6:00 PM');
+  await expect(steps.last()).toContainText('9:00 PM');
+  const about = await steps.allTextContents();
+  await page.goto('/');
+  const home = page
+    .locator('section', { has: page.getByText('How a Lab night works') })
+    .locator('ol > li h3');
+  const homeTitles = await home.allTextContents();
+  homeTitles.forEach((title, i) => expect(about[i]).toContain(title.trim()));
+});

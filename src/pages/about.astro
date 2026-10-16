@@ -5,6 +5,7 @@ import ClosingFlock from '../components/ClosingFlock.astro';
 import ProgramCards from '../components/ProgramCards.astro';
 import { community, links } from '../config';
 import { getHandbookValues } from '../lib/handbook';
+import { labNight } from '../data/lab-night';
 
 /**
  * About, Edition 1.2 (DESIGN.md, "The 1.2 redesign"). Mode: Read. Sections
@@ -191,6 +192,26 @@ const valueCount = countWords[values.length] ?? String(values.length);
         </Button>
       </div>
       <ProgramCards details={false} />
+      <!-- How a night goes, in one strip: the same five steps as Home
+           (src/data/lab-night.ts). It answers "what happens if I come?"
+           (Waskar, 10/16/2026). No link: the calendar button sits above. -->
+      <div
+        class="rounded-retro border-2 border-brand-dark bg-brand-yellow p-6 md:p-8 flex flex-col gap-5"
+        data-testid="night-strip"
+      >
+        <h3 class="m-0 text-2xl leading-none">How a night goes</h3>
+        <ol class="m-0 p-0 list-none grid gap-x-6 gap-y-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
+          {labNight.map((step) => (
+            <li class="flex flex-col gap-1">
+              <span class="font-black text-[13px] tracking-[0.14em]">{step.time}</span>
+              <span class="font-display font-extrabold text-xl uppercase leading-tight">
+                {step.title}
+              </span>
+              <span class="text-[15px] leading-[1.5]">{step.line}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
     </div>
   </section>
 
