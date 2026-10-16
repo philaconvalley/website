@@ -71,3 +71,22 @@ test.describe('Lab timeline', () => {
     });
   }
 });
+
+test('the Lab loop pauses off screen and resumes in view', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/events');
+  const track = page.locator('[data-lab-track]');
+  const chip = page.locator('.pcv-loop-chip');
+
+  await track.scrollIntoViewIfNeeded();
+  await expect(track).not.toHaveAttribute('data-paused');
+  await expect(chip).toHaveCSS('animation-play-state', 'running');
+
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await expect(track).toHaveAttribute('data-paused', '');
+  await expect(chip).toHaveCSS('animation-play-state', 'paused');
+
+  await track.scrollIntoViewIfNeeded();
+  await expect(chip).toHaveCSS('animation-play-state', 'running');
+});

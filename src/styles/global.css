@@ -345,6 +345,13 @@
     animation: pcvLabel 8s ease-out infinite;
   }
 
+  /* Off screen, the whole Lab loop pauses together, so its parts stay in
+     sync (public/js/lab-track.js sets data-paused). An endless animation
+     nobody sees still costs frames and battery. */
+  [data-lab-track][data-paused] [class*='pcv-loop-'] {
+    animation-play-state: paused;
+  }
+
   .pcv-loop-chip {
     animation: pcvChip 8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
   }

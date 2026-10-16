@@ -25,7 +25,7 @@ const dots = [
 ];
 ---
 
-<div class="relative h-[186px] lg:h-[230px] lg:max-w-[460px]" aria-hidden="true">
+<div data-lab-track class="relative h-[186px] lg:h-[230px] lg:max-w-[460px]" aria-hidden="true">
   <!-- Track: a static hairline, with the coral line drawing itself along it -->
   <div class="absolute inset-x-0 top-[58px] lg:top-[96px] h-px bg-brand-dark/[0.14]"></div>
   <div class="absolute left-0 top-[58px] lg:top-[96px] h-px bg-accent-600 pcv-loop-track"></div>
@@ -69,6 +69,10 @@ const dots = [
     </div>
   </div>
 </div>
+
+<!-- Pauses the loop while it is off screen (public/js/lab-track.js). A served
+     file, not inline: the CSP allows scripts from this origin only. -->
+<script is:inline defer src="/js/lab-track.js"></script>
 
 <!-- Same story, for screen readers and for anyone the animation never reaches. -->
 <p class="sr-only">

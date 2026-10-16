@@ -157,9 +157,18 @@ const marqueeBg = empty ? 'bg-primary-200' : marqueeClass;
     }
   }
 
+  /* Press: the cabinet drops 2px on pointer-down, faster than the hover
+     (100ms), like every other sticker on the site. Declared after :hover so
+     it wins while both match. */
+  .cabinet:active {
+    transform: translateY(2px);
+    transition-duration: 100ms;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .cabinet,
-    .cabinet:hover {
+    .cabinet:hover,
+    .cabinet:active {
       animation: none;
       transform: none;
       transition: none;
