@@ -100,3 +100,17 @@ test('the handbook parser reads each heading and its first sentence, and rejects
   expect(parseValues('# Values\n\nNo headings here.')).toBeNull();
   expect(parseValues('## Empty heading\n')).toBeNull();
 });
+
+test('About program cards drop the Cost and Experience lines; Home keeps them', async ({
+  page,
+}) => {
+  const cards = (route: string) =>
+    page
+      .goto(route)
+      .then(() => page.getByTestId('stoop-line').locator('xpath=..').locator('ul li'));
+  const about = await cards('/about');
+  await expect(about).toHaveCount(4);
+  await expect(about.filter({ hasText: 'Cost:' })).toHaveCount(0);
+  const home = await cards('/');
+  await expect(home.filter({ hasText: 'Cost:' })).toHaveCount(4);
+});

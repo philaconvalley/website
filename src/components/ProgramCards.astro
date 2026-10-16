@@ -6,6 +6,15 @@ import { programs } from '../data/programs';
  * two pages never disagree (Waskar, 10/16/2026). Each card is a whole-card
  * link. Data lives in src/data/programs.ts.
  */
+interface Props {
+  /**
+   * Show the Cost and Experience lines. Home shows them; About hides them,
+   * because its headline already says "Zero cost" (Waskar, 10/16/2026).
+   */
+  details?: boolean;
+}
+
+const { details = true } = Astro.props;
 ---
 
 <div class="flex flex-col gap-8">
@@ -23,14 +32,16 @@ import { programs } from '../data/programs';
           </span>{' '}
           <h3 class="m-0 normal-case text-[2.5rem] leading-[0.95]">{program.name}</h3>{' '}
           <p class="m-0 text-base leading-[1.55]">{program.body}</p>{' '}
-          <p class="mt-auto mb-0 border-t-2 border-brand-dark pt-3.5 flex flex-col gap-1.5 text-sm font-bold">
-            <span>
-              <strong>Cost:</strong> Free
-            </span>{' '}
-            <span>
-              <strong>Experience:</strong> None needed
-            </span>
-          </p>
+          {details && (
+            <p class="mt-auto mb-0 border-t-2 border-brand-dark pt-3.5 flex flex-col gap-1.5 text-sm font-bold">
+              <span>
+                <strong>Cost:</strong> Free
+              </span>{' '}
+              <span>
+                <strong>Experience:</strong> None needed
+              </span>
+            </p>
+          )}
         </a>
       </li>
     ))}
