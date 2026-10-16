@@ -112,7 +112,8 @@ test('About program cards drop the Cost and Experience lines; Home keeps them', 
   await expect(about).toHaveCount(4);
   await expect(about.filter({ hasText: 'Cost:' })).toHaveCount(0);
   const home = await cards('/');
-  await expect(home.filter({ hasText: 'Cost:' })).toHaveCount(4);
+  // Career Support is coming soon: a card without the Cost lines.
+  await expect(home.filter({ hasText: 'Cost:' })).toHaveCount(3);
 });
 
 test('About shows the five steps of a night, the same as Home', async ({ page }) => {

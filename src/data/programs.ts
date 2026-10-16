@@ -1,9 +1,9 @@
 /**
  * The four programs, shared by Home and About so the two pages never disagree
  * (Waskar, 10/16/2026). Lab and PATCH keep the Home mockup's copy; Community
- * projects and Career Support take the About mockup's copy. Career Support
- * runs today. Stoop is a social mixer, not a program, so each page shows it as
- * one line under the cards (`stoopLine`), not as a card.
+ * projects takes the About mockup's copy. Stoop is a social mixer, not a
+ * program, so each page shows it as one line under the cards. Career Support is
+ * coming soon (Waskar, 10/16/2026): its card has a dashed outline and no link.
  */
 export interface Program {
   name: string;
@@ -14,6 +14,8 @@ export interface Program {
   /** Card fill and tag fill, as Tailwind classes. */
   fill: string;
   tag: string;
+  /** Not running yet: a dashed card with no link. */
+  comingSoon?: boolean;
 }
 
 export const programs: Program[] = [
@@ -43,10 +45,11 @@ export const programs: Program[] = [
   },
   {
     name: 'Career Support',
-    kind: 'Next step',
-    body: "Résumé reviews, interview prep and introductions to companies, for when you're ready for the next step.",
-    href: '/events',
+    kind: 'Coming soon',
+    body: "Sessions for the next step after your first project. We'll share more once the first one is on the calendar.",
+    href: '',
     fill: 'bg-white',
-    tag: 'bg-brand-coral',
+    tag: 'bg-brand-dark text-white',
+    comingSoon: true,
   },
 ];
