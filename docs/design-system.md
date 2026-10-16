@@ -163,6 +163,7 @@ Chosen in the 10/15/2026 footer review, after the mockup.
 - **Left block:** the official wordmark (`public/images/philacon-wordmark-horizontal.svg`, the same file as the header) and one line: "Come as you are. Leave with a flock. A free, in-person tech community in Philadelphia, PA." The wordmark is the footer's only link home. Book §07 puts the wordmark, not the mascot, in footers, and says the mark is pulled from the library, never rebuilt. Diego's mockup typed the name in Baloo 2 instead.
 - **Columns:** Explore, Get involved, Find us, with amber labels and white links. The mockup's "Start a project" link waits until a real page exists.
 - **Bottom row:** location and email on the left; "This site is open source", Privacy, and the copyright on the right. All text is full white, because the Book has no greys.
+- **Tap targets:** on phones every footer link, the wordmark, and every phone menu link is at least 44px tall. Desktop keeps 24px links. `e2e/tap-targets.spec.ts` guards this at 390px and 360px.
 - **The motto** is not in the footer. It lives in `ClosingFlock`, the section above it.
 
 ### Closing section (`src/components/ClosingFlock.astro`)

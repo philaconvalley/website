@@ -63,7 +63,7 @@ const columns = [
              The wordmark is the footer's only route home: the columns deliberately
              do not repeat Home, and clicking the name is the convention a visitor
              who has read to the bottom of a long page will reach for first. -->
-        <a href="/" class="inline-block w-full max-w-[560px]">
+        <a href="/" class="flex items-center w-full max-w-[560px] min-h-[44px]">
           <img
             src="/images/philacon-wordmark-horizontal.svg"
             alt="PhilaCon Valley home"
@@ -81,9 +81,12 @@ const columns = [
         </p>
       </div>
 
+      <!-- On phones every link is 44px tall (py-2.5, min-h-[44px]), the touch
+           size Apple and Google recommend. From lg, a mouse needs no extra
+           height, so the desktop spacing is unchanged. -->
       <div class="flex flex-wrap gap-x-14 gap-y-10">
         {columns.map((column) => (
-          <nav aria-label={column.label} class="flex flex-col gap-3">
+          <nav aria-label={column.label} class="flex flex-col lg:gap-3">
             <p class="m-0 font-sans text-xs font-black uppercase tracking-[0.2em] text-brand-amber">
               {column.label}
             </p>
@@ -91,7 +94,7 @@ const columns = [
               <a
                 href={link.href}
                 {...(column.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                class="font-sans font-bold text-base text-white hover:text-brand-yellow hover:underline decoration-2 underline-offset-4"
+                class="py-2.5 lg:py-0 font-sans font-bold text-base text-white hover:text-brand-yellow hover:underline decoration-2 underline-offset-4"
               >
                 {link.name}
               </a>
@@ -106,7 +109,7 @@ const columns = [
         {site.location} ·{' '}
         <a
           href={`mailto:${site.email}`}
-          class="hover:text-brand-yellow hover:underline underline-offset-4"
+          class="inline-flex items-center min-h-[44px] lg:min-h-0 hover:text-brand-yellow hover:underline underline-offset-4"
         >
           {site.email}
         </a>
@@ -116,11 +119,14 @@ const columns = [
           href={links.github.website}
           target="_blank"
           rel="noopener noreferrer"
-          class="hover:text-brand-yellow hover:underline underline-offset-4"
+          class="inline-flex items-center min-h-[44px] lg:min-h-0 hover:text-brand-yellow hover:underline underline-offset-4"
         >
           This site is open source
         </a>
-        <a href="/privacy" class="hover:text-brand-yellow hover:underline underline-offset-4">
+        <a
+          href="/privacy"
+          class="inline-flex items-center min-h-[44px] lg:min-h-0 hover:text-brand-yellow hover:underline underline-offset-4"
+        >
           Privacy
         </a>
         <span>© {currentYear} PhilaCon Valley</span>
