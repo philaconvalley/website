@@ -47,13 +47,15 @@ const heroPhotos = (await getCollection('gallery'))
   }));
 const photo = heroPhotos[0];
 
-// The mockup's four formats, its copy exactly (Waskar, 10/15/2026). Stoop is
-// confirmed as a real program (Waskar, 10/15/2026).
+// The four programs. Lab and PATCH keep the mockup's copy (Waskar, 10/15/2026).
+// Stoop is a social mixer, not a program, so it is a line under the cards; Career
+// Support runs today (Waskar, 10/16/2026). About shows the same four.
 const programs = [
   {
     name: 'PATCH',
     kind: 'Workshop lab',
     body: 'Multi-disciplinary nights where design, code and creative tech share a room. Recent PATCHes covered NFC tags and projection mapping.',
+    href: '/events',
     fill: 'bg-brand-yellow',
     tag: 'bg-white',
   },
@@ -61,15 +63,25 @@ const programs = [
     name: 'Lab',
     kind: 'Single topic',
     body: 'One subject, one night, start to finish. You show up curious and leave having shipped something.',
+    href: '/events',
     fill: 'bg-white',
     tag: 'bg-brand-amber',
   },
   {
-    name: 'Stoop',
-    kind: 'The social one',
-    body: "Less building, more talking. The easiest night to meet the flock if you've never been before.",
+    name: 'Community projects',
+    kind: 'Open source',
+    body: 'Tools the community actually uses, built together, and yours to put in your portfolio.',
+    href: '/projects',
     fill: 'bg-white',
     tag: 'bg-brand-pink',
+  },
+  {
+    name: 'Career Support',
+    kind: 'Next step',
+    body: "Résumé reviews, interview prep and introductions to companies, for when you're ready for the next step.",
+    href: '/events',
+    fill: 'bg-white',
+    tag: 'bg-brand-coral',
   },
 ];
 
@@ -306,11 +318,11 @@ const stats = [
           and career sessions, with nothing to apply for.
         </p>
       </div>
-      <ul class="m-0 p-0 list-none grid gap-6 grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
+      <ul class="m-0 p-0 list-none grid gap-6 grid-cols-[repeat(auto-fit,minmax(280px,1fr))]">
         {programs.map((program) => (
           <li class="flex">
             <a
-              href="/events"
+              href={program.href}
               class={`card ${program.fill} text-brand-dark no-underline p-7 flex flex-col gap-4 w-full`}
             >
               <span
@@ -318,7 +330,7 @@ const stats = [
               >
                 {program.kind}
               </span>{' '}
-              <h3 class="m-0 normal-case text-5xl leading-[0.95]">{program.name}</h3>{' '}
+              <h3 class="m-0 normal-case text-[2.5rem] leading-[0.95]">{program.name}</h3>{' '}
               <p class="m-0 text-base leading-[1.55]">{program.body}</p>{' '}
               <p class="mt-auto mb-0 border-t-2 border-brand-dark pt-3.5 flex flex-col gap-1.5 text-sm font-bold">
                 <span>
@@ -331,18 +343,18 @@ const stats = [
             </a>
           </li>
         ))}
-        <!-- Not a card: nothing to click yet. Dashed outline, no shadow. -->
-        <li class="rounded-retro border-2 border-dashed border-brand-dark bg-white p-7 flex flex-col gap-4">
-          <span class="self-start rounded-full border-2 border-brand-dark bg-brand-dark text-white px-3 py-[3px] font-black text-xs tracking-[0.14em] uppercase">
-            Coming soon
-          </span>
-          <h3 class="m-0 normal-case text-[2.5rem] leading-[0.95]">Career Support</h3>
-          <p class="m-0 text-base leading-[1.55] text-brand-dark/85">
-            Sessions for the next step after your first project. We'll share more once the first one
-            is on the calendar.
-          </p>
-        </li>
       </ul>
+      <!-- Stoop is a social mixer, not a program (Waskar, 10/16/2026). -->
+      <p class="m-0 -mt-6 text-lg leading-[1.55] text-brand-dark/85" data-testid="stoop-line">
+        <strong class="text-brand-dark">Also on the calendar: Stoop,</strong> our social mixer. Less
+        building, more talking.{' '}
+        <a
+          href="/events"
+          class="inline-flex items-center min-h-11 font-black text-brand-dark underline underline-offset-[6px] decoration-[3px]"
+        >
+          See the calendar
+        </a>
+      </p>
     </div>
   </section>
 

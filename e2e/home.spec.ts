@@ -211,3 +211,16 @@ test('a number rolls again after it scrolls fully out of view and back', async (
   const counter = item.locator('[data-count]');
   await expect(counter).toHaveText((await counter.getAttribute('data-count'))!);
 });
+
+test('Home shows the four programs, and Stoop as a line under them', async ({ page }) => {
+  await page.goto('/');
+  const section = page.locator('section', {
+    has: page.getByRole('heading', { name: 'Different nights. Same open door.' }),
+  });
+  const names = section.getByRole('heading', { level: 3 });
+  await expect(names).toHaveText(['PATCH', 'Lab', 'Community projects', 'Career Support']);
+  // Each program is a whole-card link; Career Support runs today, so no "Coming soon".
+  await expect(section.getByRole('listitem').getByRole('link')).toHaveCount(4);
+  await expect(section.getByText('Coming soon')).toHaveCount(0);
+  await expect(page.getByTestId('stoop-line')).toContainText('Stoop');
+});
