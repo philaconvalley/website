@@ -2,6 +2,8 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Button from '../../components/Button.astro';
+import BackLink from '../../components/BackLink.astro';
+import TagList from '../../components/TagList.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -24,20 +26,11 @@ const { title, description, author, date, tags } = post.data;
   <section class="bg-brand-yellow text-brand-dark py-16">
     <div class="container-custom">
       <div class="max-w-3xl mx-auto">
-        <a
+        <BackLink
           href="/blog"
-          class="inline-flex items-center gap-1 text-sm text-brand-dark/50 hover:text-brand-dark transition-colors mb-6"
-        >
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 19l-7-7 7-7"
-            ></path>
-          </svg>
-          Back to Blog
-        </a>
+          label="Back to Blog"
+          class="text-brand-dark/50 hover:text-brand-dark"
+        />
         <h1 class="text-4xl md:text-5xl mb-4">{title}</h1>
         <p class="text-xl text-brand-dark/70 mb-6">{description}</p>
         <div class="flex items-center text-sm text-brand-dark/50">
@@ -64,11 +57,7 @@ const { title, description, author, date, tags } = post.data;
 
         {tags.length > 0 && (
           <div class="flex flex-wrap gap-1.5 mt-8 pt-8 border-t border-brand-dark/5">
-            {tags.map((tag) => (
-              <span class="px-2 py-0.5 bg-primary-100 text-primary-800 text-xs font-display font-bold rounded-full">
-                #{tag}
-              </span>
-            ))}
+            <TagList tags={tags} />
           </div>
         )}
       </div>

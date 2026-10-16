@@ -369,7 +369,11 @@
     ctx.restore();
   }
 
-  function update(){
+  function update(dt){
+    // dt scales per-frame motion so distance-per-second stays constant on any
+    // display (dt is ~1/60 at 60Hz, ~1/120 at 120Hz). All speeds below stay
+    // tuned exactly as before at 60fps.
+    const s = dt * 60;
     // Player 1 (W/S)
     if(keys['w'] || keys['W']) leftPaddle.dy = -PADDLE_SPEED;
     else if(keys['s'] || keys['S']) leftPaddle.dy = PADDLE_SPEED;
@@ -380,14 +384,14 @@
     else if(keys['ArrowDown']) rightPaddle.dy = PADDLE_SPEED;
     else rightPaddle.dy = 0;
 
-    leftPaddle.y += leftPaddle.dy;
-    rightPaddle.y += rightPaddle.dy;
+    leftPaddle.y += leftPaddle.dy * s;
+    rightPaddle.y += rightPaddle.dy * s;
 
     leftPaddle.y = Math.max(0, Math.min(H - leftPaddle.h, leftPaddle.y));
     rightPaddle.y = Math.max(0, Math.min(H - rightPaddle.h, rightPaddle.y));
 
-    ball.x += ball.vx;
-    ball.y += ball.vy;
+    ball.x += ball.vx * s;
+    ball.y += ball.vy * s;
 
     // top/bottom bounce
     if(ball.y - ball.r <= 0){ ball.y = ball.r; ball.vy *= -1; }
@@ -456,9 +460,13 @@
     drawBall();
   }
 
-  function loop(){
+  let lastTime = performance.now();
+  function loop(now){
+    // Clamp dt so a tab-switch gap can't teleport the ball (canon: flappy-philacon).
+    const dt = Math.min(0.05, (now - lastTime) / 1000);
+    lastTime = now;
     if(running && !paused && !gameOver){
-      update();
+      update(dt);
     }
     draw();
     requestAnimationFrame(loop);
