@@ -523,7 +523,7 @@
 
 /*
  * The numbers odometer (public/js/odo-arm.js, then public/js/home.js), on the
- * numbers band and the hero stat line. Every time a stat comes half into
+ * numbers band and the hero stat line. Every time a stat comes a quarter into
  * view (on load, and again after it leaves the screen fully and comes back): its ink rule draws down, its
  * digits roll up into place, then its
  * label and note rise in. Stats that arrive together stagger 80ms, left to
@@ -560,6 +560,15 @@
 .odo [data-odo-item]:not([data-odo]) [data-odo-rise] {
   opacity: 0;
   transform: translateY(0.5rem);
+}
+
+/* Replays (data-odo-replay, set on reset) keep the labels in place: the first
+   view earns the rise; later views only roll the digits. Same specificity as
+   the hidden-state rule above, and later, so it wins. */
+.odo [data-odo-item][data-odo-replay] [data-odo-rise] {
+  opacity: 1;
+  transform: none;
+  transition: none;
 }
 
 /* The real number keeps its box; the overlay shows the roll. */

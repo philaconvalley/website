@@ -198,9 +198,12 @@ test('a number rolls again after it scrolls fully out of view and back', async (
   // Fully out of view: it resets, unseen, to the hidden start.
   await page.evaluate(() => window.scrollTo(0, 0));
   await expect(item).not.toHaveAttribute('data-odo', /.+/);
-  // Back in view: it plays again and settles on the real value.
+  // The label stays visible while it is reset: replays only roll the digits.
+  await expect(item.locator('[data-odo-rise]').first()).toHaveCSS('opacity', '1');
+  // Back in view: it plays again, with the shorter replay roll, and settles.
   await band.evaluate((el) => el.scrollIntoView({ block: 'center' }));
   await expect(item).toHaveAttribute('data-odo', 'play');
+  await expect(item.locator('.odo-strip').first()).toHaveCSS('transition-duration', '0.7s');
   await expect(item).toHaveAttribute('data-odo', 'done', { timeout: 4000 });
   const counter = item.locator('[data-count]');
   await expect(counter).toHaveText((await counter.getAttribute('data-count'))!);
