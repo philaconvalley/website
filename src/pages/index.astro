@@ -193,6 +193,10 @@ const stats = [
         <!-- The same live numbers as the pink band below, at a glance. They roll
              in like the band (public/js/home.js). The real number stays in the
              text, so screen readers read it; the rolling copy is aria-hidden.
+             inline-block: the number's box becomes its line box, the same
+             height as each overlay digit cell, so the roll ends exactly on the
+             real digits. As an inline box it was its taller glyph area, and the
+             digits dropped 6px when the overlay was removed.
              Each slash sits in its item's left padding, and the list is pulled
              left by that padding. A slash that starts a line falls outside the
              wrapper and is clipped, so a wrapped line never opens with "/". -->
@@ -207,7 +211,10 @@ const stats = [
                 <span aria-hidden="true" class="absolute left-4 bottom-0">
                   /
                 </span>
-                <span data-count={stat.value} class="relative text-2xl lg:text-3xl tabular-nums">
+                <span
+                  data-count={stat.value}
+                  class="relative inline-block text-2xl lg:text-3xl tabular-nums"
+                >
                   {stat.value}
                 </span>{' '}
                 {stat.label.replace(/\.$/, '')}

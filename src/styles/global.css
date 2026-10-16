@@ -523,9 +523,9 @@
 
 /*
  * The numbers odometer (public/js/odo-arm.js, then public/js/home.js), on the
- * numbers band and the hero stat line. On every load, when a stat is half in
- * view: its ink rule draws down, its
- * digits roll up into place (the ones digit takes one extra lap), then its
+ * numbers band and the hero stat line. Every time a stat comes half into
+ * view (on load, and again after it leaves the screen fully and comes back): its ink rule draws down, its
+ * digits roll up into place, then its
  * label and note rise in. Stats that arrive together stagger 80ms, left to
  * right.
  *
@@ -536,19 +536,21 @@
  * Durations exceed the 300ms UI budget on purpose: this is display motion on
  * a Persuade surface (DESIGN.md, motion rule 6).
  *
+ * Delays are set per element by the script (one mechanism for every part).
+ *
  * States: html.odo (set before paint) hides every stat that has no data-odo
  * yet; data-odo="play" runs the transitions; data-odo="done" is the plain
  * final state. No script: no html.odo, and every rule below is inert.
  */
 [data-odo-item] [data-odo-rule] {
   transform-origin: top;
-  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1) var(--odo-delay, 0ms);
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 [data-odo-item] [data-odo-rise] {
   transition:
-    opacity 300ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--odo-delay, 0ms) + 700ms),
-    transform 300ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--odo-delay, 0ms) + 700ms);
+    opacity 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .odo [data-odo-item]:not([data-odo]) [data-odo-rule] {
@@ -595,7 +597,7 @@
 /* Reduced motion: nothing moves. The stat fades in at its real value. */
 @media (prefers-reduced-motion: reduce) {
   [data-odo-item] {
-    transition: opacity 300ms ease var(--odo-delay, 0ms);
+    transition: opacity 300ms ease;
   }
 
   .odo [data-odo-item]:not([data-odo]) {

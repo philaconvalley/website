@@ -135,3 +135,73 @@ test('the hero stat line shows the same live numbers as the band, and no wrapped
     else expect(slashLeft).toBeGreaterThanOrEqual(wrapperLeft);
   }
 });
+
+test('the rolling digits end exactly on the real digits, so nothing jumps when the roll ends', async ({
+  page,
+}) => {
+  // When a number's last strip finishes, the overlay digit and the real digit
+  // (transparent under it) must share the same glyph top. An inline number box
+  // once made them 6px apart, and the digits dropped when the overlay left.
+  // The listener is installed before the page loads, so no roll is missed.
+  await page.addInitScript(() => {
+    const w = window as unknown as { odoOffsets: number[] };
+    w.odoOffsets = [];
+    const glyphTop = (node: Node) => {
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      return [...range.getClientRects()].find((r) => r.width > 0)!.top;
+    };
+    document.addEventListener(
+      'transitionend',
+      (event) => {
+        const strip = event.target as HTMLElement;
+        if (!strip.classList?.contains('odo-strip') || event.propertyName !== 'transform') return;
+        const layer = strip.closest('.odo-layer')!;
+        if (strip !== layer.querySelector('.odo-col:last-child .odo-strip')) return;
+        const num = layer.parentElement!;
+        const cell = strip.children[Number(strip.getAttribute('data-target'))];
+        w.odoOffsets.push(Math.abs(glyphTop(cell) - glyphTop(num.firstChild!)));
+      },
+      true,
+    );
+  });
+  // A window tall enough to show the hero line and the band at load, so both
+  // roll. Measured from the band's real position, not a fixed height.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  const bandBottom = await page
+    .locator('section[aria-label="PhilaCon Valley in numbers"]')
+    .evaluate((el) => Math.round(el.getBoundingClientRect().bottom + scrollY));
+  await page.setViewportSize({ width: 1440, height: bandBottom + 50 });
+  await page.reload();
+  await expect
+    .poll(
+      () => page.evaluate(() => (window as unknown as { odoOffsets: number[] }).odoOffsets.length),
+      {
+        timeout: 5000,
+      },
+    )
+    .toBe(6);
+  const offsets = await page.evaluate(
+    () => (window as unknown as { odoOffsets: number[] }).odoOffsets,
+  );
+  for (const offset of offsets) expect(offset).toBeLessThan(0.5);
+});
+
+test('a number rolls again after it scrolls fully out of view and back', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  const band = page.locator('section[aria-label="PhilaCon Valley in numbers"]');
+  const item = band.locator('[data-odo-item]').first();
+  await band.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await expect(item).toHaveAttribute('data-odo', 'done', { timeout: 4000 });
+  // Fully out of view: it resets, unseen, to the hidden start.
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect(item).not.toHaveAttribute('data-odo', /.+/);
+  // Back in view: it plays again and settles on the real value.
+  await band.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await expect(item).toHaveAttribute('data-odo', 'play');
+  await expect(item).toHaveAttribute('data-odo', 'done', { timeout: 4000 });
+  const counter = item.locator('[data-count]');
+  await expect(counter).toHaveText((await counter.getAttribute('data-count'))!);
+});
