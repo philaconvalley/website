@@ -127,7 +127,6 @@
           });
         }
         item.setAttribute('data-odo', 'play');
-        state.set(el, 'playing');
         var end = reduce
           ? delay + REDUCED
           : delay + Math.max(ROLL_AT + COLUMN_STEP * (strips.length - 1) + roll, RISE_AT + 300);
@@ -171,6 +170,9 @@
         }
         if (entry.intersectionRatio < VISIBLE || state.get(el) !== 'idle') return;
         if (reduce) io.unobserve(el);
+        // Mark it now, not in the frame callback: a second visibility report
+        // before that frame must not queue the same number twice.
+        state.set(el, 'playing');
         var hero = entry.target.closest('[data-testid="hero-stats"]');
         var base = hero ? Math.max(0, HERO_SETTLED - performance.now()) : 0;
         batch.push({ el: entry.target, delay: base + STAGGER * batch.length });

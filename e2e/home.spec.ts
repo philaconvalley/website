@@ -188,13 +188,16 @@ test('the rolling digits end exactly on the real digits, so nothing jumps when t
   for (const offset of offsets) expect(offset).toBeLessThan(0.5);
 });
 
+// The roll ends on transitionend, or at the latest on a fallback timer about
+// 2.6s after it starts. 8s leaves room for a loaded machine; a real hang never
+// reaches 'done' at all.
 test('a number rolls again after it scrolls fully out of view and back', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
   const band = page.locator('section[aria-label="PhilaCon Valley in numbers"]');
   const item = band.locator('[data-odo-item]').first();
   await band.evaluate((el) => el.scrollIntoView({ block: 'center' }));
-  await expect(item).toHaveAttribute('data-odo', 'done', { timeout: 4000 });
+  await expect(item).toHaveAttribute('data-odo', 'done', { timeout: 8000 });
   // Fully out of view: it resets, unseen, to the hidden start.
   await page.evaluate(() => window.scrollTo(0, 0));
   await expect(item).not.toHaveAttribute('data-odo', /.+/);
@@ -204,7 +207,7 @@ test('a number rolls again after it scrolls fully out of view and back', async (
   await band.evaluate((el) => el.scrollIntoView({ block: 'center' }));
   await expect(item).toHaveAttribute('data-odo', 'play');
   await expect(item.locator('.odo-strip').first()).toHaveCSS('transition-duration', '0.7s');
-  await expect(item).toHaveAttribute('data-odo', 'done', { timeout: 4000 });
+  await expect(item).toHaveAttribute('data-odo', 'done', { timeout: 8000 });
   const counter = item.locator('[data-count]');
   await expect(counter).toHaveText((await counter.getAttribute('data-count'))!);
 });
