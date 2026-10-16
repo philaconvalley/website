@@ -200,7 +200,12 @@ const valueCount = countWords[values.length] ?? String(values.length);
     <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
       <div class="flex flex-col gap-[22px] max-w-[900px]">
         <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">How we keep it free</p>
-        <h2 class="m-0">Two sides. One flock.</h2>
+        <!-- Says the model plainly (Waskar, 10/16/2026). The mockup line "Two
+             sides. One flock." left a visitor asking "two sides of what?" -->
+        <h2 class="m-0">
+          <span class="block">Free for you.</span>{' '}
+          <span class="block [text-wrap:balance]">Paid for by our work.</span>
+        </h2>
       </div>
       <div class="grid gap-7 grid-cols-[repeat(auto-fit,minmax(min(320px,100%),1fr))]">
         <div class="bg-white rounded-[28px] border-2 border-brand-dark shadow-[8px_8px_0_#1a1a1a] p-[clamp(28px,4vw,48px)] flex flex-col gap-[22px]">
