@@ -1,169 +1,218 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Button from '../components/Button.astro';
-import FounderNote from '../components/FounderNote.astro';
+import ClosingFlock from '../components/ClosingFlock.astro';
+import ProgramCards from '../components/ProgramCards.astro';
+import { community } from '../config';
 
 /**
- * Mode: Read. Budget: 550 body words (DESIGN.md).
+ * About, Edition 1.2 (DESIGN.md, "The 1.2 redesign"). Mode: Read. Sections
+ * follow the redesign mockup, with these decisions (Waskar, 10/16/2026):
+ * - The story stays in Waskar's own words, first person, set in the mockup's
+ *   layout. The mockup's third-person version is not used.
+ * - The founder photo is Waskar's real headshot, sent 10/16/2026.
+ * - The programs are the same four as Home (src/data/programs.ts), with Stoop
+ *   as a line under them.
+ * - "Join 493 of us" reads the same hand-kept member count as Home
+ *   (src/config.ts), so the two pages always show one number.
+ * - The closing section is the shared ClosingFlock, as on every page.
  *
- * This page used to say the same thing four times: an "Our story" section, a
- * founder's note, a "Who we serve" section and a "Philly, by us, for us"
- * section all made the same argument in different words, and the six values
- * arrived as icon cards — the treatment the evidence contract bans.
- *
- * The note is now the spine. It is Waskar's own account, taken from his own
- * words rather than paraphrased about him, and every section that restated it
- * is gone. The values stay, set as language instead of decorated with stock
- * glyphs, because a value nobody can read past the icon is not a value.
- *
- * Deliberately no numbers. Attendance figures are the metric the org is in the
- * middle of moving away from, and hard-coding them here would write the old
- * frame into the site on the way out of it.
+ * Every claim here is already live or confirmed: the story and the six values
+ * shipped on the old About page; the programs and the agency model are in
+ * DESIGN.md's confirmed claims.
  */
 
+// The mockup's copy. Fills follow the mockup: 03 yellow, 06 pink, the rest
+// white, all on ink.
 const values = [
   {
     name: 'Centering the margins',
-    line: 'Black, Brown, LGBTQIA+, and underrepresented folks lead here. Not just attend.',
+    line: 'Black, Brown, LGBTQIA+ and underrepresented people lead this community, not just attend it.',
+    fill: 'bg-white',
   },
   {
     name: 'Hands-on learning',
-    line: 'Build sessions, not lectures. You leave with something that runs.',
+    line: 'We build instead of watching slides, so you leave every session with something that works.',
+    fill: 'bg-white',
   },
   {
     name: 'Community over competition',
-    line: 'Nobody here is your competition. Your success is the point.',
+    line: 'Your win is our win. We help each other get there instead of racing each other.',
+    fill: 'bg-brand-yellow',
   },
   {
     name: 'Philly pride',
-    line: 'Built in Philadelphia, on purpose, by people from it.',
+    line: 'Built in Philadelphia, by Philadelphians, on purpose.',
+    fill: 'bg-white',
   },
   {
     name: 'Open knowledge',
-    line: 'Every project open source. Every resource free.',
+    line: 'Our projects are open source and our resources are free. Take them, use them, improve them.',
+    fill: 'bg-white',
   },
   {
     name: 'Radical welcome',
-    line: 'First line of code yesterday, or ten years in. Same table.',
-  },
-];
-
-const programs = [
-  {
-    name: 'Lab',
-    line: "Our flagship. Bring a project or join someone else's. No presentations, just building.",
-  },
-  {
-    name: 'Workshops',
-    line: 'Git basics through shipping an API. You do the work in the room.',
-  },
-  {
-    name: 'Career support',
-    line: 'Resume reviews, interview prep, and introductions to companies worth working for.',
-  },
-  {
-    name: 'Community projects',
-    line: 'Tools our own community uses — which makes them real portfolio work.',
+    line: 'First-timers and seniors sit at the same table. Every experience level belongs here.',
+    fill: 'bg-brand-pink',
   },
 ];
 ---
 
 <BaseLayout
-  title="About PhilaCon Valley - Why this exists"
-  description="Philadelphia's tech community, by us, for us. Why PhilaCon Valley exists, in the founder's own words."
+  title="About PhilaCon Valley — Philly's tech hub, built by the people who live here"
+  description="Why PhilaCon Valley exists, in the founder's own words: a free, in-person tech community in Philadelphia that doesn't end when the class does."
 >
-  <section class="bg-brand-coral text-white py-20">
-    <div class="container-custom">
-      <div class="max-w-4xl mx-auto text-center">
-        <h1 class="text-5xl md:text-6xl mb-6">About PhilaCon Valley</h1>
-        <p class="text-2xl text-white/85">
-          Making Philly the tech hub it's meant to be: by us, for us.
-        </p>
-      </div>
+  <!-- Hero: Golden Yellow, label pill, headline, lede (mockup). -->
+  <section class="bg-brand-yellow">
+    <div class="container-custom py-[clamp(56px,8vw,112px)] flex flex-col gap-7">
+      <p class="m-0 self-start pill font-black text-[13px] tracking-[0.16em]">
+        About PhilaCon Valley
+      </p>
+      <h1 class="m-0 max-w-[1100px]">Philly's tech hub, built by the people who live here.</h1>
+      <p class="m-0 max-w-[640px] text-[clamp(18px,1.6vw,22px)] leading-[1.5] font-semibold text-brand-dark/90">
+        We're making Philadelphia a place where anyone can learn to build with technology, by
+        building a community that doesn't end when the class does.
+      </p>
     </div>
   </section>
 
-  <!--
-    The spine of the page. Waskar's words, from his own account of the
-    Resilient Coders cohort ending — not a paraphrase written about him.
-  -->
-  <section class="section-padding bg-brand-cream">
-    <div class="container-custom">
-      <div class="max-w-3xl mx-auto">
-        <h2 class="text-4xl mb-8 text-center">Why this exists</h2>
-        <FounderNote>
-          <p>
+  <!-- Why this exists: the photo and name on the left, the story on the right
+       (mockup layout). The words are Waskar's own (Waskar, 10/16/2026). -->
+  <section class="bg-white border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-wrap items-start gap-[clamp(40px,6vw,96px)]">
+      <figure class="m-0 grow shrink basis-[380px] min-w-0 flex flex-col gap-5">
+        <img
+          src="/images/waskar-paulino-560.webp"
+          srcset="/images/waskar-paulino-560.webp 560w, /images/waskar-paulino-1120.webp 1120w"
+          sizes="(min-width: 1024px) 440px, calc(100vw - 32px)"
+          width="560"
+          height="700"
+          loading="lazy"
+          decoding="async"
+          alt="Waskar Paulino, smiling, in a black polo shirt"
+          class="block w-full max-w-[520px] aspect-[4/5] object-cover rounded-[28px] border-2 border-brand-dark shadow-retro-xl bg-brand-pink"
+        />
+        <figcaption class="flex flex-col gap-0.5">
+          <span class="font-display font-extrabold text-[26px] leading-[1.1]">Waskar Paulino</span>
+          <span class="font-extrabold text-[13px] tracking-[0.16em] uppercase">
+            Founder &amp; Executive Director
+          </span>
+        </figcaption>
+      </figure>
+      <div class="grow shrink basis-[560px] min-w-0 flex flex-col gap-7">
+        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">Why this exists</p>
+        <h2 class="m-0 text-[clamp(48px,6.4vw,96px)] leading-[0.9]">“I needed the cohort back.”</h2>
+        <!-- Mockup grey #3A3A3A, as ink at 85% (the Home "Why we exist" rule). -->
+        <div class="flex flex-col gap-5 text-[19px] leading-[1.65] text-brand-dark/85">
+          <p class="m-0">
             I finished a coding bootcamp in December 2024. Resilient Coders. On Demo Day I showed an
             app I'd built from nothing, in a room full of people who had been in it with me every
             day for months.
           </p>
-          <p>
+          <p class="m-0">
             Then it ended, and I went home, and the room was gone. Where are the friends I made?
           </p>
-          <p>
-            That's the whole reason this exists. Philly has no shortage of tech events — I went to
+          <p class="m-0">
+            That's the whole reason this exists. Philly has no shortage of tech events. I went to
             them. You hand out a card, you listen to a talk, you go home with nobody. I didn't need
             another audience. I needed the cohort back.
           </p>
-          <p>
+          <p class="m-0">
             So I built one that doesn't graduate. We meet, we build real things, and the people
             around the table are still there next month.
           </p>
-          <p>
+          <p class="m-0">
             The name is on purpose. Silicon Valley decided who counted as a tech person. We're
             deciding that here.
           </p>
-          <p>I got here late and sideways. Most of us did.</p>
-        </FounderNote>
+          <p class="m-0 font-bold text-brand-dark">I got here late and sideways. Most of us did.</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="section-padding bg-brand-yellow border-t-[3px]">
-    <div class="container-custom">
-      <div class="max-w-4xl mx-auto">
-        <h2 class="text-4xl mb-12">What we hold to</h2>
-        <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 m-0">
-          {values.map((value) => (
-            <div>
-              <dt class="font-display text-2xl font-bold mb-1">{value.name}</dt>
-              <dd class="m-0 text-brand-dark/70">{value.line}</dd>
-            </div>
-          ))}
-        </dl>
+  <!-- What we hold to: six numbered values on ink (mockup). The numbers stay
+       for the exact mockup match, as on Home's "Four ways in". -->
+  <section class="bg-brand-dark text-white border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
+      <div class="flex flex-col gap-[22px] max-w-[820px]">
+        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">What we hold to</p>
+        <h2 class="m-0">
+          Six things we <span class="text-brand-yellow">don't bend on.</span>
+        </h2>
       </div>
+      <ol class="m-0 p-0 list-none grid gap-5 grid-cols-[repeat(auto-fit,minmax(300px,1fr))]">
+        {values.map((value, i) => (
+          <li class={`${value.fill} text-brand-dark rounded-retro p-[30px] flex flex-col gap-3.5`}>
+            <span class="font-black text-[13px] tracking-[0.2em]" aria-hidden="true">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <h3 class="m-0 text-[30px] leading-none">{value.name}</h3>
+            <p class="m-0 text-base leading-[1.55]">{value.line}</p>
+          </li>
+        ))}
+      </ol>
     </div>
   </section>
 
-  <section class="section-padding">
-    <div class="container-custom">
-      <div class="max-w-4xl mx-auto">
-        <h2 class="text-4xl mb-12">What we run</h2>
-        <dl class="space-y-8 m-0">
-          {programs.map((program) => (
-            <div>
-              <dt class="font-display text-2xl font-bold mb-1">{program.name}</dt>
-              <dd class="m-0 text-lg text-brand-dark/70">{program.line}</dd>
-            </div>
-          ))}
-        </dl>
-      </div>
-    </div>
-  </section>
-
-  <section class="section-padding bg-accent-400 text-brand-dark border-t-[3px]">
-    <div class="container-custom text-center">
-      <h2 class="text-4xl mb-6">Come build with us</h2>
-      <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">Show up before you feel ready.</p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button href="/join" variant="secondary" size="lg">
-          Get involved
-        </Button>
-        <Button href="/events" variant="light" size="lg">
-          {' '}
-          Attend an event{' '}
+  <!-- What we run: the same four programs as Home (src/data/programs.ts). -->
+  <section class="bg-white border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
+      <div class="flex flex-wrap justify-between items-end gap-6">
+        <div class="flex flex-col gap-[22px] max-w-[760px]">
+          <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">What we run</p>
+          <h2 class="m-0">Four programs. Zero cost.</h2>
+        </div>
+        <Button href="/events" variant="light">
+          See the calendar
         </Button>
       </div>
+      <ProgramCards />
     </div>
   </section>
+
+  <!-- How we keep it free: the two sides of the model (mockup). The agency
+       funding the programs is a confirmed claim (DESIGN.md). -->
+  <section class="bg-brand-yellow border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
+      <div class="flex flex-col gap-[22px] max-w-[900px]">
+        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">How we keep it free</p>
+        <h2 class="m-0">Two sides. One flock.</h2>
+      </div>
+      <div class="grid gap-7 grid-cols-[repeat(auto-fit,minmax(min(320px,100%),1fr))]">
+        <div class="bg-white rounded-[28px] border-2 border-brand-dark shadow-[8px_8px_0_#1a1a1a] p-[clamp(28px,4vw,48px)] flex flex-col gap-[22px]">
+          <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">For the community</p>
+          <h3 class="m-0 text-[clamp(36px,4vw,56px)] leading-[0.95]">Free, forever, for us.</h3>
+          <p class="m-0 text-lg leading-[1.55] text-brand-dark/85">
+            Labs, workshops and career sessions with no application, no fee and no prerequisite.
+          </p>
+          <!-- Book p14: Hot Pink is the main button (the mockup used ink). -->
+          <div class="mt-auto">
+            <Button href="/join" variant="primary" size="lg" data-testid="join-count">
+              Join {community.memberCount} of us
+            </Button>
+          </div>
+        </div>
+        <div class="bg-brand-coral rounded-[28px] border-2 border-brand-dark shadow-[8px_8px_0_#1a1a1a] p-[clamp(28px,4vw,48px)] flex flex-col gap-[22px]">
+          <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">
+            For Philly organizations
+          </p>
+          <h3 class="m-0 text-[clamp(36px,4vw,56px)] leading-[0.95]">
+            Paid work that pays for it.
+          </h3>
+          <p class="m-0 text-lg leading-[1.55]">
+            Design, apps and software for Philly nonprofits and community orgs. The fees fund the
+            free programs.
+          </p>
+          <div class="mt-auto">
+            <Button href="/contact" variant="light" size="lg">
+              Start a project
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <ClosingFlock />
 </BaseLayout>
