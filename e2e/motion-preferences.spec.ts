@@ -63,13 +63,14 @@ test.describe('prefers-reduced-transparency', () => {
     await client.detach();
   });
 
-  test('mobile menu keeps its translucent blur without the reduced-transparency preference', async ({
-    page,
-  }) => {
+  // Edition 1.2 rules out frosted glass, so the menu is opaque for everyone, not
+  // only for visitors who ask for reduced transparency.
+  test('mobile menu is solid ink with no blur without the preference too', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/');
     await page.click('button[aria-expanded]');
     const menu = page.locator('[data-testid="mobile-menu"]');
-    await expect(menu).toHaveCSS('backdrop-filter', 'blur(16px)');
+    await expect(menu).toHaveCSS('backdrop-filter', 'none');
+    await expect(menu).toHaveCSS('background-color', 'rgb(26, 26, 26)');
   });
 });

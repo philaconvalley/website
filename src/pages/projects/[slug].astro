@@ -34,7 +34,8 @@ const { title, description, techStack, githubUrl, liveUrl, contributors, status,
             {status === 'active' ? 'Active' : 'Completed'}
           </span>
         </div>
-        <h1 class="text-4xl md:text-5xl font-bold mb-4">{title}</h1>
+        <!-- normal-case: a project name keeps its own case (DESIGN.md, voice rule 1). -->
+        <h1 class="text-4xl md:text-5xl mb-4 normal-case">{title}</h1>
         <p class="text-xl opacity-90">{description}</p>
       </div>
     </div>
@@ -55,7 +56,7 @@ const { title, description, techStack, githubUrl, liveUrl, contributors, status,
           <!-- Sidebar -->
           <div class="lg:col-span-1">
             <div class="bg-primary-100 rounded-lg p-6 sticky top-24">
-              <h3 class="text-xl font-bold mb-4">Project info</h3>
+              <h3 class="text-xl mb-4">Project info</h3>
 
               <!-- Tech stack -->
               <div class="mb-6">
@@ -129,7 +130,7 @@ const { title, description, techStack, githubUrl, liveUrl, contributors, status,
   <!-- CTA -->
   <section class="section-padding bg-primary-100">
     <div class="container-custom text-center">
-      <h2 class="text-3xl font-bold mb-4">Want to contribute?</h2>
+      <h2 class="text-3xl mb-4">Want to contribute?</h2>
       <p class="text-lg text-brand-dark/60 mb-6 max-w-2xl mx-auto">
         All our projects are open source and welcome contributions. Check out the GitHub repo to see
         open issues and get started!
@@ -139,7 +140,7 @@ const { title, description, techStack, githubUrl, liveUrl, contributors, status,
           {' '}
           Join the Community{' '}
         </Button>
-        <Button href="/projects" variant="outline">
+        <Button href="/projects" variant="light">
           {' '}
           View all projects{' '}
         </Button>

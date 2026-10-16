@@ -11,7 +11,7 @@ import { site, links } from '../config';
   <section class="bg-brand-coral text-white py-20">
     <div class="container-custom">
       <div class="max-w-4xl mx-auto text-center">
-        <h1 class="text-5xl md:text-6xl font-bold mb-6">Get in touch</h1>
+        <h1 class="text-5xl md:text-6xl mb-6">Get in touch</h1>
         <p class="text-2xl text-white/85">
           Questions, ideas, or just want to say hi? We'd love to hear from you!
         </p>
@@ -25,7 +25,7 @@ import { site, links } from '../config';
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
         <!-- Contact Info -->
         <div>
-          <h2 class="text-3xl font-bold mb-6">Let's connect</h2>
+          <h2 class="text-3xl mb-6">Let's connect</h2>
           <p class="text-lg text-brand-dark/70 mb-8">
             Whether you have a question about our events, want to contribute, or just want to
             connect with the community – we're here for you.
@@ -50,7 +50,7 @@ import { site, links } from '../config';
                 </svg>
               </div>
               <div>
-                <h3 class="font-bold mb-1">Email</h3>
+                <h3 class="mb-1">Email</h3>
                 <a href={`mailto:${site.email}`} class="text-primary-600 hover:text-primary-700">
                   {site.email}
                 </a>
@@ -80,7 +80,7 @@ import { site, links } from '../config';
                 </svg>
               </div>
               <div>
-                <h3 class="font-bold mb-1">Location</h3>
+                <h3 class="mb-1">Location</h3>
                 <p class="text-brand-dark/60">Philadelphia, PA</p>
               </div>
             </div>
@@ -102,7 +102,7 @@ import { site, links } from '../config';
                 </svg>
               </div>
               <div>
-                <h3 class="font-bold mb-1">Events</h3>
+                <h3 class="mb-1">Events</h3>
                 <a
                   href={links.luma}
                   target="_blank"
@@ -117,7 +117,7 @@ import { site, links } from '../config';
 
           <!-- Social Links -->
           <div>
-            <h3 class="font-bold mb-4">Follow us</h3>
+            <h3 class="mb-4">Follow us</h3>
             <div class="flex gap-4">
               <a
                 href={links.social.instagram}
@@ -173,7 +173,7 @@ import { site, links } from '../config';
 
         <!-- Contact Form -->
         <div>
-          <h2 class="text-3xl font-bold mb-6">Send us a message</h2>
+          <h2 class="text-3xl mb-6">Send us a message</h2>
           <form
             action={links.formspree}
             method="POST"
@@ -211,7 +211,7 @@ import { site, links } from '../config';
                   name="name"
                   autocomplete="name"
                   required
-                  class="w-full px-4 py-3 border-2 border-brand-dark/10 rounded-xl bg-primary-100 focus:ring-2 focus:ring-accent-400 focus:border-accent-400 focus:bg-white"
+                  class="w-full px-4 py-3 border-2 border-brand-dark rounded-[14px] bg-white"
                   placeholder="Your name"
                 />
               </div>
@@ -226,7 +226,7 @@ import { site, links } from '../config';
                   name="email"
                   autocomplete="email"
                   required
-                  class="w-full px-4 py-3 border-2 border-brand-dark/10 rounded-xl bg-primary-100 focus:ring-2 focus:ring-accent-400 focus:border-accent-400 focus:bg-white"
+                  class="w-full px-4 py-3 border-2 border-brand-dark rounded-[14px] bg-white"
                   placeholder="your.email@example.com"
                 />
               </div>
@@ -239,7 +239,7 @@ import { site, links } from '../config';
                   type="text"
                   id="subject"
                   name="subject"
-                  class="w-full px-4 py-3 border-2 border-brand-dark/10 rounded-xl bg-primary-100 focus:ring-2 focus:ring-accent-400 focus:border-accent-400 focus:bg-white"
+                  class="w-full px-4 py-3 border-2 border-brand-dark rounded-[14px] bg-white"
                   placeholder="What's this about?"
                 />
               </div>
@@ -253,7 +253,7 @@ import { site, links } from '../config';
                   name="message"
                   required
                   rows="6"
-                  class="w-full px-4 py-3 border-2 border-brand-dark/10 rounded-xl bg-primary-100 focus:ring-2 focus:ring-accent-400 focus:border-accent-400 focus:bg-white resize-none"
+                  class="w-full px-4 py-3 border-2 border-brand-dark rounded-[14px] bg-white resize-none"
                   placeholder="Tell us what's on your mind..."
                 ></textarea>
               </div>
@@ -274,10 +274,12 @@ import { site, links } from '../config';
                 </p>
               </div>
 
+              <!-- Same classes as a large primary Button (src/components/Button.astro).
+                   It is a raw <button> because Alpine binds :disabled to it. -->
               <button
                 type="submit"
                 :disabled="status === 'sending'"
-                class="disabled:opacity-60 disabled:cursor-wait w-full px-6 py-3 bg-accent-400 text-brand-dark font-display font-bold rounded-full hover:bg-accent-500 transition-[transform,background-color,box-shadow] duration-150 ease-out shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                class="disabled:opacity-60 disabled:cursor-wait w-full inline-flex items-center justify-center min-h-[55px] px-7 py-2.5 border-2 border-brand-dark bg-brand-pink text-brand-dark font-display font-extrabold text-[17px] rounded-full lift"
               >
                 <span x-text="status === 'sending' ? 'Sending...' : 'Send message'">
                   Send message
@@ -305,7 +307,7 @@ import { site, links } from '../config';
                   d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                 ></path>
               </svg>
-              <h3 class="text-xl font-bold text-green-900 mb-2">Message sent!</h3>
+              <h3 class="text-xl text-green-900 mb-2">Message sent!</h3>
               <p class="text-green-700">
                 Thanks for reaching out. We'll get back to you as soon as possible!
               </p>
@@ -324,10 +326,10 @@ import { site, links } from '../config';
   <section class="section-padding bg-primary-100">
     <div class="container-custom">
       <div class="max-w-4xl mx-auto">
-        <h2 class="text-3xl font-bold mb-8 text-center">Common questions</h2>
+        <h2 class="text-3xl mb-8 text-center">Common questions</h2>
         <div class="space-y-6">
-          <div class="bg-white rounded-retro p-6 border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-lg font-bold mb-2">How do I join the Discord community?</h3>
+          <div class="bg-white rounded-retro p-6 border-2 border-brand-dark shadow-retro-lg">
+            <h3 class="text-lg mb-2">How do I join the Discord community?</h3>
             <p class="text-brand-dark/60">
               Use the invite link on the{' '}
               <a href="/join" class="underline hover:text-accent-400">
@@ -337,32 +339,32 @@ import { site, links } from '../config';
             </p>
           </div>
 
-          <div class="bg-white rounded-retro p-6 border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-lg font-bold mb-2">Do you still use Slack?</h3>
+          <div class="bg-white rounded-retro p-6 border-2 border-brand-dark shadow-retro-lg">
+            <h3 class="text-lg mb-2">Do you still use Slack?</h3>
             <p class="text-brand-dark/60">
               Discord is our main channel. We keep a Slack space open only for international
               members, since some countries restrict Discord. Ask us for an invite if that is you.
             </p>
           </div>
 
-          <div class="bg-white rounded-retro p-6 border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-lg font-bold mb-2">Are events really free?</h3>
+          <div class="bg-white rounded-retro p-6 border-2 border-brand-dark shadow-retro-lg">
+            <h3 class="text-lg mb-2">Are events really free?</h3>
             <p class="text-brand-dark/60">
               Yes! All PhilaCon Valley events are completely free. We believe financial barriers
               shouldn't prevent anyone from learning and growing in tech.
             </p>
           </div>
 
-          <div class="bg-white rounded-retro p-6 border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-lg font-bold mb-2">I'm a complete beginner. Can I still attend?</h3>
+          <div class="bg-white rounded-retro p-6 border-2 border-brand-dark shadow-retro-lg">
+            <h3 class="text-lg mb-2">I'm a complete beginner. Can I still attend?</h3>
             <p class="text-brand-dark/60">
               Absolutely! We welcome people at all skill levels. Many of our events are specifically
               designed for beginners, and we always have folks ready to help.
             </p>
           </div>
 
-          <div class="bg-white rounded-retro p-6 border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-lg font-bold mb-2">How can I contribute content or lead a workshop?</h3>
+          <div class="bg-white rounded-retro p-6 border-2 border-brand-dark shadow-retro-lg">
+            <h3 class="text-lg mb-2">How can I contribute content or lead a workshop?</h3>
             <p class="text-brand-dark/60">
               We'd love that! Send us a message with your idea, and let's make it happen. Community
               members leading workshops is exactly what we're about.
