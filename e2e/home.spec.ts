@@ -219,8 +219,11 @@ test('Home shows the four programs, and Stoop as a line under them', async ({ pa
   });
   const names = section.getByRole('heading', { level: 3 });
   await expect(names).toHaveText(['PATCH', 'Lab', 'Community projects', 'Career Support']);
-  // Each program is a whole-card link; Career Support runs today, so no "Coming soon".
-  await expect(section.getByRole('listitem').getByRole('link')).toHaveCount(4);
-  await expect(section.getByText('Coming soon')).toHaveCount(0);
+  // Running programs are whole-card links. Career Support is coming soon: a
+  // card with a "Coming soon" tag and no link.
+  await expect(section.getByRole('listitem').getByRole('link')).toHaveCount(3);
+  const career = section.getByRole('listitem').filter({ hasText: 'Career Support' });
+  await expect(career).toContainText('Coming soon');
+  await expect(career.getByRole('link')).toHaveCount(0);
   await expect(page.getByTestId('stoop-line')).toContainText('Stoop');
 });
