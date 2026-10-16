@@ -6,15 +6,17 @@ import { links } from '../config';
  * The closing section every page ends on (DESIGN.md, "Color rhythm"): the motto
  * and the single ask, in the mockup's layout (Waskar, 10/15/2026).
  *
- * - Color: the mockup drew it in light blue (#85C9FF). That is off the
- *   Edition 1.2 palette, and the Book says Sky Blue is never a background, so
- *   it stays Golden Yellow.
- * - Art: the real sunset logo from the asset library, with its lettering
+ * - Background: the brand skyline illustration (Waskar, 10/15/2026), cropped
+ *   below its lettering and its small pigeon. The buildings run along the
+ *   bottom; the text sits on the art's own sky above the rooftops. The flat
+ *   sky color #58B2F7 is sampled from the art so the image blends into it.
+ *   This is an illustration, not a flat Sky Blue field (Book: Sky Blue is
+ *   never a background); flagged for Diego in DESIGN.md.
+ * - Art: a die-cut sticker of the real sunset logo art, with its lettering
  *   removed (the wordmark already sits in the footer just below). The letters
  *   are separate shapes in the source file; only those shapes were dropped,
  *   so the art itself is unchanged.
- * - The mockup's block skyline is left out: it was generic, not Philadelphia,
- *   and the real skyline is already in the art. Real asset or absent.
+ * - The mockup's generic block skyline is replaced by the real brand art.
  *
  * Page PRs place it as the last element inside <main>, and drop the page's own
  * closing call to action so the page does not ask twice.
@@ -30,16 +32,36 @@ const { lede = "Come to one night. That's the whole ask. We'll take it from ther
 
 <section
   data-testid="closing-flock"
-  class="relative overflow-hidden bg-brand-yellow border-t-2 border-brand-dark"
+  class="relative overflow-hidden bg-[#58B2F7] border-t-2 border-brand-dark"
 >
-  <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-wrap items-center gap-[clamp(32px,5vw,72px)]">
+  <!-- The skyline band, one image at full width (Waskar's pick, 10/15/2026).
+       The art is a single portrait drawing, so it cannot zoom out further
+       without a seam: a mirrored or repeated copy shows at the join. A wider
+       version of the drawing is the fix. object-top keeps the rooftops; the
+       first rooftop sits 14.2% of the image width below the image top. -->
+  <img
+    src="/images/skyline-1200.webp"
+    srcset="/images/skyline-1200.webp 1200w, /images/skyline-2400.webp 2400w"
+    sizes="100vw"
+    width="2400"
+    height="2092"
+    loading="lazy"
+    decoding="async"
+    alt=""
+    class="absolute inset-x-0 bottom-0 w-full h-[clamp(280px,36vw,520px)] object-cover object-top pointer-events-none select-none"
+  />
+  <!-- Bottom padding = band height minus the rooftop offset, plus 48px, so the
+       buttons always end above the rooftops. Percentage padding is measured
+       against the section width, the same width the image scales to. -->
+  <div class="relative container-custom pt-[clamp(72px,9vw,128px)] pb-[calc(clamp(280px,36vw,520px)-14.2%+48px)] flex flex-wrap items-center gap-[clamp(32px,5vw,72px)]">
     <div class="grow shrink basis-[560px] min-w-0 flex flex-col gap-7">
       <h2 class="m-0 text-[clamp(48px,7vw,104px)] leading-[0.9] tracking-[-0.02em]">
-        A pigeon flies alone. <span class="sticker bg-white">A flock</span> goes much further.
+        A pigeon flies alone. <span class="sticker bg-brand-yellow">A flock</span> goes much
+        further.
       </h2>
       <p class="m-0 max-w-[520px] text-[19px] leading-[1.55] font-semibold">{lede}</p>
       <div class="flex flex-wrap gap-3.5">
-        <!-- Book p14: on a yellow field the main button is Hot Pink. -->
+        <!-- Book p14: Hot Pink is the main button. -->
         <Button href={links.luma} external variant="primary" size="lg">
           RSVP for the next night
         </Button>
@@ -48,20 +70,22 @@ const { lede = "Come to one night. That's the whole ask. We'll take it from ther
         </Button>
       </div>
     </div>
+    <!-- The pigeon as a die-cut sticker, not a badge (Waskar, 10/15/2026): a
+         white cut line around its shape, a tilt, and the hard ink shadow. Each
+         drop-shadow applies to the result of the one before it, so the ink
+         shadow falls behind the white cut line too. -->
     <div class="grow shrink basis-[360px] min-w-0 flex justify-center">
-      <div class="w-full max-w-[420px] aspect-square rounded-full bg-white border-[3px] border-brand-dark shadow-retro-xl flex items-center justify-center p-[12%]">
-        <img
-          src="/images/pigeon-keyboard-skyline-420.webp"
-          srcset="/images/pigeon-keyboard-skyline-420.webp 317w, /images/pigeon-keyboard-skyline-840.webp 634w"
-          sizes="(min-width: 1024px) 320px, 70vw"
-          width="317"
-          height="420"
-          loading="lazy"
-          decoding="async"
-          alt="The PhilaCon Valley pigeon standing on a keyboard, with the Philadelphia skyline behind it"
-          class="block w-full h-full object-contain"
-        />
-      </div>
+      <img
+        src="/images/pigeon-keyboard-skyline-420.webp"
+        srcset="/images/pigeon-keyboard-skyline-420.webp 317w, /images/pigeon-keyboard-skyline-840.webp 634w"
+        sizes="(min-width: 1024px) 340px, 260px"
+        width="317"
+        height="420"
+        loading="lazy"
+        decoding="async"
+        alt="The PhilaCon Valley pigeon standing on a keyboard, with the Philadelphia skyline behind it"
+        class="block w-full max-w-[260px] lg:max-w-[340px] h-auto -rotate-[5deg] [filter:drop-shadow(4px_0_0_#fff)_drop-shadow(-4px_0_0_#fff)_drop-shadow(0_4px_0_#fff)_drop-shadow(0_-4px_0_#fff)_drop-shadow(10px_10px_0_#1a1a1a)]"
+      />
     </div>
   </div>
 </section>
