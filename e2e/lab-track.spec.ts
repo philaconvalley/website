@@ -46,7 +46,7 @@ test.describe('Lab timeline', () => {
     test(`outcome chip never covers a caption at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       await page.emulateMedia({ reducedMotion: 'reduce' });
-      await page.goto('/');
+      await page.goto('/events');
 
       const chip = page.locator('.pcv-loop-chip');
       await expect(chip).toHaveCount(1);

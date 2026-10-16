@@ -4,8 +4,10 @@ import { links } from '../config';
 
 /**
  * The closing section every page ends on (DESIGN.md, "Color rhythm"): the motto
- * on Golden Yellow, the pigeon, and a solid ink Philadelphia skyline that runs
- * straight into the ink footer.
+ * on Golden Yellow, type only (decided 10/15/2026). The lettered sunset logo,
+ * the large pigeon head, and a generic block skyline were each tried and removed:
+ * the logo and the head repeated a brand mark already in view (header, footer),
+ * and the skyline was not Philadelphia. Real asset or absent.
  *
  * The redesign mockup drew this section in sky blue. The Book says Sky Blue is
  * never a background, so it is Golden Yellow (decided 10/15/2026).
@@ -26,7 +28,7 @@ const { lede = "Come to one night. That's the whole ask. We'll take it from ther
   data-testid="closing-flock"
   class="relative overflow-hidden bg-brand-yellow border-t-2 border-brand-dark"
 >
-  <div class="container-custom pt-16 lg:pt-28 flex flex-col lg:flex-row lg:items-center gap-10 lg:gap-16">
+  <div class="container-custom py-16 lg:py-28 flex flex-col gap-10">
     <div class="flex-1 min-w-0 flex flex-col gap-7">
       <h2 class="m-0">
         A pigeon flies alone. <span class="sticker bg-white">A flock</span> goes much further.
@@ -42,28 +44,5 @@ const { lede = "Come to one night. That's the whole ask. We'll take it from ther
         </Button>
       </div>
     </div>
-
-    <img
-      src="/images/sunset-philacon-valley-logo-720.webp"
-      alt="The PhilaCon Valley pigeon at a keyboard, with the Philadelphia skyline on its back"
-      width="720"
-      height="955"
-      loading="lazy"
-      class="w-[220px] sm:w-[260px] lg:w-[300px] h-auto self-center lg:self-end flex-none"
-    />
   </div>
-
-  <!-- Crisp geometry, not an illustration: a flat ink skyline that hands the
-       page to the footer. Decorative, so hidden from assistive tech. -->
-  <svg
-    viewBox="0 0 1440 180"
-    preserveAspectRatio="none"
-    aria-hidden="true"
-    class="block w-full h-[96px] lg:h-[160px] mt-10"
-  >
-    <path
-      fill="#1A1A1A"
-      d="M0 180V130h40v-30h50v30h30V90h40v-20h30v20h20v40h60V60h20V30h12v30h18v70h40v-50h60v50h30V40l18-24 18 24v90h40V70h30v-30h20v30h30v60h50v-40h60v40h30V50h24V20h12v30h24v80h40V100h50v30h30V70h40v60h20V30l26-20 26 20v100h40v-50h60v50h40V60h30v70h50v-40h40v40h40v-60h20v-20h30v20h20v60h40V90h60v40h30v50z"
-    ></path>
-  </svg>
 </section>

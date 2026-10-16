@@ -1,4 +1,5 @@
 ---
+import LabTrack from '../../components/LabTrack.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Button from '../../components/Button.astro';
 import PhotoGrid from '../../components/PhotoGrid.astro';
@@ -34,6 +35,18 @@ const recaps = (await getCollection('events')).sort(
   </section>
 
   <!-- What to expect -->
+  <!-- The Lab timeline moved here from Home (Diego, 10/15/2026): on Events the
+       visitor already knows they are reading about one night, so the timeline
+       explains the night instead of defining the whole org. It is still the
+       site's only looping motion (DESIGN.md, motion rule 1). The Events PR
+       restyles this page; the timeline keeps its place. -->
+  <section class="section-padding bg-white border-b-2 border-brand-dark">
+    <div class="container-custom lg:grid lg:grid-cols-2 lg:gap-24 lg:items-start">
+      <h2 class="m-0 mb-9 lg:mb-0">One night. Three hours. Something exists that didn't.</h2>
+      <LabTrack outcome="Your first pull request" outcomeDetail="Reviewed, merged, and live." />
+    </div>
+  </section>
+
   <section class="section-padding bg-primary-100">
     <div class="container-custom">
       <div class="max-w-4xl mx-auto">

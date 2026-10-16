@@ -271,7 +271,12 @@
      the line: white fill, 3px ink outline, hard shadow, a slight tilt. One per
      heading at most. Override the fill with a color utility. */
   .sticker {
-    @apply inline-block rounded-[18px] border-[3px] border-brand-dark bg-white px-3.5 shadow-retro-lg -rotate-2;
+    /* Uppercase Baloo 2 like the display type it sits beside (DESIGN.md, voice
+       rule 1), so a sticker outside a heading still reads as one. */
+    @apply inline-block rounded-[18px] border-[3px] border-brand-dark bg-white px-3.5 shadow-retro-lg -rotate-2
+           font-display font-extrabold uppercase my-[0.08em];
+    /* my-: the sticker box is taller than a display heading's tight line
+       height; without the margin it overlaps the next line on phones. */
   }
 
   /* A small flat label: one color, stadium radius, ink outline (Book section
