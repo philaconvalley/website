@@ -55,7 +55,8 @@ const rsvpHref = nextEvent?.url ?? '/events';
            wraps the whole wordmark and the name never meets the first nav link. "Hang" scales
            the head up from its top-left corner, tilts it, and drops it 8px over
            the edge. Hang is the server-rendered default, so a page that loads at the
-           top never moves. Under reduced motion the states swap with no movement. -->
+           top never moves. Under reduced motion the head stays tucked: no hang, so no
+           state change and no jump on scroll. -->
       <a
         href="/"
         class="flex-shrink-0 flex items-center gap-1 pr-4 rounded-2xl font-display font-extrabold text-xl md:text-2xl lg:text-xl xl:text-2xl leading-none tracking-[-0.01em] text-brand-dark"
@@ -66,12 +67,12 @@ const rsvpHref = nextEvent?.url ?? '/events';
             alt=""
             width="56"
             height="56"
-            class="absolute inset-0 w-full h-full origin-top-left drop-shadow-[3px_3px_0_#1A1A1A] transition-transform duration-[240ms] ease-in-out motion-reduce:transition-none translate-y-2 -rotate-6 scale-[1.36]"
+            class="absolute inset-0 w-full h-full origin-top-left drop-shadow-[3px_3px_0_#1A1A1A] transition-transform duration-[240ms] ease-in-out motion-reduce:transition-none translate-y-2 -rotate-6 scale-[1.36] motion-reduce:!transform-none"
             :class="{ 'translate-y-2 -rotate-6 scale-[1.36]': !(scrolled || mobileMenuOpen) }"
           />
         </span>
         <span
-          class="block transition-transform duration-[240ms] ease-in-out motion-reduce:transition-none translate-x-4"
+          class="block transition-transform duration-[240ms] ease-in-out motion-reduce:transition-none translate-x-4 motion-reduce:!transform-none"
           :class="{ 'translate-x-4': !(scrolled || mobileMenuOpen) }"
         >
           <!-- The official wordmark, unchanged from the brand logo library. Its
@@ -103,15 +104,16 @@ const rsvpHref = nextEvent?.url ?? '/events';
         <div
           data-testid="desktop-nav"
           class="relative flex items-center space-x-0.5"
-          x-data="{ pos: { left: 0, width: 0 } }"
+          x-data="{ pos: { left: 0, width: 0 }, instant: false }"
           x-init="const current = $el.querySelector('[aria-current=page]'); if (current) pos = { left: current.offsetLeft, width: current.offsetWidth }; if (document.fonts) document.fonts.ready.then(() => { if (!$el.matches(':hover')) { const c = $el.querySelector('[aria-current=page]'); if (c) pos = { left: c.offsetLeft, width: c.offsetWidth } } })"
-          @mouseleave="const current = $el.querySelector('[aria-current=page]'); if (current) pos = { left: current.offsetLeft, width: current.offsetWidth }"
-          @focusout="if (!$el.contains($event.relatedTarget)) { const current = $el.querySelector('[aria-current=page]'); if (current) pos = { left: current.offsetLeft, width: current.offsetWidth } }"
+          @mouseleave="instant = false; const current = $el.querySelector('[aria-current=page]'); if (current) pos = { left: current.offsetLeft, width: current.offsetWidth }"
+          @focusout="if (!$el.contains($event.relatedTarget)) { instant = true; const current = $el.querySelector('[aria-current=page]'); if (current) pos = { left: current.offsetLeft, width: current.offsetWidth } }"
         >
           <div
             x-cloak
             data-testid="nav-pill"
             class="absolute inset-y-1 left-0 rounded-full bg-accent-400 transition-[transform,width] duration-200 ease-out motion-reduce:transition-none"
+            :class="instant && '!transition-none'"
             :style="`transform: translateX(${pos.left}px); width: ${pos.width}px;`"
           ></div>
           {navItems.map((item) => {
@@ -120,12 +122,14 @@ const rsvpHref = nextEvent?.url ?? '/events';
             // Pink (accent-400), where white text fails AA and ink passes. The
             // other links used to sit at 60% ink, which reads as grey on yellow.
             // No hover underline: the sliding pill already follows the pointer.
+            // The pill slides for the mouse and jumps for the keyboard: Tab is
+            // keyboard-initiated, and keyboard actions get no animation.
             return (
               <a
                 href={item.href}
                 aria-current={isCurrent ? 'page' : undefined}
-                @mouseenter="pos = { left: $el.offsetLeft, width: $el.offsetWidth }"
-                @focus="pos = { left: $el.offsetLeft, width: $el.offsetWidth }"
+                @mouseenter="instant = false; pos = { left: $el.offsetLeft, width: $el.offsetWidth }"
+                @focus="instant = true; pos = { left: $el.offsetLeft, width: $el.offsetWidth }"
                 class="relative z-10 px-2 xl:px-2.5 py-1.5 rounded-full text-[15px] xl:text-base font-display font-extrabold text-brand-dark"
               >
                 {item.name}
@@ -164,7 +168,7 @@ const rsvpHref = nextEvent?.url ?? '/events';
               }
             : {})}
           data-testid="hero-cta"
-          class="inline-flex items-center gap-2 min-h-[48px] font-display font-extrabold text-base xl:text-[17px] px-5 xl:px-6 py-2.5 rounded-full border-2 border-brand-dark bg-accent-400 text-brand-dark shadow-retro-sm transition-[transform,box-shadow] duration-150 ease-out hover:shadow-retro-lg active:shadow-[1px_1px_0_#1A1A1A] motion-safe:hover:-translate-x-0.5 motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-x-0.5 motion-safe:active:translate-y-0.5"
+          class="inline-flex items-center gap-2 min-h-[48px] font-display font-extrabold text-base xl:text-[17px] px-5 xl:px-6 py-2.5 rounded-full border-2 border-brand-dark bg-accent-400 text-brand-dark lift lift-sm"
         >
           RSVP
           <svg
@@ -232,12 +236,12 @@ const rsvpHref = nextEvent?.url ?? '/events';
       x-cloak
       id="mobile-menu"
       data-testid="mobile-menu"
-      x-transition:enter="transition ease-out duration-200 motion-reduce:duration-0"
-      x-transition:enter-start="opacity-0 -translate-y-2"
+      x-transition:enter="transition ease-out duration-200 motion-reduce:duration-150"
+      x-transition:enter-start="opacity-0 -translate-y-2 motion-reduce:translate-y-0"
       x-transition:enter-end="opacity-100 translate-y-0"
-      x-transition:leave="transition ease-out duration-150 motion-reduce:duration-0"
+      x-transition:leave="transition ease-out duration-150"
       x-transition:leave-start="opacity-100 translate-y-0"
-      x-transition:leave-end="opacity-0 -translate-y-2"
+      x-transition:leave-end="opacity-0 -translate-y-2 motion-reduce:translate-y-0"
       class="lg:hidden -mx-4 sm:-mx-6 bg-brand-dark border-t-2 border-brand-dark"
       @click.away="mobileMenuOpen = false"
       @keydown.escape.window="if (mobileMenuOpen) { mobileMenuOpen = false; $refs.menuButton.focus() }"

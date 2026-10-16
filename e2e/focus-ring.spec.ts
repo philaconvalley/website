@@ -31,8 +31,8 @@ async function keyboardFocus(page: Page, target: Locator) {
   // Shift+Tab / Tab round trip puts the browser in keyboard mode.
   await page.keyboard.press('Shift+Tab');
   await page.keyboard.press('Tab');
-  // Buttons transition box-shadow over 150ms; read the settled value.
-  await page.waitForTimeout(300);
+  // No wait: the ring must be there at once. Keyboard actions get no
+  // animation, so the ring never fades in (DESIGN.md motion rule 11).
 }
 
 async function ringStyle(target: Locator) {
@@ -218,4 +218,29 @@ test('the phone event bar never hides the footer or a focused link', async ({ pa
     return last.bottom - barTop;
   });
   expect(overlap, "the footer's last line is under the event bar").toBeLessThanOrEqual(0);
+});
+
+test('the focus ring snaps: box-shadow is never transitioned on a sticker button', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/support');
+  const button = page.locator('[data-testid="primary-cta"]');
+  const props = await button.evaluate((el) => getComputedStyle(el).transitionProperty);
+  // Only transform and the --lift offset animate; box-shadow (which carries the
+  // ring) must not appear, or the ring fades in and out on every Tab.
+  expect(props).not.toMatch(/box-shadow|\ball\b/);
+  expect(props).toContain('--lift');
+});
+
+test('the nav pill jumps on keyboard focus and slides only for the mouse', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/about');
+  const pill = page.locator('[data-testid="nav-pill"]');
+  const events = page.locator('[data-testid="desktop-nav"] a', { hasText: 'Events' });
+  await keyboardFocus(page, events);
+  await expect(pill).toHaveCSS('transition-property', 'none');
+
+  await page.locator('[data-testid="desktop-nav"] a', { hasText: 'Projects' }).hover();
+  await expect(pill).not.toHaveCSS('transition-property', 'none');
 });
