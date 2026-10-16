@@ -193,3 +193,24 @@ test('if night.js never loads, the night steps still show after the safety timer
   await page.goto('/about');
   await expect.poll(() => settled(page), { timeout: 5000 }).toBe(true);
 });
+
+test('About ends on its own closing copy; Home keeps the motto', async ({ page }) => {
+  await page.goto('/about');
+  const about = page.getByTestId('closing-flock');
+  await expect(about.getByRole('heading', { level: 2 })).toHaveText(
+    'Show up before you feel ready.',
+  );
+  await expect(about).toContainText('A pigeon flies alone. A flock goes much further.');
+  await expect(about.getByRole('link', { name: 'Get involved' })).toHaveAttribute('href', '/join');
+  await expect(about.getByRole('link', { name: 'Attend an event' })).toHaveAttribute(
+    'href',
+    '/events',
+  );
+  await page.goto('/');
+  const home = page.getByTestId('closing-flock');
+  await expect(home.getByRole('heading', { level: 2 })).toContainText('A pigeon flies alone.');
+  // Home keeps the event-aware default: an RSVP for a real event, else Get notified.
+  await expect(
+    home.getByRole('link', { name: /RSVP for the next night|Get notified/ }),
+  ).toBeVisible();
+});
