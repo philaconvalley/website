@@ -279,7 +279,7 @@ import { site, links } from '../config';
               <button
                 type="submit"
                 :disabled="status === 'sending'"
-                class="disabled:opacity-60 disabled:cursor-wait w-full inline-flex items-center justify-center min-h-[55px] px-7 py-2.5 border-2 border-brand-dark bg-brand-pink text-brand-dark font-display font-extrabold text-[17px] rounded-full shadow-retro hover:shadow-retro-lg hover:-translate-y-0.5 transition-[transform,background-color,box-shadow] duration-150 ease-out motion-safe:active:scale-[0.97] motion-reduce:active:opacity-80"
+                class="disabled:opacity-60 disabled:cursor-wait w-full inline-flex items-center justify-center min-h-[55px] px-7 py-2.5 border-2 border-brand-dark bg-brand-pink text-brand-dark font-display font-extrabold text-[17px] rounded-full shadow-retro transition-[transform,box-shadow] duration-150 ease-out hover:shadow-retro-lg active:shadow-retro-press motion-safe:hover:-translate-x-0.5 motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-x-0.5 motion-safe:active:translate-y-0.5"
               >
                 <span x-text="status === 'sending' ? 'Sending...' : 'Send message'">
                   Send message

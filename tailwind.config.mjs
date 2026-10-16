@@ -79,6 +79,16 @@ export default {
         'retro-lg': '6px 6px 0 #1A1A1A',
         'retro-hover': '9px 9px 0 #1A1A1A',
         'retro-xl': '10px 10px 0 #1A1A1A',
+        // Pressed: the object moves 2px into its shadow, so the shadow
+        // shrinks by 2px and its outer edge stays where it was (DESIGN.md,
+        // motion rule 11).
+        'retro-press': '2px 2px 0 #1A1A1A',
+      },
+      // The codebase's two curves, promoted from inline values to tokens
+      // (DESIGN.md, motion rule 6). `ease-out` was Tailwind's weak default.
+      transitionTimingFunction: {
+        out: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        'in-out': 'cubic-bezier(0.77, 0, 0.175, 1)',
       },
       borderRadius: {
         // Card radius. Book §06: 18-24px; the mockup's standard card is 24px.

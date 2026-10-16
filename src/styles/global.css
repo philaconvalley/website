@@ -177,9 +177,13 @@
      happens to differ on hover, off the GPU. The hover lift is gated to
      real pointers by `hoverOnlyWhenSupported` in tailwind.config.mjs. */
   .card {
+    /* Same physics as Button: lift 2px up-left with a bigger shadow on hover,
+       push 2px down-right into a smaller shadow on press. */
     @apply bg-white rounded-retro border-2 border-brand-dark shadow-retro-lg
-           transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]
-           hover:-translate-y-1 hover:shadow-retro-hover;
+           transition-[transform,box-shadow] duration-150 ease-out
+           hover:shadow-retro-hover active:shadow-retro
+           motion-safe:hover:-translate-x-0.5 motion-safe:hover:-translate-y-0.5
+           motion-safe:active:translate-x-0.5 motion-safe:active:translate-y-0.5;
   }
 
   /* A highlighted word inside a display heading, set like a sticker slapped on
@@ -406,12 +410,6 @@
    * against its `width: 100%` base and the spine restores itself.
    */
 
-  /* Cards keep their shadow and colour, and stop moving. */
-  .card {
-    transition: none;
-  }
-
-  .card:hover {
-    transform: none;
-  }
+  /* Cards and buttons need no rule here: their movement is gated by
+     motion-safe:, so under reduced motion only the shadow changes. */
 }

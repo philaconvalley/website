@@ -19,15 +19,19 @@ const {
 
 // Book section 10: a flat fill, a 2px ink outline, stadium radius, and a hard
 // ink shadow. The focus ring comes from the global `:focus-visible` rule, so
-// buttons, links, and inputs all share one ring. The transition and press
-// classes are motion; the `animate` skill owns them (DESIGN.md, motion rule 9).
+// buttons, links, and inputs all share one ring.
+// Motion (Stage 5, animate): hover lifts 2px up-left while the shadow grows;
+// press pushes 2px down-right into the shadow, which shrinks by 2px, so the
+// shadow's outer edge stays put. 150ms, strong ease-out. Under reduced motion
+// only the shadow changes (motion-safe gates the movement). The outline
+// variant has no shadow to press into, so it keeps a 0.97 scale press.
 const baseClasses =
-  'inline-flex items-center justify-center gap-2 font-display font-extrabold rounded-full transition-[transform,background-color,box-shadow] duration-150 ease-out motion-safe:active:scale-[0.97] motion-reduce:active:opacity-80';
+  'inline-flex items-center justify-center gap-2 font-display font-extrabold rounded-full transition-[transform,background-color,box-shadow] duration-150 ease-out';
 
 // Every filled variant has ink text: ink reads on all the warm fills, and
 // white on Hot Pink fails AA (Book section 04, "Contrast").
 const filled =
-  'border-2 border-brand-dark shadow-retro hover:shadow-retro-lg hover:-translate-y-0.5';
+  'border-2 border-brand-dark shadow-retro hover:shadow-retro-lg active:shadow-retro-press motion-safe:hover:-translate-x-0.5 motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-x-0.5 motion-safe:active:translate-y-0.5';
 
 const variantClasses = {
   // Main call to action.
@@ -39,7 +43,8 @@ const variantClasses = {
   // Strongest action on a yellow or saturated section.
   ink: `${filled} bg-brand-dark text-white`,
   // Tertiary. Takes the text color it sits on, so it also works on dark fields.
-  outline: 'border-2 border-current bg-transparent text-brand-dark hover:bg-brand-dark/5',
+  outline:
+    'border-2 border-current bg-transparent text-brand-dark hover:bg-brand-dark/5 motion-safe:active:scale-[0.97] motion-reduce:active:opacity-80',
 };
 
 // Heights, padding, and text sizes match the mockup (10/15/2026). Every size

@@ -66,12 +66,12 @@ const rsvpHref = nextEvent?.url ?? '/events';
             alt=""
             width="56"
             height="56"
-            class="absolute inset-0 w-full h-full origin-top-left drop-shadow-[3px_3px_0_#1A1A1A] transition-transform duration-[240ms] ease-[cubic-bezier(0.77,0,0.175,1)] motion-reduce:transition-none translate-y-2 -rotate-6 scale-[1.36]"
+            class="absolute inset-0 w-full h-full origin-top-left drop-shadow-[3px_3px_0_#1A1A1A] transition-transform duration-[240ms] ease-in-out motion-reduce:transition-none translate-y-2 -rotate-6 scale-[1.36]"
             :class="{ 'translate-y-2 -rotate-6 scale-[1.36]': !(scrolled || mobileMenuOpen) }"
           />
         </span>
         <span
-          class="block transition-transform duration-[240ms] ease-[cubic-bezier(0.77,0,0.175,1)] motion-reduce:transition-none translate-x-4"
+          class="block transition-transform duration-[240ms] ease-in-out motion-reduce:transition-none translate-x-4"
           :class="{ 'translate-x-4': !(scrolled || mobileMenuOpen) }"
         >
           <!-- The official wordmark, unchanged from the brand logo library. Its
@@ -111,7 +111,7 @@ const rsvpHref = nextEvent?.url ?? '/events';
           <div
             x-cloak
             data-testid="nav-pill"
-            class="absolute inset-y-1 left-0 rounded-full bg-accent-400 transition-[transform,width] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+            class="absolute inset-y-1 left-0 rounded-full bg-accent-400 transition-[transform,width] duration-200 ease-out motion-reduce:transition-none"
             :style="`transform: translateX(${pos.left}px); width: ${pos.width}px;`"
           ></div>
           {navItems.map((item) => {
@@ -164,7 +164,7 @@ const rsvpHref = nextEvent?.url ?? '/events';
               }
             : {})}
           data-testid="hero-cta"
-          class="inline-flex items-center gap-2 min-h-[48px] font-display font-extrabold text-base xl:text-[17px] px-5 xl:px-6 py-2.5 rounded-full border-2 border-brand-dark bg-accent-400 text-brand-dark shadow-retro-sm transition-[transform,box-shadow] duration-150 ease-out hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-retro-lg motion-safe:active:scale-[0.97] motion-reduce:active:opacity-80 motion-reduce:transition-none"
+          class="inline-flex items-center gap-2 min-h-[48px] font-display font-extrabold text-base xl:text-[17px] px-5 xl:px-6 py-2.5 rounded-full border-2 border-brand-dark bg-accent-400 text-brand-dark shadow-retro-sm transition-[transform,box-shadow] duration-150 ease-out hover:shadow-retro-lg active:shadow-[1px_1px_0_#1A1A1A] motion-safe:hover:-translate-x-0.5 motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-x-0.5 motion-safe:active:translate-y-0.5"
         >
           RSVP
           <svg
