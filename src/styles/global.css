@@ -294,13 +294,9 @@
    * Two distinct families, and the distinction matters for accessibility:
    *
    *   .pcv-enter-*  run ONCE on load. Entrances.
-   *   .pcv-loop-*   run forever. These narrate the Lab story — a dot
-   *                 arrives alone, two more join, you leave with a thing — so
-   *                 they are the page's only infinite motion and the first
-   *                 thing killed under prefers-reduced-motion.
    *
-   * Every looping element must remain legible in its final state, because that
-   * is exactly where the reduced-motion block below freezes it.
+   * The site has no endless loop. The LabTrack loop on Events was replaced by
+   * the night timeline (10/16/2026), which plays once per view.
    */
   .pcv-enter-word {
     animation: pcvWord 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -316,44 +312,6 @@
 
   .pcv-enter-bar {
     animation: pcvBarUp 250ms cubic-bezier(0.22, 1, 0.36, 1) 150ms both;
-  }
-
-  /*
-   * Draws itself with scaleX, not width. Animating width relayouts the page on
-   * every frame, forever; scaleX is composited. The line is a childless 1px rule
-   * with no border-radius, so horizontal scaling has nothing to distort.
-   */
-  .pcv-loop-track {
-    width: 100%;
-    transform-origin: left;
-    animation: pcvTrack 8s linear infinite;
-  }
-
-  .pcv-loop-solo {
-    animation: pcvSolo 8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
-  }
-
-  .pcv-loop-join-left {
-    animation: pcvJoinL 8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
-  }
-
-  .pcv-loop-join-right {
-    animation: pcvJoinR 8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
-  }
-
-  .pcv-loop-label {
-    animation: pcvLabel 8s ease-out infinite;
-  }
-
-  /* Off screen, the whole Lab loop pauses together, so its parts stay in
-     sync (public/js/lab-track.js sets data-paused). An endless animation
-     nobody sees still costs frames and battery. */
-  [data-lab-track][data-paused] [class*='pcv-loop-'] {
-    animation-play-state: paused;
-  }
-
-  .pcv-loop-chip {
-    animation: pcvChip 8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
   }
 
   @keyframes pcvWord {
@@ -397,79 +355,6 @@
       transform: translateY(0);
     }
   }
-
-  @keyframes pcvTrack {
-    0%,
-    12% {
-      transform: scaleX(0);
-    }
-    58%,
-    100% {
-      transform: scaleX(1);
-    }
-  }
-
-  @keyframes pcvSolo {
-    0% {
-      transform: translateX(-40px);
-      opacity: 0;
-    }
-    12%,
-    100% {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-
-  @keyframes pcvJoinL {
-    0%,
-    24% {
-      transform: translateX(-52px) scale(0.5);
-      opacity: 0;
-    }
-    40%,
-    100% {
-      transform: translateX(0) scale(1);
-      opacity: 1;
-    }
-  }
-
-  @keyframes pcvJoinR {
-    0%,
-    24% {
-      transform: translateX(52px) scale(0.5);
-      opacity: 0;
-    }
-    40%,
-    100% {
-      transform: translateX(0) scale(1);
-      opacity: 1;
-    }
-  }
-
-  @keyframes pcvLabel {
-    0%,
-    26% {
-      opacity: 0;
-    }
-    42%,
-    100% {
-      opacity: 1;
-    }
-  }
-
-  @keyframes pcvChip {
-    0%,
-    60% {
-      opacity: 0;
-      transform: translateY(12px) scale(0.95);
-    }
-    74%,
-    100% {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
 }
 
 /*
@@ -498,24 +383,11 @@
   .pcv-enter-word,
   .pcv-enter-rise,
   .pcv-enter-stat,
-  .pcv-enter-bar,
-  .pcv-loop-solo,
-  .pcv-loop-join-left,
-  .pcv-loop-join-right,
-  .pcv-loop-label,
-  .pcv-loop-chip,
-  .pcv-loop-track {
+  .pcv-enter-bar {
     animation: none;
     opacity: 1;
     transform: none;
   }
-
-  /*
-   * `.pcv-loop-track` needs no special case any more. It used to animate width
-   * from 0, so freezing it left a zero-width line and the timeline dots sat on
-   * nothing. Now that it scales, `transform: none` above resolves to scaleX(1)
-   * against its `width: 100%` base and the spine restores itself.
-   */
 
   /* Cards and buttons need no rule here: their movement is gated by
      motion-safe:, so under reduced motion only the shadow changes. */
@@ -637,7 +509,7 @@
  *
  * Timing is set per element by night.js: each delay, and each segment's
  * duration (the gap to the next dot). Segments draw linear, because they show
- * time passing (as the LabTrack spine does); dots and text use ease-out.
+ * time passing; dots and text use ease-out.
  * Segments draw down below 1024px and across from 1024px.
  */
 .night [data-night-strip]:not([data-night]) [data-night-dot] {
