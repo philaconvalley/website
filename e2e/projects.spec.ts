@@ -101,7 +101,7 @@ test('"Make your first PR" lands on the walkthrough on /join', async ({ page }) 
     /^https:\/\/github\.com\/search\?type=issues&q=.*good%20first%20issue/,
   );
   await page.goto('/join#first-pr');
-  await expect(page.locator('#first-pr [data-testid="first-pr-walkthrough"]')).toBeVisible();
+  await expect(page.locator('#first-pr [data-testid="first-pr-steps"]')).toBeVisible();
 });
 
 test('Projects ends on its own closing copy', async ({ page }) => {
