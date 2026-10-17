@@ -499,7 +499,8 @@
 
 /*
  * The night timeline on About, also used by the four "First time?" points on
- * Events (public/js/night-arm.js, then night.js). Events has no segments.
+ * Events and the role ladder on Join (public/js/night-arm.js, then night.js).
+ * Events and Join have no segments.
  * Purpose: explanation. A segment draws from each step's dot to the next, like
  * time passing; each dot pops in as the line reaches it and its text rises.
  *

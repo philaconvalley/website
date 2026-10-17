@@ -98,7 +98,11 @@ const goodFirstIssues = `${links.github.website}/issues?q=${encodeURIComponent(
     </div>
   </section>
 
-  <!-- The flock: Discord roles that mark what someone has done. -->
+  <!-- The flock: Discord roles that mark what someone has done. The ladder
+       plays with the night system (Waskar, 10/17/2026), so the build-up from
+       Neighbor to Voice happens in order as it scrolls into view: each card
+       rises, and its number pops in as it arrives. -->
+  <script is:inline src="/js/night-arm.js"></script>
   <section class="bg-brand-amber border-t-2 border-brand-dark">
     <div class="container-custom py-[clamp(72px,9vw,120px)] flex flex-col gap-12">
       <div class="flex flex-wrap justify-between items-end gap-8">
@@ -113,32 +117,39 @@ const goodFirstIssues = `${links.github.website}/issues?q=${encodeURIComponent(
       <ol
         class="m-0 p-0 list-none grid gap-5 grid-cols-1 sm:grid-cols-3"
         data-testid="discord-roles"
+        data-night-strip
       >
         {roles.map((role, i) => (
-          <li
-            class:list={[
-              'rounded-[20px] border-2 border-brand-dark p-6 flex flex-col gap-3 shadow-[6px_6px_0_theme(colors.brand.dark)]',
-              i === roles.length - 1 ? 'bg-brand-dark text-white' : 'bg-white',
-            ]}
-          >
-            <span class="font-black text-[13px] tracking-[0.14em]">
-              {String(i + 1).padStart(2, '0')}
-            </span>
-            <h3
+          <li class="flex">
+            <div
+              data-night-rise
               class:list={[
-                'm-0 text-[32px] leading-none',
-                i === roles.length - 1 && 'text-brand-yellow',
+                'w-full rounded-[20px] border-2 border-brand-dark p-6 flex flex-col gap-3 shadow-[6px_6px_0_theme(colors.brand.dark)]',
+                i === roles.length - 1 ? 'bg-brand-dark text-white' : 'bg-white',
               ]}
             >
-              {role.name}
-            </h3>
-            <p class="m-0 text-[15px] leading-[1.5]">{role.line}</p>
+              <span
+                data-night-dot
+                class="self-start origin-left font-black text-[13px] tracking-[0.14em]"
+              >
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <h3
+                class:list={[
+                  'm-0 text-[32px] leading-none',
+                  i === roles.length - 1 && 'text-brand-yellow',
+                ]}
+              >
+                {role.name}
+              </h3>
+              <p class="m-0 text-[15px] leading-[1.5]">{role.line}</p>
+            </div>
           </li>
         ))}
       </ol>
     </div>
   </section>
-
+  <script is:inline defer src="/js/night.js"></script>
   <!-- Your first pull request: six real steps on this site's own repo. The id
        is the target of "Make your first PR" here and on /projects. -->
   <section id="first-pr" class="bg-white border-t-2 border-brand-dark">

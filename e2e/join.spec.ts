@@ -84,3 +84,60 @@ test('the values are the three backed by the code of conduct', async ({ page }) 
     '/events',
   );
 });
+
+// The role ladder plays with the night system (public/js/night.js): hidden
+// before paint, revealed in order when it scrolls into view.
+const ladderSettled = (page: import('@playwright/test').Page) =>
+  page.getByTestId('discord-roles').evaluate((list) =>
+    [...list.querySelectorAll('[data-night-dot], [data-night-rise]')].every((el) => {
+      const style = getComputedStyle(el);
+      return style.opacity === '1' && style.transform === 'none';
+    }),
+  );
+
+test('the role ladder builds up in order when scrolled into view', async ({ page }) => {
+  await page.goto('/join');
+  const ladder = page.getByTestId('discord-roles');
+  await expect(ladder.locator('[data-night-rise]')).toHaveCount(3);
+  expect(
+    await ladder
+      .locator('[data-night-rise]')
+      .first()
+      .evaluate((el) => getComputedStyle(el).opacity),
+  ).toBe('0');
+  await ladder.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await expect(ladder).toHaveAttribute('data-night', 'play');
+  await expect.poll(() => ladderSettled(page), { timeout: 4000 }).toBe(true);
+});
+
+test('the role ladder replays after scrolling fully away and back', async ({ page }) => {
+  await page.goto('/join');
+  const ladder = page.getByTestId('discord-roles');
+  await ladder.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await expect.poll(() => ladderSettled(page), { timeout: 4000 }).toBe(true);
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await expect(ladder).not.toHaveAttribute('data-night', 'play');
+  await ladder.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await expect(ladder).toHaveAttribute('data-night', 'play');
+  await expect.poll(() => ladderSettled(page), { timeout: 3000 }).toBe(true);
+});
+
+test('under reduced motion the role ladder never moves', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/join');
+  const ladder = page.getByTestId('discord-roles');
+  const transforms = await ladder.evaluate((el) =>
+    [...el.querySelectorAll('[data-night-dot], [data-night-rise]')].map(
+      (node) => getComputedStyle(node).transform,
+    ),
+  );
+  expect(transforms.every((t) => t === 'none')).toBe(true);
+  await ladder.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await expect.poll(() => ladderSettled(page), { timeout: 3000 }).toBe(true);
+});
+
+test('if night.js never loads, the role ladder still shows', async ({ page }) => {
+  await page.route('**/js/night.js', (route) => route.abort());
+  await page.goto('/join');
+  await expect.poll(() => ladderSettled(page), { timeout: 5000 }).toBe(true);
+});
