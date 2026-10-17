@@ -4,8 +4,8 @@ import { links } from '../src/config';
 
 /**
  * Join, Edition 1.2. The page's facts must hold:
- * - the hero shows the real Discord server with its live count, and no Slack
- *   fallback (none is confirmed);
+ * - the hero shows the real Discord server with its live count, and the Slack
+ *   backup for people who cannot reach Discord, worded as quieter;
  * - the role ladder shows only roles with a written meaning (no Crew, which is
  *   the admin role, and no Connector, which has no definition);
  * - all six first-PR steps show at once, and every command on them is in the
@@ -22,7 +22,15 @@ test('the hero welcomes people to the real Discord server', async ({ page }) => 
     links.discord,
   );
   await expect(page.getByTestId('discord-count')).toHaveText(/\d+ members · \d+ online now/);
-  await expect(page.locator('main')).not.toContainText('Slack');
+  const slack = page.getByTestId('slack-fallback');
+  await expect(slack).toContainText('Slack');
+  await expect(slack).toContainText('quieter');
+  await expect(slack.getByRole('link', { name: 'Join our Slack' })).toHaveAttribute(
+    'href',
+    links.slack,
+  );
+  // A workspace invite, not a channel link: a channel link shows non-members a sign-in wall.
+  expect(links.slack).toMatch(/^https:\/\/join\.slack\.com\/t\/philaconvalley\/shared_invite\//);
 });
 
 test('the role ladder shows only roles with a written meaning', async ({ page }) => {

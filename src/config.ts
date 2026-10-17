@@ -33,6 +33,11 @@ export const community = {
 export const links = {
   /** Main community channel. Slack stays up only for international members. */
   discord: 'https://discord.gg/5haHYh5xcx',
+  /** Backup for people who cannot reach Discord; quieter (Waskar, 10/17/2026).
+   *  A shared invite link: if it was not created as "Never expires", it stops
+   *  working after 30 days, and /join would show a dead link. */
+  slack:
+    'https://join.slack.com/t/philaconvalley/shared_invite/zt-35ujnfnnq-WLo8FpV4fFEHwqqIuoTq5g',
   luma: 'https://lu.ma/philaconvalley',
   lumaEmbed: 'https://luma.com/embed/calendar/cal-KkQjuykLZNrSChl/events',
   /** Public, unauthenticated calendar feed — the source for events and nights held. */

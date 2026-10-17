@@ -21,8 +21,8 @@ import { firstPrSteps } from '../data/first-pr';
  *   stepper.
  * - The values are three code-of-conduct lines, each backed by
  *   CODE_OF_CONDUCT.md. "Collaboration over competition" has no source.
- * - The mockup's Slack fallback is not shown: no current Slack backup for
- *   Discord is confirmed.
+ * - The Slack fallback stays, worded as what it is: a real backup for people
+ *   who cannot reach Discord, but quieter (Waskar, 10/17/2026).
  * - "Come to a Lab" follows the empty-state rule: an RSVP only for a real
  *   event, "Get notified" otherwise.
  */
@@ -79,6 +79,18 @@ const goodFirstIssues = `${links.github.website}/issues?q=${encodeURIComponent(
             Make your first PR
           </Button>
         </div>
+        <p class="m-0 max-w-[520px] text-[15px] leading-[1.5]" data-testid="slack-fallback">
+          Discord blocked where you are?{' '}
+          <a
+            href={links.slack}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="font-black text-brand-dark underline underline-offset-[4px] decoration-2"
+          >
+            Join our Slack
+          </a>{' '}
+          instead. It's quieter than Discord, but it's a real backup.
+        </p>
       </div>
       <figure class="m-0 grow-0 shrink basis-[360px] min-w-0 flex flex-col items-center gap-5">
         <img
