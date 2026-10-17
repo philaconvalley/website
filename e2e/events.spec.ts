@@ -77,6 +77,64 @@ test('the first-time guide shows four points and no night timeline', async ({ pa
   await expect(page.locator('[data-lab-track]')).toHaveCount(0);
 });
 
+// The four points play with the night timeline's system (public/js/night.js):
+// hidden before paint, revealed in order when the list scrolls into view.
+const pointsSettled = (page: import('@playwright/test').Page) =>
+  page.getByTestId('first-time-points').evaluate((list) =>
+    [...list.querySelectorAll('[data-night-dot], [data-night-rise]')].every((el) => {
+      const style = getComputedStyle(el);
+      return style.opacity === '1' && style.transform === 'none';
+    }),
+  );
+
+test('the first-time points reveal in order when scrolled into view', async ({ page }) => {
+  await page.goto('/events');
+  const list = page.getByTestId('first-time-points');
+  await expect(list.locator('[data-night-dot]')).toHaveCount(4);
+  await expect(list.locator('[data-night-rise]')).toHaveCount(4);
+  expect(
+    await list
+      .locator('[data-night-dot]')
+      .first()
+      .evaluate((el) => getComputedStyle(el).opacity),
+  ).toBe('0');
+  await list.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await expect(list).toHaveAttribute('data-night', 'play');
+  await expect.poll(() => pointsSettled(page), { timeout: 4000 }).toBe(true);
+});
+
+test('the first-time points replay after scrolling fully away and back', async ({ page }) => {
+  await page.goto('/events');
+  const list = page.getByTestId('first-time-points');
+  await list.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await expect.poll(() => pointsSettled(page), { timeout: 4000 }).toBe(true);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect(list).not.toHaveAttribute('data-night', 'play');
+  await list.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await expect(list).toHaveAttribute('data-night', 'play');
+  await expect.poll(() => pointsSettled(page), { timeout: 3000 }).toBe(true);
+});
+
+test('under reduced motion the first-time points never move', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/events');
+  const list = page.getByTestId('first-time-points');
+  const transforms = await list.evaluate((el) =>
+    [...el.querySelectorAll('[data-night-dot], [data-night-rise]')].map(
+      (node) => getComputedStyle(node).transform,
+    ),
+  );
+  expect(transforms.every((t) => t === 'none')).toBe(true);
+  await list.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await expect.poll(() => pointsSettled(page), { timeout: 3000 }).toBe(true);
+});
+
+test('if night.js never loads, the first-time points still show', async ({ page }) => {
+  await page.route('**/js/night.js', (route) => route.abort());
+  await page.goto('/events');
+  await expect.poll(() => pointsSettled(page), { timeout: 5000 }).toBe(true);
+});
+
 test('every event recap gets a card linking to its recap page', async ({ page }) => {
   const recaps = readdirSync('src/content/events').filter((f) => f.endsWith('.md'));
   await page.goto('/events');

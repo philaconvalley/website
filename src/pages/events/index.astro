@@ -248,7 +248,12 @@ const expect = [
     </div>
   </section>
 
-  <!-- First time? On ink: the heading and four points, as in the mockup. -->
+  <!-- First time? On ink: the heading and four points, as in the mockup.
+       The points play with the night timeline's system (Waskar, 10/16/2026):
+       night-arm.js hides them before paint, then night.js reveals them in
+       order each time the list scrolls into view. The number pops in like a
+       timeline dot, and the title and line rise just after. -->
+  <script is:inline src="/js/night-arm.js"></script>
   <section class="bg-brand-dark text-white border-t-2 border-brand-dark">
     <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
       <div class="flex flex-wrap gap-[clamp(40px,6vw,96px)]">
@@ -258,16 +263,21 @@ const expect = [
             Here's what to <span class="text-brand-yellow">expect.</span>
           </h2>
         </div>
-        <ol class="grow shrink basis-[560px] min-w-0 m-0 p-0 list-none flex flex-col">
+        <ol
+          class="grow shrink basis-[560px] min-w-0 m-0 p-0 list-none flex flex-col"
+          data-night-strip
+          data-testid="first-time-points"
+        >
           {expect.map((point, i) => (
             <li class="flex gap-6 py-[26px] border-t-2 border-white">
               <span
-                class={`font-display font-extrabold text-[32px] leading-none ${point.color} flex-none w-14`}
+                class={`font-display font-extrabold text-[32px] leading-none ${point.color} flex-none w-14 origin-left`}
                 aria-hidden="true"
+                data-night-dot
               >
                 {String(i + 1).padStart(2, '0')}
               </span>
-              <div class="flex flex-col gap-2">
+              <div class="flex flex-col gap-2" data-night-rise>
                 <h3 class="m-0 text-[28px] leading-none">{point.title}</h3>
                 <p class="m-0 text-[17px] leading-[1.55] text-white/90">{point.line}</p>
               </div>
@@ -277,7 +287,7 @@ const expect = [
       </div>
     </div>
   </section>
-
+  <script is:inline defer src="/js/night.js"></script>
   <!-- Recent nights: one card per event recap (src/content/events), newest
        first, each with its own photo and summary, then a row of photos. -->
   {cards.length > 0 && (
