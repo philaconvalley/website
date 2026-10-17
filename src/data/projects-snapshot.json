@@ -1,0 +1,74 @@
+{
+  "_comment": "Last-known-good public repos and \"good first issue\" counts for /projects. Used ONLY when GitHub fails to answer during a build. Regenerate with `npm run data:refresh` and commit the diff.",
+  "_generated": "2026-10-17",
+  "repos": [
+    {
+      "name": "community-handbook",
+      "description": "Source of truth for PhilaCon Valley's philosophy, values, principles, and governance.",
+      "url": "https://github.com/philaconvalley/community-handbook",
+      "language": null,
+      "pushedAt": "2026-10-12T14:57:39Z"
+    },
+    {
+      "name": "discord-task-bot",
+      "description": "Discord bot for task assignments, due-date reminders, and Scheduled Event creation",
+      "url": "https://github.com/philaconvalley/discord-task-bot",
+      "language": "TypeScript",
+      "pushedAt": "2026-08-12T01:57:50Z"
+    },
+    {
+      "name": "djVisualizer",
+      "description": "Web-based real-time audio visualizer and effects processor for DJs, built with JavaScript and the Web Audio API.",
+      "url": "https://github.com/philaconvalley/djVisualizer",
+      "language": "JavaScript",
+      "pushedAt": "2026-10-16T19:33:04Z"
+    },
+    {
+      "name": "door-checkin",
+      "description": "NFC door check-in webhook — posts Discord notification, returns landing page",
+      "url": "https://github.com/philaconvalley/door-checkin",
+      "language": "JavaScript",
+      "pushedAt": "2026-08-09T14:43:55Z"
+    },
+    {
+      "name": "locked-groove",
+      "description": "Open-source engine for continuous, visual internet radio. Every listener synced to the same second; visuals rendered live in the browser.",
+      "url": "https://github.com/philaconvalley/locked-groove",
+      "language": "TypeScript",
+      "pushedAt": "2026-08-09T20:58:11Z"
+    },
+    {
+      "name": "owlhacks-timer",
+      "description": "Countdown timer for hackathon demos, built live at OwlHacks '26 by PhilaCon Valley",
+      "url": "https://github.com/philaconvalley/owlhacks-timer",
+      "language": "JavaScript",
+      "pushedAt": "2026-09-27T06:18:39Z"
+    },
+    {
+      "name": "projectionMapper",
+      "description": "Projection mapping starter template in p5.js by PhilaCon Valley. Built for PATCH 003: Projection Mapping Lab",
+      "url": "https://github.com/philaconvalley/projectionMapper",
+      "language": "JavaScript",
+      "pushedAt": "2026-09-30T23:18:06Z"
+    },
+    {
+      "name": "shoppingDebateChromeExtension",
+      "description": "Chrome extension where three AI personalities debate your purchase decisions before checkout. Make thoughtful choices, not impulsive ones.",
+      "url": "https://github.com/philaconvalley/shoppingDebateChromeExtension",
+      "language": "JavaScript",
+      "pushedAt": "2026-07-08T04:59:57Z"
+    },
+    {
+      "name": "website",
+      "description": "Philadelphia's tech community by us, for us. Built with Astro, Tailwind, Alpine.js",
+      "url": "https://github.com/philaconvalley/website",
+      "language": "HTML",
+      "pushedAt": "2026-10-17T02:25:15Z"
+    }
+  ],
+  "goodFirstIssues": {
+    "website": 7,
+    "shoppingDebateChromeExtension": 2,
+    "community-handbook": 2
+  }
+}
