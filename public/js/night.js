@@ -21,8 +21,12 @@
   if (!strip) return;
 
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var STEP = 320; // ms between steps on the first view
-  var STEP_REPLAY = 160; // ms between steps on a replay
+  // Reading strips (data-night-read: the Events points, the Join ladder) move
+  // at half the timeline's pace, so a reader never waits for the next line
+  // (motion review, 10/17/2026). The About timeline keeps its pace.
+  var read = strip.hasAttribute('data-night-read');
+  var STEP = read ? 160 : 320; // ms between steps on the first view
+  var STEP_REPLAY = read ? 80 : 160; // ms between steps on a replay
   var RISE_AFTER = 60; // ms after its dot: the step's text rises
   var SEG_AFTER = 80; // ms after its dot: the segment to the next dot draws
   var VISIBLE = 0.25; // share of the strip in view that starts the timeline
