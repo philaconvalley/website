@@ -17,26 +17,6 @@ test.describe('prefers-reduced-motion', () => {
     await expect(tagline).toHaveCSS('animation-name', 'pcvRise');
   });
 
-  test('the looping Lab track keeps its spine when motion is reduced', async ({ page }) => {
-    // The track draws itself by animating width from 0. Killing the animation
-    // without restoring the width would leave a zero-width line and the dots
-    // would sit on nothing — so assert the restored width, not just the absence
-    // of animation.
-    await page.emulateMedia({ reducedMotion: 'reduce' });
-    // LabTrack moved from Home to Events (DESIGN.md, motion rule 1).
-    await page.goto('/events');
-
-    const track = page.locator('.pcv-loop-track');
-    await expect(track).toHaveCSS('animation-name', 'none');
-
-    const [trackWidth, parentWidth] = await track.evaluate((el) => [
-      el.getBoundingClientRect().width,
-      (el.parentElement as HTMLElement).getBoundingClientRect().width,
-    ]);
-    expect(trackWidth).toBeGreaterThan(0);
-    expect(Math.abs(trackWidth - parentWidth)).toBeLessThan(2);
-  });
-
   test('hero entrance animations and scroll-smooth are disabled when reduced', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');

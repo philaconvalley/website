@@ -12,9 +12,14 @@ interface Props {
    * because its headline already says "Zero cost" (Waskar, 10/16/2026).
    */
   details?: boolean;
+  /**
+   * Every card white. Events sets this: its cards sit on a Golden Yellow
+   * section, where the yellow PATCH card would vanish (as in the mockup).
+   */
+  allWhite?: boolean;
 }
 
-const { details = true } = Astro.props;
+const { details = true, allWhite = false } = Astro.props;
 ---
 
 <div class="flex flex-col gap-8">
@@ -36,7 +41,7 @@ const { details = true } = Astro.props;
         <li class="flex">
           <a
             href={program.href}
-            class={`card ${program.fill} text-brand-dark no-underline p-7 flex flex-col gap-4 w-full`}
+            class={`card ${allWhite ? 'bg-white' : program.fill} text-brand-dark no-underline p-7 flex flex-col gap-4 w-full`}
           >
             <span
               class={`self-start rounded-full border-2 border-brand-dark ${program.tag} px-3 py-[3px] font-black text-xs tracking-[0.14em] uppercase`}

@@ -1,256 +1,372 @@
 ---
-import LabTrack from '../../components/LabTrack.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Button from '../../components/Button.astro';
-import PhotoGrid from '../../components/PhotoGrid.astro';
+import ClosingFlock from '../../components/ClosingFlock.astro';
+import ProgramCards from '../../components/ProgramCards.astro';
+import { getCommunityData, formatEventDate } from '../../lib/community';
+import { resolvePhotoEvents } from '../../lib/events';
 import { links } from '../../config';
 import { getCollection } from 'astro:content';
-import { formatRecapDate, resolvePhotoEvents } from '../../lib/events';
+import { existsSync } from 'node:fs';
 
-// Every photo is resolved here, so a gallery entry that names a missing event
-// file fails the build. See src/lib/events.ts for why reference() alone does not.
-const photos = await resolvePhotoEvents(
-  (await getCollection('gallery')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime()),
-);
+/**
+ * Events, Edition 1.2 (DESIGN.md, "The 1.2 redesign"). Sections follow Diego's
+ * mockup, with these decisions (Waskar, 10/16/2026):
+ * - "Next up" shows the next real Luma event only, with no description (Luma
+ *   gives the build none). The mockup's "Halloween Mixer" was a placeholder.
+ * - "Kinds of nights" uses the shared program cards, all white on yellow.
+ * - "First time?" shows four points rewritten to match the real night: a
+ *   lesson or demo comes first, and people work with others or on their own.
+ *   The mockup said "no lectures" and promised pairs. The night timeline is
+ *   not on this page, because the mockup has none here (Waskar, 10/16/2026);
+ *   About keeps it.
+ * - "Recent nights" reads the event recaps and the gallery, so a new recap
+ *   appears here on its own. Each card uses its recap summary.
+ * - LabTrack, the old looping timeline, is retired (DESIGN.md, motion rule 1).
+ * - No RSVP without a real event. With none in the build, the hero, the
+ *   calendar section and the closing ask people to follow the Luma calendar
+ *   ("Get notified"), and the empty Luma embed is not shown.
+ */
+
+const { nextEvent } = await getCommunityData();
+
+// The Luma calendar feed as a subscription. An https link to the feed
+// downloads a one-time copy (the server sends it as an attachment); webcal://
+// makes the calendar app subscribe, so new nights appear on their own.
+const calendarFeed = links.lumaIcs.replace(/^https:/, 'webcal:');
+
+// Every photo is resolved, so a gallery entry that names a missing event file
+// fails the build (src/lib/events.ts).
+const photos = (
+  await resolvePhotoEvents(
+    (await getCollection('gallery')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime()),
+  )
+).map(({ photo }) => photo);
 
 const recaps = (await getCollection('events')).sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime(),
 );
+
+// Each recap card leads with one of its own photos: a wide hero-eligible shot
+// first, otherwise its newest.
+const cards = recaps.map((recap) => {
+  const own = photos.filter((photo) => photo.data.event.id === recap.id);
+  const cover = own.find((photo) => photo.data.heroEligible) ?? own[0];
+  return { recap, cover };
+});
+const covers = new Set(cards.map((card) => card.cover?.id));
+// The photo row under the cards: the four newest photos not used above.
+const strip = photos.filter((photo) => !covers.has(photo.id)).slice(0, 4);
+
+// Wide photos have an 800px copy beside the original; the PATCH 002 photos
+// are small portraits and have none. Offer the copy only when it exists, so a
+// phone never requests a missing file.
+const srcset = (src: string) => {
+  const small = src.replace(/\.jpg$/, '-800.jpg');
+  return existsSync(`public${small}`) ? `${small} 800w, ${src} 1600w` : undefined;
+};
+
+// The mockup's date style: 09.30.2026. Frontmatter dates are UTC midnight.
+const shortDate = (date: Date) =>
+  [date.getUTCMonth() + 1, date.getUTCDate()].map((n) => String(n).padStart(2, '0')).join('.') +
+  `.${date.getUTCFullYear()}`;
+
+// The mockup's four points, rewritten to match the real night (Waskar,
+// 10/16/2026). Number colors follow the mockup.
+const expect = [
+  {
+    title: "You'll meet people",
+    line: 'Work with others or on your own. Everyone in the room is building too.',
+    color: 'text-brand-yellow',
+  },
+  {
+    title: "You'll learn something first",
+    line: 'Each night starts with a short lesson or demo, then you build.',
+    color: 'text-brand-amber',
+  },
+  {
+    title: 'You can ask anything',
+    line: "Every experience level is in the room, so there's always someone who's been where you are.",
+    color: 'text-brand-pink',
+  },
+  {
+    title: "You'll leave with something real",
+    line: 'Something you built, to keep working on or add to your portfolio.',
+    color: 'text-brand-coral',
+  },
+];
 ---
 
 <BaseLayout
-  title="Events - PhilaCon Valley"
-  description="Join us for hands-on workshops, Labs, and community events in Philadelphia."
+  title="Events — Hands-on nights in Philadelphia, every one free | PhilaCon Valley"
+  description="Hands-on build nights in Philadelphia, every one free. See the calendar, the kinds of nights we run, and what a first night looks like."
 >
-  <!-- Hero Section -->
-  <section class="bg-brand-purple text-white py-20">
-    <div class="container-custom">
-      <div class="max-w-4xl mx-auto text-center">
-        <h1 class="text-5xl md:text-6xl mb-6">Events</h1>
-        <p class="text-2xl text-white/85">
-          Join us for hands-on collaboration, workshops, and community building
+  <!-- Hero: Hot Pink, as in the mockup. On pink, the main button is Golden
+       Yellow (Button, "secondary"). -->
+  <section class="bg-brand-pink">
+    <div class="container-custom py-[clamp(56px,8vw,112px)] flex flex-wrap gap-10 items-end justify-between">
+      <div class="grow shrink basis-[640px] min-w-0 flex flex-col gap-7">
+        <p class="m-0 self-start pill font-black text-[13px] tracking-[0.16em]">Events</p>
+        <h1 class="m-0">Hands-on nights. Every one free.</h1>
+        <p class="m-0 max-w-[600px] text-[clamp(18px,1.6vw,22px)] leading-[1.5] font-semibold">
+          Collaboration, workshops and community building, in person in Philadelphia. No experience
+          needed, and you don't have to come with anyone.
         </p>
       </div>
-    </div>
-  </section>
-
-  <!-- What to expect -->
-  <!-- The Lab timeline moved here from Home (Diego, 10/15/2026): on Events the
-       visitor already knows they are reading about one night, so the timeline
-       explains the night instead of defining the whole org. It is still the
-       site's only looping motion (DESIGN.md, motion rule 1). The Events PR
-       restyles this page; the timeline keeps its place. -->
-  <section class="section-padding bg-white border-b-2 border-brand-dark">
-    <div class="container-custom lg:grid lg:grid-cols-2 lg:gap-24 lg:items-start">
-      <h2 class="m-0 mb-9 lg:mb-0">One night. Three hours. Something exists that didn't.</h2>
-      <LabTrack outcome="Something you built" outcomeDetail="Yours to keep building." />
-    </div>
-  </section>
-
-  <section class="section-padding bg-primary-100">
-    <div class="container-custom">
-      <div class="max-w-4xl mx-auto">
-        <h2 class="text-3xl mb-8 text-center">What to expect</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="bg-white p-6 rounded-retro border-2 border-brand-dark shadow-retro-lg">
-            <h3 class="text-xl mb-3">Collaborative environment</h3>
-            <p class="text-brand-dark/60">
-              Work on projects together through pair programming and group collaboration. Everyone
-              contributes, everyone learns.
-            </p>
-          </div>
-          <div class="bg-white p-6 rounded-retro border-2 border-brand-dark shadow-retro-lg">
-            <h3 class="text-xl mb-3">Hands-on learning</h3>
-            <p class="text-brand-dark/60">
-              No passive lectures. You'll be coding, building, and creating from day one. Bring your
-              laptop and get ready to build.
-            </p>
-          </div>
-          <div class="bg-white p-6 rounded-retro border-2 border-brand-dark shadow-retro-lg">
-            <h3 class="text-xl mb-3">Supportive community</h3>
-            <p class="text-brand-dark/60">
-              Everyone is welcome, regardless of experience level. Ask questions, share knowledge,
-              and support each other.
-            </p>
-          </div>
-          <div class="bg-white p-6 rounded-retro border-2 border-brand-dark shadow-retro-lg">
-            <h3 class="text-xl mb-3">Real projects</h3>
-            <p class="text-brand-dark/60">
-              Work on projects that matter – community tools, portfolio pieces, and open source
-              contributions you can showcase.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Luma Calendar Embed -->
-  <section class="section-padding bg-primary-100">
-    <div class="container-custom">
-      <h2 class="text-3xl mb-8 text-center">Event calendar</h2>
-      <div class="max-w-4xl mx-auto">
-        <div class="bg-white rounded-retro border-2 border-brand-dark shadow-retro-lg overflow-hidden flex justify-center p-4">
-          <iframe
-            src={links.lumaEmbed}
-            title="PhilaCon Valley Event calendar"
-            width="100%"
-            height="600"
-            style="border: 1px solid #bfcbda88; border-radius: 4px; max-width: 800px;"
-            allowfullscreen=""
-            aria-hidden="false"
-            tabindex="0"
-          ></iframe>
-        </div>
-        <p class="text-center mt-4 text-brand-dark/60">
-          Can't see the calendar?{' '}
-          <a
-            href={links.luma}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-primary-600 hover:text-primary-700 font-semibold"
+      <div class="flex flex-wrap gap-3.5">
+        {nextEvent ? (
+          <Button
+            href={nextEvent.url}
+            external
+            variant="secondary"
+            size="lg"
+            data-pcv-event-start={nextEvent.start}
+            data-pcv-event-fallback={links.luma}
           >
-            View on Luma
-          </a>
+            <span data-pcv-event-start={nextEvent.start}>RSVP on Luma</span>
+            <span hidden data-pcv-event-after={nextEvent.start}>
+              Get notified
+            </span>
+          </Button>
+        ) : (
+          <Button href={links.luma} external variant="secondary" size="lg">
+            Get notified
+          </Button>
+        )}
+        <Button href="/join" variant="light" size="lg">
+          Join the community
+        </Button>
+      </div>
+    </div>
+  </section>
+
+  <!-- On the calendar. With a real event: the Next up card beside the live Luma
+       calendar. The card removes itself once the event starts
+       (public/js/event-freshness.js), and the calendar then fills the row.
+       With no event in the build: one "between nights" card in the Next up
+       card's shape, and no embed, because Luma's embed would only say "No
+       Upcoming Events". The scheduled rebuild brings the event state back
+       within hours of a new Luma event. -->
+  <section id="calendar" class="bg-white border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,120px)] flex flex-col gap-10">
+      {nextEvent ? (
+        <>
+          <div class="flex flex-wrap justify-between items-end gap-6">
+            <div class="flex flex-col gap-[22px] max-w-[760px]">
+              <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">On the calendar</p>
+              <h2 class="m-0">Pick a night.</h2>
+            </div>
+            <a
+              href={links.luma}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center min-h-11 font-black text-[17px] text-brand-dark underline underline-offset-[6px] decoration-[3px]"
+            >
+              View on Luma
+            </a>
+          </div>
+          <div class="flex flex-wrap gap-7">
+            <div
+              class="grow shrink basis-[520px] self-start min-w-0 bg-brand-dark text-white border-2 border-brand-dark rounded-[28px] shadow-[10px_10px_0_theme(colors.brand.pink)] p-[clamp(28px,4vw,44px)] flex flex-col gap-4"
+              data-testid="next-up"
+              data-pcv-event-start={nextEvent.start}
+            >
+              <p class="m-0 self-start rounded-full bg-brand-yellow text-brand-dark px-3 py-1 font-black text-xs tracking-[0.14em] uppercase">
+                Next up
+              </p>
+              <h3 class="m-0 text-brand-yellow text-[clamp(40px,4.4vw,64px)] leading-[0.92]">
+                {nextEvent.title}
+              </h3>
+              <p class="m-0 font-black text-sm tracking-[0.14em] uppercase text-brand-amber">
+                {formatEventDate(nextEvent.start)}
+                {nextEvent.venue && ` · ${nextEvent.venue}`}
+              </p>
+              <div class="pt-2">
+                <Button href={nextEvent.url} external variant="secondary">
+                  RSVP
+                </Button>
+              </div>
+            </div>
+            <div class="grow-[2] shrink basis-[560px] min-w-0 rounded-[28px] border-2 border-brand-dark overflow-hidden bg-white">
+              <iframe
+                src={links.lumaEmbed}
+                title="PhilaCon Valley event calendar on Luma"
+                loading="lazy"
+                class="block w-full h-[600px] border-0"
+              ></iframe>
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          <div class="flex flex-col gap-[22px] max-w-[760px]">
+            <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">On the calendar</p>
+            <h2 class="m-0 [text-wrap:balance]">The next night is on the way.</h2>
+          </div>
+          <div
+            class="bg-brand-dark text-white border-2 border-brand-dark rounded-[28px] shadow-[10px_10px_0_theme(colors.brand.pink)] p-[clamp(28px,4vw,56px)] flex flex-wrap gap-x-12 gap-y-7 items-center justify-between"
+            data-testid="between-nights"
+          >
+            <div class="grow shrink basis-[480px] min-w-0 flex flex-col gap-4">
+              <p class="m-0 self-start rounded-full bg-brand-yellow text-brand-dark px-3 py-1 font-black text-xs tracking-[0.14em] uppercase">
+                Between nights
+              </p>
+              <p class="m-0 max-w-[560px] text-[clamp(18px,1.6vw,22px)] leading-[1.5] font-semibold">
+                No night is on the calendar right now. We post every night on Luma. Follow the
+                calendar there, and Luma lets you know when the next one is posted.
+              </p>
+            </div>
+            <div class="flex flex-wrap gap-3.5">
+              <Button href={links.luma} external variant="secondary" size="lg">
+                Get notified
+              </Button>
+              <Button href={calendarFeed} variant="outline-light" size="lg">
+                Add to your calendar
+              </Button>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  </section>
+
+  <!-- Kinds of nights: the shared program cards (src/data/programs.ts), all
+       white on yellow, as in the mockup (Waskar, 10/16/2026). -->
+  <section class="bg-brand-yellow border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
+      <div class="flex flex-wrap justify-between items-end gap-6">
+        <div class="flex flex-col gap-[22px] max-w-[760px]">
+          <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">Kinds of nights</p>
+          <h2 class="m-0">Different nights. Same open door.</h2>
+        </div>
+        <p class="m-0 max-w-[380px] text-lg leading-[1.55]">
+          <strong>Every program is free of charge.</strong> Nothing to apply for, nothing to
+          prepare.
         </p>
       </div>
+      <ProgramCards allWhite />
     </div>
   </section>
 
-  <!-- Event Types -->
-  <section class="section-padding">
-    <div class="container-custom">
-      <h2 class="text-3xl mb-8 text-center">Types of events</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-        <div class="text-center">
-          <div class="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg
-              class="w-10 h-10 text-primary-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
-              ></path>
-            </svg>
-          </div>
-          <h3 class="text-xl mb-3">Lab</h3>
-          <p class="text-brand-dark/60">
-            Monthly hands-on build sessions. Pair program, get code reviews, and work on real
-            projects together.
-          </p>
+  <!-- First time? On ink: the heading and four points, as in the mockup.
+       The points play with the night timeline's system (Waskar, 10/16/2026):
+       night-arm.js hides them before paint, then night.js reveals them in
+       order each time the list scrolls into view. The number pops in like a
+       timeline dot, and the title and line rise just after. -->
+  <script is:inline src="/js/night-arm.js"></script>
+  <section class="bg-brand-dark text-white border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
+      <div class="flex flex-wrap gap-[clamp(40px,6vw,96px)]">
+        <div class="grow shrink basis-[380px] min-w-0 flex flex-col gap-[22px]">
+          <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">First time?</p>
+          <h2 class="m-0">
+            Here's what to <span class="text-brand-yellow">expect.</span>
+          </h2>
         </div>
-
-        <div class="text-center">
-          <div class="w-20 h-20 bg-accent-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg
-              class="w-10 h-10 text-accent-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-              ></path>
-            </svg>
-          </div>
-          <h3 class="text-xl mb-3">Workshops</h3>
-          <p class="text-brand-dark/60">
-            Focused technical workshops on specific topics like Git, APIs, React, and more.
-          </p>
-        </div>
-
-        <div class="text-center">
-          <div class="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg
-              class="w-10 h-10 text-primary-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-              ></path>
-            </svg>
-          </div>
-          <h3 class="text-xl mb-3">Career sessions</h3>
-          <p class="text-brand-dark/60">
-            Resume reviews, interview prep, job search strategies, and networking opportunities.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Past events -->
-  {recaps.length > 0 && (
-    <section class="section-padding bg-primary-100">
-      <div class="container-custom">
-        <h2 class="text-3xl mb-8 text-center">Past events</h2>
-        <ul class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto list-none p-0">
-          {recaps.map((recap) => (
-            <li>
-              <a
-                href={`/events/${recap.id}`}
-                class="block h-full bg-white p-6 rounded-retro border-2 border-brand-dark shadow-retro-lg hover:border-primary-600 transition-colors"
+        <ol
+          class="grow shrink basis-[560px] min-w-0 m-0 p-0 list-none flex flex-col"
+          data-night-strip
+          data-testid="first-time-points"
+        >
+          {expect.map((point, i) => (
+            <li class="flex gap-6 py-[26px] border-t-2 border-white">
+              <span
+                class={`font-display font-extrabold text-[32px] leading-none ${point.color} flex-none w-14 origin-left`}
+                aria-hidden="true"
+                data-night-dot
               >
-                <p class="text-sm text-brand-dark/60 mb-2">
-                  {formatRecapDate(recap.data.date)} · {recap.data.venue}
-                </p>{' '}
-                <h3 class="text-xl mb-3">{recap.data.title}</h3>{' '}
-                <p class="text-brand-dark/60">{recap.data.summary}</p>
-              </a>
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <div class="flex flex-col gap-2" data-night-rise>
+                <h3 class="m-0 text-[28px] leading-none">{point.title}</h3>
+                <p class="m-0 text-[17px] leading-[1.55] text-white/90">{point.line}</p>
+              </div>
             </li>
           ))}
-        </ul>
+        </ol>
+      </div>
+    </div>
+  </section>
+  <script is:inline defer src="/js/night.js"></script>
+  <!-- Recent nights: one card per event recap (src/content/events), newest
+       first, each with its own photo and summary, then a row of photos. -->
+  {cards.length > 0 && (
+    <section class="bg-white border-t-2 border-brand-dark">
+      <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
+        <div class="flex flex-col gap-[22px] max-w-[760px]">
+          <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">From the room</p>
+          <h2 class="m-0">Recent nights.</h2>
+        </div>
+        <div class="grid gap-7 grid-cols-[repeat(auto-fit,minmax(min(320px,100%),1fr))]">
+          {cards.map(({ recap, cover }) => (
+            <article class="bg-white rounded-retro border-2 border-brand-dark shadow-retro-lg overflow-hidden flex flex-col">
+              {cover && (
+                <img
+                  src={cover.data.image}
+                  srcset={srcset(cover.data.image)}
+                  sizes="(min-width: 1024px) 600px, calc(100vw - 32px)"
+                  width="1600"
+                  height="900"
+                  loading="lazy"
+                  decoding="async"
+                  alt={cover.data.alt}
+                  class="block w-full aspect-video object-cover border-b-2 border-brand-dark"
+                />
+              )}
+              <div class="p-7 flex flex-col gap-3.5 flex-1">
+                <p class="m-0 font-black text-[13px] tracking-[0.14em] uppercase">
+                  {shortDate(recap.data.date)} · {recap.data.venue}
+                </p>
+                <h3 class="m-0 normal-case text-[34px] leading-none">{recap.data.title}</h3>
+                <p class="m-0 text-base leading-[1.55] text-brand-dark/85">{recap.data.summary}</p>
+                <a
+                  href={`/events/${recap.id}`}
+                  aria-label={`Read the recap: ${recap.data.title}`}
+                  class="mt-auto self-start inline-flex items-center min-h-11 font-black text-base text-brand-dark underline underline-offset-[5px] decoration-2"
+                >
+                  Read the recap
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+        {strip.length > 0 && (
+          <ul class="m-0 p-0 list-none grid gap-4 grid-cols-2 lg:grid-cols-4">
+            {strip.map((photo) => (
+              <li>
+                <img
+                  src={photo.data.image}
+                  srcset={srcset(photo.data.image)}
+                  sizes="(min-width: 1024px) 300px, 50vw"
+                  width="800"
+                  height="800"
+                  loading="lazy"
+                  decoding="async"
+                  alt={photo.data.alt}
+                  class="block w-full aspect-square object-cover rounded-[20px] border-2 border-brand-dark"
+                />
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </section>
   )}
 
-  <!-- Community Photos -->
-  <section class="section-padding">
-    <div class="container-custom">
-      <h2 class="text-3xl mb-8 text-center">The community, in person</h2>
-      <div class="max-w-5xl mx-auto">
-        <PhotoGrid
-          photos={photos.map(({ photo, event }) => ({
-            image: photo.data.image,
-            alt: photo.data.alt,
-            event: event.data.title,
-            date: photo.data.date,
-            caption: photo.data.caption,
-          }))}
-        />
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="section-padding bg-accent-400 text-brand-dark border-t-[3px]">
-    <div class="container-custom text-center">
-      <h2 class="text-4xl mb-6">Ready to join us?</h2>
-      <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-        RSVP for our next event and become part of Philadelphia's thriving tech community.
-      </p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button href={links.luma} external variant="secondary" size="lg">
-          View events on Luma
-        </Button>
-        <Button href="/join" variant="light" size="lg">
-          {' '}
-          Join the Community{' '}
-        </Button>
-      </div>
-    </div>
-  </section>
+  <!-- The Events closing, in the mockup's copy (Waskar, 10/16/2026). -->
+  <ClosingFlock
+    lede={
+      nextEvent
+        ? 'RSVP for the next night and come as you are. A pigeon flies alone. A flock goes much further.'
+        : 'Get notified when the next night is posted, then come as you are. A pigeon flies alone. A flock goes much further.'
+    }
+    primary={
+      nextEvent
+        ? { href: links.luma, label: 'View events on Luma', external: true }
+        : { href: links.luma, label: 'Get notified', external: true }
+    }
+    secondary={{ href: '/join', label: 'Join the community' }}
+  >
+    Ready to join us?
+  </ClosingFlock>
 </BaseLayout>

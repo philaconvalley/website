@@ -1,6 +1,9 @@
-// About page: the "How a night goes" timeline, step 2 of 2 (styles:
-// global.css, "night timeline"). Served as a file because the CSP allows
-// scripts from this origin only. night-arm.js hides the steps before paint.
+// The night system, step 2 of 2 (styles: global.css, "night timeline"): the
+// "How a night goes" timeline on About, and the four "First time?" points on
+// Events. It plays the first [data-night-strip] on the page; a step needs a
+// [data-night-dot] and a [data-night-rise], and [data-night-seg] is optional.
+// Served as a file because the CSP allows scripts from this origin only.
+// night-arm.js hides the steps before paint.
 //
 // - Purpose: explanation. A line draws from step to step like time passing;
 //   as it reaches a step, the dot pops in and the text rises.
