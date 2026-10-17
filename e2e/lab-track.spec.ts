@@ -25,7 +25,7 @@ import { test, expect } from '@playwright/test';
 
 const PHONE_WIDTHS = [320, 360, 375, 390, 414, 430];
 
-const CAPTIONS = ['6:30pm · you arrive alone', '7:00pm · two others pull up a chair'];
+const CAPTIONS = ['6:00pm · you arrive', '7:15pm · build together or solo'];
 
 interface Box {
   x: number;
@@ -46,7 +46,7 @@ test.describe('Lab timeline', () => {
     test(`outcome chip never covers a caption at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       await page.emulateMedia({ reducedMotion: 'reduce' });
-      await page.goto('/');
+      await page.goto('/events');
 
       const chip = page.locator('.pcv-loop-chip');
       await expect(chip).toHaveCount(1);
@@ -70,4 +70,23 @@ test.describe('Lab timeline', () => {
       }
     });
   }
+});
+
+test('the Lab loop pauses off screen and resumes in view', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/events');
+  const track = page.locator('[data-lab-track]');
+  const chip = page.locator('.pcv-loop-chip');
+
+  await track.scrollIntoViewIfNeeded();
+  await expect(track).not.toHaveAttribute('data-paused');
+  await expect(chip).toHaveCSS('animation-play-state', 'running');
+
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await expect(track).toHaveAttribute('data-paused', '');
+  await expect(chip).toHaveCSS('animation-play-state', 'paused');
+
+  await track.scrollIntoViewIfNeeded();
+  await expect(chip).toHaveCSS('animation-play-state', 'running');
 });

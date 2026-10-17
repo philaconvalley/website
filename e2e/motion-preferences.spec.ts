@@ -23,7 +23,8 @@ test.describe('prefers-reduced-motion', () => {
     // would sit on nothing — so assert the restored width, not just the absence
     // of animation.
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.goto('/');
+    // LabTrack moved from Home to Events (DESIGN.md, motion rule 1).
+    await page.goto('/events');
 
     const track = page.locator('.pcv-loop-track');
     await expect(track).toHaveCSS('animation-name', 'none');

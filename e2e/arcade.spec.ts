@@ -150,3 +150,18 @@ test.describe('cabinet page', () => {
     await expect(frame).not.toHaveAttribute('src', /.+/);
   });
 });
+
+test('an arcade cabinet presses down on pointer-down', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/arcade');
+  const cabinet = page.locator('a.cabinet').first();
+  await cabinet.scrollIntoViewIfNeeded();
+  await page.mouse.move(0, 0);
+  // Wait out the 300ms staggered entrance before measuring.
+  await page.waitForTimeout(700);
+  const box = (await cabinet.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await expect(cabinet).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 2)');
+  await page.mouse.up({ button: 'left' }).catch(() => {});
+});
