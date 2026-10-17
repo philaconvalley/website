@@ -279,6 +279,43 @@
        height; without the margin it overlaps the next line on phones. */
   }
 
+  /* A disclosure summary (the Contact FAQ). display:flex drops the native
+     marker in Chrome and Firefox; Safari needs ::-webkit-details-marker
+     hidden. The + in an ink circle turns into an x when the question opens,
+     so the visitor can see a question opens before they tap it. It presses
+     on pointer-down (100ms), so a tap gets feedback on phones, where hover is
+     off. The "/ ''" keeps the + out of the accessible name; the summary
+     already tells screen readers it is expanded or collapsed. */
+  .faq-summary {
+    @apply flex items-center justify-between gap-4 min-h-14 px-5 py-3 cursor-pointer list-none
+           font-display font-extrabold text-2xl;
+  }
+
+  .faq-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-summary::after {
+    content: '+';
+    content: '+' / '';
+    @apply flex flex-shrink-0 items-center justify-center w-8 h-8 rounded-full border-2
+           border-brand-dark bg-white text-xl leading-none;
+    transition: transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  details[open] > .faq-summary::after {
+    transform: rotate(45deg);
+  }
+
+  .faq-summary:active::after {
+    transform: scale(0.9);
+    transition-duration: 100ms;
+  }
+
+  details[open] > .faq-summary:active::after {
+    transform: rotate(45deg) scale(0.9);
+  }
+
   /* A small flat label: one color, stadium radius, ink outline (Book section
      10, "Tags + pills"). Set the background with a color utility. */
   .pill {
@@ -585,5 +622,37 @@
 
   [data-night='play'] [data-night-seg] {
     transition: none;
+  }
+
+  .faq-summary::after {
+    transition: none;
+  }
+}
+
+/*
+ * Print, and any capture that never scrolls, shows every animated element in
+ * its final state (DESIGN.md, motion rule 2). Without this, a stat that never
+ * came into view prints as "000": the real number is transparent and the
+ * overlay sits at 0. The night steps would print blank.
+ * !important: the hidden-state rules above carry an extra :not() and would
+ * otherwise win. Print has no motion to protect, so nothing is lost.
+ */
+@media print {
+  .odo-layer {
+    display: none !important;
+  }
+
+  .odo [data-odo-item] [data-count] {
+    color: inherit !important;
+  }
+
+  .odo [data-odo-item],
+  .odo [data-odo-item] [data-odo-rule],
+  .odo [data-odo-item] [data-odo-rise],
+  .night [data-night-strip] [data-night-dot],
+  .night [data-night-strip] [data-night-rise],
+  .night [data-night-strip] [data-night-seg] {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
