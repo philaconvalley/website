@@ -119,12 +119,19 @@ const rsvpHref = nextEvent?.url ?? links.luma;
           @mouseleave="instant = false; const current = $el.querySelector('[aria-current=page]'); if (current) pos = { left: current.offsetLeft, width: current.offsetWidth }"
           @focusout="if (!$el.contains($event.relatedTarget)) { instant = true; const current = $el.querySelector('[aria-current=page]'); if (current) pos = { left: current.offsetLeft, width: current.offsetWidth } }"
         >
+          <!-- The pill spans the whole nav, and clip-path shows only the part
+               under the current link. Animating clip-path, not width, keeps
+               the move off layout (motion review, 10/17/2026), and the inset's
+               `round` keeps the ends fully round, which scaleX would squash.
+               The right inset is calc(100% - right edge), so it follows the
+               nav's own width: a pixel inset went stale for a frame when the
+               webfont swap narrowed the nav. -->
           <div
             x-cloak
             data-testid="nav-pill"
-            class="absolute inset-y-1 left-0 rounded-full bg-accent-400 transition-[transform,width] duration-200 ease-out motion-reduce:transition-none"
+            class="absolute inset-y-1 inset-x-0 bg-accent-400 transition-[clip-path] duration-200 ease-out motion-reduce:transition-none"
             :class="instant && '!transition-none'"
-            :style="`transform: translateX(${pos.left}px); width: ${pos.width}px;`"
+            :style="`clip-path: inset(0 calc(100% - ${pos.left + pos.width}px) 0 ${pos.left}px round 9999px);`"
           ></div>
           {navItems.map((item) => {
             const isCurrent = currentPath === item.href || currentPath.startsWith(item.href + '/');
