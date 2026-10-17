@@ -22,9 +22,17 @@ import { existsSync } from 'node:fs';
  * - "Recent nights" reads the event recaps and the gallery, so a new recap
  *   appears here on its own. Each card uses its recap summary.
  * - LabTrack, the old looping timeline, is retired (DESIGN.md, motion rule 1).
+ * - No RSVP without a real event. With none in the build, the hero, the
+ *   calendar section and the closing ask people to follow the Luma calendar
+ *   ("Get notified"), and the empty Luma embed is not shown.
  */
 
 const { nextEvent } = await getCommunityData();
+
+// The Luma calendar feed as a subscription. An https link to the feed
+// downloads a one-time copy (the server sends it as an attachment); webcal://
+// makes the calendar app subscribe, so new nights appear on their own.
+const calendarFeed = links.lumaIcs.replace(/^https:/, 'webcal:');
 
 // Every photo is resolved, so a gallery entry that names a missing event file
 // fails the build (src/lib/events.ts).
@@ -105,9 +113,25 @@ const expect = [
         </p>
       </div>
       <div class="flex flex-wrap gap-3.5">
-        <Button href={links.luma} external variant="secondary" size="lg">
-          RSVP on Luma
-        </Button>
+        {nextEvent ? (
+          <Button
+            href={nextEvent.url}
+            external
+            variant="secondary"
+            size="lg"
+            data-pcv-event-start={nextEvent.start}
+            data-pcv-event-fallback={links.luma}
+          >
+            <span data-pcv-event-start={nextEvent.start}>RSVP on Luma</span>
+            <span hidden data-pcv-event-after={nextEvent.start}>
+              Get notified
+            </span>
+          </Button>
+        ) : (
+          <Button href={links.luma} external variant="secondary" size="lg">
+            Get notified
+          </Button>
+        )}
         <Button href="/join" variant="light" size="lg">
           Join the community
         </Button>
@@ -115,59 +139,93 @@ const expect = [
     </div>
   </section>
 
-  <!-- On the calendar: the next real Luma event beside the live Luma calendar.
-       The card renders only for a real event and removes itself once the
-       event starts (public/js/event-freshness.js); the calendar then fills
-       the row. -->
+  <!-- On the calendar. With a real event: the Next up card beside the live Luma
+       calendar. The card removes itself once the event starts
+       (public/js/event-freshness.js), and the calendar then fills the row.
+       With no event in the build: one "between nights" card in the Next up
+       card's shape, and no embed, because Luma's embed would only say "No
+       Upcoming Events". The scheduled rebuild brings the event state back
+       within hours of a new Luma event. -->
   <section id="calendar" class="bg-white border-t-2 border-brand-dark">
     <div class="container-custom py-[clamp(72px,9vw,120px)] flex flex-col gap-10">
-      <div class="flex flex-wrap justify-between items-end gap-6">
-        <div class="flex flex-col gap-[22px] max-w-[760px]">
-          <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">On the calendar</p>
-          <h2 class="m-0">Pick a night.</h2>
-        </div>
-        <a
-          href={links.luma}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center min-h-11 font-black text-[17px] text-brand-dark underline underline-offset-[6px] decoration-[3px]"
-        >
-          View on Luma
-        </a>
-      </div>
-      <div class="flex flex-wrap gap-7">
-        {nextEvent && (
+      {nextEvent ? (
+        <>
+          <div class="flex flex-wrap justify-between items-end gap-6">
+            <div class="flex flex-col gap-[22px] max-w-[760px]">
+              <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">On the calendar</p>
+              <h2 class="m-0">Pick a night.</h2>
+            </div>
+            <a
+              href={links.luma}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center min-h-11 font-black text-[17px] text-brand-dark underline underline-offset-[6px] decoration-[3px]"
+            >
+              View on Luma
+            </a>
+          </div>
+          <div class="flex flex-wrap gap-7">
+            <div
+              class="grow shrink basis-[520px] self-start min-w-0 bg-brand-dark text-white border-2 border-brand-dark rounded-[28px] shadow-[10px_10px_0_theme(colors.brand.pink)] p-[clamp(28px,4vw,44px)] flex flex-col gap-4"
+              data-testid="next-up"
+              data-pcv-event-start={nextEvent.start}
+            >
+              <p class="m-0 self-start rounded-full bg-brand-yellow text-brand-dark px-3 py-1 font-black text-xs tracking-[0.14em] uppercase">
+                Next up
+              </p>
+              <h3 class="m-0 text-brand-yellow text-[clamp(40px,4.4vw,64px)] leading-[0.92]">
+                {nextEvent.title}
+              </h3>
+              <p class="m-0 font-black text-sm tracking-[0.14em] uppercase text-brand-amber">
+                {formatEventDate(nextEvent.start)}
+                {nextEvent.venue && ` · ${nextEvent.venue}`}
+              </p>
+              <div class="pt-2">
+                <Button href={nextEvent.url} external variant="secondary">
+                  RSVP
+                </Button>
+              </div>
+            </div>
+            <div class="grow-[2] shrink basis-[560px] min-w-0 rounded-[28px] border-2 border-brand-dark overflow-hidden bg-white">
+              <iframe
+                src={links.lumaEmbed}
+                title="PhilaCon Valley event calendar on Luma"
+                loading="lazy"
+                class="block w-full h-[600px] border-0"
+              ></iframe>
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          <div class="flex flex-col gap-[22px] max-w-[760px]">
+            <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">On the calendar</p>
+            <h2 class="m-0 [text-wrap:balance]">The next night is on the way.</h2>
+          </div>
           <div
-            class="grow shrink basis-[380px] min-w-0 bg-brand-dark text-white border-2 border-brand-dark rounded-[28px] shadow-[10px_10px_0_theme(colors.brand.pink)] p-[clamp(28px,4vw,44px)] flex flex-col gap-4"
-            data-testid="next-up"
-            data-pcv-event-start={nextEvent.start}
+            class="bg-brand-dark text-white border-2 border-brand-dark rounded-[28px] shadow-[10px_10px_0_theme(colors.brand.pink)] p-[clamp(28px,4vw,56px)] flex flex-wrap gap-x-12 gap-y-7 items-center justify-between"
+            data-testid="between-nights"
           >
-            <p class="m-0 self-start rounded-full bg-brand-yellow text-brand-dark px-3 py-1 font-black text-xs tracking-[0.14em] uppercase">
-              Next up
-            </p>
-            <h3 class="m-0 text-brand-yellow text-[clamp(40px,4.4vw,64px)] leading-[0.92]">
-              {nextEvent.title}
-            </h3>
-            <p class="m-0 font-black text-sm tracking-[0.14em] uppercase text-brand-amber">
-              {formatEventDate(nextEvent.start)}
-              {nextEvent.venue && ` · ${nextEvent.venue}`}
-            </p>
-            <div class="mt-auto pt-2">
-              <Button href={nextEvent.url} external variant="secondary">
-                RSVP
+            <div class="grow shrink basis-[480px] min-w-0 flex flex-col gap-4">
+              <p class="m-0 self-start rounded-full bg-brand-yellow text-brand-dark px-3 py-1 font-black text-xs tracking-[0.14em] uppercase">
+                Between nights
+              </p>
+              <p class="m-0 max-w-[560px] text-[clamp(18px,1.6vw,22px)] leading-[1.5] font-semibold">
+                No night is on the calendar right now. We post every night on Luma. Follow the
+                calendar there, and Luma lets you know when the next one is posted.
+              </p>
+            </div>
+            <div class="flex flex-wrap gap-3.5">
+              <Button href={links.luma} external variant="secondary" size="lg">
+                Get notified
+              </Button>
+              <Button href={calendarFeed} variant="outline-light" size="lg">
+                Add to your calendar
               </Button>
             </div>
           </div>
-        )}
-        <div class="grow-[2] shrink basis-[560px] min-w-0 rounded-[28px] border-2 border-brand-dark overflow-hidden bg-white">
-          <iframe
-            src={links.lumaEmbed}
-            title="PhilaCon Valley event calendar on Luma"
-            loading="lazy"
-            class="block w-full h-[600px] border-0"
-          ></iframe>
-        </div>
-      </div>
+        </>
+      )}
     </div>
   </section>
 
@@ -288,8 +346,16 @@ const expect = [
 
   <!-- The Events closing, in the mockup's copy (Waskar, 10/16/2026). -->
   <ClosingFlock
-    lede="RSVP for the next night and come as you are. A pigeon flies alone. A flock goes much further."
-    primary={{ href: links.luma, label: 'View events on Luma', external: true }}
+    lede={
+      nextEvent
+        ? 'RSVP for the next night and come as you are. A pigeon flies alone. A flock goes much further.'
+        : 'Get notified when the next night is posted, then come as you are. A pigeon flies alone. A flock goes much further.'
+    }
+    primary={
+      nextEvent
+        ? { href: links.luma, label: 'View events on Luma', external: true }
+        : { href: links.luma, label: 'Get notified', external: true }
+    }
     secondary={{ href: '/join', label: 'Join the community' }}
   >
     Ready to join us?
