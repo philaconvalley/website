@@ -14,6 +14,7 @@ thumbnailAlt: 'The golden PhilaCon bird mascot mid-flap over a purple city skyli
 ogImage: '/images/arcade/flappy-philacon-og.webp'
 marqueeColor: 'pink'
 kind: 'game'
+tag: 'High score'
 input: ['pointer', 'keyboard', 'touch']
 controls:
   - keys: ['Space']

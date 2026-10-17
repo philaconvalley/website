@@ -118,6 +118,11 @@ const arcade = defineCollection({
     ogImage: z.string(),
     marqueeColor: z.enum(['pink', 'purple', 'yellow', 'coral']),
     kind: z.enum(['game', 'demo']),
+    // An optional chip for the Arcade card, set by the game's author (Waskar,
+    // 10/16/2026). "Desktop only" and "Demo · No score" come from `input` and
+    // `kind`; anything else, like "High score", must be stated here, never
+    // guessed by the page.
+    tag: z.string().optional(),
     input: z.array(z.enum(['keyboard', 'pointer', 'touch'])).nonempty(),
     fixedSize: z.object({ w: z.number(), h: z.number() }).optional(),
     controls: z.array(z.object({ keys: z.array(z.string()), label: z.string() })),
