@@ -214,3 +214,12 @@ test('About ends on its own closing copy; Home keeps the motto', async ({ page }
     home.getByRole('link', { name: /RSVP for the next night|Get notified/ }),
   ).toBeVisible();
 });
+
+test('print shows every night-timeline step, even before it plays', async ({ page }) => {
+  await page.goto('/about');
+  await page.emulateMedia({ media: 'print' });
+  const parts = page.locator('[data-night-dot], [data-night-rise]');
+  const n = await parts.count();
+  expect(n).toBeGreaterThan(0);
+  for (let i = 0; i < n; i++) await expect(parts.nth(i)).toHaveCSS('opacity', '1');
+});

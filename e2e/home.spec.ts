@@ -258,3 +258,17 @@ test('a first visit paints the headline in its real font, with no reflow', async
     /baloo-2-latin-800-normal\.[\w-]+\.woff2$/,
   );
 });
+
+// A number that never scrolled into view is transparent under an overlay at 0.
+// Print (and any capture that never scrolls) must show the real value, not "000".
+test('print shows the real numbers, even ones that never came into view', async ({ page }) => {
+  await page.goto('/');
+  await page.emulateMedia({ media: 'print' });
+  const counts = page.locator('[data-count]');
+  const n = await counts.count();
+  expect(n).toBeGreaterThan(0);
+  for (let i = 0; i < n; i++) {
+    await expect(counts.nth(i)).toHaveCSS('color', 'rgb(26, 26, 26)');
+    await expect(counts.nth(i).locator('.odo-layer')).toBeHidden();
+  }
+});
