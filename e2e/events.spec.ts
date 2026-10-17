@@ -9,7 +9,8 @@ import { links } from '../src/config';
  *   and no RSVP shows anywhere (which test runs depends on the live calendar
  *   at build time; the other skips);
  * - the programs are the same four as Home and About, all white on yellow;
- * - the first-time guide shows the real night (timeline included);
+ * - the first-time guide shows four points about the real night, and no
+ *   timeline (the mockup has none on Events; About keeps it);
  * - every event recap gets a card that links to its recap page;
  * - every photo loads (no missing 800px copies);
  * - the page ends on its own closing copy.
@@ -66,12 +67,12 @@ test('Events shows the shared programs, every card white', async ({ page }) => {
   expect(fills.every((fill) => fill === 'rgb(255, 255, 255)')).toBe(true);
 });
 
-test('the first-time guide shows four points and the night timeline', async ({ page }) => {
+test('the first-time guide shows four points and no night timeline', async ({ page }) => {
   await page.goto('/events');
   const section = page.locator('section', { has: page.getByText('First time?') });
   await expect(section.locator('ol > li h3')).toHaveCount(4);
   await expect(section.getByText(/lesson or demo/).first()).toBeVisible();
-  await expect(section.getByTestId('night-strip').locator('li')).toHaveCount(5);
+  await expect(page.getByTestId('night-strip')).toHaveCount(0);
   // LabTrack is retired.
   await expect(page.locator('[data-lab-track]')).toHaveCount(0);
 });

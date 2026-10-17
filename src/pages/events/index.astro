@@ -2,7 +2,6 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Button from '../../components/Button.astro';
 import ClosingFlock from '../../components/ClosingFlock.astro';
-import NightTimeline from '../../components/NightTimeline.astro';
 import ProgramCards from '../../components/ProgramCards.astro';
 import { getCommunityData, formatEventDate } from '../../lib/community';
 import { resolvePhotoEvents } from '../../lib/events';
@@ -16,9 +15,11 @@ import { existsSync } from 'node:fs';
  * - "Next up" shows the next real Luma event only, with no description (Luma
  *   gives the build none). The mockup's "Halloween Mixer" was a placeholder.
  * - "Kinds of nights" uses the shared program cards, all white on yellow.
- * - "First time?" shows the night timeline and four points rewritten to match
- *   the real night: a lesson or demo comes first, and people work with others
- *   or on their own. The mockup said "no lectures" and promised pairs.
+ * - "First time?" shows four points rewritten to match the real night: a
+ *   lesson or demo comes first, and people work with others or on their own.
+ *   The mockup said "no lectures" and promised pairs. The night timeline is
+ *   not on this page, because the mockup has none here (Waskar, 10/16/2026);
+ *   About keeps it.
  * - "Recent nights" reads the event recaps and the gallery, so a new recap
  *   appears here on its own. Each card uses its recap summary.
  * - LabTrack, the old looping timeline, is retired (DESIGN.md, motion rule 1).
@@ -247,8 +248,7 @@ const expect = [
     </div>
   </section>
 
-  <!-- First time? On ink: the heading and four points (mockup layout), then
-       the night timeline, so a newcomer sees the whole night before coming. -->
+  <!-- First time? On ink: the heading and four points, as in the mockup. -->
   <section class="bg-brand-dark text-white border-t-2 border-brand-dark">
     <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
       <div class="flex flex-wrap gap-[clamp(40px,6vw,96px)]">
@@ -275,7 +275,6 @@ const expect = [
           ))}
         </ol>
       </div>
-      <NightTimeline />
     </div>
   </section>
 
