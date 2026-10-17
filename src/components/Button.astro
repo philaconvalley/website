@@ -7,6 +7,10 @@ interface Props {
   class?: string;
   external?: boolean;
   'data-testid'?: string;
+  /** Event freshness markers (public/js/event-freshness.js), for a link that
+   *  points at one event and falls back once it has started. */
+  'data-pcv-event-start'?: string;
+  'data-pcv-event-fallback'?: string;
 }
 
 const {
@@ -17,6 +21,8 @@ const {
   external = false,
   type = 'button',
   'data-testid': testId,
+  'data-pcv-event-start': eventStart,
+  'data-pcv-event-fallback': eventFallback,
 } = Astro.props;
 
 // Book section 10: a flat fill, a 2px ink outline, stadium radius, and a hard
@@ -63,7 +69,14 @@ const externalProps = external ? { target: '_blank', rel: 'noopener noreferrer' 
 ---
 
 {href ? (
-  <a href={href} class={classes} data-testid={testId} {...externalProps}>
+  <a
+    href={href}
+    class={classes}
+    data-testid={testId}
+    data-pcv-event-start={eventStart}
+    data-pcv-event-fallback={eventFallback}
+    {...externalProps}
+  >
     <slot />
     {external && (
       <svg

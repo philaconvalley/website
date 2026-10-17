@@ -1,6 +1,7 @@
 ---
 import Button from './Button.astro';
 import { links } from '../config';
+import { getCommunityData } from '../lib/community';
 
 /**
  * The closing section every page ends on (DESIGN.md, "Color rhythm"): the motto
@@ -28,6 +29,9 @@ interface Props {
 
 const { lede = "Come to one night. That's the whole ask. We'll take it from there, together." } =
   Astro.props;
+
+// No RSVP without a real event, the same rule as the header and the Home hero.
+const { nextEvent } = await getCommunityData();
 ---
 
 <section
@@ -62,9 +66,25 @@ const { lede = "Come to one night. That's the whole ask. We'll take it from ther
       <p class="m-0 max-w-[520px] text-[19px] leading-[1.55] font-semibold">{lede}</p>
       <div class="flex flex-wrap gap-3.5">
         <!-- Book p14: Hot Pink is the main button. -->
-        <Button href={links.luma} external variant="primary" size="lg">
-          RSVP for the next night
-        </Button>
+        {nextEvent ? (
+          <Button
+            href={nextEvent.url}
+            external
+            variant="primary"
+            size="lg"
+            data-pcv-event-start={nextEvent.start}
+            data-pcv-event-fallback={links.luma}
+          >
+            <span data-pcv-event-start={nextEvent.start}>RSVP for the next night</span>
+            <span hidden data-pcv-event-after={nextEvent.start}>
+              Get notified
+            </span>
+          </Button>
+        ) : (
+          <Button href={links.luma} external variant="primary" size="lg">
+            Get notified
+          </Button>
+        )}
         <Button href="/support" variant="light" size="lg">
           Support the flock
         </Button>

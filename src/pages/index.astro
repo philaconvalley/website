@@ -177,15 +177,32 @@ const stats = [
           {tagline}
         </p>
         <div class="mt-8 flex flex-wrap gap-4">
-          <Button
-            href={nextEvent?.url ?? links.luma}
-            external
-            variant="primary"
-            size="lg"
-            data-testid="home-rsvp"
-          >
-            RSVP for the next night
-          </Button>
+          {/* An RSVP with nothing to RSVP to is a dead end (EventBar.astro).
+              With no event, the button asks people to follow the Luma
+              calendar, which lets them know when the next night is posted
+              (Luma's own words: "Follow the calendar to get notified when new
+              events are posted."). Once a built event starts, it falls back
+              there too. */}
+          {nextEvent ? (
+            <Button
+              href={nextEvent.url}
+              external
+              variant="primary"
+              size="lg"
+              data-testid="home-rsvp"
+              data-pcv-event-start={nextEvent.start}
+              data-pcv-event-fallback={links.luma}
+            >
+              <span data-pcv-event-start={nextEvent.start}>RSVP for the next night</span>
+              <span hidden data-pcv-event-after={nextEvent.start}>
+                Get notified
+              </span>
+            </Button>
+          ) : (
+            <Button href={links.luma} external variant="primary" size="lg" data-testid="home-rsvp">
+              Get notified
+            </Button>
+          )}
           <Button href={links.discord} external variant="light" size="lg">
             Join the community
           </Button>

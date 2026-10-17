@@ -36,12 +36,27 @@ for (const el of document.querySelectorAll('[data-pcv-event-start]')) {
   const fallback = el.dataset.pcvEventFallback;
   if (fallback) {
     el.setAttribute('href', fallback);
-    el.removeAttribute('target');
-    el.removeAttribute('rel');
+    // A page on this site opens in the same tab. Another site (the Luma
+    // calendar) keeps the new tab the link already had.
+    if (fallback.startsWith('/')) {
+      el.removeAttribute('target');
+      el.removeAttribute('rel');
+    }
     // Dropping the marker once handled leaves a checkable invariant: after this
     // loop, a surviving data-pcv-event-start means an unexpired claim.
     el.removeAttribute('data-pcv-event-start');
   } else {
     el.remove();
   }
+}
+
+// The reverse marker: a label that stands in once the event has started (the
+// "Get notified" labels on the header, hero, and closing buttons) ships
+// `hidden` and appears here. With no JavaScript it stays hidden, and the page
+// shows the event as it did at build time.
+for (const el of document.querySelectorAll('[data-pcv-event-after]')) {
+  const start = Date.parse(el.dataset.pcvEventAfter ?? '');
+  if (!(Date.now() > start)) continue;
+  el.removeAttribute('hidden');
+  el.removeAttribute('data-pcv-event-after');
 }
