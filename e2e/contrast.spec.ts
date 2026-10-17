@@ -12,8 +12,8 @@ import { test, expect, type Locator } from '@playwright/test';
  * the pairing gets caught, not just a literal `text-white` reappearing.
  *
  * Header / event-bar RSVP and the shared `Button` primary variant (pink on
- * brand-dark) are both gated here. `/about` has no primary Button — the
- * regression target is `/support` `data-testid="primary-cta"`.
+ * brand-dark) are both gated here. The regression target is `/support`
+ * `data-testid="primary-cta"`.
  */
 
 const AA_NORMAL_TEXT = 4.5;

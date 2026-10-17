@@ -4,8 +4,9 @@ import { links } from '../config';
 import { getCommunityData } from '../lib/community';
 
 /**
- * The closing section every page ends on (DESIGN.md, "Color rhythm"): the motto
- * and the single ask, in the mockup's layout (Waskar, 10/15/2026).
+ * The closing section every page ends on (DESIGN.md, "Color rhythm"): a
+ * headline and the single ask, in the mockup's layout (Waskar, 10/15/2026).
+ * Each page brings its own copy; Home's is the motto (see Props below).
  *
  * - Background: the brand skyline illustration (Waskar, 10/15/2026), cropped
  *   below its lettering and its small pigeon. The buildings run along the
@@ -22,15 +23,37 @@ import { getCommunityData } from '../lib/community';
  * Page PRs place it as the last element inside <main>, and drop the page's own
  * closing call to action so the page does not ask twice.
  */
-interface Props {
-  /** One or two sentences under the motto. Keep it to the single ask. */
-  lede?: string;
+interface Action {
+  href: string;
+  label: string;
+  /** Opens off-site (Luma), with the external icon. */
+  external?: boolean;
 }
 
-const { lede = "Come to one night. That's the whole ask. We'll take it from there, together." } =
-  Astro.props;
+interface Props {
+  /** One or two sentences under the headline. Keep it to the single ask. */
+  lede?: string;
+  /** The main button (Hot Pink, Book p14). With none passed, the section uses
+   *  the event-aware default below. */
+  primary?: Action;
+  /** The second button (white sticker). */
+  secondary?: Action;
+}
 
-// No RSVP without a real event, the same rule as the header and the Home hero.
+/**
+ * Each mockup page has its own closing copy (Waskar, 10/16/2026). A page
+ * passes its headline in the default slot, plus its lede and buttons. With
+ * nothing passed, the section shows Home's copy: the motto as the headline.
+ */
+const {
+  lede = "Come to one night. That's the whole ask. We'll take it from there, together.",
+  primary,
+  secondary = { href: '/support', label: 'Support the flock' },
+} = Astro.props;
+const hasTitle = Astro.slots.has('default');
+
+// The default main button: no RSVP without a real event, the same rule as the
+// header and the Home hero.
 const { nextEvent } = await getCommunityData();
 ---
 
@@ -60,13 +83,23 @@ const { nextEvent } = await getCommunityData();
   <div class="relative container-custom pt-[clamp(72px,9vw,128px)] pb-[calc(clamp(280px,36vw,520px)-14.2%+48px)] flex flex-wrap items-center gap-[clamp(32px,5vw,72px)]">
     <div class="grow shrink basis-[560px] min-w-0 flex flex-col gap-7">
       <h2 class="m-0 text-[clamp(48px,7vw,104px)] leading-[0.9] tracking-[-0.02em]">
-        A pigeon flies alone. <span class="sticker bg-brand-yellow">A flock</span> goes much
-        further.
+        {hasTitle ? (
+          <slot />
+        ) : (
+          <Fragment>
+            A pigeon flies alone. <span class="sticker bg-brand-yellow">A flock</span> goes much
+            further.
+          </Fragment>
+        )}
       </h2>
       <p class="m-0 max-w-[520px] text-[19px] leading-[1.55] font-semibold">{lede}</p>
       <div class="flex flex-wrap gap-3.5">
         <!-- Book p14: Hot Pink is the main button. -->
-        {nextEvent ? (
+        {primary ? (
+          <Button href={primary.href} external={primary.external} variant="primary" size="lg">
+            {primary.label}
+          </Button>
+        ) : nextEvent ? (
           <Button
             href={nextEvent.url}
             external
@@ -76,17 +109,15 @@ const { nextEvent } = await getCommunityData();
             data-pcv-event-fallback={links.luma}
           >
             <span data-pcv-event-start={nextEvent.start}>RSVP for the next night</span>
-            <span hidden data-pcv-event-after={nextEvent.start}>
-              Get notified
-            </span>
+            <span hidden data-pcv-event-after={nextEvent.start}>Get notified</span>
           </Button>
         ) : (
           <Button href={links.luma} external variant="primary" size="lg">
             Get notified
           </Button>
         )}
-        <Button href="/support" variant="light" size="lg">
-          Support the flock
+        <Button href={secondary.href} external={secondary.external} variant="light" size="lg">
+          {secondary.label}
         </Button>
       </div>
     </div>

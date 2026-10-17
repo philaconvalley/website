@@ -1,0 +1,69 @@
+---
+import { programs } from '../data/programs';
+
+/**
+ * The four program cards and the Stoop line, shared by Home and About so the
+ * two pages never disagree (Waskar, 10/16/2026). Each card is a whole-card
+ * link. Data lives in src/data/programs.ts.
+ */
+interface Props {
+  /**
+   * Show the Cost and Experience lines. Home shows them; About hides them,
+   * because its headline already says "Zero cost" (Waskar, 10/16/2026).
+   */
+  details?: boolean;
+}
+
+const { details = true } = Astro.props;
+---
+
+<div class="flex flex-col gap-8">
+  <ul class="m-0 p-0 list-none grid gap-6 grid-cols-[repeat(auto-fit,minmax(280px,1fr))]">
+    {/* A coming-soon program is not a card: nothing to click yet, so a
+        dashed outline and no shadow. */}
+    {programs.map((program) =>
+      program.comingSoon ? (
+        <li class="rounded-retro border-2 border-dashed border-brand-dark bg-white p-7 flex flex-col gap-4">
+          <span
+            class={`self-start rounded-full border-2 border-brand-dark ${program.tag} px-3 py-[3px] font-black text-xs tracking-[0.14em] uppercase`}
+          >
+            {program.kind}
+          </span>{' '}
+          <h3 class="m-0 normal-case text-[2.5rem] leading-[0.95]">{program.name}</h3>{' '}
+          <p class="m-0 text-base leading-[1.55] text-brand-dark/85">{program.body}</p>
+        </li>
+      ) : (
+        <li class="flex">
+          <a
+            href={program.href}
+            class={`card ${program.fill} text-brand-dark no-underline p-7 flex flex-col gap-4 w-full`}
+          >
+            <span
+              class={`self-start rounded-full border-2 border-brand-dark ${program.tag} px-3 py-[3px] font-black text-xs tracking-[0.14em] uppercase`}
+            >
+              {program.kind}
+            </span>{' '}
+            <h3 class="m-0 normal-case text-[2.5rem] leading-[0.95]">{program.name}</h3>{' '}
+            <p class="m-0 text-base leading-[1.55]">{program.body}</p>{' '}
+            {details && (
+              <p class="mt-auto mb-0 border-t-2 border-brand-dark pt-3.5 flex flex-col gap-1.5 text-sm font-bold">
+                <span>
+                  <strong>Cost:</strong> Free
+                </span>{' '}
+                <span>
+                  <strong>Experience:</strong> None needed
+                </span>
+              </p>
+            )}
+          </a>
+        </li>
+      ),
+    )}
+  </ul>
+  <!-- Stoop is a social mixer, not a program, and has no date yet, so the
+       line names no calendar and has no link (Waskar, 10/16/2026). -->
+  <p class="m-0 text-lg leading-[1.55] text-brand-dark/85" data-testid="stoop-line">
+    <strong class="text-brand-dark">Sometimes we just hang out: Stoop,</strong> our social mixer.
+    Less building, more talking.
+  </p>
+</div>
