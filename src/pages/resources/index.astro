@@ -1,216 +1,211 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import ResourceCard from '../../components/ResourceCard.astro';
-import Button from '../../components/Button.astro';
+import ClosingFlock from '../../components/ClosingFlock.astro';
 import { getCollection } from 'astro:content';
+import { links } from '../../config';
+
+/**
+ * Resources, Edition 1.2 (DESIGN.md, "The 1.2 redesign"). Sections follow
+ * Diego's mockup, with these decisions (Waskar, 10/17/2026):
+ * - Each card uses the guide file's own copy (src/content/resources), the same
+ *   rule as the Arcade. A tag that repeats the level is not shown.
+ * - A filter appears only when it has two or more choices. With one guide,
+ *   neither shows; they appear on their own as guides are added. The old
+ *   search box is gone, as in the mockup.
+ * - "Contribute a resource" goes to the contribution guide on GitHub, and the
+ *   "Your guide here" card says a guide is published after a review.
+ * - Card titles are h2, so the heading order no longer skips from h1 to h3
+ *   (10/2026 polish audit).
+ */
 
 const resources = (await getCollection('resources')).sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime(),
 );
 
-// Get unique categories and levels
 const categories = [...new Set(resources.map((r) => r.data.category))];
 const levels = [...new Set(resources.map((r) => r.data.level))];
+const showCategory = categories.length > 1;
+const showLevel = levels.length > 1;
+const filtered = showCategory || showLevel;
+
+const countLabel = (n: number) => `${n} ${n === 1 ? 'resource' : 'resources'}`;
+
+const cards = resources.map((r) => ({
+  slug: r.id,
+  ...r.data,
+  tags: r.data.tags.filter((tag) => tag.toLowerCase() !== r.data.level.toLowerCase()),
+}));
+
+const guide = `${links.github.website}/blob/main/docs/adding-content.md#adding-a-resource`;
 ---
 
 <BaseLayout
-  title="Learning resources - PhilaCon Valley"
-  description="Free tutorials, workshops, and career resources for learning web development and tech skills."
+  title="Resources — Free tech guides written by the PhilaCon Valley community"
+  description="Free tutorials and walkthroughs for building tech skills, whether you're brand new or leveling up. Every one is free and community-made."
 >
-  <!-- Hero Section -->
-  <section class="bg-brand-coral text-white py-20">
-    <div class="container-custom">
-      <div class="max-w-4xl mx-auto text-center">
-        <h1 class="text-5xl md:text-6xl mb-6">Learning resources</h1>
-        <p class="text-2xl text-white/85">
-          Free tutorials, guides, and resources to level up your tech skills
-        </p>
-        {resources.length > 0 && (
-          <p class="mt-4 text-sm font-display font-bold text-white/50">
-            {resources.length} {resources.length === 1 ? 'resource' : 'resources'} and counting
-          </p>
-        )}
-      </div>
-    </div>
-  </section>
-
-  {resources.length === 0 ? (
-    <section class="section-padding">
-      <div class="container-custom">
-        <div class="max-w-3xl mx-auto text-center">
-          <div class="bg-white rounded-retro border-2 border-brand-dark shadow-retro-lg p-12 md:p-16">
-            <svg
-              class="w-24 h-24 mx-auto mb-6 text-primary-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-              />
-            </svg>
-            <h2 class="text-3xl md:text-4xl mb-4">Resources coming soon</h2>
-            <p class="text-xl text-brand-dark/70 mb-8 leading-relaxed">
-              We're creating free tutorials, guides, and learning materials for the community! Check
-              back soon, or join us to help create and share knowledge.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button href="/events" variant="primary" size="lg">
-                Attend a Workshop
-              </Button>
-              <Button href="/join" variant="light" size="lg">
-                Join the Community
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  ) : (
-    <>
-      <section class="section-padding">
-        <div class="container-custom">
-          <div class="max-w-3xl mx-auto text-center mb-10">
-            <p class="text-xl text-brand-dark/70 leading-relaxed">
-              All resources are free and created by the PhilaCon Valley community. Whether you're
-              just starting out or looking to level up, we've got something for you.
-            </p>
-          </div>
-
-          <div
-            x-data="{
-              searchQuery: '',
-              categoryFilter: 'all',
-              levelFilter: 'all',
-              resources: $el.querySelectorAll('[data-resource]'),
-              filterResources() {
-                this.resources.forEach(resource => {
-                  const matchesSearch = !this.searchQuery ||
-                    resource.dataset.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                    resource.dataset.tags.toLowerCase().includes(this.searchQuery.toLowerCase());
-                  const matchesCategory = this.categoryFilter === 'all' || resource.dataset.category === this.categoryFilter;
-                  const matchesLevel = this.levelFilter === 'all' || resource.dataset.level === this.levelFilter;
-
-                  if (matchesSearch && matchesCategory && matchesLevel) {
-                    resource.style.display = 'block';
-                  } else {
-                    resource.style.display = 'none';
-                  }
-                });
-              }
-            }"
-          >
-            <div class="mb-10 flex flex-col sm:flex-row items-center gap-4 max-w-3xl mx-auto">
-              <div class="relative flex-grow w-full">
-                <input
-                  type="text"
-                  x-model="searchQuery"
-                  @input="filterResources()"
-                  placeholder="Search resources by title or tags..."
-                  class="w-full px-4 py-3 pl-12 border-2 border-brand-dark rounded-[14px] bg-white"
-                />
-                <svg
-                  class="w-5 h-5 text-brand-dark/30 absolute left-4 top-1/2 transform -translate-y-1/2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-              </div>
-
-              <div class="flex gap-3 flex-shrink-0">
-                <select
-                  x-model="categoryFilter"
-                  @change="filterResources()"
-                  class="px-4 py-3 border-2 border-brand-dark rounded-[14px] bg-white font-display font-bold text-sm text-brand-dark"
-                >
-                  <option value="all">All Categories</option>
-                  {categories.map((cat) => (
-                    <option value={cat}>{cat}</option>
-                  ))}
-                </select>
-
-                <select
-                  x-model="levelFilter"
-                  @change="filterResources()"
-                  class="px-4 py-3 border-2 border-brand-dark rounded-[14px] bg-white font-display font-bold text-sm text-brand-dark"
-                >
-                  <option value="all">All Levels</option>
-                  {levels.map((level) => (
-                    <option value={level}>{level}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div
-              x-show="Array.from(resources).some(r => r.style.display !== 'none')"
-              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-            >
-              {resources.map((resource) => (
-                <div
-                  data-resource
-                  data-title={resource.data.title}
-                  data-category={resource.data.category}
-                  data-level={resource.data.level}
-                  data-tags={resource.data.tags.join(' ')}
-                >
-                  <ResourceCard
-                    title={resource.data.title}
-                    description={resource.data.description}
-                    category={resource.data.category}
-                    level={resource.data.level}
-                    author={resource.data.author}
-                    tags={resource.data.tags}
-                    slug={resource.id}
-                  />
-                </div>
-              ))}
-            </div>
-
-            <div
-              x-show="!Array.from(resources).some(r => r.style.display !== 'none')"
-              x-cloak
-              class="text-center py-12"
-            >
-              <p class="text-lg font-display font-bold text-brand-dark/40 mb-2">
-                No resources match your filters
-              </p>
-              <p class="text-sm text-brand-dark/30">Try adjusting your search or filters</p>
-            </div>
-          </div>
-        </div>
-      </section>
-    </>
-  )}
-
-  <!-- Contribute CTA -->
-  <section class="section-padding bg-accent-400 text-brand-dark">
-    <div class="container-custom text-center">
-      <h2 class="text-4xl mb-6">Share your knowledge</h2>
-      <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-        Have expertise to share? Create a tutorial or guide for the community. All contributions are
-        welcome!
+  <!-- Hero: white, as in the mockup. -->
+  <section class="bg-white">
+    <div class="container-custom py-[clamp(56px,8vw,112px)] flex flex-col gap-7">
+      <p class="m-0 self-start pill bg-brand-yellow font-black text-[13px] tracking-[0.16em]">
+        Learning resources
       </p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button href="/contact" variant="secondary" size="lg">
-          {' '}
-          Contribute a resource{' '}
-        </Button>
-        <Button href="/join" variant="light" size="lg">
-          {' '}
-          Join the Community{' '}
-        </Button>
-      </div>
+      <h1 class="m-0 max-w-[900px]">Free guides, written by the flock.</h1>
+      <p class="m-0 max-w-[600px] text-[clamp(18px,1.6vw,22px)] leading-[1.5] font-semibold">
+        Tutorials and walkthroughs for building tech skills, whether you're brand new or leveling
+        up. Every one is free and community-made.
+      </p>
     </div>
   </section>
+
+  <!-- The guides: Golden Yellow, with a dashed card inviting a new one. -->
+  <section class="bg-brand-yellow border-t-2 border-brand-dark">
+    <div
+      class="container-custom py-[clamp(56px,7vw,96px)] flex flex-col gap-10"
+      x-data={
+        filtered
+          ? `{
+            category: 'all',
+            level: 'all',
+            shown: ${resources.length},
+            apply() {
+              let n = 0;
+              this.$root.querySelectorAll('[data-resource]').forEach((card) => {
+                const ok = (this.category === 'all' || card.dataset.category === this.category) &&
+                  (this.level === 'all' || card.dataset.level === this.level);
+                card.hidden = !ok;
+                if (ok) n++;
+              });
+              this.shown = n;
+            }
+          }`
+          : undefined
+      }
+    >
+      <div class="flex flex-wrap items-end gap-4">
+        {showCategory && (
+          <label class="flex flex-col gap-2 font-black text-[13px] tracking-[0.2em] uppercase">
+            Category
+            <select
+              x-model="category"
+              @change="apply()"
+              class="min-h-11 min-w-[200px] px-4 rounded-[14px] border-2 border-brand-dark bg-white font-display font-bold text-sm normal-case tracking-normal text-brand-dark"
+            >
+              <option value="all">All categories</option>
+              {categories.map((c) => (
+                <option value={c}>{c}</option>
+              ))}
+            </select>
+          </label>
+        )}
+        {showLevel && (
+          <label class="flex flex-col gap-2 font-black text-[13px] tracking-[0.2em] uppercase">
+            Level
+            <select
+              x-model="level"
+              @change="apply()"
+              class="min-h-11 min-w-[200px] px-4 rounded-[14px] border-2 border-brand-dark bg-white font-display font-bold text-sm normal-case tracking-normal text-brand-dark"
+            >
+              <option value="all">All levels</option>
+              {levels.map((l) => (
+                <option value={l}>{l}</option>
+              ))}
+            </select>
+          </label>
+        )}
+        <p
+          class="m-0 min-h-11 inline-flex items-center font-black text-sm"
+          aria-live="polite"
+          data-testid="resource-count"
+        >
+          {filtered ? (
+            <span x-text={`shown === 1 ? '1 resource' : shown + ' resources'`}>
+              {countLabel(resources.length)}
+            </span>
+          ) : (
+            countLabel(resources.length)
+          )}
+        </p>
+      </div>
+
+      <ul class="m-0 p-0 list-none grid gap-7 grid-cols-1 lg:grid-cols-3">
+        {cards.map((card) => (
+          <li
+            class:list={[cards.length === 1 && 'lg:col-span-2']}
+            data-resource
+            data-category={card.category}
+            data-level={card.level}
+          >
+            <a
+              href={`/resources/${card.slug}`}
+              class="card h-full !border-brand-dark p-[clamp(24px,3vw,36px)] flex flex-col gap-4 text-brand-dark no-underline"
+              aria-label={`Read the guide: ${card.title} (${card.category}, ${card.level})`}
+            >
+              <p class="m-0 flex flex-wrap gap-2">
+                <span class="pill bg-brand-pink">{card.category}</span>{' '}
+                <span class="pill bg-brand-amber">{card.level}</span>
+              </p>{' '}
+              <h2 class="m-0 text-[clamp(32px,4.4vw,63px)] leading-[0.95]">{card.title}</h2>{' '}
+              <p class="m-0 text-[18px] leading-[1.55]">{card.description}</p>{' '}
+              {card.tags.length > 0 && (
+                <ul class="m-0 p-0 list-none flex flex-wrap gap-2" aria-label="Tags">
+                  {card.tags.map((tag) => (
+                    <li class="pill normal-case tracking-normal text-xs">{tag}</li>
+                  ))}
+                </ul>
+              )}{' '}
+              <div class="mt-auto pt-4 border-t-2 border-brand-dark flex flex-wrap items-center justify-between gap-3">
+                <span class="font-extrabold text-sm tracking-[0.14em] uppercase">
+                  By {card.author}
+                </span>{' '}
+                <span class="font-black text-[17px] underline underline-offset-[5px] decoration-2">
+                  Read the guide
+                </span>
+              </div>
+            </a>
+          </li>
+        ))}
+        <li>
+          <div
+            class="h-full rounded-retro border-2 border-dashed border-brand-dark p-7 flex flex-col justify-center gap-4"
+            data-testid="your-guide-here"
+          >
+            <h2 class="m-0 text-[clamp(28px,2.6vw,36px)] leading-[0.95]">Your guide here.</h2>
+            <p class="m-0 text-[15px] leading-[1.55]">
+              Know something worth teaching? Write it up, and after a quick review we'll publish it
+              for the whole flock.
+            </p>
+            <a
+              href={guide}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="self-start inline-flex items-center min-h-11 font-black text-[15px] text-brand-dark underline underline-offset-[5px] decoration-2"
+            >
+              Contribute a resource
+            </a>
+          </div>
+        </li>
+      </ul>
+
+      {filtered && (
+        <p x-show="shown === 0" x-cloak class="m-0 text-lg font-semibold">
+          No guides match these filters. Choose "All" to see every guide.
+        </p>
+      )}
+
+      {resources.length === 0 && (
+        <p class="m-0 text-lg font-semibold">
+          No guides yet. The first one could be yours: the dashed card shows how to add it.
+        </p>
+      )}
+    </div>
+  </section>
+
+  <!-- The Resources closing, in the mockup's copy. -->
+  <ClosingFlock
+    lede="The best guides come from people who just figured it out. Yours could help the next person in the room."
+    primary={{ href: guide, label: 'Contribute a resource', external: true }}
+    secondary={{ href: '/join', label: 'Join the community' }}
+  >
+    Share what you know.
+  </ClosingFlock>
 </BaseLayout>
