@@ -48,7 +48,8 @@ const rsvpHref = nextEvent?.url ?? links.luma;
 <header class="sticky top-0 z-50 bg-brand-yellow border-b-2 border-brand-dark">
   <nav
     class="container-custom"
-    x-data="{ mobileMenuOpen: false, scrolled: window.scrollY > 8 }"
+    x-data="{ mobileMenuOpen: false, scrolled: window.scrollY > 8, ready: false }"
+    x-init="requestAnimationFrame(() => requestAnimationFrame(() => (ready = true)))"
     @scroll.window.passive="scrolled = window.scrollY > 8"
   >
     <div class="flex items-center justify-between h-[64px] lg:h-[74px]">
@@ -59,7 +60,9 @@ const rsvpHref = nextEvent?.url ?? links.luma;
            the head up from its top-left corner, tilts it, and drops it 8px over
            the edge. Hang is the server-rendered default, so a page that loads at the
            top never moves. Under reduced motion the head stays tucked: no hang, so no
-           state change and no jump on scroll. -->
+           state change and no jump on scroll. A reload partway down the page starts
+           tucked: `ready` keeps the transition off until the first state has painted,
+           so only a real scroll animates (Waskar, 10/16/2026). -->
       <a
         href="/"
         class="flex-shrink-0 flex items-center gap-1 pr-4 rounded-2xl font-display font-extrabold text-xl md:text-2xl lg:text-xl xl:text-2xl leading-none tracking-[-0.01em] text-brand-dark"
@@ -71,12 +74,12 @@ const rsvpHref = nextEvent?.url ?? links.luma;
             width="56"
             height="56"
             class="absolute inset-0 w-full h-full origin-top-left drop-shadow-[3px_3px_0_#1A1A1A] transition-transform duration-[240ms] ease-in-out motion-reduce:transition-none translate-y-2 -rotate-6 scale-[1.36] motion-reduce:!transform-none"
-            :class="{ 'translate-y-2 -rotate-6 scale-[1.36]': !(scrolled || mobileMenuOpen) }"
+            :class="{ 'translate-y-2 -rotate-6 scale-[1.36]': !(scrolled || mobileMenuOpen), '!transition-none': !ready }"
           />
         </span>
         <span
           class="block transition-transform duration-[240ms] ease-in-out motion-reduce:transition-none translate-x-4 motion-reduce:!transform-none"
-          :class="{ 'translate-x-4': !(scrolled || mobileMenuOpen) }"
+          :class="{ 'translate-x-4': !(scrolled || mobileMenuOpen), '!transition-none': !ready }"
         >
           <!-- The official wordmark, unchanged from the brand logo library. Its
                built-in ink outline is what the Book asks for on pink-on-yellow. -->
@@ -102,12 +105,16 @@ const rsvpHref = nextEvent?.url ?? links.luma;
         nav. The `document.fonts.ready` correction below re-measures once the
         real font is in, skipped only while the visitor is already hovering
         (their own mouseenter measurement is already correct by then).
+        `instant` starts true, so the first measurement and this correction
+        snap into place instead of sliding: the pill used to shrink over 200ms
+        on every first visit (Waskar, 10/16/2026). The slide is for following
+        the pointer, so the first mouseenter turns it on.
       -->
       <div class="hidden lg:block">
         <div
           data-testid="desktop-nav"
           class="relative flex items-center space-x-0.5"
-          x-data="{ pos: { left: 0, width: 0 }, instant: false }"
+          x-data="{ pos: { left: 0, width: 0 }, instant: true }"
           x-init="const current = $el.querySelector('[aria-current=page]'); if (current) pos = { left: current.offsetLeft, width: current.offsetWidth }; if (document.fonts) document.fonts.ready.then(() => { if (!$el.matches(':hover')) { const c = $el.querySelector('[aria-current=page]'); if (c) pos = { left: c.offsetLeft, width: c.offsetWidth } } })"
           @mouseleave="instant = false; const current = $el.querySelector('[aria-current=page]'); if (current) pos = { left: current.offsetLeft, width: current.offsetWidth }"
           @focusout="if (!$el.contains($event.relatedTarget)) { instant = true; const current = $el.querySelector('[aria-current=page]'); if (current) pos = { left: current.offsetLeft, width: current.offsetWidth } }"

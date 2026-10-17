@@ -48,6 +48,43 @@ test.describe('desktop nav sliding pill indicator', () => {
     expect(finalStyle).toContain(`width: ${linkMetrics.width}px`);
   });
 
+  test('snaps to the corrected width after the font swap, never slides', async ({ page }) => {
+    // The correction above used to animate: the pill shrank over 200ms on
+    // load, which read as the header "breathing" on every first visit
+    // (Waskar, 10/16/2026). A correction the visitor did not ask for gets no
+    // motion; only pointer moves slide. So every painted width must be either
+    // the first measurement or the final one, with no frames in between.
+    await page.route('**/*.woff2', async (route) => {
+      await page.waitForTimeout(400);
+      await route.continue();
+    });
+    await page.addInitScript(() => {
+      const widths: number[] = [];
+      (window as unknown as { __pillWidths: number[] }).__pillWidths = widths;
+      const start = performance.now();
+      const tick = () => {
+        const pill = document.querySelector('[data-testid="nav-pill"]');
+        const w = pill ? Math.round(pill.getBoundingClientRect().width) : 0;
+        if (w && widths[widths.length - 1] !== w) widths.push(w);
+        if (performance.now() - start < 1500) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+
+    await page.goto('/arcade');
+    await page.mouse.move(10, 800); // keep the pointer off the nav
+    await page.evaluate(() => document.fonts.ready);
+    await page.waitForTimeout(1200);
+
+    const widths = await page.evaluate(
+      () => (window as unknown as { __pillWidths: number[] }).__pillWidths,
+    );
+    const link = page.locator('[data-testid="desktop-nav"] [aria-current="page"]');
+    const final = await link.evaluate((el) => (el as HTMLElement).offsetWidth);
+    expect(widths.at(-1)).toBe(final);
+    expect(widths.length, `pill widths painted: ${widths.join(' → ')}`).toBeLessThanOrEqual(2);
+  });
+
   test('follows keyboard focus, not just mouse hover', async ({ page }) => {
     await page.goto('/');
     const pill = page.locator('[data-testid="nav-pill"]');
@@ -70,6 +107,36 @@ test.describe('desktop nav sliding pill indicator', () => {
     expect(after).toContain(`translateX(${expectedLeft}px)`);
     expect(after).toContain(`width: ${expectedWidth}px`);
   });
+});
+
+test('a reload partway down the page shows the tucked logo at once, without shrinking', async ({
+  page,
+}) => {
+  // The logo hangs over the bar at the top of a page and tucks in once the
+  // visitor scrolls. A reload partway down used to draw the hanging logo and
+  // then shrink it over 240ms (Waskar, 10/16/2026). The first state must snap;
+  // only a real scroll animates.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/arcade');
+  await page.evaluate(() => window.scrollTo(0, 1100));
+  await page.waitForTimeout(400);
+  await page.addInitScript(() => {
+    const seen: string[] = [];
+    (window as unknown as { __logo: string[] }).__logo = seen;
+    const start = performance.now();
+    const tick = () => {
+      const img = document.querySelector('header a[href="/"] img');
+      const t = img ? getComputedStyle(img).transform : '';
+      if (t && seen[seen.length - 1] !== t) seen.push(t);
+      if (performance.now() - start < 1200) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+  await page.reload();
+  await page.waitForTimeout(1400);
+  const seen = await page.evaluate(() => (window as unknown as { __logo: string[] }).__logo);
+  expect(seen.at(-1), 'the logo ends tucked').toBe('none');
+  expect(seen.length, `logo transforms painted: ${seen.length}`).toBeLessThanOrEqual(2);
 });
 
 test.describe('mobile menu sheet', () => {
