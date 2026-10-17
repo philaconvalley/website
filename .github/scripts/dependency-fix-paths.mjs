@@ -64,10 +64,16 @@ function nameFromKey(key) {
   return key.slice(key.lastIndexOf('node_modules/') + 'node_modules/'.length);
 }
 
+// The name comes from the GitHub API, so encode all of it rather than trusting
+// it to be a well-formed npm name. The registry wants a scoped name's leading
+// "@" literal and its "/" encoded: "@scope%2Fname".
 async function registryVersions(pkg) {
-  const res = await fetch(`https://registry.npmjs.org/${pkg.replace('/', '%2f')}`, {
-    headers: { accept: 'application/vnd.npm.install-v1+json' },
-  });
+  const res = await fetch(
+    `https://registry.npmjs.org/${encodeURIComponent(pkg).replace(/^%40/, '@')}`,
+    {
+      headers: { accept: 'application/vnd.npm.install-v1+json' },
+    },
+  );
   if (!res.ok) throw new Error(`npm registry returned ${res.status} for ${pkg}`);
   const doc = await res.json();
   // Prereleases are not a fix anyone should be told to install.
