@@ -119,21 +119,26 @@ test('a recap shares its own cover photo and links the nights around it', async 
 });
 
 // Second Steve Jobs review, 10/18/2026: a photo shows once per page, and
-// Home and Support each show their own row.
-test('no photo repeats on a recap, or between Home and Support', async ({ page }) => {
+// Home, Support and Studio each show their own row.
+test('no photo repeats on a recap, or between Home, Support and Studio', async ({ page }) => {
   const gridSources = () =>
     page
       .getByTestId('photo-grid')
       .locator('img')
       .evaluateAll((imgs) => imgs.map((img) => img.getAttribute('src')));
 
-  await page.goto('/');
-  const home = await gridSources();
-  await page.goto('/support');
-  const support = await gridSources();
-  expect(home.length).toBeGreaterThan(0);
-  expect(support.length).toBeGreaterThan(0);
-  expect(support.filter((src) => home.includes(src))).toEqual([]);
+  // Studio is a 404 until the first client story is approved; it joins the
+  // check once it builds.
+  const seen = new Map<string, string>();
+  for (const route of ['/', '/support', '/studio']) {
+    if ((await page.goto(route))?.status() === 404) continue;
+    const sources = await gridSources();
+    expect(sources.length, route).toBeGreaterThan(0);
+    for (const src of sources) {
+      expect(seen.get(src!), `${src} on ${route}`).toBeUndefined();
+      seen.set(src!, route);
+    }
+  }
 
   const recaps = readdirSync('src/content/events')
     .filter((f) => f.endsWith('.md'))

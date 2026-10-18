@@ -2,8 +2,11 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Button from '../../components/Button.astro';
 import ClosingFlock from '../../components/ClosingFlock.astro';
+import { getCollection } from 'astro:content';
 import PartnerStrip from '../../components/PartnerStrip.astro';
+import PhotoGrid from '../../components/PhotoGrid.astro';
 import StudioProof from '../../components/StudioProof.astro';
+import { getRoomPhotos } from '../../lib/events';
 import { getShowcase, isStudioLive } from '../../lib/showcase';
 
 /**
@@ -24,6 +27,12 @@ import { getShowcase, isStudioLive } from '../../lib/showcase';
  * is the page's argument, so it keeps the full size. The other section
  * headings are quiet.
  *
+ * Steve Jobs review, 10/18/2026:
+ * - "We teach" shows proof from the free nights: four room photos that Home
+ *   and Support do not use, and a link to each recap.
+ * - The closing links the crew only once the crew section is published.
+ *   Until then it links About ("Read our story"), not to an empty section.
+ *
  * Why a rest route: a plain studio.astro always builds. This file builds
  * /studio only when getStaticPaths returns a path, which it does once
  * isStudioLive() is true. Until then /studio is a 404 in every build.
@@ -34,6 +43,14 @@ export async function getStaticPaths() {
 
 const studies = await getShowcase('caseStudies');
 const partners = await getShowcase('partners');
+const team = await getShowcase('team');
+
+// Proof for "We teach": Home shows room photos 1-4 and Support 5-8, so this
+// row starts at 9. The recaps link under it, newest first.
+const teachPhotos = await getRoomPhotos(4, 8);
+const recaps = (await getCollection('events')).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
 
 const offers = [
   {
@@ -120,6 +137,30 @@ const offers = [
           </li>
         ))}
       </ul>
+      {teachPhotos.length > 0 && (
+        <div class="flex flex-col gap-7" data-testid="studio-teach-proof">
+          <div class="flex flex-wrap justify-between items-end gap-6">
+            <p class="m-0 max-w-[620px] text-[clamp(18px,1.6vw,22px)] leading-[1.5] font-semibold">
+              We teach the same way at our free build nights. These photos are from the room.
+            </p>
+            {recaps.length > 0 && (
+              <ul class="m-0 p-0 list-none flex flex-wrap gap-x-6 gap-y-2">
+                {recaps.map((recap) => (
+                  <li>
+                    <a
+                      href={`/events/${recap.id}`}
+                      class="inline-flex items-center min-h-11 font-black text-[17px] text-brand-dark underline underline-offset-[6px] decoration-[3px]"
+                    >
+                      {recap.data.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <PhotoGrid photos={teachPhotos} />
+        </div>
+      )}
     </div>
   </section>
 
@@ -150,7 +191,11 @@ const offers = [
   <ClosingFlock
     lede="Tell us what you need. We'll tell you straight if we're the right fit."
     primary={{ href: '/contact', label: 'Start a project' }}
-    secondary={{ href: '/about', label: 'Meet the crew' }}
+    secondary={
+      team.length > 0
+        ? { href: '/about#crew', label: 'Meet the crew' }
+        : { href: '/about', label: 'Read our story' }
+    }
   >
     Let's build it together.
   </ClosingFlock>
