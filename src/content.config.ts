@@ -130,6 +130,101 @@ const arcade = defineCollection({
   }),
 });
 
+/**
+ * The three collections below show people and organizations who must say yes
+ * before they appear: the team, partners, and client case studies (Diego's
+ * site feedback, 10/17/2026). Each entry starts as `draft` and the site hides
+ * it until someone flips `status`. The schemas refuse a live entry that is
+ * missing what it needs (a photo, a logo, a record of the yes), so a
+ * half-filled card fails the build instead of shipping.
+ *
+ * This repo is public. A draft file is visible on GitHub even though the site
+ * hides it, so a partner or client draft that names someone before they agree
+ * belongs in a `preview-*` file, which .gitignore keeps on your machine.
+ * Copy the `_example` file in each folder to start one.
+ */
+
+// Who said yes, when, and how. Kept short on purpose: the full record lives in
+// the org's files, not in a public repo. Example: "Email, 2026-10-20".
+const approval = z.object({
+  date: z.date(),
+  source: z.string(),
+});
+
+const team = defineCollection({
+  loader: glob({ pattern: '**/[^_]*.{yaml,yml}', base: './src/content/team' }),
+  schema: z
+    .object({
+      name: z.string(),
+      title: z.string(),
+      bio: z.string().optional(),
+      photo: z.string().optional(),
+      photoAlt: z.string().optional(),
+      // Lower numbers come first.
+      order: z.number().default(100),
+      status: z.enum(['draft', 'published']).default('draft'),
+    })
+    .refine((m) => m.status === 'draft' || (m.photo && m.photoAlt && m.bio), {
+      message: 'A published team member needs photo, photoAlt, and bio.',
+    }),
+});
+
+const partners = defineCollection({
+  loader: glob({ pattern: '**/[^_]*.{yaml,yml}', base: './src/content/partners' }),
+  schema: z
+    .object({
+      name: z.string(),
+      // What the partner does with us, in a few words: "Venue partner".
+      role: z.string(),
+      url: z.url().optional(),
+      logo: z.string().optional(),
+      order: z.number().default(100),
+      status: z.enum(['draft', 'approved']).default('draft'),
+      approval: approval.optional(),
+    })
+    .refine((p) => p.status === 'draft' || (p.logo && p.approval), {
+      message: 'An approved partner needs a logo and an approval record.',
+    }),
+});
+
+// One image of a client's site, with its alt text. Alt is required: a
+// screenshot is the proof on /studio, and a screen reader user needs it too.
+const shot = z.object({ image: z.string(), alt: z.string() });
+
+/**
+ * Client work on /studio (Waskar, 10/18/2026). No essay: each entry is the
+ * proof a buyer needs at a glance. The client's site, before and after; the
+ * client's own words; and what the project paid for. The page that sells is
+ * the client's live site, so `liveUrl` links straight to it.
+ */
+const caseStudies = defineCollection({
+  loader: glob({ pattern: '**/[^_]*.{yaml,yml}', base: './src/content/case-studies' }),
+  schema: z
+    .object({
+      client: z.string(),
+      // Which of the two studio offers this proves: we build, or we teach.
+      offer: z.enum(['build', 'teach']),
+      // One sentence about what changed for the client, in plain words.
+      line: z.string(),
+      date: z.date(),
+      liveUrl: z.url().optional(),
+      before: shot.optional(),
+      after: shot.optional(),
+      testimonial: z.object({ quote: z.string(), name: z.string(), role: z.string() }).optional(),
+      // Free build nights this project paid for. Only a real, counted number:
+      // the page says it to funders, so it must survive a question.
+      nightsFunded: z.number().int().positive().optional(),
+      status: z.enum(['draft', 'approved']).default('draft'),
+      approval: approval.optional(),
+    })
+    .refine((c) => c.status === 'draft' || c.approval, {
+      message: 'An approved case study needs an approval record.',
+    })
+    .refine((c) => c.status === 'draft' || c.after || c.testimonial, {
+      message: 'An approved case study needs an after image or a testimonial to show.',
+    }),
+});
+
 export const collections = {
   projects,
   resources,
@@ -137,4 +232,7 @@ export const collections = {
   events,
   gallery,
   arcade,
+  team,
+  partners,
+  caseStudies,
 };

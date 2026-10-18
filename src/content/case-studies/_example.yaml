@@ -1,0 +1,26 @@
+# Copy this file to preview-<client>.yaml to draft a client story for
+# /studio. .gitignore keeps preview-* files off GitHub until the client
+# approves. Once they say yes in writing, rename it to <client>.yaml, set
+# status to approved, and fill in approval.
+client: Example Client
+offer: build # build or teach
+line: One sentence about what changed for them, in plain words.
+date: 2026-09-22
+liveUrl: https://example.org
+# Screenshots: 1600px wide WebP in public/images/studio/.
+# before:
+#   image: /images/studio/example-before.webp
+#   alt: The old Example homepage, a long page of grey text
+# after:
+#   image: /images/studio/example-after.webp
+#   alt: The new Example homepage, with a Request services button up top
+# testimonial:
+#   quote: A few words from the client, in their own voice.
+#   name: First Last
+#   role: Title, Example Client
+# Only a real, counted number. Leave it out if you are not sure.
+# nightsFunded: 4
+status: draft
+# approval:
+#   date: 2026-10-20
+#   source: Email from the client

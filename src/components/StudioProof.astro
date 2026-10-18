@@ -1,0 +1,95 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Button from './Button.astro';
+import DraftBadge from './DraftBadge.astro';
+import { isLive } from '../lib/showcase';
+
+/**
+ * One client, shown as proof on /studio (Waskar, 10/18/2026): their site
+ * before and after, their own words, a link to the live site, and the free
+ * nights the project paid for. No essay; the client's site does the selling.
+ * Data lives in src/content/case-studies/.
+ */
+interface Props {
+  study: CollectionEntry<'caseStudies'>;
+}
+
+const { study } = Astro.props;
+const { client, offer, line, liveUrl, before, after, testimonial, nightsFunded } = study.data;
+const shots = [
+  { label: 'Before', shot: before },
+  { label: 'After', shot: after },
+].filter((s) => s.shot || !isLive(study));
+---
+
+<article
+  class="rounded-[28px] border-2 border-brand-dark bg-white shadow-[8px_8px_0_theme(colors.brand.dark)] p-[clamp(24px,4vw,48px)] flex flex-col gap-8"
+  data-testid="studio-proof"
+>
+  <header class="flex flex-col gap-4">
+    {!isLive(study) && <DraftBadge />}
+    <p class="m-0 flex flex-wrap items-center gap-3">
+      <span class="font-extrabold text-[13px] tracking-[0.16em] uppercase">{client}</span>
+      <span class="rounded-full border-2 border-brand-dark bg-brand-yellow px-3 py-[3px] font-black text-xs tracking-[0.14em] uppercase">
+        {offer === 'build' ? 'We built' : 'We taught'}
+      </span>
+    </p>
+    <h3 class="m-0 normal-case text-[clamp(28px,3.2vw,44px)] leading-[1.05] max-w-[900px]">
+      {line}
+    </h3>
+  </header>
+
+  {shots.length > 0 && (
+    <div class="grid gap-5 grid-cols-[repeat(auto-fit,minmax(min(320px,100%),1fr))]">
+      {shots.map(({ label, shot }) => (
+        <figure class="m-0 flex flex-col gap-3">
+          {shot ? (
+            <img
+              src={shot.image}
+              alt={shot.alt}
+              loading="lazy"
+              decoding="async"
+              class="block w-full aspect-[16/10] object-cover object-top rounded-[16px] border-2 border-brand-dark bg-brand-dark/5"
+            />
+          ) : (
+            <div
+              class="w-full aspect-[16/10] rounded-[16px] border-2 border-dashed border-brand-dark flex items-center justify-center font-bold text-brand-dark/60"
+              aria-hidden="true"
+            >
+              {label} screenshot goes here
+            </div>
+          )}
+          <figcaption class="font-black text-[13px] tracking-[0.16em] uppercase">
+            {label}
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  )}
+
+  {testimonial && (
+    <figure class="m-0 border-l-[6px] border-brand-pink pl-6 flex flex-col gap-3">
+      <blockquote class="m-0 font-display font-extrabold text-[clamp(24px,2.6vw,34px)] leading-[1.2]">
+        “{testimonial.quote}”
+      </blockquote>
+      <figcaption class="font-extrabold text-[13px] tracking-[0.16em] uppercase">
+        {testimonial.name}, {testimonial.role}
+      </figcaption>
+    </figure>
+  )}
+
+  {(liveUrl || nightsFunded) && (
+    <footer class="flex flex-wrap items-center gap-x-6 gap-y-4 border-t-2 border-brand-dark pt-6">
+      {liveUrl && (
+        <Button href={liveUrl} external variant="light">
+          See their site
+        </Button>
+      )}
+      {nightsFunded && (
+        <p class="m-0 font-black text-[16px]" data-testid="nights-funded">
+          This project paid for {nightsFunded} free build {nightsFunded === 1 ? 'night' : 'nights'}.
+        </p>
+      )}
+    </footer>
+  )}
+</article>

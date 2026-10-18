@@ -4,7 +4,7 @@ import { links } from '../src/config';
 /**
  * Support, Edition 1.2. The page's facts must hold:
  * - every donate button goes to the live Open Collective page;
- * - "Start a project" (the agency) goes to /contact;
+ * - the agency card sends buyers to /studio once it is live, /contact before;
  * - "Other ways to help" lands on its section, and each way has a real link;
  * - the venue is named Pennovation Center, the building, not the campus;
  * - the page ends on its own closing copy.
@@ -23,11 +23,13 @@ test('every donate button goes to Open Collective', async ({ page }) => {
   }
 });
 
-test('"Start a project" goes to the contact page', async ({ page }) => {
+test('the agency card goes to the studio page once it is live, or to contact', async ({ page }) => {
+  const studioLive = (await page.goto('/studio'))?.status() === 200;
   await page.goto('/support');
   await expect(page.getByRole('heading', { name: 'Hire us. Fund the flock.' })).toBeVisible();
-  await expect(page.getByTestId('primary-cta')).toHaveText('Start a project');
-  await expect(page.getByTestId('primary-cta')).toHaveAttribute('href', '/contact');
+  const cta = page.getByTestId('primary-cta');
+  await expect(cta).toHaveText(studioLive ? 'See the studio' : 'Start a project');
+  await expect(cta).toHaveAttribute('href', studioLive ? '/studio' : '/contact');
 });
 
 test('"Other ways to help" lands on four real ways', async ({ page }) => {

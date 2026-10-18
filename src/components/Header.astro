@@ -1,6 +1,7 @@
 ---
 import { getCommunityData, formatEventDate } from '../lib/community';
 import { links } from '../config';
+import { isStudioLive } from '../lib/showcase';
 
 /**
  * The redesign shows a three-link nav (Community / Studio / Stories). That is an
@@ -17,9 +18,14 @@ const navItems = [
   // Blog is hidden until an editorial procedure exists — see src/pages/_blog/.
   // { name: 'Blog', href: '/blog' },
   { name: 'Join', href: '/join' },
+  // Shown only once /studio has approved client proof (src/lib/showcase.ts).
+  ...((await isStudioLive()) ? [{ name: 'Studio', href: '/studio' }] : []),
   { name: 'Support', href: '/support' },
   { name: 'Contact', href: '/contact' },
 ];
+// Nine links do not fit at 1024px at the usual size: they touched the logo
+// and the button (10/18/2026). Below xl, a full nav gets tighter links.
+const tight = navItems.length > 8;
 
 const currentPath = Astro.url.pathname;
 
@@ -148,7 +154,10 @@ const rsvpHref = nextEvent?.url ?? links.luma;
                 aria-current={isCurrent ? 'page' : undefined}
                 @mouseenter="instant = false; pos = { left: $el.offsetLeft, width: $el.offsetWidth }"
                 @focus="instant = true; pos = { left: $el.offsetLeft, width: $el.offsetWidth }"
-                class="relative z-10 px-2 xl:px-2.5 py-1.5 rounded-full text-[15px] xl:text-base font-display font-extrabold text-brand-dark"
+                class:list={[
+                  'relative z-10 xl:px-2.5 py-1.5 rounded-full xl:text-base font-display font-extrabold text-brand-dark',
+                  tight ? 'px-1.5 text-[14px]' : 'px-2 text-[15px]',
+                ]}
               >
                 {item.name}
               </a>

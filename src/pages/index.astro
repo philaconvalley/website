@@ -8,6 +8,7 @@ import { community, links } from '../config';
 import { getCollection } from 'astro:content';
 import { labNight } from '../data/lab-night';
 import ProgramCards from '../components/ProgramCards.astro';
+import { getHireLink } from '../lib/showcase';
 
 const { nextEvent, nightsHeld, thingsShipped } = await getCommunityData();
 
@@ -64,6 +65,9 @@ const nightCards = labNight.map((step, i, all) => {
 
 // The mockup's "Four ways in", its copy and links exactly (Waskar, 10/15/2026).
 // Each whole card is one link to a page on this site.
+// /studio once it has proof, /contact until then (src/lib/showcase.ts).
+const hire = await getHireLink();
+
 const waysIn = [
   {
     title: 'Come to a night.',
@@ -92,8 +96,8 @@ const waysIn = [
     // (Waskar, 10/17/2026).
     title: 'Hire us. Fund the flock.',
     body: 'We design and build sites, apps and software for Philly nonprofits and community orgs. Your project pays for the free nights.',
-    cta: 'Start a project',
-    href: '/contact',
+    cta: hire.label,
+    href: hire.href,
     fill: 'bg-brand-coral',
   },
 ];

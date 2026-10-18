@@ -1,0 +1,153 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Button from '../../components/Button.astro';
+import ClosingFlock from '../../components/ClosingFlock.astro';
+import PartnerStrip from '../../components/PartnerStrip.astro';
+import StudioProof from '../../components/StudioProof.astro';
+import { getShowcase, isStudioLive } from '../../lib/showcase';
+
+/**
+ * Studio: the page for organizations that want to hire PhilaCon Valley
+ * (Waskar, 10/18/2026). Support is for people who want to give; this page is
+ * for people with a budget. Diego's redesign nav already names it.
+ *
+ * It sells like a product launch, not an agency brochure. The buyer is a
+ * nonprofit with no tech staff, afraid of a site nobody can update after the
+ * vendor leaves. So the page leads with that promise ("run by you"), shows
+ * proof in the client's own hands and words, and asks for one thing.
+ *
+ * Client proof and partner logos appear only after each one approves
+ * (src/lib/showcase.ts). The whole page waits for the first approved client
+ * story: without proof it is only claims (Waskar, 10/18/2026).
+ *
+ * Why a rest route: a plain studio.astro always builds. This file builds
+ * /studio only when getStaticPaths returns a path, which it does once
+ * isStudioLive() is true. Until then /studio is a 404 in every build.
+ */
+export async function getStaticPaths() {
+  return (await isStudioLive()) ? [{ params: { page: undefined } }] : [];
+}
+
+const studies = await getShowcase('caseStudies');
+const partners = await getShowcase('partners');
+
+const offers = [
+  {
+    kind: 'We build',
+    title: 'Sites and tools you run yourself.',
+    line: 'Websites, apps and intake forms for Philly nonprofits and community orgs. We train your team before we hand over the keys.',
+    fill: 'bg-white',
+  },
+  {
+    kind: 'We teach',
+    title: 'Workshops where people build.',
+    line: 'Hands-on sessions for your staff, members or students. Everyone leaves with something they made, not just slides.',
+    fill: 'bg-brand-yellow',
+  },
+];
+---
+
+<BaseLayout
+  title="Studio — Built with you, run by you"
+  description="PhilaCon Valley builds sites and tools that Philly nonprofits run themselves, and teaches hands-on workshops. Every project pays for free build nights."
+>
+  <!-- Hero: the promise first. The fear it answers: being stuck with a site
+       nobody can update. -->
+  <section class="bg-brand-purple">
+    <div class="container-custom py-[clamp(56px,8vw,112px)] flex flex-wrap gap-10 items-end justify-between">
+      <div class="grow shrink basis-[640px] min-w-0 flex flex-col gap-7">
+        <p class="m-0 self-start pill font-black text-[13px] tracking-[0.16em]">PhilaCon Studio</p>
+        <h1 class="m-0 [text-wrap:balance]">Built with you. Run by you.</h1>
+        <p class="m-0 max-w-[620px] text-[clamp(18px,1.6vw,22px)] leading-[1.5] font-semibold">
+          We design and build for Philly nonprofits and community orgs. When we hand it over, your
+          team knows how to run it.
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-3.5">
+        <Button href="/contact" variant="primary" size="lg" data-testid="studio-cta">
+          Start a project
+        </Button>
+        {studies.length > 0 && (
+          <Button href="#work" variant="light" size="lg">
+            See the work
+          </Button>
+        )}
+      </div>
+    </div>
+  </section>
+
+  {/* The proof: each client the way a buyer needs to see them. */}
+  {studies.length > 0 && (
+    <section id="work" class="bg-white border-t-2 border-brand-dark">
+      <div class="container-custom py-[clamp(72px,9vw,120px)] flex flex-col gap-12">
+        <div class="flex flex-col gap-[22px] max-w-[760px]">
+          <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">The work</p>
+          <h2 class="m-0 [text-wrap:balance]">Don't take our word for it.</h2>
+        </div>
+        <div class="flex flex-col gap-10">
+          {studies.map((study) => (
+            <StudioProof study={study} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- The two offers, one line each. -->
+  <section class="bg-brand-coral border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,120px)] flex flex-col gap-12">
+      <div class="flex flex-col gap-[22px] max-w-[760px]">
+        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">What we do</p>
+        <h2 class="m-0 [text-wrap:balance]">Two ways to work with us.</h2>
+      </div>
+      <ul class="m-0 p-0 list-none grid gap-7 grid-cols-[repeat(auto-fit,minmax(min(320px,100%),1fr))]">
+        {offers.map((offer) => (
+          <li
+            class:list={[
+              'rounded-[28px] border-2 border-brand-dark p-[clamp(28px,4vw,48px)] flex flex-col gap-5 shadow-[8px_8px_0_theme(colors.brand.dark)]',
+              offer.fill,
+            ]}
+          >
+            <span class="self-start rounded-full border-2 border-brand-dark bg-white px-3 py-[3px] font-black text-xs tracking-[0.14em] uppercase">
+              {offer.kind}
+            </span>
+            <h3 class="m-0 text-[clamp(32px,3.6vw,48px)] leading-[0.95]">{offer.title}</h3>
+            <p class="m-0 text-[18px] leading-[1.55]">{offer.line}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  {partners.length > 0 && (
+    <section class="bg-white border-t-2 border-brand-dark">
+      <div class="container-custom py-[clamp(72px,9vw,120px)] flex flex-col gap-12">
+        <div class="flex flex-col gap-[22px] max-w-[760px]">
+          <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">Who we build with</p>
+          <h2 class="m-0">Our partners.</h2>
+        </div>
+        <PartnerStrip partners={partners} />
+      </div>
+    </section>
+  )}
+
+  <!-- Why it matters: the one thing no other studio can say. -->
+  <section class="bg-brand-yellow border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,120px)] flex flex-col gap-7">
+      <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">Why it matters</p>
+      <h2 class="m-0 max-w-[900px] [text-wrap:balance]">Your budget does good twice.</h2>
+      <p class="m-0 max-w-[680px] text-[clamp(18px,1.6vw,22px)] leading-[1.5] font-semibold">
+        Every project pays for PhilaCon Valley's free build nights. You get the work. Philly gets
+        another night where anyone can learn to build, at no cost.
+      </p>
+    </div>
+  </section>
+
+  <ClosingFlock
+    lede="Tell us what you need. We'll tell you straight if we're the right fit."
+    primary={{ href: '/contact', label: 'Start a project' }}
+    secondary={{ href: '/about', label: 'Meet the crew' }}
+  >
+    Let's build it together.
+  </ClosingFlock>
+</BaseLayout>

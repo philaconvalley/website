@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Button from '../components/Button.astro';
 import ClosingFlock from '../components/ClosingFlock.astro';
 import { links } from '../config';
+import { getHireLink } from '../lib/showcase';
 
 /**
  * Support, Edition 1.2 (DESIGN.md, "The 1.2 redesign"). Sections follow
@@ -15,6 +16,9 @@ import { links } from '../config';
  * flock." (Waskar, 10/17/2026); the mockup's "Paid work that pays for it."
  * read as a riddle.
  */
+
+// /studio once it has proof, /contact until then (src/lib/showcase.ts).
+const hire = await getHireLink();
 
 const uses = [
   {
@@ -165,8 +169,9 @@ const ways = [
           Your project pays for the free nights.
         </p>
         <div class="mt-auto pt-2">
-          <Button href="/contact" variant="primary" size="lg" data-testid="primary-cta">
-            Start a project
+          <!-- Support is for giving; /studio is for buyers (Waskar, 10/18/2026). -->
+          <Button href={hire.href} variant="primary" size="lg" data-testid="primary-cta">
+            {hire.label}
           </Button>
         </div>
       </div>
