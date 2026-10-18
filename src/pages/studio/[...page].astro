@@ -30,6 +30,8 @@ import { getShowcase, isStudioLive } from '../../lib/showcase';
  * Steve Jobs review, 10/18/2026:
  * - "We teach" shows proof from the free nights: four room photos that Home
  *   and Support do not use, and a link to each recap.
+ * - "How it works" shows the three steps of a build project. Each one comes
+ *   from the DSM215 record (see `steps`).
  * - The closing links the crew only once the crew section is published.
  *   Until then it links About ("Read our story"), not to an empty section.
  *
@@ -51,6 +53,27 @@ const teachPhotos = await getRoomPhotos(4, 8);
 const recaps = (await getCollection('events')).sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime(),
 );
+
+// How a build project runs, from the first client's record (DSM215,
+// confirmed by Waskar 10/18/2026). Parts approved in writing: the agreement,
+// quoted in the 10/02/2026 sign-off email. The walkthrough where the client
+// made their own edit, and the handbook with numbered steps and screenshots:
+// the same email. Do not add a warranty or maintenance term here; those are
+// set per contract.
+const steps = [
+  {
+    title: 'We listen.',
+    line: 'We start with what your team needs and who will run it after we leave.',
+  },
+  {
+    title: 'We build.',
+    line: 'We build in parts. You approve each part in writing before we call it done.',
+  },
+  {
+    title: 'We hand it over.',
+    line: 'Your team makes its own edits in a walkthrough with us. You keep a handbook with every step and a screenshot of where to click.',
+  },
+];
 
 const offers = [
   {
@@ -175,6 +198,38 @@ const offers = [
       </div>
     </section>
   )}
+
+  <!-- How it works: the promise "run by you" in three steps. The last step
+       is the proof of the promise, so it gets the pink fill. -->
+  <section class="bg-brand-dark text-white border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,120px)] flex flex-col gap-12">
+      <div class="flex flex-col gap-[22px] max-w-[760px]">
+        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">How it works</p>
+        <h2 class="m-0 heading-quiet [text-wrap:balance]">
+          Three steps. Then it's <span class="text-brand-yellow">yours.</span>
+        </h2>
+      </div>
+      <ol
+        class="m-0 p-0 list-none grid gap-6 grid-cols-[repeat(auto-fit,minmax(min(280px,100%),1fr))]"
+        data-testid="studio-steps"
+      >
+        {steps.map((step, i) => (
+          <li
+            class:list={[
+              'rounded-[28px] border-2 border-brand-dark p-[clamp(24px,3vw,36px)] flex flex-col gap-4 text-brand-dark',
+              i === steps.length - 1 ? 'bg-brand-pink' : 'bg-white',
+            ]}
+          >
+            <span class="font-display font-extrabold text-[32px] leading-none" aria-hidden="true">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <h3 class="m-0 text-[clamp(26px,2.4vw,34px)] leading-none">{step.title}</h3>
+            <p class="m-0 text-[17px] leading-[1.55]">{step.line}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
 
   <!-- Why it matters: the one thing no other studio can say. -->
   <section class="bg-brand-yellow border-t-2 border-brand-dark">
