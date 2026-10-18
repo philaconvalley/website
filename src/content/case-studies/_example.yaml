@@ -3,7 +3,7 @@
 # approves. Once they say yes in writing, rename it to <client>.yaml, set
 # status to approved, and fill in approval.
 client: Example Client
-offer: build # build or teach
+offer: build # build, teach or host
 line: One sentence about what changed for them, in plain words.
 date: 2026-09-22
 liveUrl: https://example.org

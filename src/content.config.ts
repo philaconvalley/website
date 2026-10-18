@@ -208,8 +208,10 @@ const caseStudies = defineCollection({
   schema: z
     .object({
       client: z.string(),
-      // Which of the two studio offers this proves: we build, or we teach.
-      offer: z.enum(['build', 'teach']),
+      // Which studio offer this proves: we build (sites, apps, tools), we teach
+      // (workshops, trainings, series), or we host (events and activations;
+      // added 10/18/2026).
+      offer: z.enum(['build', 'teach', 'host']),
       // One sentence about what changed for the client, in plain words.
       line: z.string(),
       date: z.date(),

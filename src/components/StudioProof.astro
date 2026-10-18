@@ -31,7 +31,7 @@ const shots = [
     <p class="m-0 flex flex-wrap items-center gap-3">
       <span class="font-extrabold text-[13px] tracking-[0.16em] uppercase">{client}</span>
       <span class="rounded-full border-2 border-brand-dark bg-brand-yellow px-3 py-[3px] font-black text-xs tracking-[0.14em] uppercase">
-        {offer === 'build' ? 'We built' : 'We taught'}
+        {{ build: 'We built', teach: 'We taught', host: 'We hosted' }[offer]}
       </span>
     </p>
     <h3 class="m-0 normal-case text-[clamp(28px,3.2vw,44px)] leading-[1.05] max-w-[900px]">

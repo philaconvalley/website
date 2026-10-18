@@ -28,7 +28,10 @@ import { getShowcase, isStudioLive } from '../../lib/showcase';
  * headings are quiet.
  *
  * Steve Jobs review, 10/18/2026:
- * - "We teach" shows proof from the free nights: four room photos that Home
+ * - A third offer, "We host", for events and activations (Waskar,
+ *   10/18/2026). The heading says three ways.
+ * - "We teach" and "We host" share proof from the free nights: four room
+ *   photos that Home
  *   and Support do not use, and a link to each recap.
  * - "How it works" shows the three steps of a build project. Each one comes
  *   from the DSM215 record (see `steps`).
@@ -47,7 +50,7 @@ const studies = await getShowcase('caseStudies');
 const partners = await getShowcase('partners');
 const team = await getShowcase('team');
 
-// Proof for "We teach": Home shows room photos 1-4 and Support 5-8, so this
+// Proof for "We teach" and "We host": Home shows room photos 1-4 and Support 5-8, so this
 // row starts at 9. The recaps link under it, newest first.
 const teachPhotos = await getRoomPhotos(4, 8);
 const recaps = (await getCollection('events')).sort(
@@ -92,12 +95,18 @@ const offers = [
     line: 'Hands-on sessions for your staff, members or students. Everyone leaves with something they made, not just slides.',
     fill: 'bg-brand-yellow',
   },
+  {
+    kind: 'We host',
+    title: 'Events where guests make something.',
+    line: 'Build nights and activations for your conference, launch or community. Your guests make something together, not just swap cards.',
+    fill: 'bg-brand-purple',
+  },
 ];
 ---
 
 <BaseLayout
   title="Studio — Built with you, run by you"
-  description="PhilaCon Valley builds sites and tools that Philly nonprofits run themselves, and teaches hands-on workshops. Every project pays for free build nights."
+  description="PhilaCon Valley builds sites and tools that Philly nonprofits run themselves, and teaches hands-on workshops, and hosts events where guests build. Every project pays for free build nights."
 >
   <!-- Hero: the promise first. The fear it answers: being stuck with a site
        nobody can update. -->
@@ -146,7 +155,7 @@ const offers = [
     <div class="container-custom py-[clamp(72px,9vw,120px)] flex flex-col gap-12">
       <div class="flex flex-col gap-[22px] max-w-[760px]">
         <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">What we do</p>
-        <h2 class="m-0 heading-quiet [text-wrap:balance]">Two ways to work with us.</h2>
+        <h2 class="m-0 heading-quiet [text-wrap:balance]">Three ways to work with us.</h2>
       </div>
       <ul class="m-0 p-0 list-none grid gap-7 grid-cols-[repeat(auto-fit,minmax(min(320px,100%),1fr))]">
         {offers.map((offer) => (
@@ -159,7 +168,9 @@ const offers = [
             <span class="self-start rounded-full border-2 border-brand-dark bg-white px-3 py-[3px] font-black text-xs tracking-[0.14em] uppercase">
               {offer.kind}
             </span>
-            <h3 class="m-0 text-[clamp(32px,3.6vw,48px)] leading-[0.95]">{offer.title}</h3>
+            <h3 class="m-0 text-[clamp(28px,2.6vw,38px)] leading-[0.95] [text-wrap:balance]">
+              {offer.title}
+            </h3>
             <p class="m-0 text-[18px] leading-[1.55]">{offer.line}</p>
           </li>
         ))}
@@ -168,7 +179,8 @@ const offers = [
         <div class="flex flex-col gap-7" data-testid="studio-teach-proof">
           <div class="flex flex-wrap justify-between items-end gap-6">
             <p class="m-0 max-w-[620px] text-[clamp(18px,1.6vw,22px)] leading-[1.5] font-semibold">
-              We teach the same way at our free build nights. These photos are from the room.
+              Our free build nights are where we practice teaching and hosting. These photos are
+              from the room.
             </p>
             {recaps.length > 0 && (
               <ul class="m-0 p-0 list-none flex flex-wrap gap-x-6 gap-y-2">
@@ -208,7 +220,7 @@ const offers = [
   <section class="bg-brand-dark text-white border-t-2 border-brand-dark">
     <div class="container-custom py-[clamp(72px,9vw,120px)] flex flex-col gap-12">
       <div class="flex flex-col gap-[22px] max-w-[760px]">
-        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">How it works</p>
+        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">How a build works</p>
         <h2 class="m-0 heading-quiet [text-wrap:balance]">
           Three steps. Then it's <span class="text-brand-yellow">yours.</span>
         </h2>
