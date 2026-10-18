@@ -8,7 +8,8 @@ import { readdirSync } from 'node:fs';
  * - the program cards live on Events only;
  * - the night timeline lives on Home only;
  * - the first-PR walkthrough lives on Projects only;
- * - every recap photo has its own caption, not the event title.
+ * - every recap photo has its own caption, not the event title;
+ * - each page has at most one loud section heading (audit item 8).
  */
 
 const MOTTO = 'A pigeon flies alone';
@@ -74,4 +75,71 @@ test('with no night posted, Events opens on recent nights, above the empty state
   const recent = await page.getByTestId('recent-nights').boundingBox();
   const empty = await page.getByTestId('between-nights').boundingBox();
   expect(recent!.y).toBeLessThan(empty!.y);
+});
+
+// One loud moment per page (audit item 8). A section h2 at the base size is
+// loud; heading-quiet and the sized card headings are not. The closing is
+// left out: it has its own scale (ClosingFlock.astro), and on Home it is the
+// motto. Measured at 1440px, where the base h2 is 80px and heading-quiet is
+// 53px, so 70px separates them with room to spare.
+test('each page has at most one loud section heading', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const route of PAGES) {
+    await page.goto(route);
+    const loud = await page.locator('main h2').evaluateAll((headings) =>
+      headings
+        .filter((h) => !h.closest('[data-testid="closing-flock"]'))
+        .filter((h) => parseFloat(getComputedStyle(h).fontSize) >= 70)
+        .map((h) => h.textContent!.replace(/\s+/g, ' ').trim()),
+    );
+    expect(loud.length, `${route} has loud headings: ${loud.join(' | ')}`).toBeLessThanOrEqual(1);
+  }
+});
+
+test('a recap shares its own cover photo and links the nights around it', async ({ page }) => {
+  const recaps = readdirSync('src/content/events')
+    .filter((f) => f.endsWith('.md'))
+    .map((f) => f.replace(/\.md$/, ''));
+  for (const recap of recaps) {
+    await page.goto(`/events/${recap}`);
+    const share = await page.locator('meta[property="og:image"]').getAttribute('content');
+    expect(share, recap).toContain(`/images/gallery/${recap}/`);
+    await expect(page.locator('meta[property="og:type"]')).toHaveAttribute('content', 'article');
+    if (recaps.length > 1) {
+      const links = page.getByTestId('recap-nav').locator('a[rel="prev"], a[rel="next"]');
+      expect(await links.count(), recap).toBeGreaterThan(0);
+      for (const href of await links.evaluateAll((as) => as.map((a) => a.getAttribute('href')))) {
+        expect(href).not.toBe(`/events/${recap}`);
+      }
+    }
+  }
+});
+
+// Second Steve Jobs review, 10/18/2026: a photo shows once per page, and
+// Home and Support each show their own row.
+test('no photo repeats on a recap, or between Home and Support', async ({ page }) => {
+  const gridSources = () =>
+    page
+      .getByTestId('photo-grid')
+      .locator('img')
+      .evaluateAll((imgs) => imgs.map((img) => img.getAttribute('src')));
+
+  await page.goto('/');
+  const home = await gridSources();
+  await page.goto('/support');
+  const support = await gridSources();
+  expect(home.length).toBeGreaterThan(0);
+  expect(support.length).toBeGreaterThan(0);
+  expect(support.filter((src) => home.includes(src))).toEqual([]);
+
+  const recaps = readdirSync('src/content/events')
+    .filter((f) => f.endsWith('.md'))
+    .map((f) => f.replace(/\.md$/, ''));
+  for (const recap of recaps) {
+    await page.goto(`/events/${recap}`);
+    const all = await page
+      .locator('main img[src^="/images/gallery/"]')
+      .evaluateAll((imgs) => imgs.map((img) => img.getAttribute('src')));
+    expect(new Set(all).size, `${recap} shows a photo twice`).toBe(all.length);
+  }
 });

@@ -17,15 +17,28 @@ import { formatRecapDate, photoSrcset } from '../../lib/events';
  * - Every photo with its own caption (src/content.config.ts requires one).
  * - The shared closing, with the event-aware default button: an RSVP only for
  *   a real event, "Get notified" otherwise.
+ *
+ * Steve Jobs review follow-ups, 10/18/2026:
+ * - The cover photo is the share image, so a recap link shows the night itself.
+ * - The page links the night before and the night after, so a recap is not a
+ *   dead end.
+ * - The photo grid leaves out the cover, so the hero photo does not repeat.
  */
 
 export async function getStaticPaths() {
-  const recaps = await getCollection('events');
+  // Oldest first, so the night before is i - 1 and the night after is i + 1.
+  const recaps = (await getCollection('events')).sort(
+    (a, b) => a.data.date.getTime() - b.data.date.getTime(),
+  );
   const photos = await getCollection('gallery');
-  return recaps.map((recap) => ({
+  const link = (recap: (typeof recaps)[number] | undefined) =>
+    recap && { href: `/events/${recap.id}`, title: recap.data.title };
+  return recaps.map((recap, i) => ({
     params: { slug: recap.id },
     props: {
       recap,
+      before: link(recaps[i - 1]),
+      after: link(recaps[i + 1]),
       // Missing event files are caught on /events, which resolves every photo.
       // Here a photo only needs to know whether it belongs to this recap.
       photos: photos
@@ -35,16 +48,23 @@ export async function getStaticPaths() {
   }));
 }
 
-const { recap, photos } = Astro.props;
+const { recap, photos, before, after } = Astro.props;
 const { Content } = await render(recap);
 const { title, date, venue, lumaUrl, summary } = recap.data;
 
 // The cover: a wide hero-eligible shot first, otherwise the first photo. The
 // same rule as the recap cards on /events.
 const cover = photos.find((photo) => photo.data.heroEligible) ?? photos[0];
+// The grid leaves the cover out, so no photo shows twice on the page.
+const rest = photos.filter((photo) => photo !== cover);
 ---
 
-<BaseLayout title={`${title} - PhilaCon Valley Events`} description={summary}>
+<BaseLayout
+  title={`${title} - PhilaCon Valley Events`}
+  description={summary}
+  image={cover?.data.image}
+  type="article"
+>
   <section class="bg-brand-yellow">
     <div class="container-custom pt-10 pb-[clamp(56px,8vw,112px)] grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:items-center">
       <div class="min-w-0 flex flex-col gap-6">
@@ -95,7 +115,7 @@ const cover = photos.find((photo) => photo.data.heroEligible) ?? photos[0];
     </div>
   </section>
 
-  {photos.length > 0 && (
+  {rest.length > 0 && (
     <section class="bg-brand-yellow border-t-2 border-brand-dark">
       <div class="container-custom py-[clamp(56px,7vw,96px)] flex flex-col gap-10">
         <div class="flex flex-col gap-[22px] max-w-[760px]">
@@ -103,7 +123,7 @@ const cover = photos.find((photo) => photo.data.heroEligible) ?? photos[0];
           <h2 class="m-0 heading-quiet">Photos from the night.</h2>
         </div>
         <PhotoGrid
-          photos={photos.map((photo) => ({
+          photos={rest.map((photo) => ({
             image: photo.data.image,
             alt: photo.data.alt,
             caption: photo.data.caption,
@@ -111,6 +131,35 @@ const cover = photos.find((photo) => photo.data.heroEligible) ?? photos[0];
         />
       </div>
     </section>
+  )}
+
+  {(before || after) && (
+    <nav
+      aria-label="More nights"
+      class="bg-white border-t-2 border-brand-dark"
+      data-testid="recap-nav"
+    >
+      <div class="container-custom py-10 flex flex-wrap justify-between gap-6">
+        {before ? (
+          <a href={before.href} rel="prev" class="flex flex-col gap-1 min-h-11">
+            <span class="font-black text-[13px] tracking-[0.2em] uppercase">The night before</span>
+            <span class="font-display font-extrabold uppercase text-[clamp(20px,2vw,28px)] leading-none underline underline-offset-[6px] decoration-[3px]">
+              {before.title}
+            </span>
+          </a>
+        ) : (
+          <span />
+        )}
+        {after && (
+          <a href={after.href} rel="next" class="flex flex-col gap-1 min-h-11 text-right ml-auto">
+            <span class="font-black text-[13px] tracking-[0.2em] uppercase">The night after</span>
+            <span class="font-display font-extrabold uppercase text-[clamp(20px,2vw,28px)] leading-none underline underline-offset-[6px] decoration-[3px]">
+              {after.title}
+            </span>
+          </a>
+        )}
+      </div>
+    </nav>
   )}
 
   <ClosingFlock

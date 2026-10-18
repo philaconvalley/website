@@ -64,9 +64,14 @@ export function photoSrcset(src: string): string | undefined {
  * "the best proof is hidden"). Newest night first, then one photo from each
  * night in turn, so the row shows more than one night. Within a night, the
  * gallery's own order (newest file date, then filename) holds.
+ *
+ * `skip` passes over the first photos in that order, so two pages can show
+ * different rows (second Steve Jobs review, 10/18/2026: Home and Support
+ * showed the same four photos).
  */
 export async function getRoomPhotos(
   count: number,
+  skip = 0,
 ): Promise<{ image: string; alt: string; caption: string }[]> {
   const photos = (await getCollection('gallery')).sort(
     (a, b) => b.data.date.getTime() - a.data.date.getTime() || a.id.localeCompare(b.id),
@@ -79,11 +84,13 @@ export async function getRoomPhotos(
   }
   const picked: CollectionEntry<'gallery'>[] = [];
   const queues = [...nights.values()];
-  while (picked.length < count && queues.some((queue) => queue.length > 0)) {
+  while (picked.length < skip + count && queues.some((queue) => queue.length > 0)) {
     for (const queue of queues) {
       const next = queue.shift();
-      if (next && picked.length < count) picked.push(next);
+      if (next && picked.length < skip + count) picked.push(next);
     }
   }
-  return picked.map(({ data }) => ({ image: data.image, alt: data.alt, caption: data.caption }));
+  return picked
+    .slice(skip)
+    .map(({ data }) => ({ image: data.image, alt: data.alt, caption: data.caption }));
 }

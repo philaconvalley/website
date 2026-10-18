@@ -31,7 +31,8 @@ import { getHireLink, getShowcase } from '../lib/showcase';
 const hire = await getHireLink();
 
 const { nightsHeld, thingsShipped } = await getCommunityData();
-const roomPhotos = await getRoomPhotos(4);
+// Home shows the first four; Support shows the next four.
+const roomPhotos = await getRoomPhotos(4, 4);
 // Partners show only with a written approval on record (src/content.config.ts).
 const partners = await getShowcase('partners');
 
@@ -168,7 +169,7 @@ const ways = [
             <span class="font-black text-[13px] tracking-[0.14em]">
               {String(i + 1).padStart(2, '0')}
             </span>
-            <h3 class="m-0 text-[clamp(24px,2.2vw,32px)] leading-none">{use.title}</h3>
+            <h3 class="m-0 text-[clamp(22px,1.9vw,28px)] leading-none">{use.title}</h3>
             <p class="m-0 text-[16px] leading-[1.55]">{use.line}</p>
           </li>
         ))}
