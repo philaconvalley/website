@@ -23,11 +23,14 @@ const PAGES = [
   '/join',
   '/support',
   '/contact',
+  // Studio builds only after the first approved client story
+  // (src/lib/showcase.ts). Until then it is a 404, and each test skips it.
+  '/studio',
 ];
 
 test('the motto closes Home and no other page', async ({ page }) => {
   for (const route of PAGES) {
-    await page.goto(route);
+    if ((await page.goto(route))?.status() === 404) continue;
     const count = await page.locator('main').getByText(MOTTO).count();
     expect(count, `${route} shows the motto ${count} times`).toBe(route === '/' ? 1 : 0);
   }
@@ -40,7 +43,7 @@ test('each block lives on one page only', async ({ page }) => {
     walkthrough: { selector: '[data-testid="first-pr-steps"]', home: '/projects' },
   };
   for (const route of PAGES) {
-    await page.goto(route);
+    if ((await page.goto(route))?.status() === 404) continue;
     for (const [name, { selector, home }] of Object.entries(homes)) {
       const count = await page.locator('main').locator(selector).count();
       expect(count, `${name} on ${route}`).toBe(route === home ? 1 : 0);
@@ -85,7 +88,7 @@ test('with no night posted, Events opens on recent nights, above the empty state
 test('each page has at most one loud section heading', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   for (const route of PAGES) {
-    await page.goto(route);
+    if ((await page.goto(route))?.status() === 404) continue;
     const loud = await page.locator('main h2').evaluateAll((headings) =>
       headings
         .filter((h) => !h.closest('[data-testid="closing-flock"]'))
