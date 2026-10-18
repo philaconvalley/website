@@ -58,8 +58,12 @@ const recaps = (await getCollection('events')).sort(
 // confirmed by Waskar 10/18/2026). Parts approved in writing: the agreement,
 // quoted in the 10/02/2026 sign-off email. The walkthrough where the client
 // made their own edit, and the handbook with numbered steps and screenshots:
-// the same email. Do not add a warranty or maintenance term here; those are
-// set per contract.
+// the same email.
+//
+// After launch (Waskar, 10/18/2026): maintenance is standard, and teaching a
+// team to full ownership is an option for clients who want it. The 30-day
+// warranty was DSM215's contract and is not standard yet, so the page does
+// not promise one.
 const steps = [
   {
     title: 'We listen.',
@@ -228,6 +232,13 @@ const offers = [
           </li>
         ))}
       </ol>
+      <p
+        class="m-0 max-w-[760px] text-[clamp(18px,1.6vw,22px)] leading-[1.5] font-semibold"
+        data-testid="studio-after-launch"
+      >
+        <span class="text-brand-yellow">After launch, you choose.</span> We keep your site
+        maintained for you, or we teach your team to own all of it.
+      </p>
     </div>
   </section>
 
