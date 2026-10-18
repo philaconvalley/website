@@ -1,10 +1,18 @@
 ---
+import { photoSrcset } from '../lib/events';
+
+/**
+ * Photos from the room, each on an ink-bordered card with its own caption
+ * (site audit, 10/18/2026). Used by the event recap page for all of its
+ * photos, and by Home and Support for a row of four. Every gallery entry has a
+ * caption (src/content.config.ts), so no photo falls back to the event title.
+ *
+ * The photos are not links, so the cards do not move on hover.
+ */
 interface Photo {
   image: string;
   alt: string;
-  event: string;
-  date: Date;
-  caption?: string;
+  caption: string;
 }
 
 interface Props {
@@ -12,37 +20,30 @@ interface Props {
 }
 
 const { photos } = Astro.props;
-
-// The caption is always visible, on a solid white band under the photo. It
-// used to sit on a gradient (the Book: "No gradients") and show only on
-// hover, so phones never showed it.
 ---
 
-{photos.length > 0 ? (
-  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-    {photos.map((photo) => (
-      <figure class="group relative flex flex-col overflow-hidden rounded-retro border-2 border-brand-dark bg-white shadow-retro-lg">
-        <div class="overflow-hidden">
-          <img
-            src={photo.image}
-            alt={photo.alt}
-            loading="lazy"
-            class="w-full aspect-square object-cover transition-transform duration-300 ease-out motion-safe:group-hover:scale-105"
-          />
-        </div>
-        <figcaption class="flex-1 border-t-2 border-brand-dark p-3">
-          <p class="text-brand-dark text-xs font-display font-extrabold">{photo.event}</p>{' '}
-          {photo.caption && <p class="text-brand-dark text-xs">{photo.caption}</p>}
+<ul
+  class="m-0 p-0 list-none grid gap-4 md:gap-5 grid-cols-2 lg:grid-cols-4"
+  data-testid="photo-grid"
+>
+  {photos.map((photo) => (
+    <li>
+      <figure class="m-0 h-full flex flex-col overflow-hidden rounded-[20px] border-2 border-brand-dark bg-white shadow-retro-lg">
+        <img
+          src={photo.image}
+          srcset={photoSrcset(photo.image)}
+          sizes="(min-width: 1024px) 300px, 50vw"
+          width="800"
+          height="800"
+          loading="lazy"
+          decoding="async"
+          alt={photo.alt}
+          class="block w-full aspect-square object-cover"
+        />
+        <figcaption class="flex-1 border-t-2 border-brand-dark px-3.5 py-3 font-bold text-[14px] leading-[1.35]">
+          {photo.caption}
         </figcaption>
       </figure>
-    ))}
-  </div>
-) : (
-  <div class="text-center py-12 px-6 rounded-retro border-2 border-dashed border-brand-dark">
-    <p class="text-lg font-display font-bold text-brand-dark/70 mb-2">Photos are on their way</p>
-    <p class="text-brand-dark/50 max-w-md mx-auto">
-      We're gathering shots from Commit, Ship It, and our Labs — check back after our next event to
-      see the community in action.
-    </p>
-  </div>
-)}
+    </li>
+  ))}
+</ul>

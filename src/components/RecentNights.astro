@@ -1,0 +1,103 @@
+---
+import { getCollection } from 'astro:content';
+import PhotoGrid from './PhotoGrid.astro';
+import { photoSrcset, resolvePhotoEvents } from '../lib/events';
+
+/**
+ * Recent nights on /events: one card per event recap (src/content/events),
+ * newest first, each with its own photo and summary, then a row of photos.
+ * A new recap appears here on its own.
+ *
+ * Its own component so /events can place it by state (site audit,
+ * 10/18/2026): with no night on the calendar, it comes first, above the
+ * "between nights" card, so the page opens on proof, not an empty state.
+ */
+interface Props {
+  /** Full-volume heading. Set when this is the page's first section. */
+  loud?: boolean;
+}
+
+const { loud = false } = Astro.props;
+
+// Every photo is resolved, so a gallery entry that names a missing event file
+// fails the build (src/lib/events.ts).
+const photos = (
+  await resolvePhotoEvents(
+    (await getCollection('gallery')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime()),
+  )
+).map(({ photo }) => photo);
+
+const recaps = (await getCollection('events')).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+
+// Each recap card leads with one of its own photos: a wide hero-eligible shot
+// first, otherwise its newest.
+const cards = recaps.map((recap) => {
+  const own = photos.filter((photo) => photo.data.event.id === recap.id);
+  const cover = own.find((photo) => photo.data.heroEligible) ?? own[0];
+  return { recap, cover };
+});
+const covers = new Set(cards.map((card) => card.cover?.id));
+// The photo row under the cards: the four newest photos not used above.
+const strip = photos.filter((photo) => !covers.has(photo.id)).slice(0, 4);
+
+// The mockup's date style: 09.30.2026. Frontmatter dates are UTC midnight.
+const shortDate = (date: Date) =>
+  [date.getUTCMonth() + 1, date.getUTCDate()].map((n) => String(n).padStart(2, '0')).join('.') +
+  `.${date.getUTCFullYear()}`;
+---
+
+{cards.length > 0 && (
+  <section class="bg-white border-t-2 border-brand-dark" data-testid="recent-nights">
+    <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
+      <div class="flex flex-col gap-[22px] max-w-[760px]">
+        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">From the room</p>
+        <h2 class:list={['m-0', !loud && 'heading-quiet']}>Recent nights.</h2>
+      </div>
+      <div class="grid gap-7 grid-cols-[repeat(auto-fit,minmax(min(320px,100%),1fr))]">
+        {cards.map(({ recap, cover }) => (
+          <article class="bg-white rounded-retro border-2 border-brand-dark shadow-retro-lg overflow-hidden flex flex-col">
+            {cover && (
+              <img
+                src={cover.data.image}
+                srcset={photoSrcset(cover.data.image)}
+                sizes="(min-width: 1024px) 600px, calc(100vw - 32px)"
+                width="1600"
+                height="900"
+                loading="lazy"
+                decoding="async"
+                alt={cover.data.alt}
+                class="block w-full aspect-video object-cover border-b-2 border-brand-dark"
+              />
+            )}
+            <div class="p-7 flex flex-col gap-3.5 flex-1">
+              <p class="m-0 font-black text-[13px] tracking-[0.14em] uppercase">
+                {shortDate(recap.data.date)} · {recap.data.venue}
+              </p>
+              <h3 class="m-0 normal-case text-[34px] leading-none">{recap.data.title}</h3>
+              <p class="m-0 text-base leading-[1.55] text-brand-dark/85">{recap.data.summary}</p>
+              <a
+                href={`/events/${recap.id}`}
+                aria-label={`Read the recap: ${recap.data.title}`}
+                class="mt-auto self-start inline-flex items-center min-h-11 font-black text-base text-brand-dark underline underline-offset-[5px] decoration-2"
+              >
+                Read the recap
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+      {/* Captioned like every other room photo (Jobs review, 10/18/2026). */}
+      {strip.length > 0 && (
+        <PhotoGrid
+          photos={strip.map(({ data }) => ({
+            image: data.image,
+            alt: data.alt,
+            caption: data.caption,
+          }))}
+        />
+      )}
+    </div>
+  </section>
+)}

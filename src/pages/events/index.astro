@@ -3,11 +3,9 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Button from '../../components/Button.astro';
 import ClosingFlock from '../../components/ClosingFlock.astro';
 import ProgramCards from '../../components/ProgramCards.astro';
+import RecentNights from '../../components/RecentNights.astro';
 import { getCommunityData, formatEventDate } from '../../lib/community';
-import { resolvePhotoEvents } from '../../lib/events';
 import { links } from '../../config';
-import { getCollection } from 'astro:content';
-import { existsSync } from 'node:fs';
 
 /**
  * Events, Edition 1.2 (DESIGN.md, "The 1.2 redesign"). Sections follow Diego's
@@ -26,6 +24,14 @@ import { existsSync } from 'node:fs';
  * - No RSVP without a real event. With none in the build, the hero, the
  *   calendar section and the closing ask people to follow the Luma calendar
  *   ("Get notified"), and the empty Luma embed is not shown.
+ *
+ * Site audit, 10/18/2026:
+ * - With no night on the calendar, "Recent nights" comes first, above the
+ *   "between nights" card, and takes the page's loud heading. The page then
+ *   opens on proof, not on an empty state.
+ * - Events is the one home of the program cards. Home and About no longer
+ *   repeat them.
+ * - The closing does not repeat the motto; that is Home's alone.
  */
 
 const { nextEvent } = await getCommunityData();
@@ -34,42 +40,6 @@ const { nextEvent } = await getCommunityData();
 // downloads a one-time copy (the server sends it as an attachment); webcal://
 // makes the calendar app subscribe, so new nights appear on their own.
 const calendarFeed = links.lumaIcs.replace(/^https:/, 'webcal:');
-
-// Every photo is resolved, so a gallery entry that names a missing event file
-// fails the build (src/lib/events.ts).
-const photos = (
-  await resolvePhotoEvents(
-    (await getCollection('gallery')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime()),
-  )
-).map(({ photo }) => photo);
-
-const recaps = (await getCollection('events')).sort(
-  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
-);
-
-// Each recap card leads with one of its own photos: a wide hero-eligible shot
-// first, otherwise its newest.
-const cards = recaps.map((recap) => {
-  const own = photos.filter((photo) => photo.data.event.id === recap.id);
-  const cover = own.find((photo) => photo.data.heroEligible) ?? own[0];
-  return { recap, cover };
-});
-const covers = new Set(cards.map((card) => card.cover?.id));
-// The photo row under the cards: the four newest photos not used above.
-const strip = photos.filter((photo) => !covers.has(photo.id)).slice(0, 4);
-
-// Wide photos have an 800px copy beside the original; the PATCH 002 photos
-// are small portraits and have none. Offer the copy only when it exists, so a
-// phone never requests a missing file.
-const srcset = (src: string) => {
-  const small = src.replace(/\.jpg$/, '-800.jpg');
-  return existsSync(`public${small}`) ? `${small} 800w, ${src} 1600w` : undefined;
-};
-
-// The mockup's date style: 09.30.2026. Frontmatter dates are UTC midnight.
-const shortDate = (date: Date) =>
-  [date.getUTCMonth() + 1, date.getUTCDate()].map((n) => String(n).padStart(2, '0')).join('.') +
-  `.${date.getUTCFullYear()}`;
 
 // The mockup's four points, rewritten to match the real night (Waskar,
 // 10/16/2026). Number colors follow the mockup.
@@ -147,6 +117,8 @@ const expect = [
        card's shape, and no embed, because Luma's embed would only say "No
        Upcoming Events". The scheduled rebuild brings the event state back
        within hours of a new Luma event. -->
+  {!nextEvent && <RecentNights loud />}
+
   <section id="calendar" class="bg-white border-t-2 border-brand-dark">
     <div class="container-custom py-[clamp(72px,9vw,120px)] flex flex-col gap-10">
       {nextEvent ? (
@@ -201,7 +173,7 @@ const expect = [
         <>
           <div class="flex flex-col gap-[22px] max-w-[760px]">
             <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">On the calendar</p>
-            <h2 class="m-0 [text-wrap:balance]">The next night is on the way.</h2>
+            <h2 class="m-0 heading-quiet [text-wrap:balance]">The next night is on the way.</h2>
           </div>
           <div
             class="bg-brand-dark text-white border-2 border-brand-dark rounded-[28px] shadow-[10px_10px_0_theme(colors.brand.pink)] p-[clamp(28px,4vw,56px)] flex flex-wrap gap-x-12 gap-y-7 items-center justify-between"
@@ -237,7 +209,7 @@ const expect = [
       <div class="flex flex-wrap justify-between items-end gap-6">
         <div class="flex flex-col gap-[22px] max-w-[760px]">
           <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">Kinds of nights</p>
-          <h2 class="m-0">Different nights. Same open door.</h2>
+          <h2 class="m-0 heading-quiet [text-wrap:balance]">Different nights. Same open door.</h2>
         </div>
         <p class="m-0 max-w-[380px] text-lg leading-[1.55]">
           <strong>Every program is free of charge.</strong> Nothing to apply for, nothing to
@@ -259,7 +231,7 @@ const expect = [
       <div class="flex flex-wrap gap-[clamp(40px,6vw,96px)]">
         <div class="grow shrink basis-[380px] min-w-0 flex flex-col gap-[22px]">
           <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">First time?</p>
-          <h2 class="m-0">
+          <h2 class="m-0 heading-quiet">
             Here's what to <span class="text-brand-yellow">expect.</span>
           </h2>
         </div>
@@ -289,77 +261,14 @@ const expect = [
     </div>
   </section>
   <script is:inline defer src="/js/night.js"></script>
-  <!-- Recent nights: one card per event recap (src/content/events), newest
-       first, each with its own photo and summary, then a row of photos. -->
-  {cards.length > 0 && (
-    <section class="bg-white border-t-2 border-brand-dark">
-      <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
-        <div class="flex flex-col gap-[22px] max-w-[760px]">
-          <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">From the room</p>
-          <h2 class="m-0">Recent nights.</h2>
-        </div>
-        <div class="grid gap-7 grid-cols-[repeat(auto-fit,minmax(min(320px,100%),1fr))]">
-          {cards.map(({ recap, cover }) => (
-            <article class="bg-white rounded-retro border-2 border-brand-dark shadow-retro-lg overflow-hidden flex flex-col">
-              {cover && (
-                <img
-                  src={cover.data.image}
-                  srcset={srcset(cover.data.image)}
-                  sizes="(min-width: 1024px) 600px, calc(100vw - 32px)"
-                  width="1600"
-                  height="900"
-                  loading="lazy"
-                  decoding="async"
-                  alt={cover.data.alt}
-                  class="block w-full aspect-video object-cover border-b-2 border-brand-dark"
-                />
-              )}
-              <div class="p-7 flex flex-col gap-3.5 flex-1">
-                <p class="m-0 font-black text-[13px] tracking-[0.14em] uppercase">
-                  {shortDate(recap.data.date)} · {recap.data.venue}
-                </p>
-                <h3 class="m-0 normal-case text-[34px] leading-none">{recap.data.title}</h3>
-                <p class="m-0 text-base leading-[1.55] text-brand-dark/85">{recap.data.summary}</p>
-                <a
-                  href={`/events/${recap.id}`}
-                  aria-label={`Read the recap: ${recap.data.title}`}
-                  class="mt-auto self-start inline-flex items-center min-h-11 font-black text-base text-brand-dark underline underline-offset-[5px] decoration-2"
-                >
-                  Read the recap
-                </a>
-              </div>
-            </article>
-          ))}
-        </div>
-        {strip.length > 0 && (
-          <ul class="m-0 p-0 list-none grid gap-4 grid-cols-2 lg:grid-cols-4">
-            {strip.map((photo) => (
-              <li>
-                <img
-                  src={photo.data.image}
-                  srcset={srcset(photo.data.image)}
-                  sizes="(min-width: 1024px) 300px, 50vw"
-                  width="800"
-                  height="800"
-                  loading="lazy"
-                  decoding="async"
-                  alt={photo.data.alt}
-                  class="block w-full aspect-square object-cover rounded-[20px] border-2 border-brand-dark"
-                />
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </section>
-  )}
+  {nextEvent && <RecentNights />}
 
-  <!-- The Events closing, in the mockup's copy (Waskar, 10/16/2026). -->
+  <!-- The Events closing, in the mockup's headline (Waskar, 10/16/2026). -->
   <ClosingFlock
     lede={
       nextEvent
-        ? 'RSVP for the next night and come as you are. A pigeon flies alone. A flock goes much further.'
-        : 'Get notified when the next night is posted, then come as you are. A pigeon flies alone. A flock goes much further.'
+        ? "RSVP for the next night. Come alone or bring a friend; you'll meet people either way."
+        : "Get notified when the next night is posted. Come alone or bring a friend; you'll meet people either way."
     }
     primary={
       nextEvent

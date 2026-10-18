@@ -1,4 +1,5 @@
-import { getEntry, type CollectionEntry } from 'astro:content';
+import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
+import { existsSync } from 'node:fs';
 
 export interface PhotoWithEvent {
   photo: CollectionEntry<'gallery'>;
@@ -46,4 +47,43 @@ export function formatRecapDate(date: Date): string {
     day: 'numeric',
     timeZone: 'UTC',
   });
+}
+
+/**
+ * The srcset for a gallery photo. Wide photos have an 800px copy beside the
+ * original; the PATCH 002 photos are small portraits and have none. The copy is
+ * offered only when it exists, so a phone never requests a missing file.
+ */
+export function photoSrcset(src: string): string | undefined {
+  const small = src.replace(/\.jpg$/, '-800.jpg');
+  return existsSync(`public${small}`) ? `${small} 800w, ${src} 1600w` : undefined;
+}
+
+/**
+ * A row of photos from the room for Home and Support (site audit, 10/18/2026:
+ * "the best proof is hidden"). Newest night first, then one photo from each
+ * night in turn, so the row shows more than one night. Within a night, the
+ * gallery's own order (newest file date, then filename) holds.
+ */
+export async function getRoomPhotos(
+  count: number,
+): Promise<{ image: string; alt: string; caption: string }[]> {
+  const photos = (await getCollection('gallery')).sort(
+    (a, b) => b.data.date.getTime() - a.data.date.getTime() || a.id.localeCompare(b.id),
+  );
+  const nights = new Map<string, CollectionEntry<'gallery'>[]>();
+  for (const photo of photos) {
+    const night = nights.get(photo.data.event.id) ?? [];
+    night.push(photo);
+    nights.set(photo.data.event.id, night);
+  }
+  const picked: CollectionEntry<'gallery'>[] = [];
+  const queues = [...nights.values()];
+  while (picked.length < count && queues.some((queue) => queue.length > 0)) {
+    for (const queue of queues) {
+      const next = queue.shift();
+      if (next && picked.length < count) picked.push(next);
+    }
+  }
+  return picked.map(({ data }) => ({ image: data.image, alt: data.alt, caption: data.caption }));
 }

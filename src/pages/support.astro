@@ -2,8 +2,12 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Button from '../components/Button.astro';
 import ClosingFlock from '../components/ClosingFlock.astro';
-import { links } from '../config';
-import { getHireLink } from '../lib/showcase';
+import PhotoGrid from '../components/PhotoGrid.astro';
+import PartnerStrip from '../components/PartnerStrip.astro';
+import { community, links } from '../config';
+import { getCommunityData } from '../lib/community';
+import { getRoomPhotos } from '../lib/events';
+import { getHireLink, getShowcase } from '../lib/showcase';
 
 /**
  * Support, Edition 1.2 (DESIGN.md, "The 1.2 redesign"). Sections follow
@@ -15,10 +19,27 @@ import { getHireLink } from '../lib/showcase';
  * the campus. The agency card says the trade out loud, "Hire us. Fund the
  * flock." (Waskar, 10/17/2026); the mockup's "Paid work that pays for it."
  * read as a riddle.
+ *
+ * Site audit, 10/18/2026: donors give to what they can see. Right under the
+ * hero, the page shows the proof: the live numbers (the same ones as Home,
+ * labeled the same way), four photos from the room, and the partners who
+ * said yes to being shown. The numbers heading is the page's loudest
+ * section; the others are one step quieter.
  */
 
 // /studio once it has proof, /contact until then (src/lib/showcase.ts).
 const hire = await getHireLink();
+
+const { nightsHeld, thingsShipped } = await getCommunityData();
+const roomPhotos = await getRoomPhotos(4);
+// Partners show only with a written approval on record (src/content.config.ts).
+const partners = await getShowcase('partners');
+
+// The nights count is in the heading above, so the row does not repeat it.
+const proof = [
+  { value: community.memberCount, label: 'people on our calendar' },
+  { value: thingsShipped, label: thingsShipped === 1 ? 'thing shipped' : 'things shipped' },
+];
 
 const uses = [
   {
@@ -100,12 +121,41 @@ const ways = [
     </div>
   </section>
 
+  <!-- The proof: what the money has already paid for. -->
+  <section class="bg-white border-t-2 border-brand-dark" data-testid="support-proof">
+    <div class="container-custom py-[clamp(72px,9vw,120px)] flex flex-col gap-12">
+      <div class="flex flex-col gap-[22px] max-w-[900px]">
+        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">What it pays for</p>
+        <h2 class="m-0 [text-wrap:balance]">
+          {nightsHeld} nights so far. <span class="sticker bg-brand-pink">Every one free.</span>
+        </h2>
+      </div>
+      <dl class="m-0 grid gap-8 grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+        {proof.map((item) => (
+          <div class="border-l-[3px] border-brand-dark pl-5 flex flex-col-reverse gap-1">
+            <dt class="font-black text-lg">{item.label}</dt>
+            <dd class="m-0 font-display font-extrabold text-[clamp(56px,6vw,88px)] leading-[0.85] tabular-nums">
+              {item.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+      {roomPhotos.length > 0 && <PhotoGrid photos={roomPhotos} />}
+      {partners.length > 0 && (
+        <div class="flex flex-col gap-6">
+          <h3 class="m-0">Thank you to our partners.</h3>
+          <PartnerStrip partners={partners} />
+        </div>
+      )}
+    </div>
+  </section>
+
   <!-- Where your support goes. -->
   <section class="bg-white border-t-2 border-brand-dark">
     <div class="container-custom py-[clamp(72px,9vw,120px)] flex flex-col gap-12">
       <div class="flex flex-col gap-[22px] max-w-[760px]">
         <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">Where your support goes</p>
-        <h2 class="m-0 [text-wrap:balance]">Rooms, tools and reach.</h2>
+        <h2 class="m-0 heading-quiet [text-wrap:balance]">Rooms, tools and reach.</h2>
       </div>
       <ol class="m-0 p-0 list-none grid gap-6 grid-cols-[repeat(auto-fill,minmax(min(240px,100%),1fr))]">
         {uses.map((use, i) => (
@@ -118,7 +168,7 @@ const ways = [
             <span class="font-black text-[13px] tracking-[0.14em]">
               {String(i + 1).padStart(2, '0')}
             </span>
-            <h3 class="m-0 text-[32px] leading-none">{use.title}</h3>
+            <h3 class="m-0 text-[clamp(24px,2.2vw,32px)] leading-none">{use.title}</h3>
             <p class="m-0 text-[16px] leading-[1.55]">{use.line}</p>
           </li>
         ))}
@@ -183,7 +233,7 @@ const ways = [
     <div class="container-custom py-[clamp(72px,9vw,120px)] flex flex-col gap-12">
       <div class="flex flex-col gap-[22px] max-w-[760px]">
         <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">Other ways to help</p>
-        <h2 class="m-0 [text-wrap:balance]">Bring what you've got.</h2>
+        <h2 class="m-0 heading-quiet [text-wrap:balance]">Bring what you've got.</h2>
       </div>
       <ul class="m-0 p-0 list-none grid gap-6 grid-cols-[repeat(auto-fill,minmax(min(240px,100%),1fr))]">
         {ways.map((way) => (
@@ -202,9 +252,10 @@ const ways = [
     </div>
   </section>
 
-  <!-- The Support closing, in the mockup's copy. -->
+  <!-- The Support closing, in the mockup's headline. The motto is Home's
+       alone (site audit, 10/18/2026). -->
   <ClosingFlock
-    lede="A pigeon flies alone. A flock goes much further, and you can help it get there."
+    lede="Open Collective publishes our budget, so you can see where every dollar goes."
     primary={{ href: links.openCollective, label: 'Donate now', external: true }}
     secondary={{ href: '/contact', label: 'Talk to us' }}
   >

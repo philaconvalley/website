@@ -26,9 +26,15 @@ test('one card per guide, with the guide file’s own copy', async ({ page }) =>
   );
   const cards = page.locator('[data-resource]');
   await expect(cards).toHaveCount(guides.length);
-  await expect(page.getByTestId('resource-count')).toHaveText(
-    `${guides.length} ${guides.length === 1 ? 'resource' : 'resources'}`,
-  );
+  // The count shows only with the filters (site audit, 10/18/2026).
+  const filtered = distinct('category') > 1 || distinct('level') > 1;
+  if (filtered) {
+    await expect(page.getByTestId('resource-count')).toHaveText(
+      `${guides.length} ${guides.length === 1 ? 'resource' : 'resources'}`,
+    );
+  } else {
+    await expect(page.getByTestId('resource-count')).toHaveCount(0);
+  }
   for (const file of guides) {
     const card = cards.filter({ hasText: field(file, 'title')! });
     await expect(card.getByRole('heading', { level: 2 })).toHaveText(field(file, 'title')!);

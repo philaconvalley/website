@@ -1,0 +1,106 @@
+---
+import { links } from '../config';
+import { firstPrSteps } from '../data/first-pr';
+
+/**
+ * The six-step first pull request walkthrough, as a grid of cards with the real
+ * commands (src/data/first-pr.ts). It lives on /projects (site audit,
+ * 10/18/2026): Join is about the Discord and coming to a night, and opening
+ * Join with a git tutorial worked against "You don't need to know how to
+ * code". The section id `first-pr` is the anchor every "Make your first PR"
+ * link points at.
+ */
+
+// Step number colors rotate through the accents, as in the mockup.
+const dots = [
+  'bg-brand-yellow',
+  'bg-brand-amber',
+  'bg-brand-pink',
+  'bg-brand-coral',
+  'bg-brand-yellow',
+];
+
+const goodFirstIssues = `${links.github.website}/issues?q=${encodeURIComponent(
+  'is:issue is:open label:"good first issue"',
+)}`;
+---
+
+<section id="first-pr" class="bg-white border-t-2 border-brand-dark">
+  <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-12">
+    <div class="flex flex-wrap justify-between items-end gap-8">
+      <div class="flex flex-col gap-[22px] max-w-[760px]">
+        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">Your first pull request</p>
+        <h2 class="m-0 heading-quiet [text-wrap:balance]">Six steps. Practice on our repo.</h2>
+      </div>
+      <p class="m-0 max-w-[380px] text-[17px] leading-[1.55]">
+        Try it here first, on the website you're looking at, before you do it anywhere else.
+      </p>
+    </div>
+    <ol
+      class="m-0 p-0 list-none grid gap-6 grid-cols-[repeat(auto-fill,minmax(min(300px,100%),1fr))]"
+      data-testid="first-pr-steps"
+    >
+      {firstPrSteps.map((step, i) => {
+        const last = i === firstPrSteps.length - 1;
+        return (
+          <li
+            class:list={[
+              'rounded-[24px] border-2 border-brand-dark p-6 flex flex-col gap-3',
+              last
+                ? 'bg-brand-dark text-white shadow-[6px_6px_0_theme(colors.brand.pink)]'
+                : 'bg-white shadow-[6px_6px_0_theme(colors.brand.dark)]',
+            ]}
+          >
+            <div class="flex items-center gap-3">
+              <span
+                class:list={[
+                  'flex-none inline-flex items-center justify-center size-8 rounded-full border-2 border-brand-dark font-black text-sm text-brand-dark',
+                  last ? 'bg-brand-yellow' : dots[i % dots.length],
+                ]}
+                aria-hidden="true"
+              >
+                {i + 1}
+              </span>
+              <h3 class:list={['m-0 text-[28px] leading-tight', last && 'text-brand-yellow']}>
+                {step.title}
+              </h3>
+            </div>
+            <p class="m-0 text-[16px] leading-[1.55]">{step.lead}</p>
+            {step.code && <pre class="m-0 mt-auto rounded-[12px] bg-brand-dark text-brand-yellow p-4 font-mono text-[13px] leading-[1.6] whitespace-pre-wrap [overflow-wrap:anywhere]"><code>{step.code}</code></pre>}
+            {step.note && <p class="m-0 text-[14px] leading-[1.5] font-semibold">{step.note}</p>}
+            {last && (
+              <p class="m-0 mt-auto font-display font-extrabold text-xl uppercase">
+                That's it. You're a contributor.
+              </p>
+            )}
+          </li>
+        );
+      })}
+    </ol>
+    <div class="rounded-[18px] border-2 border-brand-dark bg-brand-yellow px-6 py-3 flex flex-wrap items-center gap-x-8 gap-y-1">
+      <p class="m-0 font-black text-[17px]">Stuck? That's normal.</p>
+      <a
+        href={goodFirstIssues}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center min-h-11 font-black text-[17px] text-brand-dark underline underline-offset-[5px] decoration-2"
+      >
+        Find a good first issue
+      </a>
+      <a
+        href="/resources/first-pull-request"
+        class="inline-flex items-center min-h-11 font-black text-[17px] text-brand-dark underline underline-offset-[5px] decoration-2"
+      >
+        Read the longer guide
+      </a>
+      <a
+        href={links.discord}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center min-h-11 font-black text-[17px] text-brand-dark underline underline-offset-[5px] decoration-2"
+      >
+        Ask on Discord
+      </a>
+    </div>
+  </div>
+</section>

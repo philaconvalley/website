@@ -86,7 +86,13 @@ const gallery = defineCollection({
      */
     event: reference('events'),
     date: z.date(),
-    caption: z.string().optional(),
+    /**
+     * A short line about this one photo, shown under it on the recap page and
+     * in the room strips. Required (site audit, 10/18/2026): with no caption,
+     * every photo fell back to its event title, so a page of twelve photos
+     * said "PATCH 003: Projection Mapping Lab" twelve times.
+     */
+    caption: z.string().min(1),
     /**
      * Whether this shot can carry the homepage's full-bleed band.
      *

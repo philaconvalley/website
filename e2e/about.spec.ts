@@ -5,8 +5,10 @@ import { parseValues } from '../src/lib/parse-handbook-values';
 /**
  * About, Edition 1.2. The page's facts must match the rest of the site:
  * - the founder photo is the real headshot, with alt text;
- * - the programs are the same four as Home, with Stoop as a line;
- * - "Join N of us" shows the same member count as Home.
+ * - the member count says it is the Luma calendar count;
+ * - the values are the handbook's, with their source links.
+ * The cross-page rules (no repeated program cards or timeline, the motto on
+ * Home only) live in e2e/site-audit.spec.ts.
  */
 
 test('About shows the real founder photo, with alt text and a caption', async ({ page }) => {
@@ -18,26 +20,12 @@ test('About shows the real founder photo, with alt text and a caption', async ({
   await expect(page.locator('figcaption')).toContainText('Founder & Executive Director');
 });
 
-test('About shows the same four programs as Home, and Stoop as a line', async ({ page }) => {
-  const names = async (route: string) => {
-    await page.goto(route);
-    return page
-      .locator('[data-testid="stoop-line"]')
-      .locator('xpath=..')
-      .locator('ul h3')
-      .allTextContents();
-  };
-  const about = await names('/about');
-  expect(about).toEqual(['PATCH', 'Lab', 'Community projects', 'Career Support']);
-  expect(await names('/')).toEqual(about);
+test('the member count says it is the Luma calendar count', async ({ page }) => {
   await page.goto('/about');
-  await expect(page.getByTestId('stoop-line')).toContainText('Stoop');
-});
-
-test('"Join N of us" shows the live member count', async ({ page }) => {
-  await page.goto('/about');
-  await expect(page.getByTestId('join-count')).toHaveText(`Join ${community.memberCount} of us`);
-  await expect(page.getByTestId('join-count')).toHaveAttribute('href', '/join');
+  await expect(page.getByTestId('member-count')).toHaveText(
+    `${community.memberCount} people on our Luma calendar so far.`,
+  );
+  await expect(page.getByRole('link', { name: 'Join the flock' })).toHaveAttribute('href', '/join');
 });
 
 test('About shows every handbook value, with its source links', async ({ page }) => {
@@ -101,106 +89,12 @@ test('the handbook parser reads each heading and its first sentence, and rejects
   expect(parseValues('## Empty heading\n')).toBeNull();
 });
 
-test('About program cards drop the Cost and Experience lines; Home keeps them', async ({
-  page,
-}) => {
-  const cards = (route: string) =>
-    page
-      .goto(route)
-      .then(() => page.getByTestId('stoop-line').locator('xpath=..').locator('ul li'));
-  const about = await cards('/about');
-  await expect(about).toHaveCount(4);
-  await expect(about.filter({ hasText: 'Cost:' })).toHaveCount(0);
-  const home = await cards('/');
-  // Career Support is coming soon: a card without the Cost lines.
-  await expect(home.filter({ hasText: 'Cost:' })).toHaveCount(3);
-});
-
-test('About shows the five steps of a night, the same as Home', async ({ page }) => {
-  await page.goto('/about');
-  const steps = page.getByTestId('night-strip').locator('li');
-  await expect(steps).toHaveCount(5);
-  await expect(steps.first()).toContainText('6:00 PM');
-  await expect(steps.last()).toContainText('9:00 PM');
-  const about = await steps.allTextContents();
-  await page.goto('/');
-  const home = page
-    .locator('section', { has: page.getByText('How a Lab night works') })
-    .locator('ol > li h3');
-  const homeTitles = await home.allTextContents();
-  homeTitles.forEach((title, i) => expect(about[i]).toContain(title.trim()));
-});
-
-// The night timeline (public/js/night-arm.js, night.js).
-const settled = (page: import('@playwright/test').Page) =>
-  page.locator('[data-night-strip]').evaluate((strip) =>
-    [...strip.querySelectorAll('[data-night-dot], [data-night-rise], [data-night-seg]')].every(
-      (el) => {
-        const style = getComputedStyle(el);
-        return style.opacity === '1' && style.transform === 'none';
-      },
-    ),
-  );
-
-test('the night timeline draws in when scrolled into view and settles fully shown', async ({
-  page,
-}) => {
-  await page.goto('/about');
-  const strip = page.locator('[data-night-strip]');
-  // Hidden before it plays: the first dot starts transparent.
-  expect(
-    await strip
-      .locator('[data-night-dot]')
-      .first()
-      .evaluate((el) => getComputedStyle(el).opacity),
-  ).toBe('0');
-  await strip.evaluate((el) => el.scrollIntoView({ block: 'center' }));
-  await expect(strip).toHaveAttribute('data-night', 'play');
-  await expect.poll(() => settled(page), { timeout: 4000 }).toBe(true);
-});
-
-test('the night timeline replays after scrolling fully away and back', async ({ page }) => {
-  await page.goto('/about');
-  const strip = page.locator('[data-night-strip]');
-  await strip.evaluate((el) => el.scrollIntoView({ block: 'center' }));
-  await expect.poll(() => settled(page), { timeout: 4000 }).toBe(true);
-  await page.evaluate(() => window.scrollTo(0, 0));
-  await expect(strip).not.toHaveAttribute('data-night', 'play');
-  await expect(strip).toHaveAttribute('data-night-replay', '');
-  await strip.evaluate((el) => el.scrollIntoView({ block: 'center' }));
-  await expect(strip).toHaveAttribute('data-night', 'play');
-  await expect.poll(() => settled(page), { timeout: 3000 }).toBe(true);
-});
-
-test('under reduced motion the night timeline never moves', async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto('/about');
-  const strip = page.locator('[data-night-strip]');
-  const transforms = await strip.evaluate((el) =>
-    [...el.querySelectorAll('[data-night-dot], [data-night-rise], [data-night-seg]')].map(
-      (node) => getComputedStyle(node).transform,
-    ),
-  );
-  expect(transforms.every((t) => t === 'none')).toBe(true);
-  await strip.evaluate((el) => el.scrollIntoView({ block: 'center' }));
-  await expect.poll(() => settled(page), { timeout: 3000 }).toBe(true);
-});
-
-test('if night.js never loads, the night steps still show after the safety timer', async ({
-  page,
-}) => {
-  await page.route('**/js/night.js', (route) => route.abort());
-  await page.goto('/about');
-  await expect.poll(() => settled(page), { timeout: 5000 }).toBe(true);
-});
-
 test('About ends on its own closing copy; Home keeps the motto', async ({ page }) => {
   await page.goto('/about');
   const about = page.getByTestId('closing-flock');
   await expect(about.getByRole('heading', { level: 2 })).toHaveText(
     'Show up before you feel ready.',
   );
-  await expect(about).toContainText('A pigeon flies alone. A flock goes much further.');
   await expect(about.getByRole('link', { name: 'Get involved' })).toHaveAttribute('href', '/join');
   await expect(about.getByRole('link', { name: 'Attend an event' })).toHaveAttribute(
     'href',
@@ -213,13 +107,4 @@ test('About ends on its own closing copy; Home keeps the motto', async ({ page }
   await expect(
     home.getByRole('link', { name: /RSVP for the next night|Get notified/ }),
   ).toBeVisible();
-});
-
-test('print shows every night-timeline step, even before it plays', async ({ page }) => {
-  await page.goto('/about');
-  await page.emulateMedia({ media: 'print' });
-  const parts = page.locator('[data-night-dot], [data-night-rise]');
-  const n = await parts.count();
-  expect(n).toBeGreaterThan(0);
-  for (let i = 0; i < n; i++) await expect(parts.nth(i)).toHaveCSS('opacity', '1');
 });

@@ -1,8 +1,9 @@
 /**
- * The four programs, shared by Home and About so the two pages never disagree
- * (Waskar, 10/16/2026). Lab and PATCH keep the Home mockup's copy; Community
- * projects takes the About mockup's copy. Stoop is a social mixer, not a
- * program, so each page shows it as one line under the cards. Career Support is
+ * The four programs, shown on Events (src/components/ProgramCards.astro; Home
+ * and About dropped them in the site audit, 10/18/2026). Lab and PATCH keep
+ * the Home mockup's copy; Community projects takes the About mockup's copy.
+ * Stoop is a social mixer, not a program, so it shows as one line under the
+ * cards. Career Support is
  * coming soon (Waskar, 10/16/2026): its card has a dashed outline and no link.
  */
 export interface Program {

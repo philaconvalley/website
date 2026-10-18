@@ -1,10 +1,23 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Button from '../../components/Button.astro';
+import BackLink from '../../components/BackLink.astro';
+import ClosingFlock from '../../components/ClosingFlock.astro';
 import PhotoGrid from '../../components/PhotoGrid.astro';
-import { links } from '../../config';
-import { formatRecapDate } from '../../lib/events';
+import { formatRecapDate, photoSrcset } from '../../lib/events';
+
+/**
+ * An event recap, Edition 1.2 (site audit, 10/18/2026). The recaps are the
+ * strongest content on the site, and this page still wore the old template: a
+ * muted purple hero, small type, and every photo captioned with the event
+ * title. Now:
+ * - Golden Yellow hero with the night's own cover photo, the same object
+ *   treatment as the Home hero (ink outline, hard shadow).
+ * - The recap text on white, at reading width.
+ * - Every photo with its own caption (src/content.config.ts requires one).
+ * - The shared closing, with the event-aware default button: an RSVP only for
+ *   a real event, "Get notified" otherwise.
+ */
 
 export async function getStaticPaths() {
   const recaps = await getCollection('events');
@@ -17,7 +30,7 @@ export async function getStaticPaths() {
       // Here a photo only needs to know whether it belongs to this recap.
       photos: photos
         .filter((photo) => photo.data.event.id === recap.id)
-        .sort((a, b) => a.data.date.getTime() - b.data.date.getTime()),
+        .sort((a, b) => a.data.date.getTime() - b.data.date.getTime() || a.id.localeCompare(b.id)),
     },
   }));
 }
@@ -25,75 +38,85 @@ export async function getStaticPaths() {
 const { recap, photos } = Astro.props;
 const { Content } = await render(recap);
 const { title, date, venue, lumaUrl, summary } = recap.data;
+
+// The cover: a wide hero-eligible shot first, otherwise the first photo. The
+// same rule as the recap cards on /events.
+const cover = photos.find((photo) => photo.data.heroEligible) ?? photos[0];
 ---
 
 <BaseLayout title={`${title} - PhilaCon Valley Events`} description={summary}>
-  <section class="bg-brand-purple text-white py-16">
-    <div class="container-custom">
-      <div class="max-w-4xl mx-auto">
-        <a
+  <section class="bg-brand-yellow">
+    <div class="container-custom pt-10 pb-[clamp(56px,8vw,112px)] grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:items-center">
+      <div class="min-w-0 flex flex-col gap-6">
+        <BackLink
           href="/events"
-          class="inline-flex items-center gap-1 text-sm text-white/70 hover:text-white transition-colors mb-6"
-        >
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 19l-7-7 7-7"
-            ></path>
-          </svg>
-          Back to Events
-        </a>
-        <p class="text-sm text-white/70 mb-3">
+          label="Back to Events"
+          class="self-start min-h-11 font-black text-brand-dark underline underline-offset-[5px] decoration-2 !mb-0"
+        />
+        <p class="m-0 self-start pill bg-white">
           {formatRecapDate(date)} · {venue}
         </p>
-        <h1 class="text-4xl md:text-5xl mb-4">{title}</h1>{' '}
-        <p class="text-xl text-white/85">{summary}</p>
+        <h1 class="m-0 text-[clamp(2.75rem,1.6rem+4.4vw,5.5rem)] [text-wrap:balance]">{title}</h1>
+        <p class="m-0 max-w-[600px] text-[clamp(18px,1.6vw,22px)] leading-[1.5] font-semibold">
+          {summary}
+        </p>
       </div>
+      {cover && (
+        <figure class="m-0 min-w-0">
+          <img
+            src={cover.data.image}
+            srcset={photoSrcset(cover.data.image)}
+            sizes="(min-width: 1024px) 45vw, calc(100vw - 32px)"
+            width="1600"
+            height="1067"
+            alt={cover.data.alt}
+            class="block w-full h-auto aspect-[4/3] object-cover rounded-retro border-2 border-brand-dark shadow-retro-xl"
+          />
+        </figure>
+      )}
     </div>
   </section>
 
-  <section class="section-padding">
-    <div class="container-custom">
-      <div class="max-w-3xl mx-auto prose prose-lg">
+  <section class="bg-white border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(56px,7vw,96px)]">
+      <div class="max-w-3xl prose prose-lg text-brand-dark prose-code:before:content-none prose-code:after:content-none">
         <Content />
       </div>
+      {lumaUrl && (
+        <a
+          href={lumaUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-8 inline-flex items-center min-h-11 font-black text-[17px] text-brand-dark underline underline-offset-[6px] decoration-[3px]"
+        >
+          This night on Luma
+        </a>
+      )}
     </div>
   </section>
 
   {photos.length > 0 && (
-    <section class="section-padding bg-primary-100">
-      <div class="container-custom">
-        <h2 class="text-3xl mb-8 text-center">Photos</h2>
-        <div class="max-w-5xl mx-auto">
-          <PhotoGrid
-            photos={photos.map((photo) => ({
-              image: photo.data.image,
-              alt: photo.data.alt,
-              event: title,
-              date: photo.data.date,
-              caption: photo.data.caption,
-            }))}
-          />
+    <section class="bg-brand-yellow border-t-2 border-brand-dark">
+      <div class="container-custom py-[clamp(56px,7vw,96px)] flex flex-col gap-10">
+        <div class="flex flex-col gap-[22px] max-w-[760px]">
+          <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">From the room</p>
+          <h2 class="m-0 heading-quiet">Photos from the night.</h2>
         </div>
+        <PhotoGrid
+          photos={photos.map((photo) => ({
+            image: photo.data.image,
+            alt: photo.data.alt,
+            caption: photo.data.caption,
+          }))}
+        />
       </div>
     </section>
   )}
 
-  <section class="section-padding">
-    <div class="container-custom text-center">
-      <h2 class="text-3xl mb-4">Come to the next one</h2>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button href={links.luma} external variant="primary" size="lg">
-          See upcoming events
-        </Button>
-        {lumaUrl && (
-          <Button href={lumaUrl} external variant="light" size="lg">
-            This event on Luma
-          </Button>
-        )}
-      </div>
-    </div>
-  </section>
+  <ClosingFlock
+    lede="Every night is free. No experience needed, and you don't have to come with anyone."
+    secondary={{ href: '/events', label: 'All events' }}
+  >
+    Come to the next one.
+  </ClosingFlock>
 </BaseLayout>
