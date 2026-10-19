@@ -16,7 +16,8 @@ Everyone came in through one of three scenes. For some, it was their first time 
 - **Code.** [p5.js](https://p5js.org) and the Web Audio API. You wire the sound to the visuals.
 
 Each scene got its own short lesson, then got to building: beats on one laptop, a reactive sketch on
-the next, where what you hear becomes what you see. At the end, people showed their work on the big
+the next, where what you hear becomes what you see. People found each other across scenes and formed
+trios: an engineer, a designer, and a performer. At the end, people showed their work on the big
 screen.
 
 The visualizer from that night is open source:
