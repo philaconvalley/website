@@ -86,6 +86,34 @@ test('Studio asks for one thing, and shows only finished client proof', async ({
   }
 });
 
+test('Studio counts the same free nights as its client stories', async ({ page }) => {
+  const response = await page.goto('/studio');
+  test.skip(response?.status() !== 200, 'Studio waits for its first approved client story');
+  let total = 0;
+  for (const line of await page.getByTestId('nights-funded').allTextContents()) {
+    total += Number(line.match(/\d+/)?.[0]);
+  }
+  const words = [
+    'zero',
+    'one',
+    'two',
+    'three',
+    'four',
+    'five',
+    'six',
+    'seven',
+    'eight',
+    'nine',
+    'ten',
+  ];
+  const claim = page.getByTestId('studio-does-good');
+  if (total > 0) {
+    await expect(claim).toContainText(`about ${words[total] ?? total} free build night`);
+  } else {
+    await expect(claim).not.toContainText(/\d|about/);
+  }
+});
+
 test('the old case-study pages are gone', async ({ page }) => {
   const response = await page.goto('/work/preview-dsm215');
   expect(response?.status()).toBe(404);

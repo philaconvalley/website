@@ -26,7 +26,7 @@ const shots = [
   class="rounded-[28px] border-2 border-brand-dark bg-white shadow-[8px_8px_0_theme(colors.brand.dark)] p-[clamp(24px,4vw,48px)] flex flex-col gap-8"
   data-testid="studio-proof"
 >
-  <header class="flex flex-col gap-4">
+  <div class="flex flex-col gap-4">
     {!isLive(study) && <DraftBadge />}
     <p class="m-0 flex flex-wrap items-center gap-3">
       <span class="font-extrabold text-[13px] tracking-[0.16em] uppercase">{client}</span>
@@ -37,7 +37,7 @@ const shots = [
     <h3 class="m-0 normal-case text-[clamp(28px,3.2vw,44px)] leading-[1.05] max-w-[900px]">
       {line}
     </h3>
-  </header>
+  </div>
 
   {shots.length > 0 && (
     <div class="grid gap-5 grid-cols-[repeat(auto-fit,minmax(min(320px,100%),1fr))]">
@@ -79,7 +79,7 @@ const shots = [
   )}
 
   {(liveUrl || nightsFunded) && (
-    <footer class="flex flex-wrap items-center gap-x-6 gap-y-4 border-t-2 border-brand-dark pt-6">
+    <div class="flex flex-wrap items-center gap-x-6 gap-y-4 border-t-2 border-brand-dark pt-6">
       {liveUrl && (
         <Button href={liveUrl} external variant="light">
           See their site
@@ -90,6 +90,6 @@ const shots = [
           This project paid for {nightsFunded} free build {nightsFunded === 1 ? 'night' : 'nights'}.
         </p>
       )}
-    </footer>
+    </div>
   )}
 </article>
