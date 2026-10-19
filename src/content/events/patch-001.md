@@ -23,4 +23,4 @@ The visualizer from that night is open source:
 [djVisualizer](https://github.com/philaconvalley/djVisualizer). PATCH 001 was the first night of the
 series, and the reason every PATCH since ends with something you made.
 
-Waskar Paulino led the night. Diego Mendoza-Ramos led the visuals scene and made the photo recap.
+Waskar Paulino led the night and taught the code scene. Diego Mendoza-Ramos led the visuals scene and made the photo recap.
