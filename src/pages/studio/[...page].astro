@@ -84,10 +84,11 @@ const steps = [
   },
 ];
 
-// "Your budget does good twice." Both halves come from the record. The
-// developer: the first build paid a builder from the community (Waskar,
-// 10/18/2026). Unnamed until that builder agrees to be named; never say the
-// split. The nights: the sum of each live case study's counted nightsFunded,
+// "Your budget does good twice." Every claim comes from the record (Waskar
+// chose this copy 10/18/2026). "We hire from our community": the first build
+// paid a builder from the community. It reports what happened; it is not a
+// promise for every project. Unnamed until that builder agrees to be named;
+// never say the split. The nights: the sum of each live case study's counted nightsFunded,
 // so this line and the case study cards always agree.
 const nightsFunded = studies.reduce((sum, study) => sum + (study.data.nightsFunded ?? 0), 0);
 const numberWords = [
@@ -103,7 +104,10 @@ const numberWords = [
   'nine',
   'ten',
 ];
-const nightsLabel = `${numberWords[nightsFunded] ?? nightsFunded} free build ${nightsFunded === 1 ? 'night' : 'nights'}`;
+const nightsLine =
+  nightsFunded > 0
+    ? `What's left pays for free build nights, about ${numberWords[nightsFunded] ?? nightsFunded} so far.`
+    : "What's left pays for free build nights.";
 
 const offers = [
   {
@@ -286,11 +290,7 @@ const offers = [
         class="m-0 max-w-[680px] text-[clamp(18px,1.6vw,22px)] leading-[1.5] font-semibold"
         data-testid="studio-does-good"
       >
-        Our first build paid a developer from our community.
-        {nightsFunded > 0
-          ? ` So far, our projects cover about ${nightsLabel}.`
-          : ' Every project also pays for our free build nights.'}{' '}
-        You get the work. Philly gets the nights.
+        You hire us. We hire from our community. {nightsLine}
       </p>
     </div>
   </section>

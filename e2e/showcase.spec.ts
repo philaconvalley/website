@@ -108,7 +108,7 @@ test('Studio counts the same free nights as its client stories', async ({ page }
   ];
   const claim = page.getByTestId('studio-does-good');
   if (total > 0) {
-    await expect(claim).toContainText(`about ${words[total] ?? total} free build night`);
+    await expect(claim).toContainText(`free build nights, about ${words[total] ?? total} so far.`);
   } else {
     await expect(claim).not.toContainText(/\d|about/);
   }
