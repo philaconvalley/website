@@ -9,7 +9,7 @@ summary: 'Sound, visuals, and code in one room. People picked a scene, learned i
 Philly, a DJ set can sound alive while the screen behind it sits still. PATCH 001 started with that
 problem: the music was alive, but the visuals weren't.
 
-Everyone came in through one of three scenes. Many people had never tried their scene before:
+Everyone came in through one of three scenes. For some, it was their first time in that scene:
 
 - **Sound.** Drum machines, a DJ controller, and GarageBand. You bring the signal.
 - **Visuals.** Sketching and design on tablets and laptops. You make it move.
