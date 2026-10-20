@@ -132,11 +132,5 @@ const stats = [
     </section>
   </div>
 
-  <!-- Clears the fixed bottom bar so the footer's last line is never trapped under
-       it. Carries the same expiry as the bar: once the bar removes itself, this
-       would otherwise leave 88px of dead space at the bottom of the page. -->
-  {nextEvent && (
-    <div class="lg:hidden h-[88px]" data-pcv-event-start={nextEvent.start} aria-hidden="true" />
-  )}
   <EventBar event={nextEvent} />
 </BaseLayout>

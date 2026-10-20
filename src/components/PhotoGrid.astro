@@ -17,7 +17,7 @@ const { photos } = Astro.props;
 {photos.length > 0 ? (
   <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
     {photos.map((photo) => (
-      <figure class="group relative overflow-hidden rounded-retro border-2 border-brand-dark/10 shadow-retro">
+      <figure class="group relative overflow-hidden rounded-retro border-2 border-brand-dark shadow-retro-lg">
         <img
           src={photo.image}
           alt={photo.alt}
@@ -32,7 +32,7 @@ const { photos } = Astro.props;
     ))}
   </div>
 ) : (
-  <div class="text-center py-12 px-6 rounded-retro border-2 border-dashed border-brand-dark/20">
+  <div class="text-center py-12 px-6 rounded-retro border-2 border-dashed border-brand-dark">
     <p class="text-lg font-display font-bold text-brand-dark/70 mb-2">Photos are on their way</p>
     <p class="text-brand-dark/50 max-w-md mx-auto">
       We're gathering shots from Commit, Ship It, and our Labs — check back after our next event to

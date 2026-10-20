@@ -5,6 +5,7 @@
 // `font-src 'self'`, and Dependabot sees version bumps. Each file covers one
 // weight, split by unicode-range, so a browser downloads only the scripts a page
 // uses. Baloo 2 stops at 800: `font-black` (900) renders as 800, as it always has.
+// Nunito ships 900 for the small uppercase labels and pills (Book section 05).
 import '@fontsource/baloo-2/400.css';
 import '@fontsource/baloo-2/600.css';
 import '@fontsource/baloo-2/700.css';
@@ -14,6 +15,7 @@ import '@fontsource/nunito/600.css';
 import '@fontsource/nunito/600-italic.css';
 import '@fontsource/nunito/700.css';
 import '@fontsource/nunito/800.css';
+import '@fontsource/nunito/900.css';
 import '@fontsource/jetbrains-mono/400.css';
 import '@fontsource/jetbrains-mono/500.css';
 import '../styles/global.css';
@@ -98,9 +100,15 @@ const {
     </script>
   </head>
   <body>
+    <!-- While it has focus, the skip link is a full-width ink strip above the
+         header, in the page flow, so it pushes the header down instead of
+         covering the logo (it used to float over the top-left corner). The
+         pink outline sits inside the strip (negative offset), because the ink
+         edge of the focus ring is invisible on an ink strip. White on ink is
+         17.4:1; it was white on #D98E1C, about 2.6:1, and off palette. -->
     <a
       href="#main-content"
-      class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary-600 focus:text-white focus:rounded-lg"
+      class="sr-only focus:not-sr-only focus:block focus:w-full focus:py-3 focus:text-center focus:bg-brand-dark focus:text-white focus:font-display focus:font-extrabold focus:outline-offset-[-6px]"
     >
       Skip to main content
     </a>

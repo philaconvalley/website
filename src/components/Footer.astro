@@ -4,102 +4,132 @@ import { site, links } from '../config';
 const currentYear = new Date().getFullYear();
 
 /**
- * The redesign reduces the footer to one statement and a single hairline row of
- * links. The four-column sitemap it replaces was doing navigation work the
- * header already does; what it could not do is land the closing line.
+ * Edition 1.2 redesign (10/15/2026): an ink field with three labeled columns of
+ * links, after the redesign mockup. Text is white, not white at reduced alpha —
+ * the Book has no greys, and 45% white on ink read as grey.
  *
- * Kept as real links rather than the design's plain text — the design renders
- * "Slack · Luma · Instagram · GitHub" unlinked because a static mock has nowhere
- * to go, not because these should be dead. Slack in that mock is now Discord —
- * the main community channel, per the 2026-08 move away from Slack.
+ * Left block (decided in the 10/15/2026 footer review): the official wordmark
+ * and one line, as in the mockup. Brand Book §07 puts the wordmark, not the
+ * mascot, in footers, and the header already carries the mascot. The motto
+ * lives in ClosingFlock, the section above the footer, once each page PR
+ * places it. Privacy sits in the bottom row with the other site-level links.
+ *
+ * Social links stay real links, and Slack in the old mock is Discord — the main
+ * community channel since the 2026-08 move away from Slack.
  */
-const connect = [
-  { name: 'Discord', href: links.discord },
-  { name: 'Luma', href: links.luma },
-  { name: 'Instagram', href: links.social.instagram },
-  { name: 'LinkedIn', href: links.social.linkedin },
-  { name: 'GitHub', href: links.github.org },
-];
-
-const secondary = [
-  { name: 'About', href: '/about' },
-  { name: 'Events', href: '/events' },
-  { name: 'Projects', href: '/projects' },
-  { name: 'Resources', href: '/resources' },
-  // Blog is hidden until an editorial procedure exists — see src/pages/_blog/.
-  // { name: 'Blog', href: '/blog' },
-  { name: 'Join', href: '/join' },
-  { name: 'Support', href: '/support' },
-  { name: 'Contact', href: '/contact' },
-  { name: 'Privacy', href: '/privacy' },
+const columns = [
+  {
+    label: 'Explore',
+    links: [
+      { name: 'About', href: '/about' },
+      { name: 'Events', href: '/events' },
+      { name: 'Projects', href: '/projects' },
+      { name: 'Arcade', href: '/arcade' },
+      { name: 'Resources', href: '/resources' },
+      // Blog is hidden until an editorial procedure exists — see src/pages/_blog/.
+    ],
+  },
+  {
+    label: 'Get involved',
+    links: [
+      { name: 'Join', href: '/join' },
+      { name: 'Support', href: '/support' },
+      { name: 'Contact', href: '/contact' },
+      // The mockup adds "Start a project". It returns when a real page exists.
+    ],
+  },
+  {
+    label: 'Find us',
+    external: true,
+    links: [
+      { name: 'Discord', href: links.discord },
+      { name: 'Luma', href: links.luma },
+      { name: 'Instagram', href: links.social.instagram },
+      { name: 'LinkedIn', href: links.social.linkedin },
+      { name: 'GitHub', href: links.github.org },
+    ],
+  },
 ];
 ---
 
-<footer class="bg-brand-dark text-primary-100">
-  <div class="container-custom py-[60px] lg:py-[104px] lg:pb-[60px]">
-    <!-- The logo is the footer's only route home: the link row below deliberately
-         does not repeat Home, and clicking the mark is the convention a visitor
-         who has read to the bottom of a long page will reach for first. -->
-    <a href="/" aria-label="PhilaCon Valley home" class="inline-block mb-6 lg:mb-8">
-      <img
-        src="/images/sunset-philacon-valley-logo-264.webp"
-        alt="PhilaCon Valley — a pigeon on a keyboard with the Philadelphia skyline"
-        width="132"
-        height="176"
-        loading="lazy"
-        class="w-[108px] lg:w-[132px] h-auto block"
-      />
-    </a>
-
-    <h2 class="font-display font-extrabold text-[32px] lg:text-[52px] leading-[1.1] lg:leading-[1.06] tracking-tight text-primary-100 max-w-[720px] m-0">
-      A pigeon flies alone. A flock goes much further.
-    </h2>
-
-    <!-- Secondary navigation: everything the header carries, still reachable
-         from the bottom of the page without reproducing a four-column sitemap. -->
-    <nav
-      aria-label="Footer"
-      class="mt-10 lg:mt-14 flex flex-wrap gap-x-6 gap-y-3 font-display font-semibold text-sm"
-    >
-      {secondary.map((link) => (
-        <a href={link.href} class="text-primary-100/60 hover:text-accent-400 transition-colors">
-          {link.name}
+<footer class="bg-brand-dark text-white">
+  <div class="container-custom py-[60px] lg:py-[96px] lg:pb-10">
+    <div class="flex flex-col lg:flex-row lg:justify-between gap-12">
+      <div class="w-full max-w-[560px] lg:w-[440px] xl:w-[560px]">
+        <!-- The official wordmark from the brand logo library
+             (company/brand/character/logos/philacon-wordmark-horizontal.svg),
+             copied unchanged: Brand Book §07 says the mark is pulled from the
+             library, never rebuilt. The mockup typed it in Baloo 2 instead.
+             The wordmark is the footer's only route home: the columns deliberately
+             do not repeat Home, and clicking the name is the convention a visitor
+             who has read to the bottom of a long page will reach for first. -->
+        <a href="/" class="flex items-center w-full max-w-[560px] min-h-[44px]">
+          <img
+            src="/images/philacon-wordmark-horizontal.svg"
+            alt="PhilaCon Valley home"
+            width="560"
+            height="52"
+            loading="lazy"
+            class="block w-full h-auto"
+          />
         </a>
-      ))}
-    </nav>
+        <!-- Non-breaking hyphen and space, so "in-person" and "Philadelphia, PA"
+             never split across lines. -->
+        <p class="mt-5 mb-0 max-w-[26rem] font-sans text-lg text-white">
+          Come as you are. Leave with a flock. A free, in&#8209;person tech community in{' '}
+          {site.location.replace(' ', '\u00a0')}.
+        </p>
+      </div>
 
-    <div class="mt-10 lg:mt-[60px] pt-5 lg:pt-6 border-t border-white/10 flex flex-col lg:flex-row lg:justify-between gap-2 font-mono text-[11px] lg:text-xs text-primary-100/45">
-      <span>{site.location}</span>
-      <span class="flex flex-wrap gap-x-2">
-        {connect.map((link, index) => (
-          <>
-            {index > 0 && <span aria-hidden="true">·</span>}
-            <a
-              href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="hover:text-accent-400 transition-colors"
-            >
-              {link.name}
-            </a>
-          </>
+      <!-- On phones every link is 44px tall (py-2.5, min-h-[44px]), the touch
+           size Apple and Google recommend. From lg, a mouse needs no extra
+           height, so the desktop spacing is unchanged. -->
+      <div class="flex flex-wrap gap-x-14 gap-y-10">
+        {columns.map((column) => (
+          <nav aria-label={column.label} class="flex flex-col lg:gap-3">
+            <p class="m-0 font-sans text-xs font-black uppercase tracking-[0.2em] text-brand-amber">
+              {column.label}
+            </p>
+            {column.links.map((link) => (
+              <a
+                href={link.href}
+                {...(column.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                class="py-2.5 lg:py-0 font-sans font-bold text-base text-white hover:text-brand-yellow hover:underline decoration-2 underline-offset-4"
+              >
+                {link.name}
+              </a>
+            ))}
+          </nav>
         ))}
-      </span>
-      <span class="flex flex-wrap gap-x-2">
-        <a href={`mailto:${site.email}`} class="hover:text-accent-400 transition-colors">
+      </div>
+    </div>
+
+    <div class="mt-12 lg:mt-16 pt-6 border-t border-white flex flex-col lg:flex-row lg:justify-between gap-3 font-sans font-bold text-sm text-white">
+      <span>
+        {site.location} ·{' '}
+        <a
+          href={`mailto:${site.email}`}
+          class="inline-flex items-center min-h-[44px] lg:min-h-0 hover:text-brand-yellow hover:underline underline-offset-4"
+        >
           {site.email}
         </a>
-        <span aria-hidden="true">·</span>
+      </span>
+      <span class="flex flex-wrap gap-x-6 gap-y-2">
         <a
           href={links.github.website}
           target="_blank"
           rel="noopener noreferrer"
-          class="hover:text-accent-400 transition-colors"
+          class="inline-flex items-center min-h-[44px] lg:min-h-0 hover:text-brand-yellow hover:underline underline-offset-4"
         >
-          Open source
+          This site is open source
         </a>
-        <span aria-hidden="true">·</span>
-        <span>© {currentYear}</span>
+        <a
+          href="/privacy"
+          class="inline-flex items-center min-h-[44px] lg:min-h-0 hover:text-brand-yellow hover:underline underline-offset-4"
+        >
+          Privacy
+        </a>
+        <span>© {currentYear} PhilaCon Valley</span>
       </span>
     </div>
   </div>

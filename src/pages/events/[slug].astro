@@ -48,7 +48,7 @@ const { title, date, venue, lumaUrl, summary } = recap.data;
         <p class="text-sm text-white/70 mb-3">
           {formatRecapDate(date)} · {venue}
         </p>
-        <h1 class="text-4xl md:text-5xl font-bold mb-4">{title}</h1>{' '}
+        <h1 class="text-4xl md:text-5xl mb-4">{title}</h1>{' '}
         <p class="text-xl text-white/85">{summary}</p>
       </div>
     </div>
@@ -65,7 +65,7 @@ const { title, date, venue, lumaUrl, summary } = recap.data;
   {photos.length > 0 && (
     <section class="section-padding bg-primary-100">
       <div class="container-custom">
-        <h2 class="text-3xl font-bold mb-8 text-center">Photos</h2>
+        <h2 class="text-3xl mb-8 text-center">Photos</h2>
         <div class="max-w-5xl mx-auto">
           <PhotoGrid
             photos={photos.map((photo) => ({
@@ -83,13 +83,13 @@ const { title, date, venue, lumaUrl, summary } = recap.data;
 
   <section class="section-padding">
     <div class="container-custom text-center">
-      <h2 class="text-3xl font-bold mb-4">Come to the next one</h2>
+      <h2 class="text-3xl mb-4">Come to the next one</h2>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <Button href={links.luma} external variant="primary" size="lg">
           See upcoming events
         </Button>
         {lumaUrl && (
-          <Button href={lumaUrl} external variant="outline" size="lg">
+          <Button href={lumaUrl} external variant="light" size="lg">
             This event on Luma
           </Button>
         )}
