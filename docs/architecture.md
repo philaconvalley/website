@@ -31,8 +31,7 @@ src/
 │   ├── Hero.astro         # Homepage hero (only used on index)
 │   ├── SEO.astro          # Meta tags, Open Graph, Twitter cards
 │   ├── Button.astro       # Reusable button/link (3 variants: primary, secondary, outline)
-│   ├── ProjectCard.astro  # Project card component
-│   └── ResourceCard.astro # Resource card component
+│   └── ProjectCard.astro  # Project card component
 │
 ├── content.config.ts      # Collection schemas + glob loaders (uses Zod)
 │                          # Lives here, not in content/, since Astro 6
