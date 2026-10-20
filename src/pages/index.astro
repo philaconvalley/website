@@ -470,7 +470,9 @@ const stats = [
             <p class="m-0 self-start rounded-full bg-brand-yellow text-brand-dark px-3 py-1 font-black text-xs tracking-[0.14em] uppercase">
               Next up
             </p>
-            <h2 class="m-0 text-brand-yellow text-[clamp(40px,5vw,72px)] leading-[0.92]">
+            <!-- Capped at 64px: at 72px the event title was a second loud
+                 heading on Home (e2e/site-audit.spec.ts, one loud moment). -->
+            <h2 class="m-0 text-brand-yellow text-[clamp(40px,4.5vw,64px)] leading-[0.92]">
               {nextEvent.title}
             </h2>
             <p class="m-0 font-black text-sm tracking-[0.14em] uppercase text-brand-amber">
