@@ -1,5 +1,6 @@
-// About page: the "How a night goes" timeline, step 1 of 2. Loaded
-// parser-blocking just before the strip, so its steps are hidden before the
+// The night system, step 1 of 2: the "How a night goes" timeline on About, and
+// the four "First time?" points on Events. Loaded parser-blocking just before
+// the strip, so its steps are hidden before the
 // browser paints them and the timeline can draw itself on every view. night.js
 // plays it. Same pattern as odo-arm.js on Home.
 // Safety: if night.js has not started within 3s (blocked, failed), show the

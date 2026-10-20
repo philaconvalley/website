@@ -14,7 +14,7 @@ const { nextEvent, nightsHeld, thingsShipped } = await getCommunityData();
 /**
  * Home, Edition 1.2 (DESIGN.md, "The 1.2 redesign"). Sections follow the
  * redesign mockup with three changes:
- * - The Lab timeline (LabTrack) moved to Events. On Home, with no context,
+ * - The animated Lab timeline left Home. On Home, with no context,
  *   "One night. Three hours." read as a one-night event (Diego, 10/15/2026).
  * - The hero line says what happens here, not only who it is for.
  * - No 01/02/03 numbers. One label above a heading ("Why we exist"), because
@@ -292,7 +292,7 @@ const stats = [
   <!-- How a Lab night works: the mockup's timeline, placed after the programs
        so visitors first see that PhilaCon runs several kinds of nights. On its
        own it read as a one-night event (Diego, 10/15/2026). Static cards; the
-       animated LabTrack stays on Events (motion rule 1). -->
+       animated night timeline lives on Events and About. -->
   <section class="bg-brand-dark text-white border-t-2 border-brand-dark">
     <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
       <div class="flex flex-wrap justify-between items-end gap-6">
