@@ -24,14 +24,17 @@ Owned by the Brand Book's Voice & Tone section. Summarized here only where the s
 
 **We sound like a neighbor, not a brand.** Direct, credible, warm — a trusted organizer. Never corporate, never startup-hype. Short sentences. The reader is always "you"; we are always "we."
 
-**The four taglines each have one job.** They are not interchangeable, and the surface decides which one applies:
+**The five taglines each have one job.** Edition 1.2, p04, "The tagline system". They are not interchangeable, and the surface decides which one applies:
 
-| Line                                                            | Job                      | Where                                                           |
-| --------------------------------------------------------------- | ------------------------ | --------------------------------------------------------------- |
-| "By us, for us."                                                | The signature            | Sparingly, so it stays earned                                   |
-| **"You find your people to build with you, not just for you."** | The community promise    | **About copy**, recruitment, welcome emails                     |
-| **"Show up before you feel ready."**                            | The welcome              | Event openings, onboarding, first-timer touchpoints — **Join**  |
-| "A pigeon flies alone. A flock goes much further."              | The rallying cry / motto | Recruitment, community moments, email sign-offs, closing slides |
+| Book label    | Line                                                          | Where                                                           |
+| ------------- | ------------------------------------------------------------- | --------------------------------------------------------------- |
+| Hero          | **"Come as you are. Leave with a flock."**                    | **Home headline**                                               |
+| Mission       | "Making Philly the tech hub it's meant to be: by us, for us." | Mission statements. "By us, for us." alone, sparingly           |
+| Encouragement | **"Show up before you feel ready."**                          | Event openings, onboarding, first-timer touchpoints — **Join**  |
+| Closing       | "A pigeon flies alone. A flock goes much further."            | Recruitment, community moments, email sign-offs, closing slides |
+| Access        | "Free, forever, for us."                                      | Cost and access claims — About                                  |
+
+Edition 1.0 had a fourth line, "You find your people to build with you, not just for you." Edition 1.2 drops it, and the site does not use it. Do not bring it back without the Brand Steward.
 
 ### The event is a Lab
 
@@ -45,11 +48,11 @@ The rename was mechanical but wide, touching a component name and two e2e spec f
 
 ### The homepage headline
 
-**"Come as you are. Leave with a flock."** is not one of the Book's four taglines — it is a site invention riffing on the motto. **Decided 08/09/2026: it stays, and it should be promoted to a documented line in the Book** rather than left as undocumented drift. It does a job none of the four cover: the homepage hook.
+**"Come as you are. Leave with a flock."** started as a site invention riffing on the motto. **Decided 08/09/2026: it stays, and it should be promoted to a documented line in the Book.** **Done:** Edition 1.2 lists it as the Hero line (p04) and puts it on its cover.
 
 **The line under it must say what happens at PhilaCon. Decided 10/15/2026, from Diego's review.** A first-time visitor has no idea what the org does. The current line says who it is for and what it costs ("Free, in person, and open before you feel ready"), but not what you do there. The Home PR rewrites it to name the activity, for example hands-on nights where people build real tech together. Every fact in it must be confirmed by Waskar (evidence contract).
 
-> **Open action, not a website task.** The Book is maintained outside this repo by the brand team. Adding a fifth line is their call and their file. Until it lands there, this is a recorded exception, not a precedent for inventing more lines.
+> **The Book owns the taglines.** It is maintained outside this repo by the brand team. A new line is their call and their file, so the site does not invent more lines.
 
 **Hard rules, all currently violated or at risk:**
 
@@ -198,13 +201,13 @@ The strongest existing part of this system and the least documented outside code
 **Rules:**
 
 1. **The site has no endless loop (Waskar, 10/16/2026).** The LabTrack loop on Events was retired when the Events page moved to the redesign. Its job, showing how a night goes, now belongs to the night timeline (`src/components/NightTimeline.astro`) on About. Events dropped it on 10/16/2026, because the mockup has no timeline there; its four "First time?" points play with the same system instead (numbers pop in like the dots, text rises, no segments). Join's role ladder uses it too (10/17/2026): each role card rises and its number pops in, showing the build-up from Neighbor to Voice. It plays once each time it comes into view and stops in its final state. Do not add a looping element without a review by `animate`: a loop costs frames and battery, and it needs a pause control past five seconds (WCAG 2.2.2). History: the loop moved from Home to Events on 10/15/2026, from Diego's review, because on Home it made PhilaCon read as a one-night event.
-2. **Every animated element must be legible in its final state**, because `prefers-reduced-motion` freezes it exactly there.
+2. **Every animated element must be legible in its final state**, because `prefers-reduced-motion` freezes it exactly there. **Print shows the final state too** (`@media print` in `global.css`, 10/17/2026). Before that rule, a live number that never scrolled into view printed as "000", and the night steps printed blank.
 3. **The reduced-motion block is deliberately unlayered** (outside `@layer`) so it wins against Tailwind's cascade order regardless of layer sorting. Do not move it into a layer.
 4. **Animate `transform` and `opacity`, never layout properties.** The night timeline's line segments draw with `scaleX` and `scaleY`, which composite. **Scaling is only safe on them because each is a childless 2px line with no border-radius.** It is the wrong fix for the nav pill — see rule 5.
-5. **The desktop nav pill is a deliberate, documented exception.** It slides for the mouse and jumps for the keyboard (no transition on focus), since Tab is keyboard-initiated. `Header.astro` transitions `width` alongside `transform`. `scaleX` would stretch its `rounded-full` ends into ellipses, so the layout cost is accepted: it is one small element, on a discrete hover, bounded at 200ms — not an infinite loop. Do not "fix" it to `scaleX` without solving the radius distortion.
+5. **The desktop nav pill moves by `clip-path`, not by `width` or `scaleX`.** It slides for the mouse and jumps for the keyboard (no transition on focus), since Tab is keyboard-initiated. The pill spans the whole nav, and `clip-path: inset(... round 9999px)` shows only the part under the current link (motion review, 10/17/2026). This keeps the move off layout, and the `round` keeps the ends fully round, which `scaleX` would squash into ellipses. It was a `width` transition until then. 200ms, `ease-out`.
 6. **Standard easing is `cubic-bezier(0.22, 1, 0.36, 1)`**, the Tailwind token `ease-out` since 10/15/2026. On-screen movement uses `cubic-bezier(0.77, 0, 0.175, 1)`, the token `ease-in-out`. Use the tokens; do not paste curves inline. Original note: for entrances and joins — a decelerating ease-out. Durations cluster at 0.8–1.0s for entrances and 8s for the loop cycle. Hero entrances exceed the 300ms UI budget on purpose: they are once-per-session display motion on a Persuade surface.
 7. **Never `ease-in`, and never `transition: all`.** `ease-in` delays the moment the user is watching; `transition: all` animates whatever happens to differ, off the GPU. Name the properties.
-8. **Hover motion is gated to real pointers** by `future.hoverOnlyWhenSupported` in `tailwind.config.mjs`, so every `hover:` utility compiles inside `@media (hover: hover)`. Hand-written CSS `:hover` rules must gate themselves. Every pressable sticker also answers `:active` (pointer-down) in 100ms; the arcade cabinet drops 2px.
+8. **Hover motion is gated to real pointers** by `future.hoverOnlyWhenSupported` in `tailwind.config.mjs`, so every `hover:` utility compiles inside `@media (hover: hover)`. Hand-written CSS `:hover` rules must gate themselves. Every pressable sticker also answers `:active` (pointer-down) in 100ms; the arcade cabinet drops 2px. **Hover gating means a phone gets no hover state, so every tappable element needs its own `:active` state** (10/17/2026). The phone menu links fill Hot Pink on press, the menu button uses `.lift`, and the FAQ's + presses to 0.9 (`.faq-summary` in `global.css`). Tailwind's `active:` is not hover-gated.
 9. **New motion goes through the `animate` skill**, per the design-team charter. `impeccable animate` is not used on this repo.
 10. **The marquee band is static. Decided 10/15/2026.** The redesign mockup scrolls it forever. That would be an endless loop, and rule 1 allows none: the marquee only decorates. The band ships as a still row of words. It stays `aria-hidden`, because its words repeat what the page says elsewhere.
 11. **Hover and press on sticker objects. Built 10/15/2026 (Stage 5), revised after `/review-animations`.** The Book: cards _"shadow grows on hover"_. **Hover** moves the object 2px up-left while its ink shadow grows; **press** (`:active`, pointer-down, per `apple-design` §1) pushes it 2px down-right while the shadow shrinks by 2px, so the shadow's outer edge never moves. Built as the `.lift` class (filled buttons) and `.card` in `global.css`: the shadow offset is a registered custom property, `--lift` (rest / hover / press: 4/6/2px; `.lift-sm` 3/6/1px; `.card` 6/9/4px). **Only `transform` and `--lift` transition, never `box-shadow`**, because `box-shadow` also carries the two-tone focus ring, and the ring must snap: keyboard actions get no animation. Press takes 100ms, release and hover 150ms, with `ease-out`. Movement is gated by hover capability and `prefers-reduced-motion`. The `outline-light` Button variant has no shadow, so it keeps a 0.97 scale press. Browsers without `@property` (before Firefox 128, Safari 16.4) show the shadow change without animation. Guarded by `e2e/button-press.spec.ts` and `e2e/focus-ring.spec.ts`.

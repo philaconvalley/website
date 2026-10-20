@@ -95,8 +95,9 @@ const rsvpHref = nextEvent?.url ?? links.luma;
 
       <!-- Desktop Navigation -->
       <!--
-        Baloo 2 loads remotely with `display=swap` (BaseLayout.astro), so the
-        browser paints these links in a fallback font first, then swaps in
+        Baloo 2 is self-hosted from @fontsource (BaseLayout.astro) with
+        `font-display: swap`, so the browser can paint these links in a
+        fallback font first, then swap in
         the real one — which changes every link's rendered width. x-init
         measures the pill's initial position/width from offsetLeft/offsetWidth
         before that swap is guaranteed to have happened, and nothing else
@@ -221,7 +222,7 @@ const rsvpHref = nextEvent?.url ?? links.luma;
           aria-controls="mobile-menu"
           @click="mobileMenuOpen = !mobileMenuOpen"
           type="button"
-          class="inline-flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full border-2 border-brand-dark bg-white text-brand-dark shadow-retro-sm"
+          class="inline-flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full border-2 border-brand-dark bg-white text-brand-dark lift lift-sm"
           :aria-expanded="mobileMenuOpen.toString()"
         >
           <span class="sr-only">Open main menu</span>
@@ -284,7 +285,7 @@ const rsvpHref = nextEvent?.url ?? links.luma;
               class={`block px-3 py-2.5 rounded-lg text-base font-display font-extrabold ${
                 isCurrent
                   ? 'bg-accent-400 text-brand-dark'
-                  : 'text-white hover:bg-accent-400 hover:text-brand-dark'
+                  : 'text-white hover:bg-accent-400 hover:text-brand-dark active:bg-accent-400 active:text-brand-dark'
               }`}
             >
               {item.name}
