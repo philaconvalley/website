@@ -1,7 +1,8 @@
 ---
 /**
- * The Lab story, told as a horizontal timeline: one dot arrives alone,
- * two more pull up a chair, you leave with a thing.
+ * The Lab story, told as a horizontal timeline: you arrive, you build (with
+ * others or on your own), you leave with a thing. The times follow
+ * src/data/lab-night.ts, checked against Luma (Waskar, 10/16/2026).
  *
  * The left-to-right travel IS the argument, which is why this stays horizontal
  * at every width rather than stacking on phones — stacked, it becomes a bulleted
@@ -25,7 +26,7 @@ const dots = [
 ];
 ---
 
-<div class="relative h-[186px] lg:h-[230px] lg:max-w-[460px]" aria-hidden="true">
+<div data-lab-track class="relative h-[186px] lg:h-[230px] lg:max-w-[460px]" aria-hidden="true">
   <!-- Track: a static hairline, with the coral line drawing itself along it -->
   <div class="absolute inset-x-0 top-[58px] lg:top-[96px] h-px bg-brand-dark/[0.14]"></div>
   <div class="absolute left-0 top-[58px] lg:top-[96px] h-px bg-accent-600 pcv-loop-track"></div>
@@ -50,16 +51,16 @@ const dots = [
        the failure mode is at worst a crowded frame, never hidden words. Above
        `lg` the chip sits clear on its own. e2e/lab-track.spec.ts. -->
   <div class="absolute z-10 left-0 top-[102px] lg:top-[126px] font-mono text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.14em] text-brand-dark/45">
-    6:30pm · you arrive alone
+    6:00pm · you arrive
   </div>
   <div class="absolute z-10 left-0 top-[120px] lg:top-[148px] font-mono text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.14em] text-brand-dark/45 pcv-loop-label">
-    7:00pm · two others pull up a chair
+    7:15pm · build together or solo
   </div>
 
   <!-- What you leave with -->
   <div class="absolute right-0 top-0.5 lg:top-1.5 w-[214px] lg:w-[242px] bg-white rounded-[14px] px-4 py-3.5 lg:px-[18px] lg:py-4 shadow-retro pcv-loop-chip">
     <div class="font-mono text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.14em] text-accent-600">
-      9:41pm · you leave with
+      9:00pm · you leave with
     </div>
     <div class="font-display font-bold text-[17px] lg:text-[19px] leading-tight mt-1.5">
       {outcome}
@@ -70,8 +71,12 @@ const dots = [
   </div>
 </div>
 
+<!-- Pauses the loop while it is off screen (public/js/lab-track.js). A served
+     file, not inline: the CSP allows scripts from this origin only. -->
+<script is:inline defer src="/js/lab-track.js"></script>
+
 <!-- Same story, for screen readers and for anyone the animation never reaches. -->
 <p class="sr-only">
-  A Lab runs from 6:30pm, when you arrive alone, through 7:00pm, when two others pull up a chair, to
-  9:41pm, when you leave with {outcome} — {outcomeDetail}
+  A Lab runs from 6:00pm, when you arrive, through 7:15pm, when you build together or on your own,
+  to 9:00pm, when you leave with {outcome} — {outcomeDetail}
 </p>

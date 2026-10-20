@@ -271,7 +271,12 @@
      the line: white fill, 3px ink outline, hard shadow, a slight tilt. One per
      heading at most. Override the fill with a color utility. */
   .sticker {
-    @apply inline-block rounded-[18px] border-[3px] border-brand-dark bg-white px-3.5 shadow-retro-lg -rotate-2;
+    /* Uppercase Baloo 2 like the display type it sits beside (DESIGN.md, voice
+       rule 1), so a sticker outside a heading still reads as one. */
+    @apply inline-block rounded-[18px] border-[3px] border-brand-dark bg-white px-3.5 shadow-retro-lg -rotate-2
+           font-display font-extrabold uppercase my-[0.08em];
+    /* my-: the sticker box is taller than a display heading's tight line
+       height; without the margin it overlaps the next line on phones. */
   }
 
   /* A small flat label: one color, stadium radius, ink outline (Book section
@@ -338,6 +343,13 @@
 
   .pcv-loop-label {
     animation: pcvLabel 8s ease-out infinite;
+  }
+
+  /* Off screen, the whole Lab loop pauses together, so its parts stay in
+     sync (public/js/lab-track.js sets data-paused). An endless animation
+     nobody sees still costs frames and battery. */
+  [data-lab-track][data-paused] [class*='pcv-loop-'] {
+    animation-play-state: paused;
   }
 
   .pcv-loop-chip {
@@ -507,4 +519,108 @@
 
   /* Cards and buttons need no rule here: their movement is gated by
      motion-safe:, so under reduced motion only the shadow changes. */
+}
+
+/*
+ * The numbers odometer (public/js/odo-arm.js, then public/js/home.js), on the
+ * numbers band and the hero stat line. Every time a stat comes a quarter into
+ * view (on load, and again after it leaves the screen fully and comes back): its ink rule draws down, its
+ * digits roll up into place, then its
+ * label and note rise in. Stats that arrive together stagger 80ms, left to
+ * right.
+ *
+ * Only `transform` and `opacity` move. The rolling digits sit in an overlay
+ * over the real number, which turns transparent but keeps its layout, so the
+ * page never shifts. The script removes the overlay when the roll ends.
+ *
+ * Durations exceed the 300ms UI budget on purpose: this is display motion on
+ * a Persuade surface (DESIGN.md, motion rule 6).
+ *
+ * Delays are set per element by the script (one mechanism for every part).
+ *
+ * States: html.odo (set before paint) hides every stat that has no data-odo
+ * yet; data-odo="play" runs the transitions; data-odo="done" is the plain
+ * final state. No script: no html.odo, and every rule below is inert.
+ */
+[data-odo-item] [data-odo-rule] {
+  transform-origin: top;
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-odo-item] [data-odo-rise] {
+  transition:
+    opacity 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.odo [data-odo-item]:not([data-odo]) [data-odo-rule] {
+  transform: scaleY(0);
+}
+
+.odo [data-odo-item]:not([data-odo]) [data-odo-rise] {
+  opacity: 0;
+  transform: translateY(0.5rem);
+}
+
+/* Replays (data-odo-replay, set on reset) keep the labels in place: the first
+   view earns the rise; later views only roll the digits. Same specificity as
+   the hidden-state rule above, and later, so it wins. */
+.odo [data-odo-item][data-odo-replay] [data-odo-rise] {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+/* The real number keeps its box; the overlay shows the roll. */
+.odo [data-odo-item]:not([data-odo]) [data-count],
+[data-odo='play'] [data-count] {
+  color: transparent;
+}
+
+.odo-layer {
+  position: absolute;
+  inset: 0;
+  white-space: nowrap;
+  color: #1a1a1a;
+}
+
+.odo-col {
+  display: inline-block;
+  /* One line of the number's own line height, so the overlay fits both the
+     band numbers and the hero stat line. */
+  height: 1lh;
+  overflow: hidden;
+  vertical-align: top;
+}
+
+.odo-strip {
+  display: block;
+  transition: transform 1100ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.odo-strip > span {
+  display: block;
+  height: 1lh;
+}
+
+/* Reduced motion: nothing moves. The stat fades in at its real value. */
+@media (prefers-reduced-motion: reduce) {
+  [data-odo-item] {
+    transition: opacity 300ms ease;
+  }
+
+  .odo [data-odo-item]:not([data-odo]) {
+    opacity: 0;
+  }
+
+  [data-odo-item] [data-odo-rule],
+  [data-odo-item] [data-odo-rise] {
+    transition: none;
+    transform: none;
+    opacity: 1;
+  }
+
+  .odo [data-odo-item]:not([data-odo]) [data-count] {
+    color: inherit;
+  }
 }

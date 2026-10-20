@@ -1,5 +1,6 @@
 ---
 import { getCommunityData, formatEventDate } from '../lib/community';
+import { links } from '../config';
 
 /**
  * The redesign shows a three-link nav (Community / Studio / Stories). That is an
@@ -24,7 +25,9 @@ const currentPath = Astro.url.pathname;
 
 const { nextEvent } = await getCommunityData();
 const eventDate = nextEvent ? formatEventDate(nextEvent.start) : null;
-const rsvpHref = nextEvent?.url ?? '/events';
+// With no event, the header asks people to follow the Luma calendar instead
+// of offering an RSVP with nothing behind it.
+const rsvpHref = nextEvent?.url ?? links.luma;
 ---
 
 <!--
@@ -155,24 +158,35 @@ const rsvpHref = nextEvent?.url ?? '/events';
              the ink shadow sits on yellow, not behind an ink button (the old fill).
              Both attributes are the static-build guard, continued client-side: once
              the visitor's clock passes the event, the date row removes itself and
-             this CTA falls back to /events rather than deep-linking a closed Luma
-             page. See BaseLayout.astro. -->
+             this CTA falls back to the Luma calendar ("Get notified") rather than
+             deep-linking a closed event page. See BaseLayout.astro. -->
         <a
           href={rsvpHref}
+          target="_blank"
+          rel="noopener noreferrer"
           {...(nextEvent
             ? {
-                target: '_blank',
-                rel: 'noopener noreferrer',
                 'data-pcv-event-start': nextEvent.start,
-                'data-pcv-event-fallback': '/events',
+                'data-pcv-event-fallback': links.luma,
               }
             : {})}
           data-testid="hero-cta"
-          class="inline-flex items-center gap-2 min-h-[48px] font-display font-extrabold text-base xl:text-[17px] px-5 xl:px-6 py-2.5 rounded-full border-2 border-brand-dark bg-accent-400 text-brand-dark lift lift-sm"
+          class="inline-flex items-center gap-2 min-h-[48px] font-display font-extrabold text-base xl:text-[17px] px-4 xl:px-6 py-2.5 rounded-full border-2 border-brand-dark bg-accent-400 text-brand-dark lift lift-sm"
         >
-          RSVP
+          {nextEvent ? (
+            <>
+              <span data-pcv-event-start={nextEvent.start}>RSVP</span>
+              <span hidden data-pcv-event-after={nextEvent.start}>
+                Get notified
+              </span>
+            </>
+          ) : (
+            'Get notified'
+          )}
+          {/* From 1024 to 1279px the nav is full, and "Get notified" is 50px
+              wider than "RSVP". The arrow and some padding make room there. */}
           <svg
-            class="w-4 h-4"
+            class="hidden xl:block w-4 h-4"
             viewBox="0 0 16 16"
             fill="none"
             stroke="currentColor"
