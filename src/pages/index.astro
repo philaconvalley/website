@@ -1,142 +1,485 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/Button.astro';
+import ClosingFlock from '../components/ClosingFlock.astro';
 import EventBar from '../components/EventBar.astro';
-import LabTrack from '../components/LabTrack.astro';
-import { getCommunityData } from '../lib/community';
+import { getCommunityData, formatEventDate } from '../lib/community';
 import { community, links } from '../config';
-import { getCollection } from 'astro:content';
+import { labNight } from '../data/lab-night';
+import PhotoGrid from '../components/PhotoGrid.astro';
+import { getRoomPhotos } from '../lib/events';
+import { getHireLink } from '../lib/showcase';
+import { getHeroPhotos } from '../lib/hero-photos';
 
 const { nextEvent, nightsHeld, thingsShipped } = await getCommunityData();
 
 /**
- * The design calls for one full-bleed photo of a Lab — warm, faces.
- * There is no stand-in for that: the banner artwork is brand illustration, not a
- * room full of people, and cropping it full-bleed would read as a placeholder.
- * So the section renders only when a real photo exists in the gallery
- * collection, and is absent rather than wrong until one is added.
+ * Home, Edition 1.2 (DESIGN.md, "The 1.2 redesign"). Sections follow the
+ * redesign mockup with three changes:
+ * - The animated Lab timeline left Home. On Home, with no context,
+ *   "One night. Three hours." read as a one-night event (Diego, 10/15/2026).
+ * - The hero line says what happens here, not only who it is for.
+ * - No 01/02/03 numbers. One label above a heading ("Why we exist"), because
+ *   that section matches the mockup exactly (Waskar, 10/15/2026).
  *
- * `heroEligible` gates it rather than "newest wins". The band is ~1400px wide;
- * the PATCH 002 set tops out at 768px portrait, which the /events grid can use
- * but this cannot without visible upscaling. An absent band beats a soft one.
+ * Every claim is confirmed (DESIGN.md, evidence contract). The hero photo is a
+ * real PATCH 003 photo; the next-event section renders only for a real event.
+ *
+ * Site audit, 10/18/2026:
+ * - The program cards left Home for Events, their one home. In their place,
+ *   "From the room" shows four real photos from more than one night, with a
+ *   line and a link to the kinds of nights. The room is the proof.
+ * - The member count says what it counts: people on the Luma calendar. Join
+ *   shows the Discord count, a different number.
+ * - "Nobody handed us a way in" is the page's loudest section heading. Every
+ *   other section heading is one step quieter (global.css, .heading-quiet).
+ *   The motto closes Home and no other page.
  */
-const photo = (await getCollection('gallery'))
-  .filter((entry) => entry.data.heroEligible)
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())[0];
+const tagline =
+  'A free tech community in Philadelphia. Every month we meet in person to build real projects together, and no one needs to feel ready first.';
+
+// Every hero-eligible gallery photo (src/lib/hero-photos.ts). The HTML ships
+// the first one; /js/hero-photo.js picks one at random per visit from the same
+// list. No timed rotation: that would be a second loop (DESIGN.md, motion
+// rule 1) and would need a pause control (WCAG 2.2.2).
+const heroPhotos = await getHeroPhotos();
+const photo = heroPhotos[0];
+
+// How a night goes: five steps from src/data/lab-night.ts, checked against
+// every past Luma event (Waskar, 10/16/2026). Card colors follow the mockup:
+// the last step, the one you leave with, is pink.
+const nightCards = labNight.map((step, i, all) => {
+  const last = i === all.length - 1;
+  return {
+    ...step,
+    fill: last ? 'bg-brand-pink' : 'bg-white',
+    tag: last ? 'bg-white' : ['bg-brand-yellow', 'bg-brand-amber'][i % 2],
+    edge: last ? 'border-brand-pink' : 'border-white',
+  };
+});
+
+// The mockup's "Four ways in", its copy and links exactly (Waskar, 10/15/2026).
+// Each whole card is one link to a page on this site.
+// /studio once it has proof, /contact until then (src/lib/showcase.ts).
+const hire = await getHireLink();
+
+const waysIn = [
+  {
+    title: 'Come to a night.',
+    body: "RSVP on Luma, bring a laptop if you have one, and walk in. That's it.",
+    cta: 'See events',
+    href: '/events',
+    fill: 'bg-white',
+  },
+  {
+    title: 'Join the Discord.',
+    body: "The flock lives there between events. Ask questions, share what you're building, find your people.",
+    cta: 'Join the community',
+    href: '/join',
+    fill: 'bg-white',
+  },
+  {
+    title: 'Ship your first PR.',
+    // Client work is private, so the claim is scoped, as on /projects.
+    body: 'Every community project is open source. Pick an issue on one of them and make your first contribution.',
+    cta: 'Browse projects',
+    href: '/projects',
+    fill: 'bg-white',
+  },
+  {
+    // The same promise as Support's agency card, said one way everywhere
+    // (Waskar, 10/17/2026).
+    title: 'Hire us. Fund the flock.',
+    body: 'We design and build sites, apps and software for Philly nonprofits and community orgs. Your project pays for the free nights.',
+    cta: hire.label,
+    href: hire.href,
+    fill: 'bg-brand-coral',
+  },
+];
+
+// Room photos for "From the room" (src/lib/events.ts).
+const roomPhotos = await getRoomPhotos(4);
 
 const stats = [
-  { value: community.memberCount, label: 'people, not users' },
-  { value: nightsHeld, label: nightsHeld === 1 ? 'night held' : 'nights held' },
+  // The Luma calendar total, labeled so it never reads as the Discord count.
+  { value: community.memberCount, label: 'people on our calendar.', note: 'Not users.' },
+  {
+    value: nightsHeld,
+    label: nightsHeld === 1 ? 'night held.' : 'nights held.',
+    note: 'All of them free.',
+  },
   {
     value: thingsShipped,
-    label: thingsShipped === 1 ? 'thing shipped, so far' : 'things shipped, so far',
+    label: thingsShipped === 1 ? 'thing shipped.' : 'things shipped.',
+    note: 'So far.',
   },
 ];
 ---
 
-<BaseLayout
-  title="PhilaCon Valley — Come as you are. Leave with a flock."
-  description="A tech community in Philly for the people who were never handed a way in. Free, in person, and open before you feel ready."
->
-  <!-- No <main> here: BaseLayout already wraps the page slot in
-       <main id="main-content">, and nesting a second one is invalid HTML that
-       reports two main landmarks. -->
-  <div>
-    <!-- Hero -->
-    <section class="px-5 lg:px-[72px] pt-[76px] pb-[84px] lg:pt-[136px] lg:pb-[140px]">
-      <h1 class="font-display font-extrabold text-[44px] lg:text-[96px] leading-[1.02] lg:leading-[0.98] tracking-[-0.03em] lg:tracking-[-0.035em] m-0 max-w-[900px]">
-        <span class="block overflow-hidden">
-          <span class="inline-block pcv-enter-word [animation-delay:0.1s]">Come as you are.</span>
-        </span>{' '}
-        <span class="block overflow-hidden text-accent-600">
-          <span class="inline-block pcv-enter-word [animation-delay:0.35s]">
-            Leave with a flock.
-          </span>
-        </span>
-      </h1>
-      <p
-        data-testid="hero-tagline"
-        class="text-[17px] lg:text-[22px] leading-[1.55] lg:leading-[1.5] text-brand-dark/[0.72] max-w-[560px] mt-6 lg:mt-[34px] pcv-enter-rise [animation-delay:0.6s]"
-      >
-        A tech community in Philly for the people who were never handed a way in. Free, in person,
-        and open before you feel ready.
-      </p>
-    </section>
+<BaseLayout title="PhilaCon Valley — Come as you are. Leave with a flock." description={tagline}>
+  <!-- BaseLayout already wraps the page slot in <main id="main-content">. -->
 
-    <!-- What a Lab actually is -->
-    <section class="px-5 lg:px-[72px] py-14 lg:py-[104px] border-t border-brand-dark/[0.11] bg-primary-50 lg:grid lg:grid-cols-2 lg:gap-24 lg:items-start">
-      <h2 class="font-display font-extrabold text-[30px] lg:text-[52px] leading-[1.08] lg:leading-[1.04] tracking-[-0.02em] lg:tracking-[-0.025em] m-0 mb-9 lg:mb-0 pcv-enter-rise">
-        One night. Three hours. Something exists that didn't.
-      </h2>
-      <LabTrack outcome="Your first pull request" outcomeDetail="Reviewed, merged, and live." />
-    </section>
-
-    {photo && (
-      <section class="border-t border-brand-dark/[0.11]">
-        <img
-          src={photo.data.image}
-          alt={photo.data.alt}
-          loading="lazy"
-          class="w-full h-[300px] lg:h-[440px] object-cover block"
-        />
-      </section>
-    )}
-
-    <!-- The two halves of the org -->
-    <section class="px-5 lg:px-[72px] py-[60px] lg:py-[104px] border-t border-brand-dark/[0.11] lg:grid lg:grid-cols-2 lg:gap-24 lg:max-w-[1000px]">
+  {/* Parser-blocking on purpose: hides the stats before they paint, so the
+      odometer can play on every load without a flash (see the file). */}
+  <script is:inline src="/js/odo-arm.js"></script>
+  <!-- Hero: Golden Yellow (DESIGN.md, hero table). -->
+  <section class="bg-brand-yellow">
+    <div class="container-custom pt-16 pb-20 lg:pt-24 lg:pb-28 grid gap-12 lg:grid-cols-[1.15fr_1fr] lg:items-center">
       <div>
-        <h3 class="font-display font-extrabold text-[28px] lg:text-[38px] leading-[1.08] lg:leading-[1.05] tracking-[-0.02em] m-0 mb-3 lg:mb-3.5">
-          Free, forever, for us.
-        </h3>
-        <p class="text-base lg:text-[17px] leading-[1.65] text-brand-dark/70 m-0">
-          Labs, workshops, and career sessions. You show up, you pair with someone, you leave having
-          made a thing. No application, no fee, no prerequisite.
-        </p>
-        <a
-          href={links.luma}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-block font-display font-bold text-base mt-3.5 lg:mt-5 py-3 lg:py-0 lg:pb-0.5 text-brand-dark no-underline border-b-2 border-brand-pink hover:text-accent-700 transition-colors"
+        <ul class="flex flex-wrap gap-2 m-0 p-0 list-none" aria-label="At a glance">
+          <li class="pill bg-brand-pink">Philadelphia</li>
+          <li class="pill bg-white">Free</li>
+          <li class="pill bg-white">In person</li>
+          <li class="pill bg-white">Open to everyone</li>
+        </ul>
+        <h1 class="mt-6 mb-0">
+          <span class="block pcv-enter-word [animation-delay:0.1s]">Come as you are.</span>
+          <span class="block pcv-enter-word [animation-delay:0.3s]">
+            Leave with a <span class="sticker bg-white">flock.</span>
+          </span>
+        </h1>
+        <p
+          data-testid="hero-tagline"
+          class="mt-7 mb-0 max-w-[34rem] text-lg lg:text-xl font-semibold pcv-enter-rise [animation-delay:0.5s]"
         >
-          Join {community.memberCount} of us →
-        </a>
-      </div>
-      <div class="mt-[52px] lg:mt-0">
-        <h3 class="font-display font-extrabold text-[28px] lg:text-[38px] leading-[1.08] lg:leading-[1.05] tracking-[-0.02em] m-0 mb-3 lg:mb-3.5">
-          Paid work that pays for it.
-        </h3>
-        <p class="text-base lg:text-[17px] leading-[1.65] text-brand-dark/70 m-0">
-          Design, apps, and software for Philly nonprofits and community orgs. The fee funds the
-          free side — and the people who build it came up through it.
+          {tagline}
         </p>
-        <a
-          href="/contact"
-          class="inline-block font-display font-bold text-base mt-3.5 lg:mt-5 py-3 lg:py-0 lg:pb-0.5 text-brand-dark no-underline border-b-2 border-brand-pink hover:text-accent-700 transition-colors"
-        >
-          Start a project →
-        </a>
+        <div class="mt-8 flex flex-wrap gap-4">
+          {/* An RSVP with nothing to RSVP to is a dead end (EventBar.astro).
+              With no event, the button asks people to follow the Luma
+              calendar, which lets them know when the next night is posted
+              (Luma's own words: "Follow the calendar to get notified when new
+              events are posted."). Once a built event starts, it falls back
+              there too. */}
+          {nextEvent ? (
+            <Button
+              href={nextEvent.url}
+              external
+              variant="primary"
+              size="lg"
+              data-testid="home-rsvp"
+              data-pcv-event-start={nextEvent.start}
+              data-pcv-event-fallback={links.luma}
+            >
+              <span data-pcv-event-start={nextEvent.start}>RSVP for the next night</span>
+              <span hidden data-pcv-event-after={nextEvent.start}>
+                Get notified
+              </span>
+            </Button>
+          ) : (
+            <Button href={links.luma} external variant="primary" size="lg" data-testid="home-rsvp">
+              Get notified
+            </Button>
+          )}
+          <Button href={links.discord} external variant="light" size="lg">
+            Join the community
+          </Button>
+        </div>
+        <!-- The same live numbers as the pink band below, at a glance. They roll
+             in like the band (public/js/home.js). The real number stays in the
+             text, so screen readers read it; the rolling copy is aria-hidden.
+             inline-block: the number's box becomes its line box, the same
+             height as each overlay digit cell, so the roll ends exactly on the
+             real digits. As an inline box it was its taller glyph area, and the
+             digits dropped 6px when the overlay was removed.
+             Each slash sits in its item's left padding, and the list is pulled
+             left by that padding. A slash that starts a line falls outside the
+             wrapper and is clipped, so a wrapped line never opens with "/". -->
+        <div class="mt-10 overflow-hidden">
+          <ul
+            class="-ml-10 my-0 p-0 list-none flex flex-wrap items-baseline gap-y-2 font-display font-extrabold text-lg lg:text-xl"
+            aria-label="PhilaCon Valley in numbers"
+            data-testid="hero-stats"
+          >
+            {stats.map((stat) => (
+              <li class="relative pl-10" data-odo-item>
+                <span aria-hidden="true" class="absolute left-4 bottom-0">
+                  /
+                </span>
+                <span
+                  data-count={stat.value}
+                  class="relative inline-block text-2xl lg:text-3xl tabular-nums"
+                >
+                  {stat.value}
+                </span>{' '}
+                {stat.label.replace(/\.$/, '')}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-    </section>
 
-    <!-- What it adds up to -->
-    <section class="px-5 lg:px-[72px] py-14 lg:py-[84px] border-t border-brand-dark/[0.11] flex flex-col lg:flex-row gap-[30px] lg:gap-[88px] pcv-enter-stat">
-      {stats.map((stat) => (
-        <div>
-          <div class="font-display font-extrabold text-[60px] lg:text-[84px] leading-[0.86] lg:leading-[0.9] tracking-[-0.04em]">
-            {stat.value}
+      {photo && (
+        <figure class="relative m-0" data-hero-photos={JSON.stringify(heroPhotos)}>
+          <!-- No src in the HTML: the script right after this figure picks the
+               photo first, so the browser loads one photo and paints it once
+               (no swap after load). Width and height reserve the space. -->
+          <img
+            data-hero-img
+            sizes="(min-width: 1024px) 40vw, 100vw"
+            alt=""
+            width="1600"
+            height="1067"
+            class="block w-full h-auto aspect-[4/3] object-cover rounded-retro border-2 border-brand-dark shadow-retro-xl"
+          />
+          <noscript>
+            <img
+              src={photo.src}
+              srcset={photo.srcset}
+              sizes="(min-width: 1024px) 40vw, 100vw"
+              alt={photo.alt}
+              width="1600"
+              height="1067"
+              class="block w-full h-auto aspect-[4/3] object-cover rounded-retro border-2 border-brand-dark shadow-retro-xl"
+            />
+          </noscript>
+          <span class="sticker bg-brand-pink absolute -top-4 -right-2 lg:-right-4 rotate-[4deg] text-lg lg:text-2xl">
+            Free. Forever.
+          </span>
+          <!-- Confirmed claim: the site already says no one needs to know how to code. -->
+          <span class="sticker bg-white absolute -bottom-5 left-2 lg:-left-4 -rotate-[3deg] text-base lg:text-xl">
+            No experience needed.
+          </span>
+        </figure>
+      )}
+      {/* Parser-blocking on purpose (no defer): it must set the photo before
+          the page paints. It is tiny and cached. */}
+      {photo && <script is:inline src="/js/hero-photo.js"></script>}
+    </div>
+  </section>
+
+  <!-- Why we exist -->
+  <!-- Matches the mockup's mission section exactly (Waskar, 10/15/2026),
+       including its label above the heading. Two columns that wrap (600px and
+       380px bases) and sit on a shared bottom line. -->
+  <section class="bg-white border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-wrap items-end gap-[clamp(32px,5vw,80px)]">
+      <div class="grow shrink basis-[600px] min-w-0 flex flex-col gap-6">
+        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">Why we exist</p>
+        <h2 class="m-0">Nobody handed us a way in. So we built the room.</h2>
+      </div>
+      <div class="grow shrink basis-[380px] min-w-0 flex flex-col gap-[22px]">
+        <!-- Mockup grey #3A3A3A, as ink at 85% (about #3B3B3B on white). -->
+        <p class="m-0 text-[19px] leading-[1.6] text-brand-dark/85">
+          PhilaCon Valley is where Philly learns tech together, in the same room, at no cost.
+          There's no application, no fee and no prerequisite. You don't need to know how to code,
+          and you don't need to feel ready. You just need to be curious enough to walk in.
+        </p>
+        <!-- min-h-11: a 44px tap target on phones (e2e/tap-targets.spec.ts). -->
+        <a
+          href="/about"
+          class="self-start inline-flex items-center min-h-11 font-black text-[17px] text-brand-dark underline underline-offset-[6px] decoration-[3px]"
+        >
+          Read our story
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- From the room: real photos from more than one night, and the one line
+       that names the kinds of nights (site audit, 10/18/2026). The program
+       cards live on Events. -->
+  {roomPhotos.length > 0 && (
+    <section class="bg-white border-t-2 border-brand-dark" data-testid="from-the-room">
+      <div class="container-custom py-[clamp(64px,8vw,112px)] flex flex-col gap-12">
+        <div class="flex flex-wrap justify-between items-end gap-6">
+          <div class="grow basis-[600px] min-w-0 flex flex-col gap-[22px] max-w-[760px]">
+            <p class="m-0 self-start pill bg-brand-pink font-black text-[13px] tracking-[0.2em] uppercase">
+              From the room
+            </p>
+            <h2 class="m-0 heading-quiet">This is what a night looks like.</h2>
           </div>
-          <div class="font-mono text-[10px] lg:text-[11px] font-medium uppercase tracking-[0.18em] text-brand-dark/50 mt-2 lg:mt-3">
-            {stat.label}
+          <div class="max-w-[380px] flex flex-col gap-3">
+            <p class="m-0 text-lg leading-[1.55] text-brand-dark/85">
+              <strong class="text-brand-dark">PATCH and Lab nights, every one free.</strong> Design,
+              code and creative tech in the same room.
+            </p>
+            <a
+              href="/events"
+              class="self-start inline-flex items-center min-h-11 font-black text-[17px] text-brand-dark underline underline-offset-[6px] decoration-[3px]"
+            >
+              See the kinds of nights
+            </a>
           </div>
         </div>
-      ))}
+        <PhotoGrid photos={roomPhotos} />
+      </div>
     </section>
-  </div>
-
-  <!-- Clears the fixed bottom bar so the footer's last line is never trapped under
-       it. Carries the same expiry as the bar: once the bar removes itself, this
-       would otherwise leave 88px of dead space at the bottom of the page. -->
-  {nextEvent && (
-    <div class="lg:hidden h-[88px]" data-pcv-event-start={nextEvent.start} aria-hidden="true" />
   )}
+
+  <!-- How a Lab night works: the mockup's timeline, placed after the programs
+       so visitors first see that PhilaCon runs several kinds of nights. On its
+       own it read as a one-night event (Diego, 10/15/2026). Static cards.
+       This is the site's one night timeline (site audit, 10/18/2026). -->
+  <section class="bg-brand-dark text-white border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
+      <div class="flex flex-wrap justify-between items-end gap-6">
+        <div class="grow basis-[600px] min-w-0 flex flex-col gap-[22px] max-w-[820px]">
+          <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">How a Lab night works</p>
+          <h2 class="m-0 heading-quiet">
+            One night. Three hours.{' '}
+            <span class="text-brand-yellow">Something exists that didn't.</span>
+          </h2>
+        </div>
+        <Button href="/events" variant="secondary">
+          See upcoming nights
+        </Button>
+      </div>
+      <!-- Five across from 1280px; three per row from 1024px and two on
+           tablets, with the last step filling its row; one per row on phones. -->
+      <ol class="m-0 p-0 list-none grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        {nightCards.map((step, i) => (
+          <li
+            class={`rounded-retro border-2 ${step.edge} ${step.fill} text-brand-dark p-6 flex flex-col gap-4 ${i === nightCards.length - 1 ? 'sm:col-span-2 xl:col-span-1' : ''}`}
+          >
+            <div class="flex justify-between items-center gap-3">
+              <span class="font-black text-[13px] tracking-[0.2em]" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span
+                class={`rounded-full border-2 border-brand-dark ${step.tag} px-3 py-1 font-black text-[13px] whitespace-nowrap`}
+              >
+                {step.time}
+              </span>
+            </div>
+            <h3 class="m-0 text-[28px] leading-none">{step.title}</h3>
+            <p
+              class={`m-0 text-base leading-[1.55] ${step.fill === 'bg-white' ? 'text-brand-dark/85' : ''}`}
+            >
+              {step.line}
+            </p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- Four ways in: matches the mockup exactly (Waskar, 10/15/2026),
+       including its 01-04 numbers. -->
+  <section class="bg-brand-yellow border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
+      <div class="flex flex-wrap justify-between items-end gap-6">
+        <div class="grow basis-[600px] min-w-0 flex flex-col gap-[22px] max-w-[820px]">
+          <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">How to take part</p>
+          <h2 class="m-0 heading-quiet">Four ways in. Pick one tonight.</h2>
+        </div>
+        <p class="m-0 max-w-[380px] text-lg leading-[1.55]">
+          You don't have to do all of them. Most people start by showing up once and figure out the
+          rest from there.
+        </p>
+      </div>
+      <ul class="m-0 p-0 list-none grid gap-6 grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
+        {waysIn.map((way, i) => (
+          <li class="flex">
+            <a
+              href={way.href}
+              class={`card ${way.fill} text-brand-dark no-underline p-7 flex flex-col gap-4 w-full min-h-[280px]`}
+            >
+              <span
+                aria-hidden="true"
+                class="font-display font-extrabold text-[56px] leading-[0.8]"
+              >
+                {String(i + 1).padStart(2, '0')}
+              </span>{' '}
+              <h3 class="m-0 text-[30px] leading-none">{way.title}</h3>{' '}
+              <p
+                class={`m-0 text-base leading-[1.55] ${way.fill === 'bg-white' ? 'text-brand-dark/85' : ''}`}
+              >
+                {way.body}
+              </p>{' '}
+              <span class="mt-auto font-black text-base underline underline-offset-[5px] decoration-2">
+                {way.cta}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- The live numbers (evidence rung 2: build-time real data). Layout matches
+       the mockup exactly (Waskar, 10/15/2026): an ink rule on the left of each. -->
+  <section
+    class="bg-brand-pink border-t-2 border-brand-dark"
+    aria-label="PhilaCon Valley in numbers"
+  >
+    <dl class="container-custom py-[clamp(56px,7vw,96px)] my-0 grid gap-8 grid-cols-[repeat(auto-fit,minmax(240px,1fr))]">
+      {stats.map((stat) => (
+        <div class="relative pl-6" data-odo-item>
+          <!-- The ink rule is its own element so it can draw in with a
+               transform (an animated border would repaint). -->
+          <span
+            aria-hidden="true"
+            data-odo-rule
+            class="absolute left-0 inset-y-0 w-[3px] bg-brand-dark"
+          ></span>
+          <dt class="sr-only">{stat.label}</dt>
+          <dd class="m-0 flex flex-col gap-1.5">
+            <!-- The HTML holds the real number (no-JS, search, screen readers).
+                 The visible copy rolls in once on scroll (public/js/home.js);
+                 the sr-only copy is what assistive tech reads, so it never
+                 hears the roll. -->
+            <span
+              aria-hidden="true"
+              data-count={stat.value}
+              class="relative font-display font-extrabold text-[clamp(80px,10vw,140px)] leading-[0.85] tabular-nums"
+            >
+              {stat.value}
+            </span>
+            <span class="sr-only">{stat.value}</span>{' '}
+            <span data-odo-rise class="font-black text-xl">
+              {stat.label}
+            </span>{' '}
+            <span data-odo-rise class="font-bold text-base">
+              {stat.note}
+            </span>
+          </dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+
+  <!-- Next up: only for a real scheduled event, never a placeholder. Layout
+       matches the mockup (Waskar, 10/15/2026). The mockup's description line
+       is left out: Luma gives the build no event description. -->
+  {nextEvent && (
+    <section
+      class="bg-white border-t-2 border-brand-dark"
+      aria-label="Next event"
+      data-pcv-event-start={nextEvent.start}
+    >
+      <div class="container-custom py-[clamp(56px,7vw,96px)]">
+        <div class="bg-brand-dark text-white border-2 border-brand-dark rounded-[28px] shadow-[10px_10px_0_theme(colors.brand.pink)] p-[clamp(28px,4vw,56px)] flex flex-wrap gap-x-12 gap-y-7 items-center justify-between">
+          <div class="grow shrink basis-[520px] min-w-0 flex flex-col gap-4">
+            <p class="m-0 self-start rounded-full bg-brand-yellow text-brand-dark px-3 py-1 font-black text-xs tracking-[0.14em] uppercase">
+              Next up
+            </p>
+            <!-- Capped at 64px: at 72px the event title was a second loud
+                 heading on Home (e2e/site-audit.spec.ts, one loud moment). -->
+            <h2 class="m-0 text-brand-yellow text-[clamp(40px,4.5vw,64px)] leading-[0.92]">
+              {nextEvent.title}
+            </h2>
+            <p class="m-0 font-black text-sm tracking-[0.14em] uppercase text-brand-amber">
+              {formatEventDate(nextEvent.start)}
+              {nextEvent.venue && ` · ${nextEvent.venue}`}
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-3.5">
+            <Button href={nextEvent.url} external variant="secondary" size="lg">
+              RSVP on Luma
+            </Button>
+            <Button href="/events" variant="outline-light" size="lg">
+              All events
+            </Button>
+          </div>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <ClosingFlock />
+
+  <!-- Hero photo shuffle and the number count-up (see the file). -->
+  <script is:inline defer src="/js/home.js"></script>
   <EventBar event={nextEvent} />
 </BaseLayout>

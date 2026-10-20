@@ -1,11 +1,16 @@
 ---
 interface Props {
   href?: string;
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?: 'primary' | 'secondary' | 'light' | 'outline-light';
+  type?: 'button' | 'submit';
   size?: 'sm' | 'md' | 'lg';
   class?: string;
   external?: boolean;
   'data-testid'?: string;
+  /** Event freshness markers (public/js/event-freshness.js), for a link that
+   *  points at one event and falls back once it has started. */
+  'data-pcv-event-start'?: string;
+  'data-pcv-event-fallback'?: string;
 }
 
 const {
@@ -14,25 +19,48 @@ const {
   size = 'md',
   class: className = '',
   external = false,
+  type = 'button',
   'data-testid': testId,
+  'data-pcv-event-start': eventStart,
+  'data-pcv-event-fallback': eventFallback,
 } = Astro.props;
 
+// Book section 10: a flat fill, a 2px ink outline, stadium radius, and a hard
+// ink shadow. The focus ring comes from the global `:focus-visible` rule, so
+// buttons, links, and inputs all share one ring.
+// Motion: filled variants use .lift (global.css): hover lifts 2px up-left
+// while the shadow grows; press pushes 2px down-right into a 2px-smaller
+// shadow. Press 100ms, release 150ms. The focus ring never animates. The
+// outline-light variant has no shadow to press into, so it keeps a 0.97 scale
+// press.
 const baseClasses =
-  'inline-flex items-center justify-center font-display font-bold rounded-full transition-[transform,background-color,box-shadow] duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 motion-safe:active:scale-[0.97] motion-reduce:active:opacity-80';
+  'inline-flex items-center justify-center gap-2 font-display font-extrabold rounded-full';
+
+// Every filled variant has ink text: ink reads on all the warm fills, and
+// white on Hot Pink fails AA (Book section 04, "Contrast").
+const filled = 'lift border-2 border-brand-dark';
 
 const variantClasses = {
-  primary:
-    'bg-accent-400 text-brand-dark hover:bg-accent-500 focus:ring-accent-400 shadow-md hover:shadow-lg hover:-translate-y-0.5',
-  secondary:
-    'bg-primary-300 text-brand-dark hover:bg-primary-400 focus:ring-primary-400 shadow-md hover:shadow-lg hover:-translate-y-0.5',
-  outline:
-    'border-2 border-current bg-transparent text-brand-dark hover:bg-brand-dark/5 focus:ring-accent-400',
+  // Main call to action on a white or ink section.
+  primary: `${filled} bg-brand-pink text-brand-dark`,
+  // Main call to action on a pink or saturated section, where pink would vanish.
+  secondary: `${filled} bg-brand-yellow text-brand-dark`,
+  // Second action next to a main one: a white sticker, as in the mockup.
+  // Decided 10/15/2026. The Book lists Hot Pink or Golden Yellow for button
+  // fills; White is its light neutral (noted for Diego, DESIGN.md tension 14).
+  light: `${filled} bg-white text-brand-dark`,
+  // Second action on an ink or purple section, where an ink shadow cannot
+  // show. White text and outline, no fill, no shadow (as in the mockup).
+  'outline-light':
+    'border-2 border-white bg-transparent text-white hover:bg-white/10 transition-[transform,background-color] duration-150 ease-out motion-safe:active:scale-[0.97] motion-reduce:active:opacity-80',
 };
 
+// Heights, padding, and text sizes match the mockup (10/15/2026). Every size
+// clears the 44px touch target.
 const sizeClasses = {
-  sm: 'px-4 py-2 text-sm',
-  md: 'px-6 py-3 text-base',
-  lg: 'px-8 py-4 text-lg',
+  sm: 'min-h-[44px] px-[22px] py-1.5 text-[15px]',
+  md: 'min-h-[50px] px-6 py-2 text-base',
+  lg: 'min-h-[55px] px-7 py-2.5 text-[17px]',
 };
 
 const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
@@ -41,10 +69,23 @@ const externalProps = external ? { target: '_blank', rel: 'noopener noreferrer' 
 ---
 
 {href ? (
-  <a href={href} class={classes} data-testid={testId} {...externalProps}>
+  <a
+    href={href}
+    class={classes}
+    data-testid={testId}
+    data-pcv-event-start={eventStart}
+    data-pcv-event-fallback={eventFallback}
+    {...externalProps}
+  >
     <slot />
     {external && (
-      <svg class="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg
+        class="w-4 h-4 ml-2"
+        aria-hidden="true"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
@@ -55,7 +96,7 @@ const externalProps = external ? { target: '_blank', rel: 'noopener noreferrer' 
     )}
   </a>
 ) : (
-  <button class={classes} data-testid={testId}>
+  <button type={type} class={classes} data-testid={testId}>
     <slot />
   </button>
 )}

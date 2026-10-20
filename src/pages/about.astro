@@ -1,169 +1,290 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Button from '../components/Button.astro';
-import FounderNote from '../components/FounderNote.astro';
+import ClosingFlock from '../components/ClosingFlock.astro';
+import { community, links } from '../config';
+import { getHandbookValues } from '../lib/handbook';
+import TeamGrid from '../components/TeamGrid.astro';
+import PartnerStrip from '../components/PartnerStrip.astro';
+import { getHireLink, getShowcase } from '../lib/showcase';
 
 /**
- * Mode: Read. Budget: 550 body words (DESIGN.md).
+ * About, Edition 1.2 (DESIGN.md, "The 1.2 redesign"). Mode: Read. Sections
+ * follow the redesign mockup, with these decisions (Waskar, 10/16/2026):
+ * - The story stays in Waskar's own words, first person, set in the mockup's
+ *   layout. The mockup's third-person version is not used.
+ * - The founder photo is Waskar's real headshot, sent 10/16/2026.
+ * - The closing section is the shared ClosingFlock, as on every page.
  *
- * This page used to say the same thing four times: an "Our story" section, a
- * founder's note, a "Who we serve" section and a "Philly, by us, for us"
- * section all made the same argument in different words, and the six values
- * arrived as icon cards — the treatment the evidence contract bans.
+ * Site audit, 10/18/2026:
+ * - About's one job is why PhilaCon exists and how it stays free. The program
+ *   cards live on Events, and the night timeline on Home; About repeated
+ *   both word for word.
+ * - The member count says what it counts: people on the Luma calendar. "Join
+ *   493 of us" led to Join's Discord count (78), and the number "shrank".
+ * - The story's headline is the page's loudest moment. Every other section
+ *   heading is one step quieter (global.css, .heading-quiet).
  *
- * The note is now the spine. It is Waskar's own account, taken from his own
- * words rather than paraphrased about him, and every section that restated it
- * is gone. The values stay, set as language instead of decorated with stock
- * glyphs, because a value nobody can read past the icon is not a value.
+ * - The values come from the Community Handbook at build time
+ *   (src/lib/handbook.ts), so About follows the handbook on every deploy.
  *
- * Deliberately no numbers. Attendance figures are the metric the org is in the
- * middle of moving away from, and hard-coding them here would write the old
- * frame into the site on the way out of it.
+ * Every claim here is already live or confirmed: the story shipped on the old
+ * About page; the values are the handbook's own words; the programs and the
+ * agency model are in DESIGN.md's confirmed claims.
  */
 
-const values = [
-  {
-    name: 'Centering the margins',
-    line: 'Black, Brown, LGBTQIA+, and underrepresented folks lead here. Not just attend.',
-  },
-  {
-    name: 'Hands-on learning',
-    line: 'Build sessions, not lectures. You leave with something that runs.',
-  },
-  {
-    name: 'Community over competition',
-    line: 'Nobody here is your competition. Your success is the point.',
-  },
-  {
-    name: 'Philly pride',
-    line: 'Built in Philadelphia, on purpose, by people from it.',
-  },
-  {
-    name: 'Open knowledge',
-    line: 'Every project open source. Every resource free.',
-  },
-  {
-    name: 'Radical welcome',
-    line: 'First line of code yesterday, or ten years in. Same table.',
-  },
+// Every value in the Community Handbook, in its order: the one source of truth
+// (Waskar, 10/16/2026). The page keeps no list of its own.
+const values = await getHandbookValues();
+// The mockup's fill rhythm: every third card yellow, every sixth pink.
+const fills = ['bg-white', 'bg-white', 'bg-brand-yellow', 'bg-white', 'bg-white', 'bg-brand-pink'];
+const countWords = [
+  'Zero',
+  'One',
+  'Two',
+  'Three',
+  'Four',
+  'Five',
+  'Six',
+  'Seven',
+  'Eight',
+  'Nine',
+  'Ten',
 ];
+const valueCount = countWords[values.length] ?? String(values.length);
 
-const programs = [
-  {
-    name: 'Lab',
-    line: "Our flagship. Bring a project or join someone else's. No presentations, just building.",
-  },
-  {
-    name: 'Workshops',
-    line: 'Git basics through shipping an API. You do the work in the room.',
-  },
-  {
-    name: 'Career support',
-    line: 'Resume reviews, interview prep, and introductions to companies worth working for.',
-  },
-  {
-    name: 'Community projects',
-    line: 'Tools our own community uses — which makes them real portfolio work.',
-  },
-];
+// The team and partners (Diego's site feedback, 10/17/2026). Each section
+// renders only when it has someone in it, so the page never shows an empty
+// grid while headshots and partner approvals are still coming in.
+const team = await getShowcase('team');
+const partners = await getShowcase('partners');
+const hire = await getHireLink();
 ---
 
 <BaseLayout
-  title="About PhilaCon Valley - Why this exists"
-  description="Philadelphia's tech community, by us, for us. Why PhilaCon Valley exists, in the founder's own words."
+  title="About PhilaCon Valley — A free tech community, built by Philly"
+  description="Why PhilaCon Valley exists, in the founder's own words: a free, in-person tech community in Philadelphia that doesn't end when the class does."
 >
-  <section class="bg-brand-coral text-white py-20">
-    <div class="container-custom">
-      <div class="max-w-4xl mx-auto text-center">
-        <h1 class="text-5xl md:text-6xl font-bold mb-6">About PhilaCon Valley</h1>
-        <p class="text-2xl text-white/85">
-          Making Philly the tech hub it's meant to be: by us, for us.
-        </p>
-      </div>
+  <!-- Hero: Golden Yellow, label pill, headline, lede (mockup). -->
+  <section class="bg-brand-yellow">
+    <div class="container-custom py-[clamp(56px,8vw,112px)] flex flex-col gap-7">
+      <p class="m-0 self-start pill font-black text-[13px] tracking-[0.16em]">
+        About PhilaCon Valley
+      </p>
+      <!-- Says free, in person, and building in the first screen (Waskar,
+           10/16/2026). The mockup line "Philly's tech hub" read as a building. -->
+      <h1 class="m-0 max-w-[1100px]">
+        A free tech community, <span class="sm:whitespace-nowrap">built by Philly.</span>
+      </h1>
+      <p class="m-0 max-w-[640px] text-[clamp(18px,1.6vw,22px)] leading-[1.5] font-semibold text-brand-dark/90">
+        Once a month we meet in person and build real projects together. No fee, no application, no
+        experience needed.
+      </p>
     </div>
   </section>
 
-  <!--
-    The spine of the page. Waskar's words, from his own account of the
-    Resilient Coders cohort ending — not a paraphrase written about him.
-  -->
-  <section class="section-padding bg-brand-cream">
-    <div class="container-custom">
-      <div class="max-w-3xl mx-auto">
-        <h2 class="text-4xl font-bold mb-8 text-center">Why this exists</h2>
-        <FounderNote>
-          <p>
+  <!-- Why this exists: the photo and name on the left, the story on the right
+       (mockup layout). The words are Waskar's own (Waskar, 10/16/2026). -->
+  <section class="bg-white border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-wrap items-start gap-[clamp(40px,6vw,96px)]">
+      <figure class="m-0 grow shrink basis-[380px] min-w-0 flex flex-col gap-5">
+        <img
+          src="/images/waskar-paulino-560.webp"
+          srcset="/images/waskar-paulino-560.webp 560w, /images/waskar-paulino-1120.webp 1120w"
+          sizes="(min-width: 1024px) 440px, calc(100vw - 32px)"
+          width="560"
+          height="700"
+          loading="lazy"
+          decoding="async"
+          alt="Waskar Paulino, smiling, in a black polo shirt"
+          class="block w-full max-w-[520px] aspect-[4/5] object-cover rounded-[28px] border-2 border-brand-dark shadow-retro-xl bg-brand-pink"
+        />
+        <figcaption class="flex flex-col gap-0.5">
+          <span class="font-display font-extrabold text-[26px] leading-[1.1]">Waskar Paulino</span>
+          <span class="font-extrabold text-[13px] tracking-[0.16em] uppercase">
+            Founder &amp; Executive Director
+          </span>
+        </figcaption>
+      </figure>
+      <div class="grow shrink basis-[560px] min-w-0 flex flex-col gap-7">
+        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">Why this exists</p>
+        <h2 class="m-0 text-[clamp(48px,6.4vw,96px)] leading-[0.9]">“I needed the cohort back.”</h2>
+        <!-- Mockup grey #3A3A3A, as ink at 85% (the Home "Why we exist" rule). -->
+        <div class="flex flex-col gap-5 text-[19px] leading-[1.65] text-brand-dark/85">
+          <p class="m-0">
             I finished a coding bootcamp in December 2024. Resilient Coders. On Demo Day I showed an
             app I'd built from nothing, in a room full of people who had been in it with me every
             day for months.
           </p>
-          <p>
+          <p class="m-0">
             Then it ended, and I went home, and the room was gone. Where are the friends I made?
           </p>
-          <p>
-            That's the whole reason this exists. Philly has no shortage of tech events — I went to
+          <p class="m-0">
+            That's the whole reason this exists. Philly has no shortage of tech events. I went to
             them. You hand out a card, you listen to a talk, you go home with nobody. I didn't need
             another audience. I needed the cohort back.
           </p>
-          <p>
+          <p class="m-0">
             So I built one that doesn't graduate. We meet, we build real things, and the people
             around the table are still there next month.
           </p>
-          <p>
+          <p class="m-0">
             The name is on purpose. Silicon Valley decided who counted as a tech person. We're
             deciding that here.
           </p>
-          <p>I got here late and sideways. Most of us did.</p>
-        </FounderNote>
+          <p class="m-0 font-bold text-brand-dark">I got here late and sideways. Most of us did.</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="section-padding bg-brand-yellow border-t-[3px]">
-    <div class="container-custom">
-      <div class="max-w-4xl mx-auto">
-        <h2 class="text-4xl font-bold mb-12">What we hold to</h2>
-        <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 m-0">
-          {values.map((value) => (
+  {/* The crew (the team's own name, Waskar, 10/18/2026): the people who
+      run PhilaCon with Waskar. The founder is already above, so this lists
+      everyone else. */}
+  {team.length > 0 && (
+    <section id="crew" class="bg-white border-t-2 border-brand-dark">
+      <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
+        <div class="flex flex-col gap-[22px] max-w-[760px]">
+          <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">The crew</p>
+          <h2 class="m-0 heading-quiet">The people who make it run.</h2>
+        </div>
+        <TeamGrid members={team} />
+      </div>
+    </section>
+  )}
+
+  <!-- What we hold to: every handbook value on ink, numbered (mockup layout).
+       Name and first sentence only; the handbook holds the full text. -->
+  <section class="bg-brand-dark text-white border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
+      <div class="flex flex-col gap-[22px] max-w-[820px]">
+        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">What we hold to</p>
+        <h2 class="m-0 heading-quiet">
+          {valueCount} things we <span class="text-brand-yellow">don't bend on.</span>
+        </h2>
+      </div>
+      <ol
+        class="m-0 p-0 list-none grid gap-5 grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))]"
+        data-testid="values"
+      >
+        {values.map((value, i) => (
+          <li
+            class={`${fills[i % fills.length]} text-brand-dark rounded-retro p-[30px] flex flex-col gap-3.5`}
+          >
+            <span class="font-black text-[13px] tracking-[0.2em]" aria-hidden="true">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <h3 class="m-0 text-[30px] leading-none">{value.name}</h3>
+            <p class="m-0 text-base leading-[1.55]">{value.line}</p>
+          </li>
+        ))}
+      </ol>
+      <!-- Where the values come from. The claim is the handbook's own
+           (CONTRIBUTING.md): it belongs to the community, and anyone can
+           suggest a change. -->
+      <div class="flex flex-wrap items-center gap-x-8 gap-y-3" data-testid="values-source">
+        <p class="m-0 basis-full text-lg leading-[1.55] text-white/85">
+          <strong class="text-white">These come from our Community Handbook.</strong> It belongs to
+          the community, and anyone can suggest a change.
+        </p>
+        <a
+          href={links.handbook.values}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center min-h-11 font-black text-white underline underline-offset-[6px] decoration-[3px] decoration-brand-yellow"
+        >
+          Read our values
+        </a>
+        <a
+          href={links.handbook.guidelines}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center min-h-11 font-black text-white underline underline-offset-[6px] decoration-[3px] decoration-brand-yellow"
+        >
+          Read our community guidelines
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- How we keep it free: the two sides of the model (mockup). The agency
+       funding the programs is a confirmed claim (DESIGN.md). -->
+  <section class="bg-brand-yellow border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
+      <div class="flex flex-col gap-[22px] max-w-[900px]">
+        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">How we keep it free</p>
+        <!-- Says the model plainly (Waskar, 10/16/2026). The mockup line "Two
+             sides. One flock." left a visitor asking "two sides of what?" -->
+        <h2 class="m-0 heading-quiet">
+          <span class="block">Free for you.</span>{' '}
+          <span class="block [text-wrap:balance]">Paid for by our work.</span>
+        </h2>
+      </div>
+      <div class="grid gap-7 grid-cols-[repeat(auto-fit,minmax(min(320px,100%),1fr))]">
+        <div class="bg-white rounded-[28px] border-2 border-brand-dark shadow-[8px_8px_0_#1a1a1a] p-[clamp(28px,4vw,48px)] flex flex-col gap-[22px]">
+          <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">For the community</p>
+          <h3 class="m-0 text-[clamp(36px,4vw,56px)] leading-[0.95]">Free, forever, for us.</h3>
+          <p class="m-0 text-lg leading-[1.55] text-brand-dark/85">
+            Labs, workshops and community projects, with no application, no fee and no prerequisite.
+          </p>
+          <!-- Book p14: Hot Pink is the main button (the mockup used ink). -->
+          <div class="mt-auto flex flex-col gap-3">
             <div>
-              <dt class="font-display text-2xl font-bold mb-1">{value.name}</dt>
-              <dd class="m-0 text-brand-dark/70">{value.line}</dd>
+              <Button href="/join" variant="primary" size="lg">
+                Join the flock
+              </Button>
             </div>
-          ))}
-        </dl>
+            {/* The count is labeled as what it is, the same words as Home's
+                numbers (site audit, 10/18/2026). */}
+            <p class="m-0 font-bold text-[15px]" data-testid="member-count">
+              {community.memberCount} people on our Luma calendar so far.
+            </p>
+          </div>
+        </div>
+        <div class="bg-brand-coral rounded-[28px] border-2 border-brand-dark shadow-[8px_8px_0_#1a1a1a] p-[clamp(28px,4vw,48px)] flex flex-col gap-[22px]">
+          <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">
+            For Philly organizations
+          </p>
+          {/* The same promise as Support and Home, said one way everywhere
+              (Waskar, 10/17/2026). "Paid work that pays for it." read as a
+              riddle and stayed here after Support dropped it (Jobs review,
+              10/18/2026). */}
+          <h3 class="m-0 text-[clamp(36px,4vw,56px)] leading-[0.95]">Hire us. Fund the flock.</h3>
+          <p class="m-0 text-lg leading-[1.55]">
+            We design and build sites, apps and software for Philly nonprofits and community orgs.
+            Your project pays for the free nights.
+          </p>
+          <div class="mt-auto">
+            <Button href={hire.href} variant="light" size="lg">
+              {hire.label}
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="section-padding">
-    <div class="container-custom">
-      <div class="max-w-4xl mx-auto">
-        <h2 class="text-4xl font-bold mb-12">What we run</h2>
-        <dl class="space-y-8 m-0">
-          {programs.map((program) => (
-            <div>
-              <dt class="font-display text-2xl font-bold mb-1">{program.name}</dt>
-              <dd class="m-0 text-lg text-brand-dark/70">{program.line}</dd>
-            </div>
-          ))}
-        </dl>
+  {/* Partners: organizations that said yes to being shown here. Each one
+      needs a written approval on record (src/content.config.ts). */}
+  {partners.length > 0 && (
+    <section class="bg-white border-t-2 border-brand-dark">
+      <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
+        <div class="flex flex-col gap-[22px] max-w-[760px]">
+          <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">Who we build with</p>
+          <h2 class="m-0 heading-quiet">Our partners.</h2>
+        </div>
+        <PartnerStrip partners={partners} />
       </div>
-    </div>
-  </section>
+    </section>
+  )}
 
-  <section class="section-padding bg-accent-400 text-brand-dark border-t-[3px]">
-    <div class="container-custom text-center">
-      <h2 class="text-4xl font-bold mb-6">Come build with us</h2>
-      <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">Show up before you feel ready.</p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button href="/join" variant="secondary" size="lg">
-          Get involved
-        </Button>
-        <Button href="/events" variant="outline" size="lg">
-          {' '}
-          Attend an event{' '}
-        </Button>
-      </div>
-    </div>
-  </section>
+  <!-- The About closing, in the mockup's headline (Waskar, 10/16/2026). The
+       motto is Home's alone (site audit, 10/18/2026). -->
+  <ClosingFlock
+    lede="You don't need a bootcamp, a degree or a plan. Come to one night and meet the room."
+    primary={{ href: '/join', label: 'Get involved' }}
+    secondary={{ href: '/events', label: 'Attend an event' }}
+  >
+    Show up before you feel ready.
+  </ClosingFlock>
 </BaseLayout>

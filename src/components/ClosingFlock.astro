@@ -1,0 +1,155 @@
+---
+import Button from './Button.astro';
+import { links } from '../config';
+import { getCommunityData } from '../lib/community';
+
+/**
+ * The closing section every page ends on (DESIGN.md, "Color rhythm"): a
+ * headline and the single ask, in the mockup's layout (Waskar, 10/15/2026).
+ * Each page brings its own copy; Home's is the motto (see Props below).
+ *
+ * - Background: the brand skyline illustration (Waskar, 10/15/2026), cropped
+ *   below its lettering and its small pigeon. The buildings run along the
+ *   bottom; the text sits on the art's own sky above the rooftops. The flat
+ *   sky color #58B2F7 is sampled from the art so the image blends into it.
+ *   This is an illustration, not a flat Sky Blue field (Book: Sky Blue is
+ *   never a background); flagged for Diego in DESIGN.md.
+ * - Art: a die-cut sticker of the real sunset logo art, with its lettering
+ *   removed (the wordmark already sits in the footer just below). The letters
+ *   are separate shapes in the source file; only those shapes were dropped,
+ *   so the art itself is unchanged.
+ * - The mockup's generic block skyline is replaced by the real brand art.
+ *
+ * Page PRs place it as the last element inside <main>, and drop the page's own
+ * closing call to action so the page does not ask twice.
+ *
+ * The motto ("A pigeon flies alone. A flock goes much further.") is Home's
+ * closing only (site audit, 10/18/2026). It closed seven places on six pages,
+ * and a line read on every page stops being heard. A page that passes its own
+ * headline also passes its own lede, and neither repeats the motto.
+ */
+interface Action {
+  href: string;
+  label: string;
+  /** Opens off-site (Luma), with the external icon. */
+  external?: boolean;
+}
+
+interface Props {
+  /** One or two sentences under the headline. Keep it to the single ask. */
+  lede?: string;
+  /** The main button (Hot Pink, Book p14). With none passed, the section uses
+   *  the event-aware default below. */
+  primary?: Action;
+  /** The second button (white sticker). */
+  secondary?: Action;
+}
+
+/**
+ * Each mockup page has its own closing copy (Waskar, 10/16/2026). A page
+ * passes its headline in the default slot, plus its lede and buttons. With
+ * nothing passed, the section shows Home's copy: the motto as the headline.
+ */
+const {
+  lede = "Come to one night. That's the whole ask. We'll take it from there, together.",
+  primary,
+  secondary = { href: '/support', label: 'Support the flock' },
+} = Astro.props;
+const hasTitle = Astro.slots.has('default');
+
+// The default main button: no RSVP without a real event, the same rule as the
+// header and the Home hero.
+const { nextEvent } = await getCommunityData();
+---
+
+<section
+  data-testid="closing-flock"
+  class="relative overflow-hidden bg-[#58B2F7] border-t-2 border-brand-dark"
+>
+  <!-- The skyline band, one image at full width (Waskar's pick, 10/15/2026).
+       The art is a single portrait drawing, so it cannot zoom out further
+       without a seam: a mirrored or repeated copy shows at the join. A wider
+       version of the drawing is the fix. object-top keeps the rooftops; the
+       first rooftop sits 14.2% of the image width below the image top. -->
+  <img
+    src="/images/skyline-1200.webp"
+    srcset="/images/skyline-1200.webp 1200w, /images/skyline-2400.webp 2400w"
+    sizes="100vw"
+    width="2400"
+    height="2092"
+    loading="lazy"
+    alt=""
+    class="absolute inset-x-0 bottom-0 w-full h-[clamp(280px,36vw,520px)] object-cover object-top pointer-events-none select-none"
+  />
+  <!-- Bottom padding = band height minus the rooftop offset, plus 48px, so the
+       buttons always end above the rooftops. Percentage padding is measured
+       against the section width, the same width the image scales to. -->
+  <div class="relative container-custom pt-[clamp(72px,9vw,128px)] pb-[calc(clamp(280px,36vw,520px)-14.2%+48px)] flex flex-wrap items-center gap-[clamp(32px,5vw,72px)]">
+    <div class="grow shrink basis-[560px] min-w-0 flex flex-col gap-7">
+      {/* Only Home's motto closes at full volume (site audit, 10/18/2026).
+          A page's own closing line is one step down, so the motto stays
+          Home's alone and each page's loudest moment sits above it. */}
+      <h2
+        class:list={[
+          'm-0 leading-[0.9] tracking-[-0.02em]',
+          hasTitle ? 'text-[clamp(40px,5vw,72px)]' : 'text-[clamp(48px,7vw,104px)]',
+        ]}
+      >
+        {hasTitle ? (
+          <slot />
+        ) : (
+          <Fragment>
+            A pigeon flies alone. <span class="sticker bg-brand-yellow">A flock</span> goes much
+            further.
+          </Fragment>
+        )}
+      </h2>
+      <p class="m-0 max-w-[520px] text-[19px] leading-[1.55] font-semibold">{lede}</p>
+      <div class="flex flex-wrap gap-3.5">
+        <!-- Book p14: Hot Pink is the main button. -->
+        {primary ? (
+          <Button href={primary.href} external={primary.external} variant="primary" size="lg">
+            {primary.label}
+          </Button>
+        ) : nextEvent ? (
+          <Button
+            href={nextEvent.url}
+            external
+            variant="primary"
+            size="lg"
+            data-pcv-event-start={nextEvent.start}
+            data-pcv-event-fallback={links.luma}
+          >
+            <span data-pcv-event-start={nextEvent.start}>RSVP for the next night</span>
+            <span hidden data-pcv-event-after={nextEvent.start}>
+              Get notified
+            </span>
+          </Button>
+        ) : (
+          <Button href={links.luma} external variant="primary" size="lg">
+            Get notified
+          </Button>
+        )}
+        <Button href={secondary.href} external={secondary.external} variant="light" size="lg">
+          {secondary.label}
+        </Button>
+      </div>
+    </div>
+    <!-- The pigeon as a die-cut sticker, not a badge (Waskar, 10/15/2026): a
+         white cut line around its shape, a tilt, and the hard ink shadow. Each
+         drop-shadow applies to the result of the one before it, so the ink
+         shadow falls behind the white cut line too. -->
+    <div class="grow shrink basis-[360px] min-w-0 flex justify-center">
+      <img
+        src="/images/pigeon-keyboard-skyline-420.webp"
+        srcset="/images/pigeon-keyboard-skyline-420.webp 317w, /images/pigeon-keyboard-skyline-840.webp 634w"
+        sizes="(min-width: 1024px) 340px, 260px"
+        width="317"
+        height="420"
+        loading="lazy"
+        alt="The PhilaCon Valley pigeon standing on a keyboard, with the Philadelphia skyline behind it"
+        class="block w-full max-w-[260px] lg:max-w-[340px] h-auto -rotate-[5deg] [filter:drop-shadow(4px_0_0_#fff)_drop-shadow(-4px_0_0_#fff)_drop-shadow(0_4px_0_#fff)_drop-shadow(0_-4px_0_#fff)_drop-shadow(10px_10px_0_#1a1a1a)]"
+      />
+    </div>
+  </div>
+</section>

@@ -1,254 +1,265 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Button from '../components/Button.astro';
-import { links } from '../config';
+import ClosingFlock from '../components/ClosingFlock.astro';
+import PhotoGrid from '../components/PhotoGrid.astro';
+import PartnerStrip from '../components/PartnerStrip.astro';
+import { community, links } from '../config';
+import { getCommunityData } from '../lib/community';
+import { getRoomPhotos } from '../lib/events';
+import { getHireLink, getShowcase } from '../lib/showcase';
+
+/**
+ * Support, Edition 1.2 (DESIGN.md, "The 1.2 redesign"). Sections follow
+ * Diego's mockup. Every claim was confirmed (Waskar, 10/17/2026): PhilaCon
+ * pays for its venues, hands out hardware at nights, and thanks sponsors in
+ * the room. Open Collective is live (fiscal host: Open Source Collective) and
+ * publishes the budget. Job openings go to Discord's #philly-tech channel.
+ * The venue is named Pennovation Center (the building); Pennovation Works is
+ * the campus. The agency card says the trade out loud, "Hire us. Fund the
+ * flock." (Waskar, 10/17/2026); the mockup's "Paid work that pays for it."
+ * read as a riddle.
+ *
+ * Site audit, 10/18/2026: donors give to what they can see. Right under the
+ * hero, the page shows the proof: the live numbers (the same ones as Home,
+ * labeled the same way), four photos from the room, and the partners who
+ * said yes to being shown. The numbers heading is the page's loudest
+ * section; the others are one step quieter.
+ */
+
+// /studio once it has proof, /contact until then (src/lib/showcase.ts).
+const hire = await getHireLink();
+
+const { nightsHeld, thingsShipped } = await getCommunityData();
+// Home shows the first four; Support shows the next four.
+const roomPhotos = await getRoomPhotos(4, 4);
+// Partners show only with a written approval on record (src/content.config.ts).
+const partners = await getShowcase('partners');
+
+// The nights count is in the heading above, so the row does not repeat it.
+const proof = [
+  { value: community.memberCount, label: 'people on our calendar' },
+  { value: thingsShipped, label: thingsShipped === 1 ? 'thing shipped' : 'things shipped' },
+];
+
+const uses = [
+  {
+    title: 'Event venues',
+    line: 'Renting rooms like Pennovation Center, where people can actually sit down and build together.',
+    fill: 'bg-brand-yellow',
+  },
+  {
+    title: 'Learning resources',
+    line: 'Free tutorials, workshop materials and the hardware we hand out on the night.',
+    fill: 'bg-white',
+  },
+  {
+    title: 'Infrastructure',
+    line: 'Keeping the website, tools and platforms the community runs on up and running.',
+    fill: 'bg-white',
+  },
+  {
+    title: 'Community growth',
+    line: 'Outreach to the people in Philadelphia who are least represented in tech.',
+    fill: 'bg-brand-pink',
+  },
+];
+
+const ways = [
+  {
+    title: 'Sponsor a night',
+    line: 'Cover the venue, food or materials for an event, and your organization gets thanked in the room.',
+    cta: 'Get in touch',
+    href: '/contact',
+  },
+  {
+    title: 'Mentor',
+    line: 'Lead a workshop, sit with a team at a Lab, or answer questions on Discord.',
+    cta: 'Join the community',
+    href: '/join',
+  },
+  {
+    title: 'Host us',
+    line: 'Have a room with tables, power and Wi-Fi? Let the flock build in it for a night.',
+    cta: 'Offer a space',
+    href: '/contact',
+  },
+  {
+    title: 'Share opportunities',
+    line: "Know of an inclusive role at a company that means it? Pass it to us and we'll share it with the flock.",
+    cta: 'Send it over',
+    href: '/contact',
+  },
+];
 ---
 
 <BaseLayout
-  title="Support PhilaCon Valley - Donate"
-  description="Support PhilaCon Valley's mission to make Philadelphia a tech hub by us, for us. Your donation keeps events free and accessible."
+  title="Support — Keep PhilaCon Valley free for the next person"
+  description="Every PhilaCon Valley event stays free and open. Donate through Open Collective, bring us a project, or sponsor, mentor or host a night."
 >
-  <!-- Hero Section -->
-  <section class="bg-brand-purple text-white py-20">
-    <div class="container-custom">
-      <div class="max-w-4xl mx-auto text-center">
-        <h1 class="text-5xl md:text-6xl font-bold mb-6">Support our mission</h1>
-        <p class="text-2xl text-white/85">
-          Help keep PhilaCon Valley free and accessible for everyone
+  <!-- Hero: Coral, as in the mockup. On a saturated section the main button
+       is Golden Yellow (Button, "secondary"). -->
+  <section class="bg-brand-coral">
+    <div class="container-custom py-[clamp(56px,8vw,112px)] flex flex-wrap gap-10 items-end justify-between">
+      <div class="grow shrink basis-[640px] min-w-0 flex flex-col gap-7">
+        <p class="m-0 self-start pill font-black text-[13px] tracking-[0.16em]">
+          Support our mission
+        </p>
+        <h1 class="m-0 [text-wrap:balance]">Keep it free for the next person.</h1>
+        <p class="m-0 max-w-[600px] text-[clamp(18px,1.6vw,22px)] leading-[1.5] font-semibold">
+          Every event we run stays free and open. Money shouldn't decide who in Philly gets to learn
+          tech or build a career in it.
         </p>
       </div>
-    </div>
-  </section>
-
-  <!-- Why Support -->
-  <section class="section-padding">
-    <div class="container-custom">
-      <div class="max-w-4xl mx-auto">
-        <h2 class="text-4xl font-bold mb-8 text-center">Why your support matters</h2>
-        <p class="text-xl text-brand-dark/70 leading-relaxed mb-8 text-center">
-          PhilaCon Valley is committed to keeping all events free and accessible. We believe
-          financial barriers shouldn't prevent anyone from learning tech skills and building their
-          career. Your support makes this possible.
-        </p>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
-          <div class="bg-white p-6 rounded-retro border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-2xl font-bold mb-3 flex items-center">
-              <svg
-                class="w-6 h-6 text-primary-600 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                ></path>
-              </svg>
-              Event venues
-            </h3>
-            <p class="text-brand-dark/60">
-              Rent spaces like Pennovation Works that provide the infrastructure for hands-on
-              collaboration and workshops.
-            </p>
-          </div>
-
-          <div class="bg-white p-6 rounded-retro border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-2xl font-bold mb-3 flex items-center">
-              <svg
-                class="w-6 h-6 text-primary-600 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                ></path>
-              </svg>
-              Learning resources
-            </h3>
-            <p class="text-brand-dark/60">
-              Create and share free tutorials, workshops materials, and educational content for the
-              community.
-            </p>
-          </div>
-
-          <div class="bg-white p-6 rounded-retro border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-2xl font-bold mb-3 flex items-center">
-              <svg
-                class="w-6 h-6 text-primary-600 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-                ></path>
-              </svg>
-              Infrastructure
-            </h3>
-            <p class="text-brand-dark/60">
-              Maintain website, tools, and platforms that help the community connect, collaborate,
-              and grow.
-            </p>
-          </div>
-
-          <div class="bg-white p-6 rounded-retro border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-2xl font-bold mb-3 flex items-center">
-              <svg
-                class="w-6 h-6 text-primary-600 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                ></path>
-              </svg>
-              Community growth
-            </h3>
-            <p class="text-brand-dark/60">
-              Support outreach efforts to connect with more underrepresented folks in tech across
-              Philadelphia.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Open Collective Section -->
-  <section class="section-padding bg-brand-yellow border-t-[3px]">
-    <div class="container-custom">
-      <div class="max-w-4xl mx-auto text-center">
-        <h2 class="text-4xl font-bold mb-8">Support via Open Collective</h2>
-        <p class="text-lg text-brand-dark/70 mb-8">
-          We use Open Collective for transparent, community-driven financial management. You can see
-          exactly how every dollar is spent and the impact it makes.
-        </p>
-
-        <!-- Open Collective Embed -->
-        <div class="bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro-lg p-8 mb-8">
-          <div class="mb-6">
-            <h3 class="text-2xl font-bold mb-4">Make a contribution</h3>
-            <p class="text-brand-dark/60 mb-6">
-              One-time or recurring donations – every amount helps keep our events free and
-              accessible.
-            </p>
-          </div>
-
-          <!-- Open Collective Widget Placeholder -->
-          <div class="bg-primary-100 rounded-retro border-2 border-brand-dark/10 p-12 mb-6">
-            <p class="text-lg font-semibold mb-4">Support us on Open Collective</p>
-            <p class="text-brand-dark/60 mb-6">
-              Visit our Open Collective page to make a one-time or recurring contribution. All
-              transactions are transparent and publicly visible.
-            </p>
-            <Button
-              href={links.openCollective}
-              external
-              variant="primary"
-              size="lg"
-              data-testid="primary-cta"
-            >
-              Donate on Open Collective
-            </Button>
-          </div>
-
-          <div class="text-sm text-brand-dark/50">
-            <p class="mb-2">✓ Fully transparent – see how funds are used</p>
-            <p>✓ Secure payment processing</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Other ways to support -->
-  <section class="section-padding">
-    <div class="container-custom">
-      <div class="max-w-4xl mx-auto">
-        <h2 class="text-3xl font-bold mb-8 text-center">Other ways to support</h2>
-        <div class="space-y-6">
-          <div class="bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro p-6">
-            <h3 class="text-xl font-bold mb-2">Sponsor an event</h3>
-            <p class="text-brand-dark/60 mb-4">
-              Companies and organizations can sponsor specific events. Your support covers venue
-              costs, refreshments, and materials while gaining visibility with our community.
-            </p>
-            <Button href="/contact" variant="outline">
-              {' '}
-              Inquire about sponsorship{' '}
-            </Button>
-          </div>
-
-          <div class="bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro p-6">
-            <h3 class="text-xl font-bold mb-2">Volunteer as a mentor</h3>
-            <p class="text-brand-dark/60 mb-4">
-              Share your expertise by mentoring community members, leading workshops, or supporting
-              Lab sessions.
-            </p>
-            <Button href="/join" variant="outline">
-              {' '}
-              Get involved{' '}
-            </Button>
-          </div>
-
-          <div class="bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro p-6">
-            <h3 class="text-xl font-bold mb-2">Provide venue space</h3>
-            <p class="text-brand-dark/60 mb-4">
-              Do you have space we could use for events? Help us bring tech education to more people
-              across Philadelphia.
-            </p>
-            <Button href="/contact" variant="outline">
-              {' '}
-              Offer venue space{' '}
-            </Button>
-          </div>
-
-          <div class="bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro p-6">
-            <h3 class="text-xl font-bold mb-2">Share job opportunities</h3>
-            <p class="text-brand-dark/60 mb-4">
-              Hiring? Share inclusive job opportunities with our community. We especially welcome
-              roles from companies committed to diversity and equity.
-            </p>
-            <Button href="/contact" variant="outline">
-              {' '}
-              Post a job{' '}
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="section-padding bg-accent-400 text-brand-dark border-t-[3px]">
-    <div class="container-custom text-center">
-      <h2 class="text-4xl font-bold mb-6">Ready to make an impact?</h2>
-      <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-        Your support helps us build the Philadelphia tech community we want to see.
-      </p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <div class="flex flex-wrap gap-3.5">
         <Button href={links.openCollective} external variant="secondary" size="lg">
-          Donate now
+          Donate
         </Button>
-        <Button href="/contact" variant="outline" size="lg">
-          {' '}
-          Other ways to help{' '}
+        <Button href="#ways" variant="light" size="lg">
+          Other ways to help
         </Button>
       </div>
     </div>
   </section>
+
+  <!-- The proof: what the money has already paid for. -->
+  <section class="bg-white border-t-2 border-brand-dark" data-testid="support-proof">
+    <div class="container-custom py-[clamp(72px,9vw,120px)] flex flex-col gap-12">
+      <div class="flex flex-col gap-[22px] max-w-[900px]">
+        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">What it pays for</p>
+        <h2 class="m-0 [text-wrap:balance]">
+          {nightsHeld} nights so far. <span class="sticker bg-brand-pink">Every one free.</span>
+        </h2>
+      </div>
+      <dl class="m-0 grid gap-8 grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+        {proof.map((item) => (
+          <div class="border-l-[3px] border-brand-dark pl-5 flex flex-col-reverse gap-1">
+            <dt class="font-black text-lg">{item.label}</dt>
+            <dd class="m-0 font-display font-extrabold text-[clamp(56px,6vw,88px)] leading-[0.85] tabular-nums">
+              {item.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+      {roomPhotos.length > 0 && <PhotoGrid photos={roomPhotos} />}
+      {partners.length > 0 && (
+        <div class="flex flex-col gap-6">
+          <h3 class="m-0">Thank you to our partners.</h3>
+          <PartnerStrip partners={partners} />
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- Where your support goes. -->
+  <section class="bg-white border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,120px)] flex flex-col gap-12">
+      <div class="flex flex-col gap-[22px] max-w-[760px]">
+        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">Where your support goes</p>
+        <h2 class="m-0 heading-quiet [text-wrap:balance]">Rooms, tools and reach.</h2>
+      </div>
+      <ol class="m-0 p-0 list-none grid gap-6 grid-cols-[repeat(auto-fill,minmax(min(240px,100%),1fr))]">
+        {uses.map((use, i) => (
+          <li
+            class:list={[
+              'rounded-[24px] border-2 border-brand-dark p-6 flex flex-col gap-3 shadow-[6px_6px_0_theme(colors.brand.dark)]',
+              use.fill,
+            ]}
+          >
+            <span class="font-black text-[13px] tracking-[0.14em]">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <h3 class="m-0 text-[clamp(22px,1.9vw,28px)] leading-none">{use.title}</h3>
+            <p class="m-0 text-[16px] leading-[1.55]">{use.line}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- Two ways to fund it: give directly, or bring us paid work. -->
+  <section class="bg-brand-yellow border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,120px)] grid gap-7 grid-cols-1 lg:grid-cols-2">
+      <div class="rounded-[28px] border-2 border-brand-dark bg-brand-dark text-white p-[clamp(28px,4vw,48px)] flex flex-col gap-5 shadow-[8px_8px_0_theme(colors.white)]">
+        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase text-brand-yellow">
+          Give directly
+        </p>
+        <h2 class="m-0 text-brand-yellow text-[clamp(36px,4.2vw,60px)] leading-[0.95]">
+          Donate through Open Collective.
+        </h2>
+        <p class="m-0 text-[18px] leading-[1.55]">
+          Give once or every month. Every amount helps keep our events free and open to everyone.
+        </p>
+        <ul class="m-0 p-0 list-none flex flex-col gap-2 font-black text-[15px]">
+          <li class="flex items-center gap-2">
+            <span class="text-brand-yellow" aria-hidden="true">
+              ✓
+            </span>{' '}
+            Full financial transparency
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-brand-yellow" aria-hidden="true">
+              ✓
+            </span>{' '}
+            Secure payment processing
+          </li>
+        </ul>
+        <div class="mt-auto pt-2">
+          <Button href={links.openCollective} external variant="secondary" size="lg">
+            Donate now
+          </Button>
+        </div>
+      </div>
+      <div class="rounded-[28px] border-2 border-brand-dark bg-white p-[clamp(28px,4vw,48px)] flex flex-col gap-5 shadow-[8px_8px_0_theme(colors.brand.dark)]">
+        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">
+          For Philly organizations
+        </p>
+        <h2 class="m-0 text-[clamp(36px,4.2vw,60px)] leading-[0.95]">Hire us. Fund the flock.</h2>
+        <p class="m-0 text-[18px] leading-[1.55]">
+          We design and build sites, apps and software for Philly nonprofits and community orgs.
+          Your project pays for the free nights.
+        </p>
+        <div class="mt-auto pt-2">
+          <!-- Support is for giving; /studio is for buyers (Waskar, 10/18/2026). -->
+          <Button href={hire.href} variant="primary" size="lg" data-testid="primary-cta">
+            {hire.label}
+          </Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Other ways to help. The id is the target of the hero's second button. -->
+  <section id="ways" class="bg-white border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,120px)] flex flex-col gap-12">
+      <div class="flex flex-col gap-[22px] max-w-[760px]">
+        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">Other ways to help</p>
+        <h2 class="m-0 heading-quiet [text-wrap:balance]">Bring what you've got.</h2>
+      </div>
+      <ul class="m-0 p-0 list-none grid gap-6 grid-cols-[repeat(auto-fill,minmax(min(240px,100%),1fr))]">
+        {ways.map((way) => (
+          <li class="rounded-[24px] border-2 border-brand-dark bg-white p-6 flex flex-col gap-3 shadow-[6px_6px_0_theme(colors.brand.dark)]">
+            <h3 class="m-0 text-[30px] leading-none">{way.title}</h3>
+            <p class="m-0 text-[16px] leading-[1.55]">{way.line}</p>
+            <a
+              href={way.href}
+              class="mt-auto self-start inline-flex items-center min-h-11 font-black text-[16px] text-brand-dark underline underline-offset-[5px] decoration-2"
+            >
+              {way.cta}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- The Support closing, in the mockup's headline. The motto is Home's
+       alone (site audit, 10/18/2026). -->
+  <ClosingFlock
+    lede="Open Collective publishes our budget, so you can see where every dollar goes."
+    primary={{ href: links.openCollective, label: 'Donate now', external: true }}
+    secondary={{ href: '/contact', label: 'Talk to us' }}
+  >
+    Ready to make an impact?
+  </ClosingFlock>
 </BaseLayout>

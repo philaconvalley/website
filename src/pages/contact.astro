@@ -1,375 +1,350 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ClosingFlock from '../components/ClosingFlock.astro';
 import { site, links } from '../config';
+
+/**
+ * Contact, Edition 1.2 (DESIGN.md, "The 1.2 redesign"). Sections follow
+ * Diego's mockup, with these decisions (Waskar, 10/17/2026):
+ * - The form is the same working form as before (Formspree, the res.ok check,
+ *   the 15-second timeout, the spam trap); only its layout changed.
+ * - "We usually reply within 24 to 48 hours." is confirmed.
+ * - The FAQ uses native <details>, so it works with no JavaScript and with a
+ *   keyboard. The Slack answer matches /join: a quieter backup, with the
+ *   invite link.
+ * - The closing uses ClosingFlock's event-aware default button: an RSVP for a
+ *   real event, "Get notified" otherwise.
+ */
+
+const social = [
+  { label: 'Discord', href: links.discord },
+  { label: 'Instagram', href: links.social.instagram },
+  { label: 'LinkedIn', href: links.social.linkedin },
+  { label: 'X', href: links.social.twitter },
+  { label: 'GitHub', href: links.github.org },
+];
+
+const lumaLabel = links.luma.replace(/^https?:\/\//, '');
 ---
 
 <BaseLayout
-  title="Contact PhilaCon Valley"
-  description="Get in touch with PhilaCon Valley. We'd love to hear from you!"
+  title="Contact — Say hi to PhilaCon Valley"
+  description="Questions about an event, a project you want built, an idea for a workshop, or just hello. It all lands in the same inbox."
 >
-  <!-- Hero Section -->
-  <section class="bg-brand-coral text-white py-20">
-    <div class="container-custom">
-      <div class="max-w-4xl mx-auto text-center">
-        <h1 class="text-5xl md:text-6xl font-bold mb-6">Get in touch</h1>
-        <p class="text-2xl text-white/85">
-          Questions, ideas, or just want to say hi? We'd love to hear from you!
-        </p>
-      </div>
+  <!-- Hero: Amber, as in the mockup. -->
+  <section class="bg-brand-amber">
+    <div class="container-custom py-[clamp(56px,8vw,112px)] flex flex-col gap-7">
+      <p class="m-0 self-start pill font-black text-[13px] tracking-[0.16em]">Get in touch</p>
+      <h1 class="m-0 max-w-[1000px] [text-wrap:balance]">Say hi. We'll say it back.</h1>
+      <p class="m-0 max-w-[600px] text-[clamp(18px,1.6vw,22px)] leading-[1.5] font-semibold">
+        Questions about an event, a project you want built, an idea for a workshop, or just hello.
+        It all lands in the same inbox.
+      </p>
     </div>
   </section>
 
-  <!-- Contact Section -->
-  <section class="section-padding">
-    <div class="container-custom">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
-        <!-- Contact Info -->
-        <div>
-          <h2 class="text-3xl font-bold mb-6">Let's connect</h2>
-          <p class="text-lg text-brand-dark/70 mb-8">
-            Whether you have a question about our events, want to contribute, or just want to
-            connect with the community – we're here for you.
+  <!-- Let's connect, beside the form. -->
+  <section class="bg-white border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,120px)] grid gap-7 grid-cols-1 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+      <div class="rounded-[28px] border-2 border-brand-dark bg-brand-dark text-white p-[clamp(28px,3.5vw,40px)] flex flex-col gap-6 shadow-[8px_8px_0_theme(colors.brand.pink)]">
+        <h2 class="m-0 text-brand-yellow text-[clamp(32px,3vw,44px)] leading-none">
+          Let's connect.
+        </h2>
+        <dl class="m-0 flex flex-col gap-5">
+          <div class="flex flex-col gap-1">
+            <dt class="font-black text-[13px] tracking-[0.14em] uppercase text-brand-yellow">
+              Email
+            </dt>
+            <dd class="m-0">
+              <a
+                href={`mailto:${site.email}`}
+                class="inline-flex items-center min-h-11 font-extrabold text-[18px] text-white underline underline-offset-[4px] decoration-2 break-all"
+              >
+                {site.email}
+              </a>
+            </dd>
+          </div>
+          <div class="flex flex-col gap-1">
+            <dt class="font-black text-[13px] tracking-[0.14em] uppercase text-brand-yellow">
+              Location
+            </dt>
+            <dd class="m-0 font-black">{site.location}</dd>
+          </div>
+          <div class="flex flex-col gap-1">
+            <dt class="font-black text-[13px] tracking-[0.14em] uppercase text-brand-yellow">
+              Events
+            </dt>
+            <dd class="m-0">
+              <a
+                href={links.luma}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center min-h-11 font-extrabold text-[18px] text-white underline underline-offset-[4px] decoration-2"
+              >
+                {lumaLabel}
+              </a>
+            </dd>
+          </div>
+        </dl>
+        <div class="mt-auto flex flex-col gap-3">
+          <p class="m-0 font-black text-[13px] tracking-[0.14em] uppercase text-brand-yellow">
+            Find us
           </p>
-
-          <!-- Contact Methods -->
-          <div class="space-y-6 mb-8">
-            <div class="flex items-start">
-              <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0 mr-4">
-                <svg
-                  class="w-6 h-6 text-primary-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                  ></path>
-                </svg>
-              </div>
-              <div>
-                <h3 class="font-bold mb-1">Email</h3>
-                <a href={`mailto:${site.email}`} class="text-primary-600 hover:text-primary-700">
-                  {site.email}
-                </a>
-              </div>
-            </div>
-
-            <div class="flex items-start">
-              <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0 mr-4">
-                <svg
-                  class="w-6 h-6 text-primary-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                  ></path>
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                  ></path>
-                </svg>
-              </div>
-              <div>
-                <h3 class="font-bold mb-1">Location</h3>
-                <p class="text-brand-dark/60">Philadelphia, PA</p>
-              </div>
-            </div>
-
-            <div class="flex items-start">
-              <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0 mr-4">
-                <svg
-                  class="w-6 h-6 text-primary-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  ></path>
-                </svg>
-              </div>
-              <div>
-                <h3 class="font-bold mb-1">Events</h3>
+          <ul class="m-0 p-0 list-none flex flex-wrap gap-2.5" data-testid="contact-social">
+            {social.map((s, i) => (
+              <li>
                 <a
-                  href={links.luma}
+                  href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-primary-600 hover:text-primary-700"
+                  class:list={[
+                    'inline-flex items-center min-h-11 px-4 rounded-full border-2 border-brand-dark font-display font-extrabold text-sm text-brand-dark',
+                    i === 0 ? 'bg-brand-yellow' : 'bg-white',
+                  ]}
                 >
-                  lu.ma/philaconvalley
+                  {s.label}
                 </a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Social Links -->
-          <div>
-            <h3 class="font-bold mb-4">Follow us</h3>
-            <div class="flex gap-4">
-              <a
-                href={links.social.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center hover:bg-primary-100 transition-colors"
-                aria-label="Instagram"
-              >
-                <svg class="w-6 h-6 text-brand-dark/60" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"></path>
-                </svg>
-              </a>
-              <a
-                href={links.social.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center hover:bg-primary-100 transition-colors"
-                aria-label="LinkedIn"
-              >
-                <svg class="w-6 h-6 text-brand-dark/60" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path>
-                </svg>
-              </a>
-              <a
-                href={links.social.twitter}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center hover:bg-primary-100 transition-colors"
-                aria-label="Twitter/X"
-              >
-                <svg class="w-6 h-6 text-brand-dark/60" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
-                </svg>
-              </a>
-              <a
-                href={links.github.org}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center hover:bg-primary-100 transition-colors"
-                aria-label="GitHub"
-              >
-                <svg class="w-6 h-6 text-brand-dark/60" fill="currentColor" viewBox="0 0 24 24">
-                  <path
-                    fill-rule="evenodd"
-                    d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
-                    clip-rule="evenodd"
-                  ></path>
-                </svg>
-              </a>
-            </div>
-          </div>
+              </li>
+            ))}
+          </ul>
         </div>
+      </div>
 
-        <!-- Contact Form -->
-        <div>
-          <h2 class="text-3xl font-bold mb-6">Send us a message</h2>
-          <form
-            action={links.formspree}
-            method="POST"
-            class="space-y-6"
-            x-data="{ status: 'idle' }"
-            @submit.prevent="status = 'sending'; const stop = new AbortController(); const timer = setTimeout(() => stop.abort(), 15000); fetch($el.action, { method: 'POST', body: new FormData($el), headers: { 'Accept': 'application/json' }, signal: stop.signal }).then((res) => { if (!res.ok) throw new Error(res.status); status = 'sent'; $el.reset(); }).catch(() => { status = 'error'; }).finally(() => clearTimeout(timer))"
-          >
+      <div class="rounded-[28px] border-2 border-brand-dark bg-brand-yellow p-[clamp(28px,3.5vw,40px)] flex flex-col gap-6 shadow-[8px_8px_0_theme(colors.brand.dark)]">
+        <h2 class="m-0 text-[clamp(32px,3vw,44px)] leading-none">Send us a message.</h2>
+        <form
+          action={links.formspree}
+          method="POST"
+          class="flex flex-col"
+          x-data="{ status: 'idle' }"
+          @submit.prevent="status = 'sending'; const stop = new AbortController(); const timer = setTimeout(() => stop.abort(), 15000); fetch($el.action, { method: 'POST', body: new FormData($el), headers: { 'Accept': 'application/json' }, signal: stop.signal }).then((res) => { if (!res.ok) throw new Error(res.status); status = 'sent'; $el.reset(); }).catch(() => { status = 'error'; }).finally(() => clearTimeout(timer))"
+        >
+          <!--
+            fetch() only rejects on a network failure. Formspree answers a rejected
+            submission (spam filter, bad form ID, quota) with a 4xx, which still
+            resolves. Without the res.ok check, those showed "Message sent!" and the
+            message was lost. The 15-second abort covers the other silent failure: a
+            request that never answers, which left the button on "Sending..." forever.
+          -->
+          <div x-show="status !== 'sent'" class="grid gap-5 grid-cols-1 sm:grid-cols-2">
             <!--
-              fetch() only rejects on a network failure. Formspree answers a rejected
-              submission (spam filter, bad form ID, quota) with a 4xx, which still
-              resolves. Without the res.ok check, those showed "Message sent!" and the
-              message was lost. The 15-second abort covers the other silent failure: a
-              request that never answers, which left the button on "Sending..." forever.
+              Spam trap. Formspree drops any submission that fills `_gotcha`. People
+              never see the field; bots that fill every input do.
             -->
-            <div x-show="status !== 'sent'" class="space-y-6">
-              <!--
-                Spam trap. Formspree drops any submission that fills `_gotcha`. People
-                never see the field; bots that fill every input do.
-              -->
+            <input
+              type="text"
+              name="_gotcha"
+              class="hidden"
+              tabindex="-1"
+              autocomplete="off"
+              aria-hidden="true"
+            />
+            <div>
+              <label
+                for="name"
+                class="block mb-2 font-black text-[13px] tracking-[0.14em] uppercase text-brand-dark"
+              >
+                Name *
+              </label>
               <input
                 type="text"
-                name="_gotcha"
-                class="hidden"
-                tabindex="-1"
-                autocomplete="off"
-                aria-hidden="true"
+                id="name"
+                name="name"
+                autocomplete="name"
+                required
+                class="w-full px-4 py-3 border-2 border-brand-dark rounded-[14px] bg-white"
+                placeholder="Your name"
               />
-              <div>
-                <label for="name" class="block text-sm font-semibold text-brand-dark/70 mb-2">
-                  Name *
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  autocomplete="name"
-                  required
-                  class="w-full px-4 py-3 border-2 border-brand-dark/10 rounded-xl bg-primary-100 focus:ring-2 focus:ring-accent-400 focus:border-accent-400 focus:bg-white"
-                  placeholder="Your name"
-                />
-              </div>
+            </div>
 
-              <div>
-                <label for="email" class="block text-sm font-semibold text-brand-dark/70 mb-2">
-                  Email *
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  autocomplete="email"
-                  required
-                  class="w-full px-4 py-3 border-2 border-brand-dark/10 rounded-xl bg-primary-100 focus:ring-2 focus:ring-accent-400 focus:border-accent-400 focus:bg-white"
-                  placeholder="your.email@example.com"
-                />
-              </div>
-
-              <div>
-                <label for="subject" class="block text-sm font-semibold text-brand-dark/70 mb-2">
-                  Subject
-                </label>
-                <input
-                  type="text"
-                  id="subject"
-                  name="subject"
-                  class="w-full px-4 py-3 border-2 border-brand-dark/10 rounded-xl bg-primary-100 focus:ring-2 focus:ring-accent-400 focus:border-accent-400 focus:bg-white"
-                  placeholder="What's this about?"
-                />
-              </div>
-
-              <div>
-                <label for="message" class="block text-sm font-semibold text-brand-dark/70 mb-2">
-                  Message *
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  required
-                  rows="6"
-                  class="w-full px-4 py-3 border-2 border-brand-dark/10 rounded-xl bg-primary-100 focus:ring-2 focus:ring-accent-400 focus:border-accent-400 focus:bg-white resize-none"
-                  placeholder="Tell us what's on your mind..."
-                ></textarea>
-              </div>
-
-              <div
-                x-show="status === 'error'"
-                x-cloak
-                role="alert"
-                class="bg-red-50 border border-red-200 rounded-lg p-4 text-red-900"
+            <div>
+              <label
+                for="email"
+                class="block mb-2 font-black text-[13px] tracking-[0.14em] uppercase text-brand-dark"
               >
-                <p class="font-semibold">Your message did not send.</p>
-                <p class="text-sm mt-1">
-                  Your text is still here. Try again, or email us at{' '}
-                  <a href={`mailto:${site.email}`} class="underline font-semibold">
-                    {site.email}
-                  </a>
-                  .
-                </p>
-              </div>
+                Email *
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                autocomplete="email"
+                required
+                class="w-full px-4 py-3 border-2 border-brand-dark rounded-[14px] bg-white"
+                placeholder="you@example.com"
+              />
+            </div>
 
+            <div class="sm:col-span-2">
+              <label
+                for="subject"
+                class="block mb-2 font-black text-[13px] tracking-[0.14em] uppercase text-brand-dark"
+              >
+                Subject
+              </label>
+              <input
+                type="text"
+                id="subject"
+                name="subject"
+                class="w-full px-4 py-3 border-2 border-brand-dark rounded-[14px] bg-white"
+                placeholder="Event question, project idea, sponsorship..."
+              />
+            </div>
+
+            <div class="sm:col-span-2">
+              <label
+                for="message"
+                class="block mb-2 font-black text-[13px] tracking-[0.14em] uppercase text-brand-dark"
+              >
+                Message *
+              </label>
+              <textarea
+                id="message"
+                name="message"
+                required
+                rows="5"
+                class="w-full px-4 py-3 border-2 border-brand-dark rounded-[14px] bg-white resize-none"
+                placeholder="What's on your mind?"
+              ></textarea>
+            </div>
+
+            <div
+              x-show="status === 'error'"
+              x-cloak
+              role="alert"
+              class="sm:col-span-2 bg-white border-2 border-brand-dark rounded-[14px] p-4 text-brand-dark"
+            >
+              <p class="font-semibold">Your message did not send.</p>
+              <p class="text-sm mt-1">
+                Your text is still here. Try again, or email us at{' '}
+                <a href={`mailto:${site.email}`} class="underline font-semibold">
+                  {site.email}
+                </a>
+                .
+              </p>
+            </div>
+
+            <div class="sm:col-span-2 flex flex-wrap items-center justify-between gap-4">
+              <!-- Same classes as a large primary Button (src/components/Button.astro).
+                   It is a raw <button> because Alpine binds :disabled to it. -->
               <button
                 type="submit"
                 :disabled="status === 'sending'"
-                class="disabled:opacity-60 disabled:cursor-wait w-full px-6 py-3 bg-accent-400 text-brand-dark font-display font-bold rounded-full hover:bg-accent-500 transition-[transform,background-color,box-shadow] duration-150 ease-out shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                class="disabled:opacity-60 disabled:cursor-wait w-full sm:w-auto inline-flex items-center justify-center min-h-[55px] px-7 py-2.5 border-2 border-brand-dark bg-brand-pink text-brand-dark font-display font-extrabold text-[17px] rounded-full lift"
               >
                 <span x-text="status === 'sending' ? 'Sending...' : 'Send message'">
                   Send message
                 </span>
               </button>
+              <p class="m-0 font-bold text-[15px]">We usually reply within 24 to 48 hours.</p>
             </div>
+          </div>
 
-            <!-- Success Message -->
-            <div
-              x-show="status === 'sent'"
-              x-cloak
-              role="status"
-              class="bg-green-50 border border-green-200 rounded-lg p-6 text-center"
+          <!-- Success Message -->
+          <div
+            x-show="status === 'sent'"
+            x-cloak
+            role="status"
+            class="bg-green-50 border border-green-200 rounded-lg p-6 text-center"
+          >
+            <svg
+              class="w-12 h-12 text-green-600 mx-auto mb-3"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              <svg
-                class="w-12 h-12 text-green-600 mx-auto mb-3"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                ></path>
-              </svg>
-              <h3 class="text-xl font-bold text-green-900 mb-2">Message sent!</h3>
-              <p class="text-green-700">
-                Thanks for reaching out. We'll get back to you as soon as possible!
-              </p>
-            </div>
-          </form>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
+            </svg>
+            <h3 class="text-xl text-green-900 mb-2">Message sent!</h3>
+            <p class="text-green-700">
+              Thanks for reaching out. We'll get back to you as soon as possible!
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
 
-          <p class="text-sm text-brand-dark/50 mt-4">
-            * Required fields. We typically respond within 24-48 hours.
+  <!-- Before you ask: native disclosures, the first one open. -->
+  <section class="bg-white border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,120px)] grid gap-10 grid-cols-1 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+      <div class="flex flex-col gap-[22px]">
+        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">Common questions</p>
+        <h2 class="m-0 [text-wrap:balance]">Before you ask.</h2>
+      </div>
+      <div class="flex flex-col gap-3.5" data-testid="faq">
+        <details
+          open
+          class="group rounded-[20px] border-2 border-brand-dark bg-white open:bg-brand-yellow"
+        >
+          <summary class="faq-summary">Do events cost anything?</summary>
+          <p class="m-0 px-5 pb-5 text-[17px] leading-[1.55]">
+            No. Every event is free, and it's going to stay that way.
           </p>
-        </div>
+        </details>
+        <details class="group rounded-[20px] border-2 border-brand-dark bg-white open:bg-brand-yellow">
+          <summary class="faq-summary">I'm a total beginner. Can I come?</summary>
+          <p class="m-0 px-5 pb-5 text-[17px] leading-[1.55]">
+            Yes. No experience is needed, and every level is in the room, so there's always someone
+            who's been where you are.
+          </p>
+        </details>
+        <details class="group rounded-[20px] border-2 border-brand-dark bg-white open:bg-brand-yellow">
+          <summary class="faq-summary">How do I join the Discord?</summary>
+          <p class="m-0 px-5 pb-5 text-[17px] leading-[1.55]">
+            Use the invite on our{' '}
+            <a href="/join" class="font-black underline underline-offset-[4px] decoration-2">
+              Join page
+            </a>
+            . You join as a Neighbor, and the flock takes it from there.
+          </p>
+        </details>
+        <details class="group rounded-[20px] border-2 border-brand-dark bg-white open:bg-brand-yellow">
+          <summary class="faq-summary">Is there a Slack?</summary>
+          <p class="m-0 px-5 pb-5 text-[17px] leading-[1.55]">
+            Yes, as a backup for people who can't reach Discord. It's quieter than Discord, but it's
+            real.{' '}
+            <a
+              href={links.slack}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="font-black underline underline-offset-[4px] decoration-2"
+            >
+              Join our Slack
+            </a>
+            .
+          </p>
+        </details>
+        <details class="group rounded-[20px] border-2 border-brand-dark bg-white open:bg-brand-yellow">
+          <summary class="faq-summary">Can I lead a workshop or write a guide?</summary>
+          <p class="m-0 px-5 pb-5 text-[17px] leading-[1.55]">
+            Yes. Send us your workshop idea with the form above. For a guide, follow{' '}
+            <a
+              href={`${links.github.website}/blob/main/docs/adding-content.md#adding-a-resource`}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="font-black underline underline-offset-[4px] decoration-2"
+            >
+              the contribution guide
+            </a>
+            .
+          </p>
+        </details>
       </div>
     </div>
   </section>
 
-  <!-- FAQ / Common questions -->
-  <section class="section-padding bg-primary-100">
-    <div class="container-custom">
-      <div class="max-w-4xl mx-auto">
-        <h2 class="text-3xl font-bold mb-8 text-center">Common questions</h2>
-        <div class="space-y-6">
-          <div class="bg-white rounded-retro p-6 border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-lg font-bold mb-2">How do I join the Discord community?</h3>
-            <p class="text-brand-dark/60">
-              Use the invite link on the{' '}
-              <a href="/join" class="underline hover:text-accent-400">
-                Join
-              </a>{' '}
-              page, or send us a message using the form above and we'll get you set up.
-            </p>
-          </div>
-
-          <div class="bg-white rounded-retro p-6 border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-lg font-bold mb-2">Do you still use Slack?</h3>
-            <p class="text-brand-dark/60">
-              Discord is our main channel. We keep a Slack space open only for international
-              members, since some countries restrict Discord. Ask us for an invite if that is you.
-            </p>
-          </div>
-
-          <div class="bg-white rounded-retro p-6 border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-lg font-bold mb-2">Are events really free?</h3>
-            <p class="text-brand-dark/60">
-              Yes! All PhilaCon Valley events are completely free. We believe financial barriers
-              shouldn't prevent anyone from learning and growing in tech.
-            </p>
-          </div>
-
-          <div class="bg-white rounded-retro p-6 border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-lg font-bold mb-2">I'm a complete beginner. Can I still attend?</h3>
-            <p class="text-brand-dark/60">
-              Absolutely! We welcome people at all skill levels. Many of our events are specifically
-              designed for beginners, and we always have folks ready to help.
-            </p>
-          </div>
-
-          <div class="bg-white rounded-retro p-6 border-2 border-brand-dark/10 shadow-retro">
-            <h3 class="text-lg font-bold mb-2">How can I contribute content or lead a workshop?</h3>
-            <p class="text-brand-dark/60">
-              We'd love that! Send us a message with your idea, and let's make it happen. Community
-              members leading workshops is exactly what we're about.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  <!-- The Contact closing, in the mockup's headline, with the event-aware
+       default main button. The motto is Home's alone (site audit, 10/18/2026). -->
+  <ClosingFlock
+    lede="Every night is free and open. Come say hi, and bring your question with you."
+    secondary={{ href: '/join', label: 'Join the community' }}
+  >
+    Or just come say it in person.
+  </ClosingFlock>
 </BaseLayout>

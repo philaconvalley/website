@@ -2,15 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* The sticker shadow's offset, registered so the browser can animate it (see
+   .lift below). Must sit at the top level, outside @layer. */
+@property --lift {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 4px;
+}
+
 /* ---------------------------------------------------------------------------
    Brand Book §09 — the agency surface.
 
-   One brand, two dials. The community surface is the default: cream, loud,
+   One brand, two dials. The community surface is the default: white and yellow, loud,
    mascot-forward, 2px ink stroke, hard offset shadows. The agency surface keeps
    every shape and drops the volume for nonprofits and community orgs.
 
    Wrap a page or a section in [data-surface="agency"] to switch. Shapes do not
-   change — pills stay pills, 20px radii stay 20px. Only the volume moves.
+   change — pills stay pills, 24px radii stay 24px. Only the volume moves.
    --------------------------------------------------------------------------- */
 [data-surface='agency'] {
   /* Page background: off-cream, calmer than the community cream. */
@@ -48,27 +56,58 @@
 
 /* Shadows soften. No ink-stamp on this surface. */
 [data-surface='agency'] .shadow-retro {
-  box-shadow: var(--surface-shadow);
+  --tw-shadow: var(--surface-shadow);
 }
 
 [data-surface='agency'] .shadow-retro-lg {
-  box-shadow: var(--surface-shadow-lg);
+  --tw-shadow: var(--surface-shadow-lg);
 }
 
 /* NOTE: the Book §05 names three shadows — retro, retro-lg, retro-ink. The live
    config ships retro, retro-lg, retro-hover. There is no retro-ink utility to
    soften here. See Addendum 01 Part 4. */
-[data-surface='agency'] .shadow-retro-hover {
-  box-shadow: var(--surface-shadow-lg);
+[data-surface='agency'] .lift,
+[data-surface='agency'] .card {
+  --lift-color: rgba(26, 26, 26, 0.08);
 }
 
+[data-surface='agency'] .shadow-retro-hover {
+  --tw-shadow: var(--surface-shadow-lg);
+}
+
+/* These set --tw-shadow, not box-shadow, so Tailwind's shadow utilities and the
+   focus ring's ink edge (--tw-ring-shadow) still compose on this surface. */
+
 @layer base {
-  html {
-    @apply scroll-smooth;
+  /* Placeholder text: ink at 62%, 4.7:1 on white. Tailwind's default was a
+     cool grey at 2.5:1, against the "no greys" thesis. */
+  input::placeholder,
+  textarea::placeholder {
+    color: rgb(26 26 26 / 0.62);
+    opacity: 1;
   }
 
+  html {
+    /* No scroll-behavior: smooth. Decided 10/15/2026: with smooth scrolling,
+       Chrome's keyboard focus scroll ignored scroll-padding-top and parked a
+       tabbed-to form field under the sticky header (e2e/focus-ring.spec.ts).
+       The only in-page jump on the site is the skip link, so smooth scrolling
+       gave almost nothing. Stage 5 (animate) may revisit it, but not at the
+       cost of focus visibility.
+       Keep a focused element clear of the sticky header (76px). Without
+       this, tabbing scrolls a field to the very top, under the bar
+       (WCAG 2.4.11, Focus Not Obscured). */
+    scroll-padding-top: 6rem;
+  }
+
+  /* Edition 1.2: White is the light neutral. Cream is retired. */
   body {
-    @apply font-sans text-brand-dark bg-brand-cream antialiased;
+    @apply font-sans text-brand-dark bg-white antialiased;
+  }
+
+  /* Text selection is a browser surface too. Golden Yellow, like a highlighter. */
+  ::selection {
+    @apply bg-brand-yellow text-brand-dark;
   }
 
   h1,
@@ -77,28 +116,68 @@
   h4,
   h5,
   h6 {
-    @apply font-display font-bold;
+    @apply font-display font-extrabold;
   }
 
+  /*
+   * Display type renders uppercase (DESIGN.md, voice rule 1). The source text
+   * stays in sentence case — never type a heading in capitals. Sizes are fluid
+   * and in rem, so the visitor's text-size setting still scales them. Tracking
+   * is size-specific: tighter as type grows, zero by h3.
+   */
+  h1,
+  h2,
+  h3 {
+    @apply uppercase;
+  }
+
+  /* h1 matches the mockup: 44px on a 390px phone, 115px at 1440px. */
   h1 {
-    @apply text-4xl md:text-5xl lg:text-6xl;
+    font-size: clamp(2.75rem, 1.1rem + 6.76vw, 7.2rem);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
   }
 
   h2 {
-    @apply text-3xl md:text-4xl lg:text-5xl;
+    font-size: clamp(2.25rem, 1.23rem + 4.19vw, 5rem);
+    line-height: 0.95;
+    letter-spacing: -0.015em;
   }
 
   h3 {
-    @apply text-2xl md:text-3xl lg:text-4xl;
+    font-size: clamp(1.5rem, 1.15rem + 1.4vw, 2.125rem);
+    line-height: 1;
+    letter-spacing: 0;
   }
 
   h4 {
     @apply text-xl md:text-2xl;
   }
 
-  /* Focus styles for accessibility */
+  /*
+   * Long-form headings inside articles are reading aids, not display type.
+   * Inside `.prose` (resource guides) they keep sentence case on screen and
+   * the typography plugin's sizes.
+   */
+  .prose :where(h1, h2, h3) {
+    text-transform: none;
+    letter-spacing: normal;
+  }
+
+  /* One focus ring everywhere, decided 10/15/2026: a two-tone ring. The Book
+     asks for a "visible Hot Pink focus outline" and "WCAG AA contrast" (p11,
+     p14). Hot Pink alone fails 3:1 on Golden Yellow (1.9:1) and White (2.8:1).
+     So the 2px pink outline sits inside a 6px ink box-shadow: the ink shows as
+     a thin edge on both sides of the pink and carries the contrast on light
+     backgrounds (12.4:1, 17.4:1); on ink backgrounds the pink alone passes
+     (6.2:1). The ink edge goes through --tw-ring-shadow, so Tailwind's shadow
+     utilities keep composing with it: a button keeps its offset shadow while
+     it has focus. */
   *:focus-visible {
-    @apply outline-2 outline-offset-2 outline-accent-400 ring-2 ring-accent-400 ring-offset-2;
+    @apply outline outline-2 outline-offset-2 outline-accent-400;
+    --tw-ring-shadow: 0 0 0 6px #1a1a1a;
+    box-shadow:
+      var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
   }
 
   /* Alpine.js cloak — hides elements until Alpine initialises */
@@ -117,19 +196,141 @@
     @apply py-12 md:py-16 lg:py-24;
   }
 
-  /* Gradient text effect */
-  .gradient-text {
-    @apply bg-gradient-to-r from-accent-400 to-accent-600 bg-clip-text text-transparent;
-  }
-
-  /* Card styles — retro offset shadow.
+  /* Card styles — solid ink outline and hard ink shadow.
      Transition names its two properties: `all` would animate anything that
      happens to differ on hover, off the GPU. The hover lift is gated to
      real pointers by `hoverOnlyWhenSupported` in tailwind.config.mjs. */
+  /* Sticker lift (DESIGN.md, motion rule 11), shared by filled buttons and
+     cards. Hover lifts 2px up-left while the shadow grows; press pushes 2px
+     down-right while the shadow shrinks by 2px, so its outer edge never moves.
+
+     Why a custom property: the two-tone focus ring is part of box-shadow. If
+     box-shadow itself transitioned, the ring would fade in and out on every
+     Tab, and keyboard actions get no animation. So only --lift animates; the
+     shadow is rebuilt from it each frame, and the ring snaps.
+
+     Press is 100ms (pointer-down feedback lands at once); release and hover
+     settle in 150ms. Movement is behind prefers-reduced-motion and hover
+     gating; under reduced motion only the shadow size changes (rule 12). */
+  .lift,
   .card {
-    @apply bg-white rounded-retro border-2 border-brand-dark/10 shadow-retro
-           transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]
-           hover:-translate-y-1 hover:shadow-retro-hover;
+    --lift-rest: 4px;
+    --lift-hover: 6px;
+    --lift-press: 2px;
+    --lift: var(--lift-rest);
+    box-shadow:
+      var(--tw-ring-offset-shadow, 0 0 #0000),
+      var(--tw-ring-shadow, 0 0 #0000),
+      var(--lift) var(--lift) 0 var(--lift-color, #1a1a1a);
+    transition:
+      transform 150ms cubic-bezier(0.22, 1, 0.36, 1),
+      --lift 150ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* The header and event-bar RSVPs rest on a 3px shadow. */
+  .lift-sm {
+    --lift-rest: 3px;
+    --lift-press: 1px;
+  }
+
+  .card {
+    @apply bg-white rounded-retro border-2 border-brand-dark;
+    --lift-rest: 6px;
+    --lift-hover: 9px;
+    --lift-press: 4px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .lift:hover,
+    .card:hover {
+      --lift: var(--lift-hover);
+    }
+  }
+
+  .lift:active,
+  .card:active {
+    --lift: var(--lift-press);
+    transition-duration: 100ms;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @media (hover: hover) and (pointer: fine) {
+      .lift:hover,
+      .card:hover {
+        transform: translate(-2px, -2px);
+      }
+    }
+
+    .lift:active,
+    .card:active {
+      transform: translate(2px, 2px);
+    }
+  }
+
+  /* A highlighted word inside a display heading, set like a sticker slapped on
+     the line: white fill, 3px ink outline, hard shadow, a slight tilt. One per
+     heading at most. Override the fill with a color utility. */
+  .sticker {
+    /* Uppercase Baloo 2 like the display type it sits beside (DESIGN.md, voice
+       rule 1), so a sticker outside a heading still reads as one. */
+    @apply inline-block rounded-[18px] border-[3px] border-brand-dark bg-white px-3.5 shadow-retro-lg -rotate-2
+           font-display font-extrabold uppercase my-[0.08em];
+    /* my-: the sticker box is taller than a display heading's tight line
+       height; without the margin it overlaps the next line on phones. */
+  }
+
+  /* A disclosure summary (the Contact FAQ). display:flex drops the native
+     marker in Chrome and Firefox; Safari needs ::-webkit-details-marker
+     hidden. The + in an ink circle turns into an x when the question opens,
+     so the visitor can see a question opens before they tap it. It presses
+     on pointer-down (100ms), so a tap gets feedback on phones, where hover is
+     off. The "/ ''" keeps the + out of the accessible name; the summary
+     already tells screen readers it is expanded or collapsed. */
+  .faq-summary {
+    @apply flex items-center justify-between gap-4 min-h-14 px-5 py-3 cursor-pointer list-none
+           font-display font-extrabold text-2xl;
+  }
+
+  .faq-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-summary::after {
+    content: '+';
+    content: '+' / '';
+    @apply flex flex-shrink-0 items-center justify-center w-8 h-8 rounded-full border-2
+           border-brand-dark bg-white text-xl leading-none;
+    transition: transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  details[open] > .faq-summary::after {
+    transform: rotate(45deg);
+  }
+
+  .faq-summary:active::after {
+    transform: scale(0.9);
+    transition-duration: 100ms;
+  }
+
+  details[open] > .faq-summary:active::after {
+    transform: rotate(45deg) scale(0.9);
+  }
+
+  /* A small flat label: one color, stadium radius, ink outline (Book section
+     10, "Tags + pills"). Set the background with a color utility. */
+  .pill {
+    @apply inline-flex items-center rounded-full border-2 border-brand-dark bg-white px-3 py-0.5
+           font-display text-xs font-extrabold uppercase tracking-[0.14em] text-brand-dark;
+  }
+
+  /* A section heading one step down from full h2 volume (site audit,
+     10/18/2026). Each page keeps one h2 at full size, the moment that must land
+     hardest; every other section h2 takes this class, so the loud one stands
+     out. 30px on a phone, 56px on a wide screen. */
+  .heading-quiet {
+    font-size: clamp(1.875rem, 1.35rem + 2.2vw, 3.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.01em;
   }
 }
 
@@ -140,13 +341,9 @@
    * Two distinct families, and the distinction matters for accessibility:
    *
    *   .pcv-enter-*  run ONCE on load. Entrances.
-   *   .pcv-loop-*   run forever. These narrate the Lab story — a dot
-   *                 arrives alone, two more join, you leave with a thing — so
-   *                 they are the page's only infinite motion and the first
-   *                 thing killed under prefers-reduced-motion.
    *
-   * Every looping element must remain legible in its final state, because that
-   * is exactly where the reduced-motion block below freezes it.
+   * The site has no endless loop. The LabTrack loop on Events was replaced by
+   * the night timeline (10/16/2026), which plays once per view.
    */
   .pcv-enter-word {
     animation: pcvWord 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -161,38 +358,7 @@
   }
 
   .pcv-enter-bar {
-    animation: pcvBarUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 1.1s both;
-  }
-
-  /*
-   * Draws itself with scaleX, not width. Animating width relayouts the page on
-   * every frame, forever; scaleX is composited. The line is a childless 1px rule
-   * with no border-radius, so horizontal scaling has nothing to distort.
-   */
-  .pcv-loop-track {
-    width: 100%;
-    transform-origin: left;
-    animation: pcvTrack 8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  }
-
-  .pcv-loop-solo {
-    animation: pcvSolo 8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
-  }
-
-  .pcv-loop-join-left {
-    animation: pcvJoinL 8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
-  }
-
-  .pcv-loop-join-right {
-    animation: pcvJoinR 8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
-  }
-
-  .pcv-loop-label {
-    animation: pcvLabel 8s ease-out infinite;
-  }
-
-  .pcv-loop-chip {
-    animation: pcvChip 8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    animation: pcvBarUp 250ms cubic-bezier(0.22, 1, 0.36, 1) 150ms both;
   }
 
   @keyframes pcvWord {
@@ -236,85 +402,26 @@
       transform: translateY(0);
     }
   }
-
-  @keyframes pcvTrack {
-    0%,
-    12% {
-      transform: scaleX(0);
-    }
-    58%,
-    100% {
-      transform: scaleX(1);
-    }
-  }
-
-  @keyframes pcvSolo {
-    0% {
-      transform: translateX(-40px);
-      opacity: 0;
-    }
-    12%,
-    100% {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-
-  @keyframes pcvJoinL {
-    0%,
-    24% {
-      transform: translateX(-52px) scale(0.5);
-      opacity: 0;
-    }
-    40%,
-    100% {
-      transform: translateX(0) scale(1);
-      opacity: 1;
-    }
-  }
-
-  @keyframes pcvJoinR {
-    0%,
-    24% {
-      transform: translateX(52px) scale(0.5);
-      opacity: 0;
-    }
-    40%,
-    100% {
-      transform: translateX(0) scale(1);
-      opacity: 1;
-    }
-  }
-
-  @keyframes pcvLabel {
-    0%,
-    26% {
-      opacity: 0;
-    }
-    42%,
-    100% {
-      opacity: 1;
-    }
-  }
-
-  @keyframes pcvChip {
-    0%,
-    60% {
-      opacity: 0;
-      transform: translateY(12px) scale(0.95);
-    }
-    74%,
-    100% {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
 }
 
 /*
  * Deliberately unlayered (outside @layer) so these accessibility overrides win
  * against @layer utilities regardless of Tailwind's cascade-layer ordering.
  */
+/* The phone event bar is fixed to the bottom. While it exists, pad the page
+   and the scroll target area by its height, so the footer's last lines and any
+   focused element are never trapped under it (WCAG 2.4.11). :has() stops
+   matching the moment the bar removes itself after the event starts. */
+@media (max-width: 1023.98px) {
+  body:has([data-event-bar]) {
+    padding-bottom: 88px;
+  }
+
+  html:has([data-event-bar]) {
+    scroll-padding-bottom: 104px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -323,37 +430,240 @@
   .pcv-enter-word,
   .pcv-enter-rise,
   .pcv-enter-stat,
-  .pcv-enter-bar,
-  .pcv-loop-solo,
-  .pcv-loop-join-left,
-  .pcv-loop-join-right,
-  .pcv-loop-label,
-  .pcv-loop-chip,
-  .pcv-loop-track {
+  .pcv-enter-bar {
     animation: none;
     opacity: 1;
     transform: none;
   }
 
-  /*
-   * `.pcv-loop-track` needs no special case any more. It used to animate width
-   * from 0, so freezing it left a zero-width line and the timeline dots sat on
-   * nothing. Now that it scales, `transform: none` above resolves to scaleX(1)
-   * against its `width: 100%` base and the spine restores itself.
-   */
+  /* Cards and buttons need no rule here: their movement is gated by
+     motion-safe:, so under reduced motion only the shadow changes. */
+}
 
-  /* Cards keep their shadow and colour, and stop moving. */
-  .card {
-    transition: none;
+/*
+ * The numbers odometer (public/js/odo-arm.js, then public/js/home.js), on the
+ * numbers band and the hero stat line. Every time a stat comes a quarter into
+ * view (on load, and again after it leaves the screen fully and comes back): its ink rule draws down, its
+ * digits roll up into place, then its
+ * label and note rise in. Stats that arrive together stagger 80ms, left to
+ * right.
+ *
+ * Only `transform` and `opacity` move. The rolling digits sit in an overlay
+ * over the real number, which turns transparent but keeps its layout, so the
+ * page never shifts. The script removes the overlay when the roll ends.
+ *
+ * Durations exceed the 300ms UI budget on purpose: this is display motion on
+ * a Persuade surface (DESIGN.md, motion rule 6).
+ *
+ * Delays are set per element by the script (one mechanism for every part).
+ *
+ * States: html.odo (set before paint) hides every stat that has no data-odo
+ * yet; data-odo="play" runs the transitions; data-odo="done" is the plain
+ * final state. No script: no html.odo, and every rule below is inert.
+ */
+[data-odo-item] [data-odo-rule] {
+  transform-origin: top;
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-odo-item] [data-odo-rise] {
+  transition:
+    opacity 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.odo [data-odo-item]:not([data-odo]) [data-odo-rule] {
+  transform: scaleY(0);
+}
+
+.odo [data-odo-item]:not([data-odo]) [data-odo-rise] {
+  opacity: 0;
+  transform: translateY(0.5rem);
+}
+
+/* Replays (data-odo-replay, set on reset) keep the labels in place: the first
+   view earns the rise; later views only roll the digits. Same specificity as
+   the hidden-state rule above, and later, so it wins. */
+.odo [data-odo-item][data-odo-replay] [data-odo-rise] {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+/* The real number keeps its box; the overlay shows the roll. */
+.odo [data-odo-item]:not([data-odo]) [data-count],
+[data-odo='play'] [data-count] {
+  color: transparent;
+}
+
+.odo-layer {
+  position: absolute;
+  inset: 0;
+  white-space: nowrap;
+  color: #1a1a1a;
+}
+
+.odo-col {
+  display: inline-block;
+  /* One line of the number's own line height, so the overlay fits both the
+     band numbers and the hero stat line. */
+  height: 1lh;
+  overflow: hidden;
+  vertical-align: top;
+}
+
+.odo-strip {
+  display: block;
+  transition: transform 1100ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.odo-strip > span {
+  display: block;
+  height: 1lh;
+}
+
+/* Reduced motion: nothing moves. The stat fades in at its real value. */
+@media (prefers-reduced-motion: reduce) {
+  [data-odo-item] {
+    transition: opacity 300ms ease;
   }
 
-  .card:hover {
+  .odo [data-odo-item]:not([data-odo]) {
+    opacity: 0;
+  }
+
+  [data-odo-item] [data-odo-rule],
+  [data-odo-item] [data-odo-rise] {
+    transition: none;
     transform: none;
+    opacity: 1;
+  }
+
+  .odo [data-odo-item]:not([data-odo]) [data-count] {
+    color: inherit;
   }
 }
 
-@media (prefers-reduced-transparency: reduce) {
-  [data-testid='mobile-menu'] {
-    @apply backdrop-blur-none bg-brand-dark;
+/*
+ * The night system: the four "First time?" points on Events and the role
+ * ladder on Join (public/js/night-arm.js, then night.js). It began as the
+ * night timeline on About, which left About in the site audit (10/18/2026).
+ * No strip draws segments today; the segment rules stay for the next one.
+ * Purpose: explanation. A segment draws from each step's dot to the next, like
+ * time passing; each dot pops in as the line reaches it and its text rises.
+ *
+ * States: html.night (set before paint) hides every step until night.js sets
+ * data-night="play" on the strip. Transitions live only on the play state, so
+ * a reset (strip fully off screen) snaps back unseen. No script: no
+ * html.night, and every rule below is inert.
+ *
+ * Timing is set per element by night.js: each delay, and each segment's
+ * duration (the gap to the next dot). Segments draw linear, because they show
+ * time passing; dots and text use ease-out.
+ * Segments draw down below 1024px and across from 1024px.
+ */
+.night [data-night-strip]:not([data-night]) [data-night-dot] {
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+.night [data-night-strip]:not([data-night]) [data-night-rise] {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+/* Reading strips (data-night-read) pop their numbers from 0.95, not 0.6: on a
+   numeral, 0.6 reads as a jump (motion review, 10/17/2026). */
+.night [data-night-strip][data-night-read]:not([data-night]) [data-night-dot] {
+  transform: scale(0.95);
+}
+
+[data-night-seg] {
+  transform-origin: top;
+}
+
+.night [data-night-strip]:not([data-night]) [data-night-seg] {
+  transform: scaleY(0);
+}
+
+@media (min-width: 1024px) {
+  [data-night-seg] {
+    transform-origin: left;
+  }
+
+  .night [data-night-strip]:not([data-night]) [data-night-seg] {
+    transform: scaleX(0);
+  }
+}
+
+[data-night='play'] [data-night-dot] {
+  transition:
+    opacity 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-night='play'] [data-night-rise] {
+  transition:
+    opacity 400ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-night='play'] [data-night-seg] {
+  transition-property: transform;
+  transition-timing-function: linear;
+}
+
+/* Reduced motion: nothing moves. The line is already drawn; the dots and
+   text fade in once, together. */
+@media (prefers-reduced-motion: reduce) {
+  .night [data-night-strip]:not([data-night]) [data-night-dot],
+  .night [data-night-strip]:not([data-night]) [data-night-rise],
+  .night [data-night-strip][data-night-read]:not([data-night]) [data-night-dot] {
+    transform: none;
+  }
+
+  .night [data-night-strip]:not([data-night]) [data-night-seg] {
+    transform: none;
+  }
+
+  [data-night='play'] [data-night-dot],
+  [data-night='play'] [data-night-rise] {
+    transition: opacity 300ms ease;
+  }
+
+  [data-night='play'] [data-night-seg] {
+    transition: none;
+  }
+
+  .faq-summary::after {
+    transition: none;
+  }
+}
+
+/*
+ * Print, and any capture that never scrolls, shows every animated element in
+ * its final state (DESIGN.md, motion rule 2). Without this, a stat that never
+ * came into view prints as "000": the real number is transparent and the
+ * overlay sits at 0. The night steps would print blank.
+ * !important: the hidden-state rules above carry an extra :not() and would
+ * otherwise win. Print has no motion to protect, so nothing is lost.
+ */
+@media print {
+  .odo-layer {
+    display: none !important;
+  }
+
+  .odo [data-odo-item] [data-count] {
+    color: inherit !important;
+  }
+
+  .odo [data-odo-item],
+  .odo [data-odo-item] [data-odo-rule],
+  .odo [data-odo-item] [data-odo-rise],
+  .night [data-night-strip] [data-night-dot],
+  .night [data-night-strip] [data-night-rise],
+  .night [data-night-strip] [data-night-seg] {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

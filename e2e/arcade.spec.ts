@@ -25,6 +25,52 @@ test.describe('arcade wall', () => {
     await expect(page.locator('[data-cabinet="keyboard-pong"]')).toContainText('Desktop only');
   });
 
+  test('chips come from game data: the author tag is yellow, a limit is white', async ({
+    page,
+  }) => {
+    await page.goto('/arcade');
+    const chip = (slug: string) => page.locator(`[data-cabinet="${slug}"] .pill`);
+    await expect(chip('flappy-philacon')).toHaveText('High score');
+    await expect(chip('flappy-philacon')).toHaveCSS('background-color', 'rgb(252, 214, 106)');
+    await expect(chip('keyboard-pong')).toHaveText('Desktop only');
+    await expect(chip('keyboard-pong')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+    await expect(chip('pigeon-post')).toHaveText('Demo · No score');
+  });
+
+  test('each card has a short link name, not the title twice plus the alt text', async ({
+    page,
+  }) => {
+    await page.goto('/arcade');
+    await expect(page.getByRole('link', { name: /^Play Flappy Philacon/ })).toHaveAccessibleName(
+      'Play Flappy Philacon (High score), by Diego Mendoza',
+    );
+    // The title is in the card, so the screenshot inside the link is decorative.
+    await expect(page.locator('a[data-cabinet] img').first()).toHaveAttribute('alt', '');
+  });
+
+  test('"Add your game" and the submit card link to the contribution guide', async ({ page }) => {
+    await page.goto('/arcade');
+    const guide = /docs\/adding-content\.md#adding-a-game-to-the-arcade$/;
+    await expect(page.getByRole('link', { name: /Add your game/ })).toHaveAttribute('href', guide);
+    const submit = page.locator('[data-cabinet="submit"]');
+    await expect(submit).toContainText('after a quick review');
+    await expect(submit.getByRole('link', { name: 'Read the contribution guide' })).toHaveAttribute(
+      'href',
+      guide,
+    );
+  });
+
+  test('the Arcade ends on its own closing copy', async ({ page }) => {
+    await page.goto('/arcade');
+    const closing = page.getByTestId('closing-flock');
+    await expect(closing.getByRole('heading', { level: 2 })).toHaveText('Want to make one?');
+    await expect(closing).toContainText("You don't need to have made a game before.");
+    await expect(closing.getByRole('link', { name: 'Come to a Lab' })).toHaveAttribute(
+      'href',
+      '/events',
+    );
+  });
+
   test('the arcade is reachable from the header nav', async ({ page }) => {
     await page.goto('/');
     // Header renders navItems twice — desktop nav and the Alpine mobile menu —
@@ -149,4 +195,19 @@ test.describe('cabinet page', () => {
     await expect(frame).toBeHidden();
     await expect(frame).not.toHaveAttribute('src', /.+/);
   });
+});
+
+test('an arcade cabinet presses down on pointer-down', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/arcade');
+  const cabinet = page.locator('a.cabinet').first();
+  await cabinet.scrollIntoViewIfNeeded();
+  await page.mouse.move(0, 0);
+  // Wait out the 300ms staggered entrance before measuring.
+  await page.waitForTimeout(700);
+  const box = (await cabinet.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await expect(cabinet).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 2)');
+  await page.mouse.up({ button: 'left' }).catch(() => {});
 });

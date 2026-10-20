@@ -1,44 +1,210 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import ArcadeCabinet from '../../components/ArcadeCabinet.astro';
+import Button from '../../components/Button.astro';
+import ClosingFlock from '../../components/ClosingFlock.astro';
+import { links } from '../../config';
+
+/**
+ * Arcade, Edition 1.2 (DESIGN.md, "The 1.2 redesign"). Sections follow Diego's
+ * mockup, with these decisions (Waskar, 10/16/2026):
+ * - Each card uses the game file's own title and description
+ *   (src/content/arcade), the same copy as its game page, and its real
+ *   screenshot in place of the mockup's placeholder.
+ * - The chip is "Desktop only" (no pointer or touch input), "Demo · No score"
+ *   (kind: demo), or the game's own `tag`. The page never guesses one.
+ * - "Your game here" says a pull request joins the Arcade after review, and
+ *   the closing says no experience is needed. The mockup's "every game here
+ *   started with someone who'd never made one" is not confirmed.
+ * - The old ArcadeCabinet (arcade-machine cards) is retired. Its motion is
+ *   kept unchanged on the new card: the staggered rise, the hover lift, and
+ *   the press.
+ */
 
 const games = (await getCollection('arcade')).sort(
   (a, b) => a.data.date.valueOf() - b.data.date.valueOf(),
 );
+
+// The game's marquee color tints its card shadow and the screenshot backdrop.
+const tint = {
+  pink: { shadow: 'shadow-[6px_6px_0_theme(colors.brand.pink)]', bg: 'bg-brand-pink' },
+  purple: { shadow: 'shadow-[6px_6px_0_theme(colors.brand.purple)]', bg: 'bg-brand-purple' },
+  yellow: { shadow: 'shadow-[6px_6px_0_theme(colors.brand.yellow)]', bg: 'bg-brand-yellow' },
+  coral: { shadow: 'shadow-[6px_6px_0_theme(colors.brand.coral)]', bg: 'bg-brand-coral' },
+} as const;
+
+const cards = games.map((game) => {
+  const { input, kind, tag } = game.data;
+  // A game that takes no pointer or touch input cannot be played on a phone.
+  const desktopOnly = !input.includes('pointer') && !input.includes('touch');
+  const chip = desktopOnly ? 'Desktop only' : kind === 'demo' ? 'Demo · No score' : tag;
+  // As in the mockup: the game's own tag is Golden Yellow; a limit is white.
+  const chipFill = chip && chip === tag ? 'bg-brand-yellow' : 'bg-white';
+  // A short link name, per the 10/2026 polish audit: the old cabinet read its
+  // title twice plus a 25-word alt text. The chip stays in the name, so
+  // "Desktop only" still reaches screen reader users.
+  const by = game.data.contributors.join(' & ');
+  const label = `Play ${game.data.title}${chip ? ` (${chip})` : ''}, by ${by}`;
+  return { ...game.data, chip, chipFill, by, label, ...tint[game.data.marqueeColor] };
+});
+
+const guide = `${links.github.website}/blob/main/docs/adding-content.md#adding-a-game-to-the-arcade`;
 ---
 
 <BaseLayout
-  title="Arcade - PhilaCon Valley"
-  description="Play browser games built by the PhilaCon Valley community. Built at Labs, playable right here."
+  title="Arcade — Browser games built by the PhilaCon Valley community"
+  description="Play browser games built by the PhilaCon Valley community, right here. Built a game? Add it to the Arcade."
 >
-  <section class="bg-brand-coral text-white py-20">
-    <div class="container-custom">
-      <div class="max-w-4xl mx-auto text-center">
-        <h1 class="text-5xl md:text-6xl font-bold mb-6">The Arcade</h1>
-        <p class="text-2xl text-white/85">Games built by the community. Playable right here.</p>
+  <!-- Hero and the games, on ink, as in the mockup. -->
+  <section class="bg-brand-dark text-white">
+    <div class="container-custom py-[clamp(56px,8vw,112px)] flex flex-col gap-14">
+      <div class="flex flex-wrap gap-10 items-end justify-between">
+        <div class="grow shrink basis-[640px] min-w-0 flex flex-col gap-7">
+          <p class="m-0 self-start pill bg-brand-yellow font-black text-[13px] tracking-[0.16em]">
+            Insert coin: free
+          </p>
+          <h1 class="m-0 text-brand-yellow">The Arcade.</h1>
+          <p class="m-0 max-w-[560px] text-[clamp(18px,1.6vw,22px)] leading-[1.5] font-semibold">
+            Games built by the community, playable right here in your browser.
+          </p>
+        </div>
+        <Button href={guide} external variant="light" size="lg">
+          Add your game
+        </Button>
       </div>
+
+      <ul class="m-0 p-0 list-none grid gap-7 grid-cols-[repeat(auto-fill,minmax(min(240px,100%),1fr))]">
+        {cards.map((game, i) => (
+          <li>
+            <a
+              href={`/arcade/${game.slug}`}
+              class:list={[
+                'cabinet h-full flex flex-col overflow-hidden rounded-[24px] border-2 border-brand-dark bg-white text-brand-dark no-underline',
+                game.shadow,
+              ]}
+              style={`--cabinet-index: ${i}`}
+              aria-label={game.label}
+              data-cabinet={game.slug}
+            >
+              <div class:list={['border-b-2 border-brand-dark', game.bg]}>
+                <img
+                  src={game.thumbnail}
+                  alt=""
+                  width="576"
+                  height="432"
+                  loading="lazy"
+                  decoding="async"
+                  class="block w-full aspect-[4/3] object-cover"
+                />
+              </div>
+              <div class="p-6 flex flex-col gap-3 flex-1">
+                {game.chip && (
+                  <p
+                    class:list={[
+                      'm-0 self-start pill normal-case tracking-normal text-xs',
+                      game.chipFill,
+                    ]}
+                  >
+                    {game.chip}
+                  </p>
+                )}
+                {/* compressHTML drops the line breaks between these blocks, so
+                    the link's text would read "High scoreFlappy Philacon".
+                    A space between flex items changes no layout. */}{' '}
+                <h2 class="m-0 normal-case text-[32px] leading-[1.05]">{game.title}</h2>{' '}
+                <p class="m-0 text-[15px] leading-[1.55]">{game.description}</p>{' '}
+                <p class="m-0 font-extrabold text-[13px] tracking-[0.14em] uppercase">
+                  By {game.by}
+                </p>{' '}
+                <span class="mt-auto self-start inline-flex items-center gap-2 min-h-11 px-5 rounded-full bg-brand-dark text-white font-display font-extrabold text-[15px]">
+                  <svg class="w-3 h-3" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
+                    <path d="M2 1.5v9l8-4.5z" />
+                  </svg>
+                  Play
+                </span>
+              </div>
+            </a>
+          </li>
+        ))}
+        <li>
+          <div
+            class="h-full rounded-[24px] border-2 border-dashed border-brand-yellow p-7 flex flex-col justify-center gap-4"
+            data-cabinet="submit"
+          >
+            <h2 class="m-0 text-brand-yellow text-[clamp(32px,3vw,40px)] leading-[0.95]">
+              Your game here.
+            </h2>
+            <p class="m-0 text-[15px] leading-[1.55]">
+              Built a browser game? Open a pull request, and after a quick review it joins the
+              Arcade next to everyone else's.
+            </p>
+            <a
+              href={guide}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="self-start inline-flex items-center min-h-11 font-black text-[15px] text-white underline underline-offset-[5px] decoration-2"
+            >
+              Read the contribution guide
+            </a>
+          </div>
+        </li>
+      </ul>
     </div>
   </section>
 
-  <section class="section-padding">
-    <div class="container-custom">
-      <div class="flex flex-wrap items-start justify-center gap-6 md:gap-8">
-        {games.map((game, i) => (
-          <ArcadeCabinet
-            title={game.data.title}
-            href={`/arcade/${game.data.slug}`}
-            thumbnail={game.data.thumbnail}
-            thumbnailAlt={game.data.thumbnailAlt}
-            contributors={game.data.contributors}
-            marqueeColor={game.data.marqueeColor}
-            kind={game.data.kind}
-            input={game.data.input}
-            index={i}
-          />
-        ))}
-        <ArcadeCabinet title="Your game here" marqueeColor="coral" index={games.length} empty />
-      </div>
-    </div>
-  </section>
+  <!-- The Arcade closing, in the mockup's layout. -->
+  <ClosingFlock
+    lede="You don't need to have made a game before. Come build yours with the flock."
+    primary={{ href: '/events', label: 'Come to a Lab' }}
+    secondary={{ href: '/join', label: 'Join the community' }}
+  >
+    Want to make one?
+  </ClosingFlock>
 </BaseLayout>
+
+<style>
+  /* Motion carried over unchanged from the retired ArcadeCabinet.
+     One entrance, staggered by position: cards arriving in sequence read as a
+     row of machines powering on; all at once reads as a page load. */
+  .cabinet {
+    animation: cabinet-rise 300ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    animation-delay: calc(var(--cabinet-index) * 60ms);
+  }
+
+  @keyframes cabinet-rise {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+  }
+
+  /* Transition lives on the base rule, not inside :hover — declared only under
+     :hover, the lift animates in and then snaps back on mouse-out. */
+  .cabinet {
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .cabinet:hover {
+      transform: translateY(-4px);
+    }
+  }
+
+  /* Press: the card drops 2px on pointer-down, faster than the hover (100ms),
+     like every other sticker on the site. Declared after :hover so it wins
+     while both match. */
+  .cabinet:active {
+    transform: translateY(2px);
+    transition-duration: 100ms;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cabinet,
+    .cabinet:hover,
+    .cabinet:active {
+      animation: none;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>

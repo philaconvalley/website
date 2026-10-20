@@ -1,5 +1,7 @@
 ---
 import { getCommunityData, formatEventDate } from '../lib/community';
+import { links } from '../config';
+import { isStudioLive } from '../lib/showcase';
 
 /**
  * The redesign shows a three-link nav (Community / Studio / Stories). That is an
@@ -16,15 +18,22 @@ const navItems = [
   // Blog is hidden until an editorial procedure exists — see src/pages/_blog/.
   // { name: 'Blog', href: '/blog' },
   { name: 'Join', href: '/join' },
+  // Shown only once /studio has approved client proof (src/lib/showcase.ts).
+  ...((await isStudioLive()) ? [{ name: 'Studio', href: '/studio' }] : []),
   { name: 'Support', href: '/support' },
   { name: 'Contact', href: '/contact' },
 ];
+// Nine links do not fit at 1024px at the usual size: they touched the logo
+// and the button (10/18/2026). Below xl, a full nav gets tighter links.
+const tight = navItems.length > 8;
 
 const currentPath = Astro.url.pathname;
 
 const { nextEvent } = await getCommunityData();
 const eventDate = nextEvent ? formatEventDate(nextEvent.start) : null;
-const rsvpHref = nextEvent?.url ?? '/events';
+// With no event, the header asks people to follow the Luma calendar instead
+// of offering an RSVP with nothing behind it.
+const rsvpHref = nextEvent?.url ?? links.luma;
 ---
 
 <!--
@@ -35,24 +44,66 @@ const rsvpHref = nextEvent?.url ?? '/events';
   that into a soft tint, but a sticky bar that still smudges whatever passes
   under it is a bar that keeps getting revisited every time the site gains a
   high-contrast page. Opaque ends the class of bug rather than this instance.
-  The mobile menu below keeps its translucency — it sits over a dimmed page it
-  controls, not over arbitrary scrolling content.
+  Edition 1.2 (10/15/2026): the bar is Golden Yellow with a 2px ink edge, and
+  the mobile menu is opaque too — the Book rules out frosted glass.
+  The mark (chosen in the 10/15/2026 header prototype): the pigeon head hangs
+  over the ink edge at the top of the page, the Book's "Mascot + wordmark"
+  primary lockup on a mascot-forward surface. Once the visitor scrolls, or
+  opens the phone menu, it tucks inside the bar so it never covers content.
 -->
-<header class="sticky top-0 z-50 bg-primary-100 border-b border-brand-dark/10">
-  <nav class="container-custom" x-data="{ mobileMenuOpen: false }">
-    <div class="flex items-center justify-between h-[68px]">
-      <!-- Wordmark -->
+<header class="sticky top-0 z-50 bg-brand-yellow border-b-2 border-brand-dark">
+  <nav
+    class="container-custom"
+    x-data="{ mobileMenuOpen: false, scrolled: window.scrollY > 8, ready: false }"
+    x-init="requestAnimationFrame(() => requestAnimationFrame(() => (ready = true)))"
+    @scroll.window.passive="scrolled = window.scrollY > 8"
+  >
+    <div class="flex items-center justify-between h-[64px] lg:h-[74px]">
+      <!-- Mark + wordmark. The mark's box keeps the tucked size, so the layout
+           never shifts; only the image and the name transform. pr-4 reserves the
+           room the name shifts into, inside the link's box, so the focus ring
+           wraps the whole wordmark and the name never meets the first nav link. "Hang" scales
+           the head up from its top-left corner, tilts it, and drops it 8px over
+           the edge. Hang is the server-rendered default, so a page that loads at the
+           top never moves. Under reduced motion the head stays tucked: no hang, so no
+           state change and no jump on scroll. A reload partway down the page starts
+           tucked: `ready` keeps the transition off until the first state has painted,
+           so only a real scroll animates (Waskar, 10/16/2026). -->
       <a
         href="/"
-        class="flex-shrink-0 font-display font-extrabold text-base md:text-[17px] tracking-tight text-brand-dark"
+        class="flex-shrink-0 flex items-center gap-1 pr-4 rounded-2xl font-display font-extrabold text-xl md:text-2xl lg:text-xl xl:text-2xl leading-none tracking-[-0.01em] text-brand-dark"
       >
-        PhilaCon Valley
+        <span class="relative block w-12 h-12 lg:w-14 lg:h-14 mr-2" aria-hidden="true">
+          <img
+            src="/images/pigeon-head-mark-160.webp"
+            alt=""
+            width="56"
+            height="56"
+            class="absolute inset-0 w-full h-full origin-top-left drop-shadow-[3px_3px_0_#1A1A1A] transition-transform duration-[240ms] ease-in-out motion-reduce:transition-none translate-y-2 -rotate-6 scale-[1.36] motion-reduce:!transform-none"
+            :class="{ 'translate-y-2 -rotate-6 scale-[1.36]': !(scrolled || mobileMenuOpen), '!transition-none': !ready }"
+          />
+        </span>
+        <span
+          class="block transition-transform duration-[240ms] ease-in-out motion-reduce:transition-none translate-x-4 motion-reduce:!transform-none"
+          :class="{ 'translate-x-4': !(scrolled || mobileMenuOpen), '!transition-none': !ready }"
+        >
+          <!-- The official wordmark, unchanged from the brand logo library. Its
+               built-in ink outline is what the Book asks for on pink-on-yellow. -->
+          <img
+            src="/images/philacon-wordmark-horizontal.svg"
+            alt="PhilaCon Valley"
+            width="216"
+            height="20"
+            class="block h-4 xl:h-[18px] w-auto"
+          />
+        </span>
       </a>
 
       <!-- Desktop Navigation -->
       <!--
-        Baloo 2 loads remotely with `display=swap` (BaseLayout.astro), so the
-        browser paints these links in a fallback font first, then swaps in
+        Baloo 2 is self-hosted from @fontsource (BaseLayout.astro) with
+        `font-display: swap`, so the browser can paint these links in a
+        fallback font first, then swap in
         the real one — which changes every link's rendered width. x-init
         measures the pill's initial position/width from offsetLeft/offsetWidth
         before that swap is guaranteed to have happened, and nothing else
@@ -61,38 +112,52 @@ const rsvpHref = nextEvent?.url ?? '/events';
         nav. The `document.fonts.ready` correction below re-measures once the
         real font is in, skipped only while the visitor is already hovering
         (their own mouseenter measurement is already correct by then).
+        `instant` starts true, so the first measurement and this correction
+        snap into place instead of sliding: the pill used to shrink over 200ms
+        on every first visit (Waskar, 10/16/2026). The slide is for following
+        the pointer, so the first mouseenter turns it on.
       -->
       <div class="hidden lg:block">
         <div
           data-testid="desktop-nav"
           class="relative flex items-center space-x-0.5"
-          x-data="{ pos: { left: 0, width: 0 } }"
+          x-data="{ pos: { left: 0, width: 0 }, instant: true }"
           x-init="const current = $el.querySelector('[aria-current=page]'); if (current) pos = { left: current.offsetLeft, width: current.offsetWidth }; if (document.fonts) document.fonts.ready.then(() => { if (!$el.matches(':hover')) { const c = $el.querySelector('[aria-current=page]'); if (c) pos = { left: c.offsetLeft, width: c.offsetWidth } } })"
-          @mouseleave="const current = $el.querySelector('[aria-current=page]'); if (current) pos = { left: current.offsetLeft, width: current.offsetWidth }"
-          @focusout="if (!$el.contains($event.relatedTarget)) { const current = $el.querySelector('[aria-current=page]'); if (current) pos = { left: current.offsetLeft, width: current.offsetWidth } }"
+          @mouseleave="instant = false; const current = $el.querySelector('[aria-current=page]'); if (current) pos = { left: current.offsetLeft, width: current.offsetWidth }"
+          @focusout="if (!$el.contains($event.relatedTarget)) { instant = true; const current = $el.querySelector('[aria-current=page]'); if (current) pos = { left: current.offsetLeft, width: current.offsetWidth } }"
         >
+          <!-- The pill spans the whole nav, and clip-path shows only the part
+               under the current link. Animating clip-path, not width, keeps
+               the move off layout (motion review, 10/17/2026), and the inset's
+               `round` keeps the ends fully round, which scaleX would squash.
+               The right inset is calc(100% - right edge), so it follows the
+               nav's own width: a pixel inset went stale for a frame when the
+               webfont swap narrowed the nav. -->
           <div
             x-cloak
             data-testid="nav-pill"
-            class="absolute inset-y-1 left-0 rounded-full bg-accent-400 transition-[transform,width] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
-            :style="`transform: translateX(${pos.left}px); width: ${pos.width}px;`"
+            class="absolute inset-y-1 inset-x-0 bg-accent-400 transition-[clip-path] duration-200 ease-out motion-reduce:transition-none"
+            :class="instant && '!transition-none'"
+            :style="`clip-path: inset(0 calc(100% - ${pos.left + pos.width}px) 0 ${pos.left}px round 9999px);`"
           ></div>
           {navItems.map((item) => {
             const isCurrent = currentPath === item.href || currentPath.startsWith(item.href + '/');
+            // Full ink in every state. The pill behind the current link is Hot
+            // Pink (accent-400), where white text fails AA and ink passes. The
+            // other links used to sit at 60% ink, which reads as grey on yellow.
+            // No hover underline: the sliding pill already follows the pointer.
+            // The pill slides for the mouse and jumps for the keyboard: Tab is
+            // keyboard-initiated, and keyboard actions get no animation.
             return (
               <a
                 href={item.href}
                 aria-current={isCurrent ? 'page' : undefined}
-                @mouseenter="pos = { left: $el.offsetLeft, width: $el.offsetWidth }"
-                @focus="pos = { left: $el.offsetLeft, width: $el.offsetWidth }"
-                class={`relative z-10 px-3 py-1.5 rounded-full text-sm font-display font-semibold transition-colors ${
-                  isCurrent
-                    ? // Dark, not white: the pill behind this is accent-400 (#FF66A8),
-                      // where white text measures 2.72:1 against a 4.5:1 requirement
-                      // at 14px. brand-dark on the same pink is 6.40:1.
-                      'text-brand-dark'
-                    : 'text-brand-dark/60 hover:text-brand-dark focus-visible:text-brand-dark'
-                }`}
+                @mouseenter="instant = false; pos = { left: $el.offsetLeft, width: $el.offsetWidth }"
+                @focus="instant = true; pos = { left: $el.offsetLeft, width: $el.offsetWidth }"
+                class:list={[
+                  'relative z-10 xl:px-2.5 py-1.5 rounded-full xl:text-base font-display font-extrabold text-brand-dark',
+                  tight ? 'px-1.5 text-[14px]' : 'px-2 text-[15px]',
+                ]}
               >
                 {item.name}
               </a>
@@ -107,38 +172,66 @@ const rsvpHref = nextEvent?.url ?? '/events';
         {eventDate && (
           <span
             data-pcv-event-start={nextEvent!.start}
-            class="hidden xl:inline font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-brand-dark/50"
+            class="hidden xl:inline font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-brand-dark"
           >
             {eventDate}
           </span>
         )}
-        <!-- Both attributes are the static-build guard, continued client-side: once
+        <!-- Brand Book 1.2 p14: Hot Pink fill, ink outline, ink offset shadow. The
+             only hover the Book names is "shadow grows", which reads here because
+             the ink shadow sits on yellow, not behind an ink button (the old fill).
+             Both attributes are the static-build guard, continued client-side: once
              the visitor's clock passes the event, the date row removes itself and
-             this CTA falls back to /events rather than deep-linking a closed Luma
-             page. See BaseLayout.astro. -->
+             this CTA falls back to the Luma calendar ("Get notified") rather than
+             deep-linking a closed event page. See BaseLayout.astro. -->
         <a
           href={rsvpHref}
+          target="_blank"
+          rel="noopener noreferrer"
           {...(nextEvent
             ? {
-                target: '_blank',
-                rel: 'noopener noreferrer',
                 'data-pcv-event-start': nextEvent.start,
-                'data-pcv-event-fallback': '/events',
+                'data-pcv-event-fallback': links.luma,
               }
             : {})}
           data-testid="hero-cta"
-          class="font-display font-bold text-[15px] px-6 py-3 rounded-full bg-brand-pink text-brand-dark transition-[transform,box-shadow] duration-150 ease-out hover:-translate-x-px hover:-translate-y-px hover:shadow-[6px_6px_0_rgba(26,26,26,0.18)] motion-safe:active:scale-[0.97] motion-reduce:active:opacity-80 motion-reduce:transition-none"
+          class="inline-flex items-center gap-2 min-h-[48px] font-display font-extrabold text-base xl:text-[17px] px-4 xl:px-6 py-2.5 rounded-full border-2 border-brand-dark bg-accent-400 text-brand-dark lift lift-sm"
         >
-          RSVP →
+          {nextEvent ? (
+            <>
+              <span data-pcv-event-start={nextEvent.start}>RSVP</span>
+              <span hidden data-pcv-event-after={nextEvent.start}>
+                Get notified
+              </span>
+            </>
+          ) : (
+            'Get notified'
+          )}
+          {/* From 1024 to 1279px the nav is full, and "Get notified" is 50px
+              wider than "RSVP". The arrow and some padding make room there. */}
+          <svg
+            class="hidden xl:block w-4 h-4"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.25"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M3 8h10M9 4l4 4-4 4" />
+          </svg>
         </a>
       </div>
 
       <!-- Mobile menu button -->
       <div class="lg:hidden">
         <button
+          x-ref="menuButton"
+          aria-controls="mobile-menu"
           @click="mobileMenuOpen = !mobileMenuOpen"
           type="button"
-          class="inline-flex items-center justify-center p-2 rounded-md text-brand-dark hover:bg-brand-dark/5 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-accent-400"
+          class="inline-flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full border-2 border-brand-dark bg-white text-brand-dark lift lift-sm"
           :aria-expanded="mobileMenuOpen.toString()"
         >
           <span class="sr-only">Open main menu</span>
@@ -174,32 +267,34 @@ const rsvpHref = nextEvent?.url ?? '/events';
       </div>
     </div>
 
-    <!-- Mobile menu -->
+    <!-- Mobile menu. The negative margins cancel container-custom's side padding,
+         so the ink panel runs edge to edge instead of leaving yellow strips. -->
     <div
       x-show="mobileMenuOpen"
       x-cloak
+      id="mobile-menu"
       data-testid="mobile-menu"
-      x-transition:enter="transition ease-out duration-200 motion-reduce:duration-0"
-      x-transition:enter-start="opacity-0 -translate-y-2"
+      x-transition:enter="transition ease-out duration-200 motion-reduce:duration-150"
+      x-transition:enter-start="opacity-0 -translate-y-2 motion-reduce:translate-y-0"
       x-transition:enter-end="opacity-100 translate-y-0"
-      x-transition:leave="transition ease-out duration-150 motion-reduce:duration-0"
+      x-transition:leave="transition ease-out duration-150"
       x-transition:leave-start="opacity-100 translate-y-0"
-      x-transition:leave-end="opacity-0 -translate-y-2"
-      class="lg:hidden bg-brand-dark/90 backdrop-blur-lg border-t border-white/10"
+      x-transition:leave-end="opacity-0 -translate-y-2 motion-reduce:translate-y-0"
+      class="lg:hidden -mx-4 sm:-mx-6 bg-brand-dark border-t-2 border-brand-dark"
       @click.away="mobileMenuOpen = false"
-      @keydown.escape.window="mobileMenuOpen = false"
+      @keydown.escape.window="if (mobileMenuOpen) { mobileMenuOpen = false; $refs.menuButton.focus() }"
     >
-      <div class="px-2 pt-2 pb-3 space-y-1">
+      <div class="px-1 sm:px-3 pt-2 pb-3 space-y-1">
         {navItems.map((item) => {
           const isCurrent = currentPath === item.href || currentPath.startsWith(item.href + '/');
           return (
             <a
               href={item.href}
               aria-current={isCurrent ? 'page' : undefined}
-              class={`block px-3 py-2 rounded-lg text-base font-display font-bold ${
+              class={`block px-3 py-2.5 rounded-lg text-base font-display font-extrabold ${
                 isCurrent
                   ? 'bg-accent-400 text-brand-dark'
-                  : 'text-primary-100 hover:bg-accent-400 hover:text-brand-dark'
+                  : 'text-white hover:bg-accent-400 hover:text-brand-dark active:bg-accent-400 active:text-brand-dark'
               }`}
             >
               {item.name}

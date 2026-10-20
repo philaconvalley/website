@@ -5,6 +5,7 @@
 // `font-src 'self'`, and Dependabot sees version bumps. Each file covers one
 // weight, split by unicode-range, so a browser downloads only the scripts a page
 // uses. Baloo 2 stops at 800: `font-black` (900) renders as 800, as it always has.
+// Nunito ships 900 for the small uppercase labels and pills (Book section 05).
 import '@fontsource/baloo-2/400.css';
 import '@fontsource/baloo-2/600.css';
 import '@fontsource/baloo-2/700.css';
@@ -14,8 +15,12 @@ import '@fontsource/nunito/600.css';
 import '@fontsource/nunito/600-italic.css';
 import '@fontsource/nunito/700.css';
 import '@fontsource/nunito/800.css';
+import '@fontsource/nunito/900.css';
 import '@fontsource/jetbrains-mono/400.css';
 import '@fontsource/jetbrains-mono/500.css';
+// The heading face, preloaded below. Vite returns the same hashed file the
+// font CSS points at, so the preload and the CSS share one download.
+import headingFont from '@fontsource/baloo-2/files/baloo-2-latin-800-normal.woff2?url';
 import '../styles/global.css';
 import SEO from '../components/SEO.astro';
 import Header from '../components/Header.astro';
@@ -42,6 +47,13 @@ const {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Fonts use font-display: swap, and the browser finds a font file only
+         after it reads the CSS. On a first visit the first frame painted in
+         the fallback face, which is wider: Home's headline wrapped to five
+         lines (542px), then reflowed to four when Baloo 2 arrived (Waskar,
+         10/16/2026). Preloading the heading face fetches it alongside the CSS,
+         so it is ready for the first paint. -->
+    <link rel="preload" href={headingFont} as="font" type="font/woff2" crossorigin />
     <!-- Icons are generated from the brand mark by `npm run icons:generate`.
          The tab icons keep their transparency; the Apple one cannot, because
          iOS discards alpha and composites onto black, which would swallow the
@@ -98,9 +110,15 @@ const {
     </script>
   </head>
   <body>
+    <!-- While it has focus, the skip link is a full-width ink strip above the
+         header, in the page flow, so it pushes the header down instead of
+         covering the logo (it used to float over the top-left corner). The
+         pink outline sits inside the strip (negative offset), because the ink
+         edge of the focus ring is invisible on an ink strip. White on ink is
+         17.4:1; it was white on #D98E1C, about 2.6:1, and off palette. -->
     <a
       href="#main-content"
-      class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary-600 focus:text-white focus:rounded-lg"
+      class="sr-only focus:not-sr-only focus:block focus:w-full focus:py-3 focus:text-center focus:bg-brand-dark focus:text-white focus:font-display focus:font-extrabold focus:outline-offset-[-6px]"
     >
       Skip to main content
     </a>

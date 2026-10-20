@@ -17,25 +17,6 @@ test.describe('prefers-reduced-motion', () => {
     await expect(tagline).toHaveCSS('animation-name', 'pcvRise');
   });
 
-  test('the looping Lab track keeps its spine when motion is reduced', async ({ page }) => {
-    // The track draws itself by animating width from 0. Killing the animation
-    // without restoring the width would leave a zero-width line and the dots
-    // would sit on nothing — so assert the restored width, not just the absence
-    // of animation.
-    await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.goto('/');
-
-    const track = page.locator('.pcv-loop-track');
-    await expect(track).toHaveCSS('animation-name', 'none');
-
-    const [trackWidth, parentWidth] = await track.evaluate((el) => [
-      el.getBoundingClientRect().width,
-      (el.parentElement as HTMLElement).getBoundingClientRect().width,
-    ]);
-    expect(trackWidth).toBeGreaterThan(0);
-    expect(Math.abs(trackWidth - parentWidth)).toBeLessThan(2);
-  });
-
   test('hero entrance animations and scroll-smooth are disabled when reduced', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
@@ -63,13 +44,14 @@ test.describe('prefers-reduced-transparency', () => {
     await client.detach();
   });
 
-  test('mobile menu keeps its translucent blur without the reduced-transparency preference', async ({
-    page,
-  }) => {
+  // Edition 1.2 rules out frosted glass, so the menu is opaque for everyone, not
+  // only for visitors who ask for reduced transparency.
+  test('mobile menu is solid ink with no blur without the preference too', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/');
     await page.click('button[aria-expanded]');
     const menu = page.locator('[data-testid="mobile-menu"]');
-    await expect(menu).toHaveCSS('backdrop-filter', 'blur(16px)');
+    await expect(menu).toHaveCSS('backdrop-filter', 'none');
+    await expect(menu).toHaveCSS('background-color', 'rgb(26, 26, 26)');
   });
 });

@@ -1,0 +1,14 @@
+---
+/**
+ * Marks a draft entry in `astro dev` (src/lib/showcase.ts). Builds never show
+ * drafts, so this badge never reaches a deployed page. The e2e suite checks
+ * that no `[data-draft]` element appears in a build.
+ */
+---
+
+<span
+  data-draft
+  class="self-start rounded-full border-2 border-dashed border-brand-dark bg-white px-3 py-[3px] font-black text-xs tracking-[0.14em] uppercase text-brand-dark"
+>
+  Draft · not live
+</span>

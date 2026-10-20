@@ -1,0 +1,59 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import DraftBadge from './DraftBadge.astro';
+import { isLive } from '../lib/showcase';
+
+/**
+ * The team cards on About: photo, name, title, and a short bio. Data lives in
+ * src/content/team/. A draft without a photo shows its initials, and only in
+ * `astro dev`; a published member must have a photo (src/content.config.ts).
+ */
+interface Props {
+  members: CollectionEntry<'team'>[];
+}
+
+const { members } = Astro.props;
+
+const initials = (name: string) =>
+  name
+    .split(/\s+/)
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join('');
+---
+
+<ul
+  class="m-0 p-0 list-none grid gap-7 grid-cols-[repeat(auto-fill,minmax(min(260px,100%),1fr))]"
+  data-testid="team"
+>
+  {members.map(({ data }) => (
+    <li class="flex flex-col gap-4">
+      {data.photo ? (
+        <img
+          src={data.photo}
+          alt={data.photoAlt}
+          width="560"
+          height="700"
+          loading="lazy"
+          decoding="async"
+          class="block w-full aspect-[4/5] object-cover rounded-[24px] border-2 border-brand-dark shadow-retro-lg bg-brand-pink"
+        />
+      ) : (
+        <div
+          class="w-full aspect-[4/5] rounded-[24px] border-2 border-dashed border-brand-dark bg-brand-pink flex items-center justify-center font-display font-extrabold text-[72px]"
+          aria-hidden="true"
+        >
+          {initials(data.name)}
+        </div>
+      )}
+      <div class="flex flex-col gap-1.5">
+        {!isLive({ data }) && <DraftBadge />}
+        <h3 class="m-0 normal-case text-[28px] leading-[1.1]">{data.name}</h3>
+        <p class="m-0 font-extrabold text-[13px] tracking-[0.16em] uppercase">{data.title}</p>
+        {data.bio && (
+          <p class="m-0 mt-1.5 text-base leading-[1.55] text-brand-dark/85">{data.bio}</p>
+        )}
+      </div>
+    </li>
+  ))}
+</ul>
