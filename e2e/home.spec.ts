@@ -227,3 +227,34 @@ test('Home shows the four programs, and Stoop as a line under them', async ({ pa
   await expect(career.getByRole('link')).toHaveCount(0);
   await expect(page.getByTestId('stoop-line')).toContainText('Stoop');
 });
+
+test('a first visit paints the headline in its real font, with no reflow', async ({ page }) => {
+  // Fonts use font-display: swap. Without a preload, the first frame painted
+  // in the wider fallback face: the headline wrapped to five lines (542px),
+  // then reflowed to four when Baloo 2 arrived, on 12 of 12 first visits
+  // (Waskar, 10/16/2026). BaseLayout preloads the heading face. Each test
+  // runs in a fresh browser context, so this is a cold cache.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.addInitScript(() => {
+    const heights: number[] = [];
+    (window as unknown as { __h: number[] }).__h = heights;
+    const start = performance.now();
+    const tick = () => {
+      const h1 = document.querySelector('h1');
+      if (h1) {
+        const v = Math.round(h1.getBoundingClientRect().height);
+        if (heights[heights.length - 1] !== v) heights.push(v);
+      }
+      if (performance.now() - start < 1500) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+  await page.goto('/');
+  await page.waitForTimeout(1600);
+  const heights = await page.evaluate(() => (window as unknown as { __h: number[] }).__h);
+  expect(heights, `headline heights painted: ${heights.join(' → ')}`).toHaveLength(1);
+  await expect(page.locator('link[rel="preload"][as="font"]')).toHaveAttribute(
+    'href',
+    /baloo-2-latin-800-normal\.[\w-]+\.woff2$/,
+  );
+});

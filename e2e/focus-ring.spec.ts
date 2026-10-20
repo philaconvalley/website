@@ -169,8 +169,9 @@ test('no component adds its own focus ring, border, shadow, or outline', () => {
   // A focus:ring-*, focus:border-*, focus:shadow-*, focus:outline-* or
   // outline-none class replaces or hides the shared two-tone ring.
   // focus:outline-offset-* is allowed: it moves the ring, it does not replace it.
-  // The one sanctioned exception draws the same two-tone pattern itself.
-  const allowed = new Set(['src/components/ArcadeCabinet.astro']);
+  // No exceptions: the old ArcadeCabinet drew its own copy of the ring, and it
+  // was retired with the 10/16/2026 Arcade rebuild.
+  const allowed = new Set<string>();
   const offenders: string[] = [];
   const walk = (dir: string) => {
     for (const entry of readdirSync(dir)) {

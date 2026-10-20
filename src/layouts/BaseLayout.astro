@@ -18,6 +18,9 @@ import '@fontsource/nunito/800.css';
 import '@fontsource/nunito/900.css';
 import '@fontsource/jetbrains-mono/400.css';
 import '@fontsource/jetbrains-mono/500.css';
+// The heading face, preloaded below. Vite returns the same hashed file the
+// font CSS points at, so the preload and the CSS share one download.
+import headingFont from '@fontsource/baloo-2/files/baloo-2-latin-800-normal.woff2?url';
 import '../styles/global.css';
 import SEO from '../components/SEO.astro';
 import Header from '../components/Header.astro';
@@ -44,6 +47,13 @@ const {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Fonts use font-display: swap, and the browser finds a font file only
+         after it reads the CSS. On a first visit the first frame painted in
+         the fallback face, which is wider: Home's headline wrapped to five
+         lines (542px), then reflowed to four when Baloo 2 arrived (Waskar,
+         10/16/2026). Preloading the heading face fetches it alongside the CSS,
+         so it is ready for the first paint. -->
+    <link rel="preload" href={headingFont} as="font" type="font/woff2" crossorigin />
     <!-- Icons are generated from the brand mark by `npm run icons:generate`.
          The tab icons keep their transparency; the Apple one cannot, because
          iOS discards alpha and composites onto black, which would swallow the

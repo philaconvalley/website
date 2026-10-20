@@ -73,7 +73,6 @@ const { nextEvent } = await getCommunityData();
     width="2400"
     height="2092"
     loading="lazy"
-    decoding="async"
     alt=""
     class="absolute inset-x-0 bottom-0 w-full h-[clamp(280px,36vw,520px)] object-cover object-top pointer-events-none select-none"
   />
@@ -109,7 +108,9 @@ const { nextEvent } = await getCommunityData();
             data-pcv-event-fallback={links.luma}
           >
             <span data-pcv-event-start={nextEvent.start}>RSVP for the next night</span>
-            <span hidden data-pcv-event-after={nextEvent.start}>Get notified</span>
+            <span hidden data-pcv-event-after={nextEvent.start}>
+              Get notified
+            </span>
           </Button>
         ) : (
           <Button href={links.luma} external variant="primary" size="lg">
@@ -133,7 +134,6 @@ const { nextEvent } = await getCommunityData();
         width="317"
         height="420"
         loading="lazy"
-        decoding="async"
         alt="The PhilaCon Valley pigeon standing on a keyboard, with the Philadelphia skyline behind it"
         class="block w-full max-w-[260px] lg:max-w-[340px] h-auto -rotate-[5deg] [filter:drop-shadow(4px_0_0_#fff)_drop-shadow(-4px_0_0_#fff)_drop-shadow(0_4px_0_#fff)_drop-shadow(0_-4px_0_#fff)_drop-shadow(10px_10px_0_#1a1a1a)]"
       />

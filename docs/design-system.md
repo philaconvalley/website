@@ -239,43 +239,27 @@ Each page can specify a unique Open Graph image for social sharing previews. Pas
 
 Currently all pages use the default banner (`/images/1200x675 banner.png`). To add unique images per page, create them and add the `image` prop — the SEO component handles the rest.
 
-### Arcade Cabinet (`src/components/ArcadeCabinet.astro`)
+### Arcade cards (`src/pages/arcade/index.astro`)
 
-Used only on `/arcade`. The whole cabinet — marquee, screen and control deck —
-is a single `<a>`, so the obvious click target (the artwork) actually works
-and a screen reader's link list gets one entry per cabinet instead of several
-pointing at the same place.
+Used only on `/arcade` (Edition 1.2, 10/16/2026). The old `ArcadeCabinet`
+(arcade-machine cards) is retired. Each game is one white card, and the whole
+card is a single `<a>` to the game page, so a screen reader's link list gets
+one entry per game. The link carries a short `aria-label` ("Play Flappy
+Philacon (High score), by Diego Mendoza"), and the screenshot inside it has
+`alt=""`, because the title is already there.
 
-| Part         | Token                                                                          |
-| ------------ | ------------------------------------------------------------------------------ |
-| Cabinet body | `bg-brand-dark`                                                                |
-| Marquee      | one of `bg-brand-pink`, `bg-brand-purple`, `bg-brand-yellow`, `bg-brand-coral` |
-| Screen bezel | `border-black`                                                                 |
-| Control deck | `bg-primary-950`, with an offset joystick and two round buttons                |
-| Placard text | `text-brand-dark`                                                              |
-| Focus ring   | `group-focus-visible:ring-accent-500` on the cabinet housing                   |
+| Part        | Token                                                                                |
+| ----------- | ------------------------------------------------------------------------------------ |
+| Card        | `bg-white`, `border-2 border-brand-dark`, `rounded-[24px]`                           |
+| Shadow      | 6px, in the game's `marqueeColor` (pink, purple, yellow, or coral)                   |
+| Screenshot  | 4:3, on a `marqueeColor` backdrop, with an ink rule below                            |
+| Chip        | `.pill` on `bg-brand-yellow`: "Desktop only", "Demo · No score", or the game's `tag` |
+| Play        | an ink pill inside the link (not a second link)                                      |
+| Submit card | dashed `border-brand-yellow` on ink, with a link to the contribution guide           |
 
-The marquee crowns the housing flush to the top edge — no margin, sharing the
-housing's corner radius — so it reads as the machine's lit header rather than
-a label pinned inside a box.
-
-The empty "YOUR GAME HERE" submission cabinet uses `bg-primary-200` for its
-marquee, not a faded/opacity version of the live marquee colors. Fading the
-whole marquee (background and text together) drags the text below WCAG AA
-against its own background; swapping to a genuinely muted token keeps
-full-strength text contrast while still reading as "powered off" next to the
-saturated, lit marquees around it.
-
-Two rules worth keeping:
-
-**No pixel font.** The cabinet silhouette is what says "arcade" — the typeface
-is not asked to do that job. Baloo 2 at `font-extrabold` on the marquee is the
-whole treatment. A third typeface would cost contrast at small sizes and buy
-nothing.
-
-**Dark as an object, not a theme.** The cabinet is dark the way `Header` and
-`Footer` are dark. The page stays white. The site has no dark mode, and the
-arcade does not introduce one.
+Motion is the old cabinet's, unchanged: a 300ms rise staggered by 60ms, a 4px
+hover lift on real pointers, a 2px press at 100ms, and none under reduced
+motion.
 
 ### Arcade Player (`src/components/CabinetFrame.astro`)
 
