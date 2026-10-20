@@ -1,220 +1,218 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Button from '../../components/Button.astro';
+import ClosingFlock from '../../components/ClosingFlock.astro';
+import { getProjects } from '../../lib/projects';
 import { links } from '../../config';
-import { isPublicOrgProject } from '../../lib/community';
 
-// Fetch repos from the GitHub org at build time
-type GitHubRepo = {
-  name: string;
-  description: string | null;
-  html_url: string;
-  language: string | null;
-  stargazers_count: number;
-  forks_count: number;
-  topics: string[];
-  updated_at: string;
-  open_issues_count: number;
-  fork: boolean;
-  archived: boolean;
-};
+/**
+ * Projects, Edition 1.2 (DESIGN.md, "The 1.2 redesign"). Sections follow
+ * Diego's mockup, with these decisions (Waskar, 10/16/2026):
+ * - The hero says "Every community project is open source." The mockup said
+ *   "Everything we make", but client work lives in private repos.
+ * - The repo list and count come live from the GitHub org at build time
+ *   (src/lib/projects.ts), with a saved copy if GitHub does not answer. Card
+ *   copy comes from src/data/projects.ts; a new repo shows its GitHub
+ *   description until someone adds copy for it.
+ * - Each card shows its open "good first issue" count. A filled card means
+ *   "ready for a newcomer": repos with good first issues take Golden Yellow,
+ *   Hot Pink and ink in turn; the rest are white. Ready repos come first.
+ */
 
-let repos: GitHubRepo[] = [];
-try {
-  const headers: Record<string, string> = { Accept: 'application/vnd.github.v3+json' };
-  if (import.meta.env.GITHUB_TOKEN) {
-    headers.Authorization = `Bearer ${import.meta.env.GITHUB_TOKEN}`;
-  }
-  const res = await fetch(
-    // type=public is load-bearing: with a GITHUB_TOKEN set, this endpoint
-    // defaults to returning private repos too, which would publish client work
-    // and unreleased projects on a public page.
-    'https://api.github.com/orgs/philaconvalley/repos?type=public&sort=updated&per_page=20',
-    { headers, signal: AbortSignal.timeout(10_000) },
-  );
-  if (res.ok) {
-    const allRepos: GitHubRepo[] = await res.json();
-    // Shared with the homepage's "things shipped" counter so the two pages cannot
-    // state different counts of the same repos — see src/lib/community.ts.
-    repos = allRepos.filter(isPublicOrgProject);
-  }
-} catch {
-  /* build continues with empty repos */
-}
+const projects = await getProjects();
 
-// Human-readable display names for repos
-const displayNames: Record<string, string> = {
-  shoppingDebateChromeExtension: 'Shopping Debate',
-  'community-handbook': 'Community Handbook',
-  waterICE: 'WaterICE',
-  website: 'Website',
-};
+// The heading spells out small counts, as the mockup does ("Nine things
+// shipped"). The count is the cards on this page, so the two always agree.
+const words = [
+  'Zero',
+  'One',
+  'Two',
+  'Three',
+  'Four',
+  'Five',
+  'Six',
+  'Seven',
+  'Eight',
+  'Nine',
+  'Ten',
+  'Eleven',
+  'Twelve',
+];
+const count = words[projects.length] ?? String(projects.length);
+const shipped = `${count} ${projects.length === 1 ? 'thing' : 'things'} shipped.`;
+
+const fills = [
+  'bg-brand-yellow text-brand-dark',
+  'bg-brand-pink text-brand-dark',
+  'bg-brand-dark text-white',
+];
+// The first tag follows the mockup: an accent on white cards (in turn), white
+// on yellow and pink cards, and Golden Yellow on the ink card. Pills keep ink
+// text, which reads on every one of these fills.
+const accents = ['bg-brand-pink', 'bg-brand-amber', 'bg-brand-yellow', 'bg-brand-coral'];
+let ready = 0;
+let plain = 0;
+const cards = projects.map((project) => {
+  const fill = project.goodFirstIssues > 0 ? fills[ready++ % fills.length] : 'bg-white';
+  const ink = fill.includes('bg-brand-dark');
+  const firstTag =
+    fill === 'bg-white' ? accents[plain++ % accents.length] : ink ? 'bg-brand-yellow' : 'bg-white';
+  return { ...project, fill, ink, firstTag };
+});
+
+const issuesUrl = (repoUrl: string) =>
+  `${repoUrl}/issues?q=${encodeURIComponent('is:issue is:open label:"good first issue"')}`;
+// GitHub's /issues page needs a login (logged-out visitors get a 404), so the
+// org-wide link uses the public search page instead.
+const allIssuesUrl = `https://github.com/search?type=issues&q=${encodeURIComponent(
+  'org:philaconvalley label:"good first issue" is:issue is:open',
+)}`;
 ---
 
 <BaseLayout
-  title="Community projects - PhilaCon Valley"
-  description="Explore projects built by PhilaCon Valley community members. Open source, collaborative, and built in Philadelphia."
+  title="Projects — Open-source community projects from Philadelphia | PhilaCon Valley"
+  description="Every PhilaCon Valley community project is open source. Browse the repos, pick a good first issue, and open your first pull request."
 >
-  <!-- Hero Section -->
-  <section class="bg-brand-purple text-white py-20">
-    <div class="container-custom">
-      <div class="max-w-4xl mx-auto text-center">
-        <h1 class="text-5xl md:text-6xl mb-6">Community projects</h1>
-        <p class="text-2xl text-white/85">Built by the community, for the community</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Open Source Repos -->
-  <section class="section-padding">
-    <div class="container-custom">
-      <div class="max-w-3xl mx-auto text-center mb-10">
-        <p class="text-xl text-brand-dark/70 leading-relaxed">
-          Everything we build is open source. Browse our repos, pick an issue, and submit your first
-          PR.
+  <!-- Hero: Amber, as in the mockup. -->
+  <section class="bg-brand-amber">
+    <div class="container-custom py-[clamp(56px,8vw,112px)] flex flex-wrap gap-10 items-end justify-between">
+      <div class="grow shrink basis-[640px] min-w-0 flex flex-col gap-7">
+        <p class="m-0 self-start pill font-black text-[13px] tracking-[0.16em]">
+          Community projects
+        </p>
+        <h1 class="m-0">Built by the flock. For the flock.</h1>
+        <p class="m-0 max-w-[600px] text-[clamp(18px,1.6vw,22px)] leading-[1.5] font-semibold">
+          Every community project is open source. Browse the repos, pick an issue, and open your
+          first pull request.
         </p>
       </div>
-
-      {repos.length > 0 ? (
-        <div class="max-w-5xl mx-auto flex flex-col gap-4">
-          {repos.map((repo) => (
-            <a
-              href={repo.html_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="card px-6 py-5 flex flex-col sm:flex-row sm:items-center gap-4 group"
-            >
-              {/* Left: project info */}
-              <div class="flex-grow min-w-0">
-                <div class="flex items-center gap-3 mb-1.5">
-                  <h3 class="text-lg font-display text-brand-dark group-hover:text-accent-600 transition-colors leading-tight normal-case">
-                    {displayNames[repo.name] || repo.name}
-                  </h3>{' '}
-                  {repo.language && (
-                    <span class="shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-dark/5 text-brand-dark/50">
-                      {repo.language}
-                    </span>
-                  )}
-                </div>{' '}
-                <p class="text-sm text-brand-dark/55 leading-relaxed line-clamp-2">
-                  {repo.description || 'Community project — check it out on GitHub.'}
-                </p>
-              </div>
-
-              {/* Right: stats + arrow */}
-              <div class="flex items-center gap-5 shrink-0 sm:pl-4">
-                <div class="flex items-center gap-3 text-xs text-brand-dark/40">
-                  <span class="flex items-center gap-1">
-                    <svg
-                      class="w-3.5 h-3.5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-                      />
-                    </svg>
-                    {repo.stargazers_count}
-                  </span>
-                  <span class="flex items-center gap-1">
-                    <svg
-                      class="w-3.5 h-3.5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-                      />
-                    </svg>
-                    {repo.forks_count}
-                  </span>
-                </div>
-                {repo.open_issues_count > 0 && (
-                  <span class="text-xs font-semibold text-green-600 whitespace-nowrap">
-                    {repo.open_issues_count} open{' '}
-                    {repo.open_issues_count === 1 ? 'issue' : 'issues'}
-                  </span>
-                )}
-                <svg
-                  class="w-5 h-5 text-brand-dark/20 group-hover:text-accent-600 transition-colors shrink-0"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </div>
-            </a>
-          ))}
-        </div>
-      ) : (
-        <div class="max-w-3xl mx-auto text-center">
-          <div class="bg-white rounded-retro border-2 border-brand-dark shadow-retro-lg p-12 md:p-16">
-            <svg
-              class="w-24 h-24 mx-auto mb-6 text-primary-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
-              />
-            </svg>
-            <h2 class="text-3xl md:text-4xl mb-4">Projects coming soon</h2>
-            <p class="text-xl text-brand-dark/60 mb-8 leading-relaxed">
-              We're building amazing projects at our Labs! Check back soon to see what the community
-              is creating, or join us at our next event to start building your own.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button href="/events" variant="primary" size="lg">
-                Attend a Lab
-              </Button>
-              <Button href="/join" variant="light" size="lg">
-                Join the community
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  </section>
-
-  <!-- Submit Project CTA -->
-  <section class="section-padding bg-accent-400 text-brand-dark border-t-[3px]">
-    <div class="container-custom text-center">
-      <h2 class="text-4xl mb-6">Built something cool?</h2>
-      <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-        Share your project with the community! Whether you built it at one of our events or on your
-        own, we'd love to showcase it.
-      </p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button href="/contact" variant="secondary" size="lg">
-          {' '}
-          Submit your project{' '}
-        </Button>
-        <Button href={links.github.org} external variant="light" size="lg">
+      <div class="flex flex-wrap gap-3.5">
+        <Button href={links.github.org} external variant="primary" size="lg">
           View on GitHub
+        </Button>
+        <Button href="/join#first-pr" variant="light" size="lg">
+          Make your first PR
         </Button>
       </div>
     </div>
   </section>
+
+  <!-- The repos: one card per public org repo, newcomer-ready first. -->
+  <section class="bg-white border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
+      <div class="flex flex-col gap-[22px] max-w-[760px]">
+        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">The repos</p>
+        <h2 class="m-0 [text-wrap:balance]" data-testid="projects-count">
+          {shipped} So far.
+        </h2>
+      </div>
+      <ul
+        class="m-0 p-0 list-none grid gap-6 grid-cols-[repeat(auto-fill,minmax(min(250px,100%),1fr))]"
+        data-testid="project-cards"
+      >
+        {cards.map((card) => (
+          <li
+            class:list={[
+              'rounded-[24px] border-2 border-brand-dark p-6 flex flex-col gap-3',
+              card.fill,
+              card.ink
+                ? 'shadow-[6px_6px_0_theme(colors.brand.pink)]'
+                : 'shadow-[6px_6px_0_theme(colors.brand.dark)]',
+            ]}
+            data-testid="project-card"
+            data-ready={card.goodFirstIssues > 0 ? 'true' : 'false'}
+          >
+            <p
+              class:list={[
+                // 500 is the heaviest JetBrains Mono weight the site ships (BaseLayout);
+                // the mockup's 700 would be a faked bold.
+                'm-0 font-mono text-[13px] font-medium [overflow-wrap:anywhere]',
+                card.ink ? 'text-brand-yellow' : 'text-brand-dark',
+              ]}
+            >
+              philaconvalley/
+              <wbr />
+              {card.name}
+            </p>
+            <h3 class="m-0 normal-case text-[28px] leading-[1.05] break-words">
+              <a
+                href={card.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center min-h-11 underline decoration-2 underline-offset-4 decoration-transparent hover:decoration-current focus-visible:decoration-current"
+              >
+                {card.title}
+              </a>
+            </h3>
+            <p class="m-0 text-[15px] leading-[1.55]">{card.blurb}</p>
+            <div class="mt-auto pt-2 flex flex-col gap-3">
+              {card.tags.length > 0 && (
+                <ul class="m-0 p-0 list-none flex flex-wrap gap-2" aria-label="Tags">
+                  {card.tags.map((tag, i) => (
+                    <li
+                      class:list={[
+                        'pill normal-case tracking-normal text-xs',
+                        i === 0 && card.firstTag,
+                      ]}
+                    >
+                      {tag}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {card.goodFirstIssues > 0 && (
+                <a
+                  href={issuesUrl(card.url)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class:list={[
+                    'self-start inline-flex items-center min-h-11 font-black text-sm underline underline-offset-4 decoration-2',
+                    card.ink ? 'text-brand-yellow' : 'text-brand-dark',
+                  ]}
+                  data-testid="good-first-issues"
+                >
+                  {card.goodFirstIssues} good first{' '}
+                  {card.goodFirstIssues === 1 ? 'issue' : 'issues'}
+                </a>
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- New to open source: ink, as in the mockup. The six-step walkthrough lives
+       on /join. -->
+  <section class="bg-brand-dark text-white border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,120px)] flex flex-wrap gap-10 items-center justify-between">
+      <div class="grow shrink basis-[560px] min-w-0 flex flex-col gap-6">
+        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">New to open source?</p>
+        <h2 class="m-0 text-white">
+          Look for the <span class="text-brand-yellow">good first issue</span> label.
+        </h2>
+        <p class="m-0 max-w-[560px] text-[clamp(17px,1.4vw,19px)] leading-[1.55]">
+          Those issues are picked for first-timers. Our six-step walkthrough gets you from fork to
+          pull request.
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-3.5">
+        <Button href="/join#first-pr" variant="secondary" size="lg">
+          Follow the walkthrough
+        </Button>
+        <Button href={allIssuesUrl} external variant="outline-light" size="lg">
+          Browse open issues
+        </Button>
+      </div>
+    </div>
+  </section>
+
+  <!-- The Projects closing, in the mockup's copy. -->
+  <ClosingFlock
+    lede="Made it at one of our nights or on your own? Send it our way and we'll show it off."
+    primary={{ href: '/contact', label: 'Submit your project' }}
+    secondary={{ href: links.github.org, label: 'View on GitHub', external: true }}
+  >
+    Built something cool?
+  </ClosingFlock>
 </BaseLayout>
