@@ -1,7 +1,8 @@
 // The night system, step 2 of 2 (styles: global.css, "night timeline"): the
-// "How a night goes" timeline on About, and the four "First time?" points on
-// Events. It plays the first [data-night-strip] on the page; a step needs a
-// [data-night-dot] and a [data-night-rise], and [data-night-seg] is optional.
+// "How a night goes" timeline on About, the four "First time?" points on
+// Events, and the role ladder on Join. It plays the first [data-night-strip]
+// on the page; a step needs a [data-night-dot] and a [data-night-rise], and
+// [data-night-seg] is optional.
 // Served as a file because the CSP allows scripts from this origin only.
 // night-arm.js hides the steps before paint.
 //
