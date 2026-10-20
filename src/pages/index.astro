@@ -5,11 +5,11 @@ import ClosingFlock from '../components/ClosingFlock.astro';
 import EventBar from '../components/EventBar.astro';
 import { getCommunityData, formatEventDate } from '../lib/community';
 import { community, links } from '../config';
-import { getCollection } from 'astro:content';
 import { labNight } from '../data/lab-night';
 import PhotoGrid from '../components/PhotoGrid.astro';
 import { getRoomPhotos } from '../lib/events';
 import { getHireLink } from '../lib/showcase';
+import { getHeroPhotos } from '../lib/hero-photos';
 
 const { nextEvent, nightsHeld, thingsShipped } = await getCommunityData();
 
@@ -38,27 +38,11 @@ const { nextEvent, nightsHeld, thingsShipped } = await getCommunityData();
 const tagline =
   'A free tech community in Philadelphia. Every month we meet in person to build real projects together, and no one needs to feel ready first.';
 
-// Every hero-eligible gallery photo. The HTML ships the newest one (no-JS and
-// search see a real photo); a small script picks one at random per visit, so
-// returning visitors see more of the room (decided 10/15/2026). No timed
-// rotation: that would be a second loop (DESIGN.md, motion rule 1) and would
-// need a pause control (WCAG 2.2.2).
-const heroPhotos = (await getCollection('gallery'))
-  .filter((entry) => entry.data.heroEligible)
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-  .map((entry) => ({ id: entry.id, src: entry.data.image, alt: entry.data.alt }))
-  // DESIGN.md names the projection wall as the hero; it leads the list, so it
-  // is the photo no-JS visitors and search engines see.
-  .sort(
-    (a, b) =>
-      Number(b.id === 'patch-003-projection-wall') - Number(a.id === 'patch-003-projection-wall'),
-  )
-  .map(({ src, alt }) => ({
-    src,
-    alt,
-    // 800px copies sit beside each original (src/content/gallery images).
-    srcset: `${src.replace(/\.jpg$/, '-800.jpg')} 800w, ${src} 1600w`,
-  }));
+// Every hero-eligible gallery photo (src/lib/hero-photos.ts). The HTML ships
+// the first one; /js/hero-photo.js picks one at random per visit from the same
+// list. No timed rotation: that would be a second loop (DESIGN.md, motion
+// rule 1) and would need a pause control (WCAG 2.2.2).
+const heroPhotos = await getHeroPhotos();
 const photo = heroPhotos[0];
 
 // How a night goes: five steps from src/data/lab-night.ts, checked against
