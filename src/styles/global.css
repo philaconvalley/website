@@ -524,6 +524,12 @@
   transform: translateY(8px);
 }
 
+/* Reading strips (data-night-read) pop their numbers from 0.95, not 0.6: on a
+   numeral, 0.6 reads as a jump (motion review, 10/17/2026). */
+.night [data-night-strip][data-night-read]:not([data-night]) [data-night-dot] {
+  transform: scale(0.95);
+}
+
 [data-night-seg] {
   transform-origin: top;
 }
@@ -563,7 +569,8 @@
    text fade in once, together. */
 @media (prefers-reduced-motion: reduce) {
   .night [data-night-strip]:not([data-night]) [data-night-dot],
-  .night [data-night-strip]:not([data-night]) [data-night-rise] {
+  .night [data-night-strip]:not([data-night]) [data-night-rise],
+  .night [data-night-strip][data-night-read]:not([data-night]) [data-night-dot] {
     transform: none;
   }
 

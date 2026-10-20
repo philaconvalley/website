@@ -1,16 +1,34 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
+
+/**
+ * The pill spans the nav and shows only the part under a link, through
+ * clip-path: inset(0 calc(100% - <right edge>px) 0 <left>px round 9999px). This reads the target
+ * the pill is heading to (its style attribute), not a frame mid-transition,
+ * and returns it in the same terms as a link's offsetLeft and offsetWidth.
+ */
+const pillTarget = (page: Page) =>
+  page.locator('[data-testid="nav-pill"]').evaluate((el) => {
+    const m = /inset\(0 calc\(100% - (-?[\d.]+)px\) 0 (-?[\d.]+)px/.exec(
+      el.getAttribute('style') ?? '',
+    );
+    if (!m) throw new Error(`no clip-path inset on the pill: ${el.getAttribute('style')}`);
+    const edge = Number(m[1]);
+    const left = Number(m[2]);
+    return { left, width: edge - left };
+  });
 
 test.describe('desktop nav sliding pill indicator', () => {
   test('sits under the current page on load', async ({ page }) => {
     await page.goto('/about');
-    const pill = page.locator('[data-testid="nav-pill"]');
     const aboutLink = page.locator('[data-testid="desktop-nav"] a', { hasText: 'About' });
-    const pillBox = await pill.boundingBox();
-    const linkBox = await aboutLink.boundingBox();
-    expect(pillBox).not.toBeNull();
-    expect(linkBox).not.toBeNull();
-    // pill should overlap the About link horizontally (same left edge, within a few px)
-    expect(Math.abs(pillBox!.x - linkBox!.x)).toBeLessThan(5);
+    const pill = await pillTarget(page);
+    const link = await aboutLink.evaluate((el) => ({
+      left: (el as HTMLElement).offsetLeft,
+      width: (el as HTMLElement).offsetWidth,
+    }));
+    // The visible part of the pill sits exactly under the About link.
+    expect(Math.abs(pill.left - link.left)).toBeLessThan(2);
+    expect(Math.abs(pill.width - link.width)).toBeLessThan(2);
   });
 
   test('corrects itself once the webfont swaps in, even without any hover', async ({ page }) => {
@@ -34,9 +52,8 @@ test.describe('desktop nav sliding pill indicator', () => {
     await page.evaluate(() => document.fonts.ready);
     await page.waitForTimeout(700);
 
-    const pill = page.locator('[data-testid="nav-pill"]');
     const contactLink = page.locator('[data-testid="desktop-nav"] a', { hasText: 'Contact' });
-    const finalStyle = await pill.getAttribute('style');
+    const pill = await pillTarget(page);
     const linkMetrics = await contactLink.evaluate((el) => ({
       left: (el as HTMLElement).offsetLeft,
       width: (el as HTMLElement).offsetWidth,
@@ -44,8 +61,8 @@ test.describe('desktop nav sliding pill indicator', () => {
 
     // The pill must reflect the post-swap layout without requiring the user
     // to hover or focus the nav first.
-    expect(finalStyle).toContain(`translateX(${linkMetrics.left}px)`);
-    expect(finalStyle).toContain(`width: ${linkMetrics.width}px`);
+    expect(pill.left).toBe(linkMetrics.left);
+    expect(pill.width).toBe(linkMetrics.width);
   });
 
   test('snaps to the corrected width after the font swap, never slides', async ({ page }) => {
@@ -63,8 +80,16 @@ test.describe('desktop nav sliding pill indicator', () => {
       (window as unknown as { __pillWidths: number[] }).__pillWidths = widths;
       const start = performance.now();
       const tick = () => {
-        const pill = document.querySelector('[data-testid="nav-pill"]');
-        const w = pill ? Math.round(pill.getBoundingClientRect().width) : 0;
+        // The rendered (computed) clip, frame by frame. The right inset is
+        // calc(100% - edge), which Chrome may also print as calc(-edge + 100%)
+        // mid-transition; the visible width is edge - left.
+        const pill = document.querySelector('[data-testid="nav-pill"]') as HTMLElement | null;
+        const clip = pill ? getComputedStyle(pill).clipPath : '';
+        const a = /calc\(100% - (-?[\d.]+)px\) 0px (-?[\d.]+)px/.exec(clip);
+        const b = /calc\((-?[\d.]+)px \+ 100%\) 0px (-?[\d.]+)px/.exec(clip);
+        const edge = a ? Number(a[1]) : b ? -Number(b[1]) : NaN;
+        const left = Number((a ?? b)?.[2]);
+        const w = Number.isFinite(edge) && Number.isFinite(left) ? Math.round(edge - left) : 0;
         if (w && widths[widths.length - 1] !== w) widths.push(w);
         if (performance.now() - start < 1500) requestAnimationFrame(tick);
       };
@@ -87,8 +112,7 @@ test.describe('desktop nav sliding pill indicator', () => {
 
   test('follows keyboard focus, not just mouse hover', async ({ page }) => {
     await page.goto('/');
-    const pill = page.locator('[data-testid="nav-pill"]');
-    const before = await pill.getAttribute('style');
+    const before = await pillTarget(page);
 
     // Any non-current nav link exercises this; it used to be Blog, which is no
     // longer in the nav while the blog is hidden.
@@ -96,16 +120,16 @@ test.describe('desktop nav sliding pill indicator', () => {
     await targetLink.focus();
     await page.waitForTimeout(50);
 
-    const after = await pill.getAttribute('style');
-    expect(after).not.toBe(before);
+    const after = await pillTarget(page);
+    expect(after).not.toEqual(before);
 
     // Compare against the focused link's own live offsetLeft/offsetWidth rather than a
     // hardcoded pixel value or the pill's rendered boundingBox — the latter would race
     // the pill's 300ms CSS transition and could be read mid-animation.
     const expectedLeft = await targetLink.evaluate((el) => (el as HTMLElement).offsetLeft);
     const expectedWidth = await targetLink.evaluate((el) => (el as HTMLElement).offsetWidth);
-    expect(after).toContain(`translateX(${expectedLeft}px)`);
-    expect(after).toContain(`width: ${expectedWidth}px`);
+    expect(after.left).toBe(expectedLeft);
+    expect(after.width).toBe(expectedWidth);
   });
 });
 
