@@ -1,0 +1,40 @@
+name: Luma rebuild check
+
+# Rebuilds the site when its next event no longer matches Luma. The site is
+# static and reads Luma at build time, so without this a night posted on Luma
+# stays off the site until the next deploy. See the script header for the full
+# reasoning. The weekly "Luma upcoming events check" is a separate job: it opens
+# an issue when the calendar is empty, and this one keeps the site in step.
+
+on:
+  schedule:
+    # Every 3 hours, at minute 17. GitHub delays jobs queued exactly on the
+    # hour, when most scheduled jobs start.
+    - cron: '17 */3 * * *'
+  # Run by hand right after publishing a night, instead of waiting.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: luma-rebuild
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Compare Luma with the live site
+        env:
+          VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: node .github/scripts/luma-rebuild-check.mjs

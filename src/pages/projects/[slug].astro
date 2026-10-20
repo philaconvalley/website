@@ -85,6 +85,9 @@ const { title, description, techStack, githubUrl, liveUrl, contributors, status,
                 <h4 class="font-semibold text-brand-dark/70 mb-2">Last updated</h4>
                 <p class="text-brand-dark/60">
                   {date.toLocaleDateString('en-US', {
+                    // Content dates are midnight UTC; formatting in the visitor's
+                    // zone showed the day before in every US time zone.
+                    timeZone: 'UTC',
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric',
