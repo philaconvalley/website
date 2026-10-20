@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-import { readFileSync } from 'node:fs';
 import { links } from '../src/config';
 
 /**
@@ -8,10 +7,10 @@ import { links } from '../src/config';
  *   backup for people who cannot reach Discord, worded as quieter;
  * - the role ladder shows only roles with a written meaning (no Crew, which is
  *   the admin role, and no Connector, which has no definition);
- * - all six first-PR steps show at once, and every command on them is in the
- *   longer guide, so the two cannot drift apart;
+ * - the page is about the Discord and coming to a night: no git tutorial,
+ *   and an old /join#first-pr link lands on the walkthrough on /projects;
  * - "Come to a Lab" never offers an RSVP without a real event;
- * - the values are the three backed by the code of conduct.
+ * - the values are the Community Handbook's, the same list as About.
  */
 
 test('the hero welcomes people to the real Discord server', async ({ page }) => {
@@ -21,7 +20,9 @@ test('the hero welcomes people to the real Discord server', async ({ page }) => 
     'href',
     links.discord,
   );
-  await expect(page.getByTestId('discord-count')).toHaveText(/\d+ members · \d+ online now/);
+  await expect(page.getByTestId('discord-count')).toHaveText(
+    /Discord · \d+ members · \d+ online now/,
+  );
   const slack = page.getByTestId('slack-fallback');
   await expect(slack).toContainText('Slack');
   await expect(slack).toContainText('quieter');
@@ -40,29 +41,23 @@ test('the role ladder shows only roles with a written meaning', async ({ page })
   await expect(page.getByTestId('discord-roles')).not.toContainText(/Crew|Connector/);
 });
 
-test('all six first-PR steps show at once, with commands from the longer guide', async ({
-  page,
-}) => {
+test('Join leads with the Discord and a night, not a git tutorial', async ({ page }) => {
   await page.goto('/join');
-  const steps = page.getByTestId('first-pr-steps').locator(':scope > li');
-  await expect(steps).toHaveCount(6);
-  for (let i = 0; i < 6; i++) await expect(steps.nth(i)).toBeVisible();
-
-  const guide = readFileSync('src/content/resources/first-pull-request.md', 'utf8');
-  const blocks = await page.getByTestId('first-pr-steps').locator('code').allTextContents();
-  const lines = blocks
-    .flatMap((b) => b.split('\n'))
-    .map((l) => l.trim())
-    .filter((l) => l && !l.includes('→')); // the Fork line is a GitHub button, not a command
-  expect(lines.length).toBeGreaterThan(0);
-  for (const line of lines) expect(guide, `"${line}" is not in the longer guide`).toContain(line);
+  await expect(page.getByTestId('first-pr-steps')).toHaveCount(0);
+  await page.getByRole('link', { name: 'Come to a night' }).click();
+  await expect(page).toHaveURL(/#come-to-a-night$/);
+  await expect(page.locator('#come-to-a-night h2')).toBeInViewport();
+  // Code is one way in, and it points at the walkthrough's home.
+  await expect(page.getByRole('link', { name: 'Make your first PR' })).toHaveAttribute(
+    'href',
+    '/projects#first-pr',
+  );
 });
 
-test('"Make your first PR" lands on the steps', async ({ page }) => {
-  await page.goto('/join');
-  await page.getByRole('link', { name: 'Make your first PR' }).click();
-  await expect(page).toHaveURL(/#first-pr$/);
-  await expect(page.getByTestId('first-pr-steps')).toBeInViewport();
+test('an old /join#first-pr link lands on the walkthrough on /projects', async ({ page }) => {
+  await page.goto('/join#first-pr');
+  await expect(page).toHaveURL(/\/projects#first-pr$/);
+  await expect(page.getByTestId('first-pr-steps')).toBeVisible();
 });
 
 test('"Come to a Lab" never offers an RSVP without a real event', async ({ page }) => {
@@ -74,13 +69,15 @@ test('"Come to a Lab" never offers an RSVP without a real event', async ({ page 
   await expect(lab).not.toContainText('RSVP');
 });
 
-test('the values are the three backed by the code of conduct', async ({ page }) => {
+test('the values are the handbook values, the same list as About', async ({ page }) => {
+  await page.goto('/about');
+  const about = await page.getByTestId('values').locator('h3').allTextContents();
   await page.goto('/join');
-  await expect(page.getByTestId('join-values').locator('li')).toHaveText([
-    'Respect, every time',
-    'Center marginalized voices',
-    'Zero tolerance for harassment',
-  ]);
+  await expect(page.getByTestId('join-values').locator('li')).toHaveText(about);
+  await expect(page.getByRole('link', { name: 'Read our values' })).toHaveAttribute(
+    'href',
+    links.handbook.values,
+  );
   await expect(page.getByRole('link', { name: 'Read the code of conduct' })).toHaveAttribute(
     'href',
     /CODE_OF_CONDUCT\.md$/,
@@ -148,4 +145,13 @@ test('if night.js never loads, the role ladder still shows', async ({ page }) =>
   await page.route('**/js/night.js', (route) => route.abort());
   await page.goto('/join');
   await expect.poll(() => ladderSettled(page), { timeout: 5000 }).toBe(true);
+});
+
+test('print shows every role on the ladder, even before it plays', async ({ page }) => {
+  await page.goto('/join');
+  await page.emulateMedia({ media: 'print' });
+  const parts = page.getByTestId('discord-roles').locator('[data-night-dot], [data-night-rise]');
+  const n = await parts.count();
+  expect(n).toBeGreaterThan(0);
+  for (let i = 0; i < n; i++) await expect(parts.nth(i)).toHaveCSS('opacity', '1');
 });

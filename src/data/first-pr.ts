@@ -1,6 +1,6 @@
 /**
- * The six steps of a first pull request on this repo, shown as cards on /join
- * (Waskar, 10/17/2026). The steps and commands are the real ones, taken from
+ * The six steps of a first pull request on this repo, shown as cards on
+ * /projects (Waskar, 10/17/2026; moved from /join in the site audit, 10/18/2026). The steps and commands are the real ones, taken from
  * src/content/resources/first-pull-request.md, which is the longer guide. If
  * a command changes there, change it here too.
  */

@@ -8,9 +8,9 @@ import { links } from '../src/config';
  *   with none, one "between nights" card asks people to follow the calendar,
  *   and no RSVP shows anywhere (which test runs depends on the live calendar
  *   at build time; the other skips);
- * - the programs are the same four as Home and About, all white on yellow;
+ * - the programs (their one home on the site), all white on yellow;
  * - the first-time guide shows four points about the real night, and no
- *   timeline (the mockup has none on Events; About keeps it);
+ *   timeline (the mockup has none on Events; Home keeps it);
  * - every event recap gets a card that links to its recap page;
  * - every photo loads (no missing 800px copies);
  * - the page ends on its own closing copy.

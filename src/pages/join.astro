@@ -4,7 +4,7 @@ import Button from '../components/Button.astro';
 import ClosingFlock from '../components/ClosingFlock.astro';
 import { links } from '../config';
 import { getCommunityData } from '../lib/community';
-import { firstPrSteps } from '../data/first-pr';
+import { getHandbookValues } from '../lib/handbook';
 
 /**
  * Join, Edition 1.2 (DESIGN.md, "The 1.2 redesign"). Sections follow Diego's
@@ -16,49 +16,39 @@ import { firstPrSteps } from '../data/first-pr';
  *   Neighbor (given on joining), Builder (came through a workshop) and Voice
  *   (led a session), from community/discord/channel-map.md. Crew is the admin
  *   role and Connector has no definition, so neither is shown.
- * - The first PR walkthrough is the mockup's grid of six cards, with the real
- *   steps and commands (src/data/first-pr.ts). It replaces the interactive
- *   stepper.
- * - The values are three code-of-conduct lines, each backed by
- *   CODE_OF_CONDUCT.md. "Collaboration over competition" has no source.
  * - The Slack fallback stays, worded as what it is: a real backup for people
  *   who cannot reach Discord, but quieter (Waskar, 10/17/2026).
  * - "Come to a Lab" follows the empty-state rule: an RSVP only for a real
  *   event, "Get notified" otherwise.
+ *
+ * Site audit, 10/18/2026:
+ * - Join is about two things: the Discord and coming to a night. Home says
+ *   "You don't need to know how to code", and Join used to lead with a
+ *   six-step git tutorial. The walkthrough now lives on /projects#first-pr;
+ *   public/js/first-pr-moved.js sends old /join#first-pr links there.
+ * - The Discord count says it is the Discord count. The 493 on Home is the
+ *   Luma calendar, a different number, and a visitor saw it "shrink".
+ * - The values are the handbook's, the same list as About. The page keeps
+ *   no list of its own.
  */
 
 const { discord, nextEvent } = await getCommunityData();
+const values = await getHandbookValues();
 
 const roles = [
   { name: 'Neighbor', line: 'You get it the moment you join.' },
   { name: 'Builder', line: 'You came through a workshop.' },
   { name: 'Voice', line: 'You led a session for the flock.' },
 ];
-
-const values = [
-  'Respect, every time',
-  'Center marginalized voices',
-  'Zero tolerance for harassment',
-];
-
-// Step number colors rotate through the accents, as in the mockup.
-const dots = [
-  'bg-brand-yellow',
-  'bg-brand-amber',
-  'bg-brand-pink',
-  'bg-brand-coral',
-  'bg-brand-yellow',
-];
-
-const goodFirstIssues = `${links.github.website}/issues?q=${encodeURIComponent(
-  'is:issue is:open label:"good first issue"',
-)}`;
 ---
 
 <BaseLayout
   title="Join — Find your people at PhilaCon Valley"
-  description="You already belong here. Join the flock on Discord, open your first pull request on our repo, or come to a free Lab in Philadelphia."
+  description="You already belong here. Join the flock on Discord, or come to a free Lab in Philadelphia. No experience needed."
 >
+  {/* Parser-blocking on purpose: an old /join#first-pr link jumps to the
+      walkthrough's new home before this page paints. */}
+  <script is:inline src="/js/first-pr-moved.js"></script>
   <!-- Hero: Golden Yellow, with the real Discord server and its live count. -->
   <section class="bg-brand-yellow">
     <div class="container-custom py-[clamp(56px,8vw,112px)] flex flex-wrap gap-12 items-center justify-between">
@@ -75,8 +65,8 @@ const goodFirstIssues = `${links.github.website}/issues?q=${encodeURIComponent(
           <Button href={links.discord} external variant="primary" size="lg">
             Join the Discord
           </Button>
-          <Button href="#first-pr" variant="light" size="lg">
-            Make your first PR
+          <Button href="#come-to-a-night" variant="light" size="lg">
+            Come to a night
           </Button>
         </div>
         <p class="m-0 max-w-[520px] text-[15px] leading-[1.5]" data-testid="slack-fallback">
@@ -104,7 +94,7 @@ const goodFirstIssues = `${links.github.website}/issues?q=${encodeURIComponent(
           class="pill bg-white normal-case tracking-normal text-sm"
           data-testid="discord-count"
         >
-          {discord.name} · {discord.memberCount} members · {discord.onlineCount} online now
+          {discord.name} Discord · {discord.memberCount} members · {discord.onlineCount} online now
         </figcaption>
       </figure>
     </div>
@@ -120,7 +110,9 @@ const goodFirstIssues = `${links.github.website}/issues?q=${encodeURIComponent(
       <div class="flex flex-wrap justify-between items-end gap-8">
         <div class="flex flex-col gap-[22px] max-w-[760px]">
           <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">The flock</p>
-          <h2 class="m-0 [text-wrap:balance]">Start as a Neighbor. Grow from there.</h2>
+          <h2 class="m-0 heading-quiet [text-wrap:balance]">
+            Start as a Neighbor. Grow from there.
+          </h2>
         </div>
         <p class="m-0 max-w-[380px] text-[17px] leading-[1.55]">
           Roles on our Discord mark what you've done with the flock, so people know who to ask.
@@ -163,100 +155,18 @@ const goodFirstIssues = `${links.github.website}/issues?q=${encodeURIComponent(
     </div>
   </section>
   <script is:inline defer src="/js/night.js"></script>
-  <!-- Your first pull request: six real steps on this site's own repo. The id
-       is the target of "Make your first PR" here and on /projects. -->
-  <section id="first-pr" class="bg-white border-t-2 border-brand-dark">
-    <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-12">
-      <div class="flex flex-wrap justify-between items-end gap-8">
-        <div class="flex flex-col gap-[22px] max-w-[760px]">
-          <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">
-            Your first pull request
-          </p>
-          <h2 class="m-0 [text-wrap:balance]">Six steps. Practice on our repo.</h2>
-        </div>
-        <p class="m-0 max-w-[380px] text-[17px] leading-[1.55]">
-          Try it here first, on the website you're looking at, before you do it anywhere else.
-        </p>
-      </div>
-      <ol
-        class="m-0 p-0 list-none grid gap-6 grid-cols-[repeat(auto-fill,minmax(min(300px,100%),1fr))]"
-        data-testid="first-pr-steps"
-      >
-        {firstPrSteps.map((step, i) => {
-          const last = i === firstPrSteps.length - 1;
-          return (
-            <li
-              class:list={[
-                'rounded-[24px] border-2 border-brand-dark p-6 flex flex-col gap-3',
-                last
-                  ? 'bg-brand-dark text-white shadow-[6px_6px_0_theme(colors.brand.pink)]'
-                  : 'bg-white shadow-[6px_6px_0_theme(colors.brand.dark)]',
-              ]}
-            >
-              <div class="flex items-center gap-3">
-                <span
-                  class:list={[
-                    'flex-none inline-flex items-center justify-center size-8 rounded-full border-2 border-brand-dark font-black text-sm text-brand-dark',
-                    last ? 'bg-brand-yellow' : dots[i % dots.length],
-                  ]}
-                  aria-hidden="true"
-                >
-                  {i + 1}
-                </span>
-                <h3 class:list={['m-0 text-[28px] leading-tight', last && 'text-brand-yellow']}>
-                  {step.title}
-                </h3>
-              </div>
-              <p class="m-0 text-[16px] leading-[1.55]">{step.lead}</p>
-              {step.code && <pre class="m-0 mt-auto rounded-[12px] bg-brand-dark text-brand-yellow p-4 font-mono text-[13px] leading-[1.6] whitespace-pre-wrap [overflow-wrap:anywhere]"><code>{step.code}</code></pre>}
-              {step.note && <p class="m-0 text-[14px] leading-[1.5] font-semibold">{step.note}</p>}
-              {last && (
-                <p class="m-0 mt-auto font-display font-extrabold text-xl uppercase">
-                  That's it. You're a contributor.
-                </p>
-              )}
-            </li>
-          );
-        })}
-      </ol>
-      <div class="rounded-[18px] border-2 border-brand-dark bg-brand-yellow px-6 py-3 flex flex-wrap items-center gap-x-8 gap-y-1">
-        <p class="m-0 font-black text-[17px]">Stuck? That's normal.</p>
-        <a
-          href={goodFirstIssues}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center min-h-11 font-black text-[17px] text-brand-dark underline underline-offset-[5px] decoration-2"
-        >
-          Find a good first issue
-        </a>
-        <a
-          href="/resources/first-pull-request"
-          class="inline-flex items-center min-h-11 font-black text-[17px] text-brand-dark underline underline-offset-[5px] decoration-2"
-        >
-          Read the longer guide
-        </a>
-        <a
-          href={links.discord}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center min-h-11 font-black text-[17px] text-brand-dark underline underline-offset-[5px] decoration-2"
-        >
-          Ask on Discord
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Two other ways in, and how we treat each other: ink, as in the mockup. -->
-  <section class="bg-brand-dark text-white border-t-2 border-brand-dark">
+  <!-- Come to a night, and how we treat each other: ink, as in the mockup.
+       This is Join's loudest moment (site audit, 10/18/2026): the promise
+       that no one needs to code. The hero's "Come to a night" lands here. -->
+  <section id="come-to-a-night" class="bg-brand-dark text-white border-t-2 border-brand-dark">
     <div class="container-custom py-[clamp(72px,9vw,120px)] flex flex-col gap-12">
       <div class="flex flex-col gap-[22px] max-w-[760px]">
-        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">Two other ways in</p>
+        <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">Come to a night</p>
         <h2 class="m-0 text-white [text-wrap:balance]">
           Not ready to code? <span class="text-brand-yellow">Still come.</span>
         </h2>
       </div>
-      <ul class="m-0 p-0 list-none grid gap-6 grid-cols-1 md:grid-cols-2">
+      <ul class="m-0 p-0 list-none grid gap-6 grid-cols-1 md:grid-cols-3">
         <li class="rounded-[20px] border-2 border-brand-dark bg-white text-brand-dark p-7 flex flex-col gap-3">
           <h3 class="m-0 text-[clamp(30px,2.8vw,40px)] leading-none">Come to a Lab</h3>
           <p class="m-0 text-[16px] leading-[1.55]">
@@ -287,6 +197,20 @@ const goodFirstIssues = `${links.github.website}/issues?q=${encodeURIComponent(
             </a>
           )}
         </li>
+        <!-- Code is one way in, never the first one (site audit, 10/18/2026). -->
+        <li class="rounded-[20px] border-2 border-brand-dark bg-white text-brand-dark p-7 flex flex-col gap-3">
+          <h3 class="m-0 text-[clamp(30px,2.8vw,40px)] leading-none">Build on a project</h3>
+          <p class="m-0 text-[16px] leading-[1.55]">
+            When you want to, pick an open-source project and make your first contribution. Six
+            steps, on our own repo.
+          </p>
+          <a
+            href="/projects#first-pr"
+            class="self-start inline-flex items-center min-h-11 font-black text-[15px] text-brand-dark underline underline-offset-[5px] decoration-2"
+          >
+            Make your first PR
+          </a>
+        </li>
         <li class="rounded-[20px] border-2 border-brand-dark bg-brand-pink text-brand-dark p-7 flex flex-col gap-3">
           <h3 class="m-0 text-[clamp(30px,2.8vw,40px)] leading-none">Keep it free</h3>
           <p class="m-0 text-[16px] leading-[1.55]">
@@ -306,9 +230,10 @@ const goodFirstIssues = `${links.github.website}/issues?q=${encodeURIComponent(
             Our values
           </p>
           <h3 class="m-0 text-[clamp(26px,2.4vw,34px)] leading-none text-white">
-            How we treat each other.
+            What we hold to.
           </h3>
         </div>
+        {/* The Community Handbook's values, the same list About shows. */}
         <ul
           class="grow shrink basis-[420px] m-0 p-0 list-none flex flex-wrap gap-3"
           data-testid="join-values"
@@ -317,30 +242,38 @@ const goodFirstIssues = `${links.github.website}/issues?q=${encodeURIComponent(
             <li
               class:list={[
                 'rounded-[12px] border-2 px-4 py-2.5 font-extrabold text-[17px]',
-                i === values.length - 1
-                  ? 'border-brand-yellow text-brand-yellow'
-                  : 'border-white text-white',
+                i === 0 ? 'border-brand-yellow text-brand-yellow' : 'border-white text-white',
               ]}
             >
-              {value}
+              {value.name}
             </li>
           ))}
         </ul>
-        <a
-          href={`${links.github.website}/blob/main/CODE_OF_CONDUCT.md`}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center min-h-11 font-black text-[15px] text-white underline underline-offset-[5px] decoration-2"
-        >
-          Read the code of conduct
-        </a>
+        <div class="flex flex-wrap gap-x-8">
+          <a
+            href={links.handbook.values}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center min-h-11 font-black text-[15px] text-white underline underline-offset-[5px] decoration-2"
+          >
+            Read our values
+          </a>
+          <a
+            href={`${links.github.website}/blob/main/CODE_OF_CONDUCT.md`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center min-h-11 font-black text-[15px] text-white underline underline-offset-[5px] decoration-2"
+          >
+            Read the code of conduct
+          </a>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- The Join closing, in the mockup's copy. -->
+  <!-- The Join closing. The motto is Home's alone (site audit, 10/18/2026). -->
   <ClosingFlock
-    lede="A pigeon flies alone. A flock goes much further."
+    lede="Say hi on Discord tonight, or come to the next night. Either one counts."
     primary={{ href: '/events', label: 'Come to a Lab' }}
     secondary={{ href: '/contact', label: 'Get in touch' }}
   >

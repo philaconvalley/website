@@ -1,0 +1,17 @@
+# Copy this file to preview-<name>.yaml to start a partner. .gitignore keeps
+# preview-* files off GitHub, because this repo is public and a partner should
+# not appear here before they agree. Once they say yes in writing:
+#   1. Rename the file to <name>.yaml (drop "preview-").
+#   2. Set status to approved and fill in approval.
+#   3. Add the logo file they sent to public/images/partners/.
+# An approved partner without a logo or approval fails the build.
+# Quote a name that contains a colon, like "Coded by:".
+name: Example Organization
+role: Venue partner
+url: https://example.org
+logo: /images/partners/example.svg
+order: 10
+status: draft
+# approval:
+#   date: 2026-10-20
+#   source: Email from the partner

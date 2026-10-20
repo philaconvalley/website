@@ -322,6 +322,16 @@
     @apply inline-flex items-center rounded-full border-2 border-brand-dark bg-white px-3 py-0.5
            font-display text-xs font-extrabold uppercase tracking-[0.14em] text-brand-dark;
   }
+
+  /* A section heading one step down from full h2 volume (site audit,
+     10/18/2026). Each page keeps one h2 at full size, the moment that must land
+     hardest; every other section h2 takes this class, so the loud one stands
+     out. 30px on a phone, 56px on a wide screen. */
+  .heading-quiet {
+    font-size: clamp(1.875rem, 1.35rem + 2.2vw, 3.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+  }
 }
 
 @layer utilities {
@@ -535,9 +545,10 @@
 }
 
 /*
- * The night timeline on About, also used by the four "First time?" points on
- * Events and the role ladder on Join (public/js/night-arm.js, then night.js).
- * Events and Join have no segments.
+ * The night system: the four "First time?" points on Events and the role
+ * ladder on Join (public/js/night-arm.js, then night.js). It began as the
+ * night timeline on About, which left About in the site audit (10/18/2026).
+ * No strip draws segments today; the segment rules stay for the next one.
  * Purpose: explanation. A segment draws from each step's dot to the next, like
  * time passing; each dot pops in as the line reaches it and its text rises.
  *

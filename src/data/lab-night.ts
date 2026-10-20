@@ -1,6 +1,6 @@
 /**
- * How a night goes: the five steps of a Lab or PATCH night, shared by Home and
- * About (Waskar, 10/16/2026). Checked against every past Luma event that
+ * How a night goes: the five steps of a Lab or PATCH night, shown on Home
+ * (Waskar, 10/16/2026; About dropped its copy in the site audit, 10/18/2026). Checked against every past Luma event that
  * day: doors are at 6:00 on every page, and PATCH 001's timed agenda matches
  * these steps. A PATCH is a Lab that mixes several disciplines (code, design,
  * music, visual art), so both run the same night.

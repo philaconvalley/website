@@ -7,7 +7,9 @@ import { getCommunityData, formatEventDate } from '../lib/community';
 import { community, links } from '../config';
 import { getCollection } from 'astro:content';
 import { labNight } from '../data/lab-night';
-import ProgramCards from '../components/ProgramCards.astro';
+import PhotoGrid from '../components/PhotoGrid.astro';
+import { getRoomPhotos } from '../lib/events';
+import { getHireLink } from '../lib/showcase';
 
 const { nextEvent, nightsHeld, thingsShipped } = await getCommunityData();
 
@@ -22,6 +24,16 @@ const { nextEvent, nightsHeld, thingsShipped } = await getCommunityData();
  *
  * Every claim is confirmed (DESIGN.md, evidence contract). The hero photo is a
  * real PATCH 003 photo; the next-event section renders only for a real event.
+ *
+ * Site audit, 10/18/2026:
+ * - The program cards left Home for Events, their one home. In their place,
+ *   "From the room" shows four real photos from more than one night, with a
+ *   line and a link to the kinds of nights. The room is the proof.
+ * - The member count says what it counts: people on the Luma calendar. Join
+ *   shows the Discord count, a different number.
+ * - "Nobody handed us a way in" is the page's loudest section heading. Every
+ *   other section heading is one step quieter (global.css, .heading-quiet).
+ *   The motto closes Home and no other page.
  */
 const tagline =
   'A free tech community in Philadelphia. Every month we meet in person to build real projects together, and no one needs to feel ready first.';
@@ -64,6 +76,9 @@ const nightCards = labNight.map((step, i, all) => {
 
 // The mockup's "Four ways in", its copy and links exactly (Waskar, 10/15/2026).
 // Each whole card is one link to a page on this site.
+// /studio once it has proof, /contact until then (src/lib/showcase.ts).
+const hire = await getHireLink();
+
 const waysIn = [
   {
     title: 'Come to a night.',
@@ -92,14 +107,18 @@ const waysIn = [
     // (Waskar, 10/17/2026).
     title: 'Hire us. Fund the flock.',
     body: 'We design and build sites, apps and software for Philly nonprofits and community orgs. Your project pays for the free nights.',
-    cta: 'Start a project',
-    href: '/contact',
+    cta: hire.label,
+    href: hire.href,
     fill: 'bg-brand-coral',
   },
 ];
 
+// Room photos for "From the room" (src/lib/events.ts).
+const roomPhotos = await getRoomPhotos(4);
+
 const stats = [
-  { value: community.memberCount, label: 'people.', note: 'Not users.' },
+  // The Luma calendar total, labeled so it never reads as the Discord count.
+  { value: community.memberCount, label: 'people on our calendar.', note: 'Not users.' },
   {
     value: nightsHeld,
     label: nightsHeld === 1 ? 'night held.' : 'nights held.',
@@ -273,35 +292,47 @@ const stats = [
     </div>
   </section>
 
-  <!-- What happens here: matches the mockup exactly (Waskar, 10/15/2026). -->
-  <section class="bg-white border-t-2 border-brand-dark">
-    <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
-      <div class="flex flex-wrap justify-between items-end gap-6">
-        <div class="grow basis-[600px] min-w-0 flex flex-col gap-[22px] max-w-[760px]">
-          <p class="m-0 self-start pill bg-brand-pink font-black text-[13px] tracking-[0.2em] uppercase">
-            What happens here
-          </p>
-          <h2 class="m-0">Different nights. Same open door.</h2>
+  <!-- From the room: real photos from more than one night, and the one line
+       that names the kinds of nights (site audit, 10/18/2026). The program
+       cards live on Events. -->
+  {roomPhotos.length > 0 && (
+    <section class="bg-white border-t-2 border-brand-dark" data-testid="from-the-room">
+      <div class="container-custom py-[clamp(64px,8vw,112px)] flex flex-col gap-12">
+        <div class="flex flex-wrap justify-between items-end gap-6">
+          <div class="grow basis-[600px] min-w-0 flex flex-col gap-[22px] max-w-[760px]">
+            <p class="m-0 self-start pill bg-brand-pink font-black text-[13px] tracking-[0.2em] uppercase">
+              From the room
+            </p>
+            <h2 class="m-0 heading-quiet">This is what a night looks like.</h2>
+          </div>
+          <div class="max-w-[380px] flex flex-col gap-3">
+            <p class="m-0 text-lg leading-[1.55] text-brand-dark/85">
+              <strong class="text-brand-dark">PATCH and Lab nights, every one free.</strong> Design,
+              code and creative tech in the same room.
+            </p>
+            <a
+              href="/events"
+              class="self-start inline-flex items-center min-h-11 font-black text-[17px] text-brand-dark underline underline-offset-[6px] decoration-[3px]"
+            >
+              See the kinds of nights
+            </a>
+          </div>
         </div>
-        <p class="m-0 max-w-[380px] text-lg leading-[1.55] text-brand-dark/85">
-          <strong class="text-brand-dark">Every program is free of charge.</strong> Labs, workshops
-          and community projects, with nothing to apply for.
-        </p>
+        <PhotoGrid photos={roomPhotos} />
       </div>
-      <ProgramCards />
-    </div>
-  </section>
+    </section>
+  )}
 
   <!-- How a Lab night works: the mockup's timeline, placed after the programs
        so visitors first see that PhilaCon runs several kinds of nights. On its
-       own it read as a one-night event (Diego, 10/15/2026). Static cards; the
-       animated night timeline lives on Events and About. -->
+       own it read as a one-night event (Diego, 10/15/2026). Static cards.
+       This is the site's one night timeline (site audit, 10/18/2026). -->
   <section class="bg-brand-dark text-white border-t-2 border-brand-dark">
     <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
       <div class="flex flex-wrap justify-between items-end gap-6">
         <div class="grow basis-[600px] min-w-0 flex flex-col gap-[22px] max-w-[820px]">
           <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">How a Lab night works</p>
-          <h2 class="m-0">
+          <h2 class="m-0 heading-quiet">
             One night. Three hours.{' '}
             <span class="text-brand-yellow">Something exists that didn't.</span>
           </h2>
@@ -346,7 +377,7 @@ const stats = [
       <div class="flex flex-wrap justify-between items-end gap-6">
         <div class="grow basis-[600px] min-w-0 flex flex-col gap-[22px] max-w-[820px]">
           <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">How to take part</p>
-          <h2 class="m-0">Four ways in. Pick one tonight.</h2>
+          <h2 class="m-0 heading-quiet">Four ways in. Pick one tonight.</h2>
         </div>
         <p class="m-0 max-w-[380px] text-lg leading-[1.55]">
           You don't have to do all of them. Most people start by showing up once and figure out the

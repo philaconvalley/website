@@ -1,5 +1,6 @@
 ---
 import { site, links } from '../config';
+import { isStudioLive } from '../lib/showcase';
 
 const currentYear = new Date().getFullYear();
 
@@ -26,6 +27,8 @@ const columns = [
       { name: 'Projects', href: '/projects' },
       { name: 'Arcade', href: '/arcade' },
       { name: 'Resources', href: '/resources' },
+      // Shown only once /studio has approved client proof (src/lib/showcase.ts).
+      ...((await isStudioLive()) ? [{ name: 'Studio', href: '/studio' }] : []),
       // Blog is hidden until an editorial procedure exists — see src/pages/_blog/.
     ],
   },

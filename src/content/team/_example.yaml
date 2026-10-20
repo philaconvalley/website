@@ -1,0 +1,12 @@
+# Copy this file to <first-last>.yaml to add a team member. Files that start
+# with "_" are ignored. A draft shows only in `npm run dev`; set status to
+# published once the person has approved their photo and bio. A published
+# member must have photo, photoAlt, and bio, or the build fails.
+name: First Last
+title: Role at PhilaCon Valley
+bio: Two or three sentences in the person's own voice.
+# Put a 560x700 (4:5) WebP in public/images/team/.
+photo: /images/team/first-last-560.webp
+photoAlt: First Last, smiling, in a denim jacket
+order: 10
+status: draft

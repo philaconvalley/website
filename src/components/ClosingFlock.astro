@@ -22,6 +22,11 @@ import { getCommunityData } from '../lib/community';
  *
  * Page PRs place it as the last element inside <main>, and drop the page's own
  * closing call to action so the page does not ask twice.
+ *
+ * The motto ("A pigeon flies alone. A flock goes much further.") is Home's
+ * closing only (site audit, 10/18/2026). It closed seven places on six pages,
+ * and a line read on every page stops being heard. A page that passes its own
+ * headline also passes its own lede, and neither repeats the motto.
  */
 interface Action {
   href: string;
@@ -81,7 +86,15 @@ const { nextEvent } = await getCommunityData();
        against the section width, the same width the image scales to. -->
   <div class="relative container-custom pt-[clamp(72px,9vw,128px)] pb-[calc(clamp(280px,36vw,520px)-14.2%+48px)] flex flex-wrap items-center gap-[clamp(32px,5vw,72px)]">
     <div class="grow shrink basis-[560px] min-w-0 flex flex-col gap-7">
-      <h2 class="m-0 text-[clamp(48px,7vw,104px)] leading-[0.9] tracking-[-0.02em]">
+      {/* Only Home's motto closes at full volume (site audit, 10/18/2026).
+          A page's own closing line is one step down, so the motto stays
+          Home's alone and each page's loudest moment sits above it. */}
+      <h2
+        class:list={[
+          'm-0 leading-[0.9] tracking-[-0.02em]',
+          hasTitle ? 'text-[clamp(40px,5vw,72px)]' : 'text-[clamp(48px,7vw,104px)]',
+        ]}
+      >
         {hasTitle ? (
           <slot />
         ) : (

@@ -105,7 +105,21 @@ test('Home downloads exactly one hero photo', async ({ page }) => {
     if (request.url().includes('/images/gallery/')) gallery.push(request.url());
   });
   await page.goto('/', { waitUntil: 'networkidle' });
-  expect(gallery, gallery.join('\n')).toHaveLength(1);
+  // The hero loads one photo, once: no second photo after a swap. The room
+  // strip below it loads its own photos (site audit, 10/18/2026), and only
+  // those may join it.
+  const hero = await page
+    .locator('[data-hero-img]')
+    .evaluate((img: HTMLImageElement) => img.currentSrc);
+  const room = await page
+    .getByTestId('from-the-room')
+    .locator('img')
+    .evaluateAll((imgs) => imgs.map((img) => (img as HTMLImageElement).currentSrc).filter(Boolean));
+  expect(gallery.filter((url) => url === hero)).toHaveLength(1);
+  expect(
+    gallery.filter((url) => url !== hero && !room.includes(url)),
+    gallery.join('\n'),
+  ).toEqual([]);
 });
 
 test('the hero stat line shows the same live numbers as the band, and no wrapped line starts with a slash', async ({
@@ -212,20 +226,27 @@ test('a number rolls again after it scrolls fully out of view and back', async (
   await expect(counter).toHaveText((await counter.getAttribute('data-count'))!);
 });
 
-test('Home shows the four programs, and Stoop as a line under them', async ({ page }) => {
+test('Home shows photos from the room, each with its own caption, and no program cards', async ({
+  page,
+}) => {
   await page.goto('/');
-  const section = page.locator('section', {
-    has: page.getByRole('heading', { name: 'Different nights. Same open door.' }),
-  });
-  const names = section.getByRole('heading', { level: 3 });
-  await expect(names).toHaveText(['PATCH', 'Lab', 'Community projects', 'Career Support']);
-  // Running programs are whole-card links. Career Support is coming soon: a
-  // card with a "Coming soon" tag and no link.
-  await expect(section.getByRole('listitem').getByRole('link')).toHaveCount(3);
-  const career = section.getByRole('listitem').filter({ hasText: 'Career Support' });
-  await expect(career).toContainText('Coming soon');
-  await expect(career.getByRole('link')).toHaveCount(0);
-  await expect(page.getByTestId('stoop-line')).toContainText('Stoop');
+  const room = page.getByTestId('from-the-room');
+  const captions = room.locator('figcaption');
+  await expect(captions).toHaveCount(4);
+  const texts = (await captions.allTextContents()).map((t) => t.trim());
+  expect(texts.every((t) => t.length > 0)).toBe(true);
+  expect(new Set(texts).size).toBe(texts.length);
+  await expect(room.getByRole('link', { name: 'See the kinds of nights' })).toHaveAttribute(
+    'href',
+    '/events',
+  );
+  // The program cards live on Events only (site audit, 10/18/2026).
+  await expect(page.getByTestId('stoop-line')).toHaveCount(0);
+});
+
+test('the member count says it is the calendar count', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByTestId('hero-stats')).toContainText('people on our calendar');
 });
 
 test('a first visit paints the headline in its real font, with no reflow', async ({ page }) => {

@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Button from '../../components/Button.astro';
 import ClosingFlock from '../../components/ClosingFlock.astro';
+import FirstPrSteps from '../../components/FirstPrSteps.astro';
 import { getProjects } from '../../lib/projects';
 import { links } from '../../config';
 
@@ -90,7 +91,7 @@ const allIssuesUrl = `https://github.com/search?type=issues&q=${encodeURICompone
         <Button href={links.github.org} external variant="primary" size="lg">
           View on GitHub
         </Button>
-        <Button href="/join#first-pr" variant="light" size="lg">
+        <Button href="#first-pr" variant="light" size="lg">
           Make your first PR
         </Button>
       </div>
@@ -182,13 +183,13 @@ const allIssuesUrl = `https://github.com/search?type=issues&q=${encodeURICompone
     </div>
   </section>
 
-  <!-- New to open source: ink, as in the mockup. The six-step walkthrough lives
-       on /join. -->
+  <!-- New to open source: ink, as in the mockup. The six-step walkthrough sits
+       right below it (site audit, 10/18/2026: it moved here from /join). -->
   <section class="bg-brand-dark text-white border-t-2 border-brand-dark">
     <div class="container-custom py-[clamp(72px,9vw,120px)] flex flex-wrap gap-10 items-center justify-between">
       <div class="grow shrink basis-[560px] min-w-0 flex flex-col gap-6">
         <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">New to open source?</p>
-        <h2 class="m-0 text-white">
+        <h2 class="m-0 heading-quiet text-white">
           Look for the <span class="text-brand-yellow">good first issue</span> label.
         </h2>
         <p class="m-0 max-w-[560px] text-[clamp(17px,1.4vw,19px)] leading-[1.55]">
@@ -197,7 +198,7 @@ const allIssuesUrl = `https://github.com/search?type=issues&q=${encodeURICompone
         </p>
       </div>
       <div class="flex flex-wrap gap-3.5">
-        <Button href="/join#first-pr" variant="secondary" size="lg">
+        <Button href="#first-pr" variant="secondary" size="lg">
           Follow the walkthrough
         </Button>
         <Button href={allIssuesUrl} external variant="outline-light" size="lg">
@@ -206,6 +207,8 @@ const allIssuesUrl = `https://github.com/search?type=issues&q=${encodeURICompone
       </div>
     </div>
   </section>
+
+  <FirstPrSteps />
 
   <!-- The Projects closing, in the mockup's copy. -->
   <ClosingFlock

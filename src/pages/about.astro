@@ -2,10 +2,11 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Button from '../components/Button.astro';
 import ClosingFlock from '../components/ClosingFlock.astro';
-import ProgramCards from '../components/ProgramCards.astro';
 import { community, links } from '../config';
 import { getHandbookValues } from '../lib/handbook';
-import NightTimeline from '../components/NightTimeline.astro';
+import TeamGrid from '../components/TeamGrid.astro';
+import PartnerStrip from '../components/PartnerStrip.astro';
+import { getHireLink, getShowcase } from '../lib/showcase';
 
 /**
  * About, Edition 1.2 (DESIGN.md, "The 1.2 redesign"). Mode: Read. Sections
@@ -13,11 +14,16 @@ import NightTimeline from '../components/NightTimeline.astro';
  * - The story stays in Waskar's own words, first person, set in the mockup's
  *   layout. The mockup's third-person version is not used.
  * - The founder photo is Waskar's real headshot, sent 10/16/2026.
- * - The programs are the same four as Home (src/data/programs.ts), with Stoop
- *   as a line under them.
- * - "Join 493 of us" reads the same hand-kept member count as Home
- *   (src/config.ts), so the two pages always show one number.
  * - The closing section is the shared ClosingFlock, as on every page.
+ *
+ * Site audit, 10/18/2026:
+ * - About's one job is why PhilaCon exists and how it stays free. The program
+ *   cards live on Events, and the night timeline on Home; About repeated
+ *   both word for word.
+ * - The member count says what it counts: people on the Luma calendar. "Join
+ *   493 of us" led to Join's Discord count (78), and the number "shrank".
+ * - The story's headline is the page's loudest moment. Every other section
+ *   heading is one step quieter (global.css, .heading-quiet).
  *
  * - The values come from the Community Handbook at build time
  *   (src/lib/handbook.ts), so About follows the handbook on every deploy.
@@ -46,6 +52,13 @@ const countWords = [
   'Ten',
 ];
 const valueCount = countWords[values.length] ?? String(values.length);
+
+// The team and partners (Diego's site feedback, 10/17/2026). Each section
+// renders only when it has someone in it, so the page never shows an empty
+// grid while headshots and partner approvals are still coming in.
+const team = await getShowcase('team');
+const partners = await getShowcase('partners');
+const hire = await getHireLink();
 ---
 
 <BaseLayout
@@ -125,13 +138,28 @@ const valueCount = countWords[values.length] ?? String(values.length);
     </div>
   </section>
 
+  {/* The crew (the team's own name, Waskar, 10/18/2026): the people who
+      run PhilaCon with Waskar. The founder is already above, so this lists
+      everyone else. */}
+  {team.length > 0 && (
+    <section id="crew" class="bg-white border-t-2 border-brand-dark">
+      <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
+        <div class="flex flex-col gap-[22px] max-w-[760px]">
+          <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">The crew</p>
+          <h2 class="m-0 heading-quiet">The people who make it run.</h2>
+        </div>
+        <TeamGrid members={team} />
+      </div>
+    </section>
+  )}
+
   <!-- What we hold to: every handbook value on ink, numbered (mockup layout).
        Name and first sentence only; the handbook holds the full text. -->
   <section class="bg-brand-dark text-white border-t-2 border-brand-dark">
     <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
       <div class="flex flex-col gap-[22px] max-w-[820px]">
         <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">What we hold to</p>
-        <h2 class="m-0">
+        <h2 class="m-0 heading-quiet">
           {valueCount} things we <span class="text-brand-yellow">don't bend on.</span>
         </h2>
       </div>
@@ -179,26 +207,6 @@ const valueCount = countWords[values.length] ?? String(values.length);
     </div>
   </section>
 
-  <!-- What we run: the same four programs as Home (src/data/programs.ts). -->
-  <section class="bg-white border-t-2 border-brand-dark">
-    <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
-      <div class="flex flex-wrap justify-between items-end gap-6">
-        <div class="flex flex-col gap-[22px] max-w-[760px]">
-          <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">What we run</p>
-          <h2 class="m-0">Four programs. Zero cost.</h2>
-        </div>
-        <Button href="/events" variant="light">
-          See the calendar
-        </Button>
-      </div>
-      <ProgramCards details={false} />
-      <!-- How a night goes: the same five steps as Home. It answers "what
-           happens if I come?" (Waskar, 10/16/2026). No link: the calendar
-           button sits above. -->
-      <NightTimeline />
-    </div>
-  </section>
-
   <!-- How we keep it free: the two sides of the model (mockup). The agency
        funding the programs is a confirmed claim (DESIGN.md). -->
   <section class="bg-brand-yellow border-t-2 border-brand-dark">
@@ -207,7 +215,7 @@ const valueCount = countWords[values.length] ?? String(values.length);
         <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">How we keep it free</p>
         <!-- Says the model plainly (Waskar, 10/16/2026). The mockup line "Two
              sides. One flock." left a visitor asking "two sides of what?" -->
-        <h2 class="m-0">
+        <h2 class="m-0 heading-quiet">
           <span class="block">Free for you.</span>{' '}
           <span class="block [text-wrap:balance]">Paid for by our work.</span>
         </h2>
@@ -220,26 +228,35 @@ const valueCount = countWords[values.length] ?? String(values.length);
             Labs, workshops and community projects, with no application, no fee and no prerequisite.
           </p>
           <!-- Book p14: Hot Pink is the main button (the mockup used ink). -->
-          <div class="mt-auto">
-            <Button href="/join" variant="primary" size="lg" data-testid="join-count">
-              Join {community.memberCount} of us
-            </Button>
+          <div class="mt-auto flex flex-col gap-3">
+            <div>
+              <Button href="/join" variant="primary" size="lg">
+                Join the flock
+              </Button>
+            </div>
+            {/* The count is labeled as what it is, the same words as Home's
+                numbers (site audit, 10/18/2026). */}
+            <p class="m-0 font-bold text-[15px]" data-testid="member-count">
+              {community.memberCount} people on our Luma calendar so far.
+            </p>
           </div>
         </div>
         <div class="bg-brand-coral rounded-[28px] border-2 border-brand-dark shadow-[8px_8px_0_#1a1a1a] p-[clamp(28px,4vw,48px)] flex flex-col gap-[22px]">
           <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">
             For Philly organizations
           </p>
-          <h3 class="m-0 text-[clamp(36px,4vw,56px)] leading-[0.95]">
-            Paid work that pays for it.
-          </h3>
+          {/* The same promise as Support and Home, said one way everywhere
+              (Waskar, 10/17/2026). "Paid work that pays for it." read as a
+              riddle and stayed here after Support dropped it (Jobs review,
+              10/18/2026). */}
+          <h3 class="m-0 text-[clamp(36px,4vw,56px)] leading-[0.95]">Hire us. Fund the flock.</h3>
           <p class="m-0 text-lg leading-[1.55]">
-            Design, apps and software for Philly nonprofits and community orgs. The fees fund the
-            free programs.
+            We design and build sites, apps and software for Philly nonprofits and community orgs.
+            Your project pays for the free nights.
           </p>
           <div class="mt-auto">
-            <Button href="/contact" variant="light" size="lg">
-              Start a project
+            <Button href={hire.href} variant="light" size="lg">
+              {hire.label}
             </Button>
           </div>
         </div>
@@ -247,9 +264,24 @@ const valueCount = countWords[values.length] ?? String(values.length);
     </div>
   </section>
 
-  <!-- The About closing, in the mockup's copy (Waskar, 10/16/2026). -->
+  {/* Partners: organizations that said yes to being shown here. Each one
+      needs a written approval on record (src/content.config.ts). */}
+  {partners.length > 0 && (
+    <section class="bg-white border-t-2 border-brand-dark">
+      <div class="container-custom py-[clamp(72px,9vw,128px)] flex flex-col gap-14">
+        <div class="flex flex-col gap-[22px] max-w-[760px]">
+          <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">Who we build with</p>
+          <h2 class="m-0 heading-quiet">Our partners.</h2>
+        </div>
+        <PartnerStrip partners={partners} />
+      </div>
+    </section>
+  )}
+
+  <!-- The About closing, in the mockup's headline (Waskar, 10/16/2026). The
+       motto is Home's alone (site audit, 10/18/2026). -->
   <ClosingFlock
-    lede="A pigeon flies alone. A flock goes much further."
+    lede="You don't need a bootcamp, a degree or a plan. Come to one night and meet the room."
     primary={{ href: '/join', label: 'Get involved' }}
     secondary={{ href: '/events', label: 'Attend an event' }}
   >

@@ -1,0 +1,67 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import DraftBadge from './DraftBadge.astro';
+import { isLive } from '../lib/showcase';
+
+/**
+ * Partner logos, each linked to the partner's site. Data lives in
+ * src/content/partners/. An approved partner must have a logo and a record of
+ * their yes (src/content.config.ts); a draft without a logo shows its name in
+ * a dashed box, and only in `astro dev`.
+ */
+interface Props {
+  partners: CollectionEntry<'partners'>[];
+}
+
+const { partners } = Astro.props;
+---
+
+<ul
+  class="m-0 p-0 list-none grid gap-6 grid-cols-[repeat(auto-fill,minmax(min(220px,100%),1fr))]"
+  data-testid="partners"
+>
+  {partners.map(({ data }) => {
+    const body = (
+      <>
+        <span class="h-24 flex items-center justify-center">
+          {data.logo ? (
+            <img
+              src={data.logo}
+              alt={data.name}
+              loading="lazy"
+              decoding="async"
+              class="max-h-24 max-w-full object-contain"
+            />
+          ) : (
+            <span class="font-display font-extrabold text-[24px] leading-[1.1] text-center">
+              {data.name}
+            </span>
+          )}
+        </span>
+        <span class="border-t-2 border-brand-dark pt-3 font-extrabold text-[13px] tracking-[0.16em] uppercase">
+          {data.role}
+        </span>
+      </>
+    );
+    const box = isLive({ data })
+      ? 'rounded-[24px] border-2 border-brand-dark bg-white p-6 flex flex-col gap-4 h-full'
+      : 'rounded-[24px] border-2 border-dashed border-brand-dark bg-white p-6 flex flex-col gap-4 h-full';
+    return (
+      <li class="flex flex-col gap-2">
+        {!isLive({ data }) && <DraftBadge />}
+        {data.url ? (
+          <a
+            href={data.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class={`${box} text-brand-dark no-underline shadow-retro-lg`}
+          >
+            {body}
+          </a>
+        ) : (
+          <div class={box}>{body}</div>
+        )}
+      </li>
+    );
+  })}
+</ul>

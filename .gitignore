@@ -174,3 +174,10 @@ docs/superpowers/
 
 # Lighthouse CI run output
 .lighthouseci/
+
+# Draft partners and case studies that name someone before they approve
+# (src/content.config.ts), and their screenshots. The repo is public; these
+# stay on your machine.
+src/content/partners/preview-*
+src/content/case-studies/preview-*
+public/images/studio/preview-*

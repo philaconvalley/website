@@ -10,7 +10,8 @@ import { links } from '../../config';
  * - Each card uses the guide file's own copy (src/content/resources), the same
  *   rule as the Arcade. A tag that repeats the level is not shown.
  * - A filter appears only when it has two or more choices. With one guide,
- *   neither shows; they appear on their own as guides are added. The old
+ *   neither shows, and neither does the count; they appear on their own as
+ *   guides are added. The old
  *   search box is gone, as in the mockup.
  * - "Contribute a resource" goes to the contribution guide on GitHub, and the
  *   "Your guide here" card says a guide is published after a review.
@@ -81,51 +82,52 @@ const guide = `${links.github.website}/blob/main/docs/adding-content.md#adding-a
           : undefined
       }
     >
-      <div class="flex flex-wrap items-end gap-4">
-        {showCategory && (
-          <label class="flex flex-col gap-2 font-black text-[13px] tracking-[0.2em] uppercase">
-            Category
-            <select
-              x-model="category"
-              @change="apply()"
-              class="min-h-11 min-w-[200px] px-4 rounded-[14px] border-2 border-brand-dark bg-white font-display font-bold text-sm normal-case tracking-normal text-brand-dark"
-            >
-              <option value="all">All categories</option>
-              {categories.map((c) => (
-                <option value={c}>{c}</option>
-              ))}
-            </select>
-          </label>
-        )}
-        {showLevel && (
-          <label class="flex flex-col gap-2 font-black text-[13px] tracking-[0.2em] uppercase">
-            Level
-            <select
-              x-model="level"
-              @change="apply()"
-              class="min-h-11 min-w-[200px] px-4 rounded-[14px] border-2 border-brand-dark bg-white font-display font-bold text-sm normal-case tracking-normal text-brand-dark"
-            >
-              <option value="all">All levels</option>
-              {levels.map((l) => (
-                <option value={l}>{l}</option>
-              ))}
-            </select>
-          </label>
-        )}
-        <p
-          class="m-0 min-h-11 inline-flex items-center font-black text-sm"
-          aria-live="polite"
-          data-testid="resource-count"
-        >
-          {filtered ? (
+      {/* The filters and their count show only with two or more choices. With
+          one guide, a lone "1 resource" made the page look empty (site audit,
+          10/18/2026). */}
+      {filtered && (
+        <div class="flex flex-wrap items-end gap-4">
+          {showCategory && (
+            <label class="flex flex-col gap-2 font-black text-[13px] tracking-[0.2em] uppercase">
+              Category
+              <select
+                x-model="category"
+                @change="apply()"
+                class="min-h-11 min-w-[200px] px-4 rounded-[14px] border-2 border-brand-dark bg-white font-display font-bold text-sm normal-case tracking-normal text-brand-dark"
+              >
+                <option value="all">All categories</option>
+                {categories.map((c) => (
+                  <option value={c}>{c}</option>
+                ))}
+              </select>
+            </label>
+          )}
+          {showLevel && (
+            <label class="flex flex-col gap-2 font-black text-[13px] tracking-[0.2em] uppercase">
+              Level
+              <select
+                x-model="level"
+                @change="apply()"
+                class="min-h-11 min-w-[200px] px-4 rounded-[14px] border-2 border-brand-dark bg-white font-display font-bold text-sm normal-case tracking-normal text-brand-dark"
+              >
+                <option value="all">All levels</option>
+                {levels.map((l) => (
+                  <option value={l}>{l}</option>
+                ))}
+              </select>
+            </label>
+          )}
+          <p
+            class="m-0 min-h-11 inline-flex items-center font-black text-sm"
+            aria-live="polite"
+            data-testid="resource-count"
+          >
             <span x-text={`shown === 1 ? '1 resource' : shown + ' resources'`}>
               {countLabel(resources.length)}
             </span>
-          ) : (
-            countLabel(resources.length)
-          )}
-        </p>
-      </div>
+          </p>
+        </div>
+      )}
 
       <ul class="m-0 p-0 list-none grid gap-7 grid-cols-1 lg:grid-cols-3">
         {cards.map((card) => (

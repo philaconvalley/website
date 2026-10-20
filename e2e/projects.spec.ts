@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { readFileSync } from 'node:fs';
 import { links } from '../src/config';
 
 /**
@@ -85,23 +86,41 @@ test('newcomer-ready repos come first, filled, with a good first issue link', as
   ).toHaveCount(0);
 });
 
-test('"Make your first PR" lands on the walkthrough on /join', async ({ page }) => {
+test('"Make your first PR" lands on the walkthrough on this page', async ({ page }) => {
   await page.goto('/projects');
   await expect(page.getByRole('link', { name: 'Make your first PR' })).toHaveAttribute(
     'href',
-    '/join#first-pr',
+    '#first-pr',
   );
   await expect(page.getByRole('link', { name: 'Follow the walkthrough' })).toHaveAttribute(
     'href',
-    '/join#first-pr',
+    '#first-pr',
   );
   // github.com/issues needs a login; the public search page works for everyone.
   await expect(page.getByRole('link', { name: /Browse open issues/ })).toHaveAttribute(
     'href',
     /^https:\/\/github\.com\/search\?type=issues&q=.*good%20first%20issue/,
   );
-  await page.goto('/join#first-pr');
-  await expect(page.locator('#first-pr [data-testid="first-pr-steps"]')).toBeVisible();
+  await page.getByRole('link', { name: 'Make your first PR' }).click();
+  await expect(page.getByTestId('first-pr-steps')).toBeInViewport();
+});
+
+test('all six first-PR steps show at once, with commands from the longer guide', async ({
+  page,
+}) => {
+  await page.goto('/projects');
+  const steps = page.getByTestId('first-pr-steps').locator(':scope > li');
+  await expect(steps).toHaveCount(6);
+  for (let i = 0; i < 6; i++) await expect(steps.nth(i)).toBeVisible();
+
+  const guide = readFileSync('src/content/resources/first-pull-request.md', 'utf8');
+  const blocks = await page.getByTestId('first-pr-steps').locator('code').allTextContents();
+  const lines = blocks
+    .flatMap((b) => b.split('\n'))
+    .map((l) => l.trim())
+    .filter((l) => l && !l.includes('→')); // the Fork line is a GitHub button, not a command
+  expect(lines.length).toBeGreaterThan(0);
+  for (const line of lines) expect(guide, `"${line}" is not in the longer guide`).toContain(line);
 });
 
 test('Projects ends on its own closing copy', async ({ page }) => {
