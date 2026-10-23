@@ -97,9 +97,10 @@ const lumaLabel = links.luma.replace(/^https?:\/\//, '');
                   href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
+
                   class:list={[
-                    'inline-flex items-center min-h-11 px-4 rounded-full border-2 border-brand-dark font-display font-extrabold text-sm text-brand-dark',
-                    i === 0 ? 'bg-brand-yellow' : 'bg-white',
+                    'inline-flex items-center min-h-11 px-4 rounded-full border-2 border-brand-dark font-display font-extrabold text-sm text-brand-dark transition-all duration-150 ease-out hover:-translate-y-0.5 hover:shadow-retro active:scale-95 active:translate-y-0',
+                    'bg-white hover:bg-brand-yellow',
                   ]}
                 >
                   {s.label}
