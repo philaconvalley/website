@@ -4,7 +4,7 @@ The **decision layer** for design work on this site: the visual thesis, the moti
 
 > **Neither this file nor `docs/design-system.md` is the top of the chain.** The canonical design system is **PhilaCon Valley Brand Identity Guidebook Edition 1.2** (08/21/2026), held privately by the org. It replaced Edition 1.0. Maintainers with access should read it before making visual changes; outside contributors should follow `docs/design-system.md` and this file, which implement it.
 >
-> **Migration in progress (decided 10/15/2026).** `tailwind.config.mjs` and `docs/design-system.md` still hold Edition 1.0 values. The foundation PR of the redesign (see _The 1.2 redesign_ below) moves them to Edition 1.2. Until it merges, a conflict between those files and this one is expected, and the Book wins. The Edition 1.3 draft (09/25/2026) is **not** canonical. Do not take values from it.
+> **Migration done (launched 10/19/2026, #213).** `tailwind.config.mjs` and `docs/design-system.md` hold Edition 1.2 values. Two 1.0 tokens, `brand-cream` and `brand-salmon`, stay defined until the pages that use them are rebuilt. Do not use them in new work. If those files and this one disagree, that is a bug, and the Book wins. The Edition 1.3 draft (09/25/2026) is **not** canonical. Do not take values from it.
 >
 > **A secondhand palette is not the design system.** Values copied from an older file, a screenshot, or another deck drift silently and have caused real rework. Take token values from `tailwind.config.mjs` and `docs/design-system.md`, never from a sibling artifact that merely looks right.
 >
