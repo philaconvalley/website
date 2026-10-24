@@ -8,5 +8,9 @@ bio: Two or three sentences in the person's own voice.
 # Put a 560x700 (4:5) WebP in public/images/team/.
 photo: /images/team/first-last-560.webp
 photoAlt: First Last, smiling, in a denim jacket
+# Optional: the person's own sites, shown on their bio page.
+# links:
+#   - label: Their studio
+#     url: https://example.com
 order: 10
 status: draft

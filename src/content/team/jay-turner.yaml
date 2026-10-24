@@ -15,5 +15,8 @@ bio: >-
   nights.
 photo: /images/team/jay-turner-560.webp
 photoAlt: Jay Turner, smiling in glasses and a blue hoodie, under colorful lights
+links:
+  - label: GitHub
+    url: https://github.com/JayTurn93
 order: 30
 status: published

@@ -1,0 +1,91 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import BackLink from '../../../components/BackLink.astro';
+import Button from '../../../components/Button.astro';
+import ClosingFlock from '../../../components/ClosingFlock.astro';
+import DraftBadge from '../../../components/DraftBadge.astro';
+import { crewTitle, getShowcase, isLive } from '../../../lib/showcase';
+
+/**
+ * One crew member's bio page, linked from the crew on About (Waskar,
+ * 10/23/2026, after Apple's leadership pages: the grid shows faces, and each
+ * name leads to a bio). The photo on the left, the bio on the right, the same
+ * layout the founder story used on About. A build makes pages only for
+ * published members; `astro dev` also makes drafts, with a Draft badge.
+ */
+export async function getStaticPaths() {
+  const members = await getShowcase('team');
+  return members.map((member) => ({ params: { slug: member.id }, props: { member } }));
+}
+
+interface Props {
+  member: CollectionEntry<'team'>;
+}
+
+const { data } = Astro.props.member;
+const title = crewTitle(data.title);
+// A name breaks only between words, never at a hyphen (as on the crew cards).
+const words = data.name.split(/\s+/);
+const firstSentence = data.bio?.match(/^.+?[.!?](?=\s|$)/)?.[0] ?? data.bio;
+---
+
+<BaseLayout
+  title={`${data.name}, ${data.title} — PhilaCon Valley`}
+  description={firstSentence ?? `${data.name}, ${title} at PhilaCon Valley.`}
+>
+  <section class="bg-white">
+    <div class="container-custom py-[clamp(56px,8vw,112px)] flex flex-col gap-10">
+      <BackLink href="/about#crew" label="Back to the crew" class="text-brand-dark font-bold" />
+      <div class="flex flex-wrap items-start gap-[clamp(40px,6vw,96px)]">
+        {data.photo && (
+          <img
+            src={data.photo}
+            alt={data.photoAlt}
+            width="560"
+            height="700"
+            decoding="async"
+            class="block grow shrink basis-[300px] w-full max-w-[440px] aspect-[4/5] object-cover rounded-[28px] border-2 border-brand-dark shadow-retro-xl bg-brand-pink"
+          />
+        )}
+        <div class="grow shrink basis-[480px] min-w-0 max-w-[720px] flex flex-col gap-6">
+          {!isLive({ data }) && <DraftBadge />}
+          <div class="flex flex-col gap-3">
+            <h1 class="m-0 text-[clamp(44px,6vw,80px)] leading-[0.95] [text-wrap:balance]">
+              {words.map((word, i) => (
+                <>
+                  {i > 0 && ' '}
+                  <span class="whitespace-nowrap">{word}</span>
+                </>
+              ))}
+            </h1>
+            <p class="m-0 font-extrabold text-[14px] tracking-[0.16em] uppercase">{title}</p>
+          </div>
+          {data.bio && (
+            <p class="m-0 pt-6 border-t-2 border-brand-dark text-[19px] leading-[1.65] text-brand-dark/85">
+              {data.bio}
+            </p>
+          )}
+          {data.links && data.links.length > 0 && (
+            <ul class="m-0 p-0 list-none flex flex-wrap gap-4" aria-label={`${data.name}'s sites`}>
+              {data.links.map((link) => (
+                <li>
+                  <Button href={link.url} variant="secondary" external>
+                    {link.label}
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <ClosingFlock
+    lede="It's free, it's in person, and nobody needs to be ready."
+    secondary={{ href: '/about#crew', label: 'Meet the whole crew' }}
+  >
+    Come to a night.
+  </ClosingFlock>
+</BaseLayout>

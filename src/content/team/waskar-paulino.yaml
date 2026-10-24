@@ -1,0 +1,19 @@
+# Bio: drafted from the Technical.ly 2025 RealLIST award and his own story,
+# kept short because the full story sits just above the crew on About (one
+# argument, one place: DESIGN.md) (10/23/2026). Waskar approves or rewrites
+# it before launch. Photo: the headshot the founder story used before the
+# crew redesign. Title: "Founder" until the nonprofit exists (Team Structure
+# Design, 10/23/2026).
+name: Waskar Paulino
+title: Founder
+bio: >-
+  Waskar Paulino is a Technical.ly 2025 RealLIST Innovator. He started
+  PhilaCon Valley so the room never ends. As Founder, Waskar runs the nights,
+  the studio that funds them, and the partnerships that give them a home.
+photo: /images/waskar-paulino-560.webp
+photoAlt: Waskar Paulino, smiling, in a black polo shirt
+links:
+  - label: waskarpaulino.com
+    url: https://waskarpaulino.com/
+order: 0
+status: published

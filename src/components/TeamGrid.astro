@@ -1,12 +1,21 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import DraftBadge from './DraftBadge.astro';
-import { isLive } from '../lib/showcase';
+import { crewTitle, isLive } from '../lib/showcase';
 
 /**
- * The team cards on About: photo, name, title, and a short bio. Data lives in
+ * The crew on About: photo, name, and title, each linking to that person's
+ * bio page (src/pages/about/crew/[slug].astro). Data lives in
  * src/content/team/. A draft without a photo shows its initials, and only in
  * `astro dev`; a published member must have a photo (src/content.config.ts).
+ *
+ * Redesign (Waskar, 10/23/2026), after Apple's leadership page: the grid
+ * shows faces, names, and titles only, and the bio lives one click away. The
+ * photo is the sticker object (ink outline, hard shadow); the name and title
+ * sit on the section's own color. Hovering anywhere on the card lifts the
+ * photo: the site's sticker lift (.lift-parent / .lift-child, global.css).
+ * A fixed column count (1, then 2, then 4), so a short crew never leaves an
+ * empty column.
  */
 interface Props {
   members: CollectionEntry<'team'>[];
@@ -20,40 +29,60 @@ const initials = (name: string) =>
     .map((part) => part[0])
     .slice(0, 2)
     .join('');
+
+// A name breaks only between words, never at a hyphen: each word is kept
+// whole, so "Mendoza-Ramos" stays on one line.
+const words = (name: string) => name.split(/\s+/);
+
+// The photos are 4:5 portraits shown square, anchored to the top, so a
+// full-length photo (Diego's) keeps the person's head in frame.
+const photoClass =
+  'lift-child block w-full aspect-square rounded-[24px] border-2 border-brand-dark bg-brand-pink';
 ---
 
 <ul
-  class="m-0 p-0 list-none grid gap-7 grid-cols-[repeat(auto-fill,minmax(min(260px,100%),1fr))]"
+  class="m-0 p-0 list-none grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4"
   data-testid="team"
 >
-  {members.map(({ data }) => (
-    <li class="flex flex-col gap-4">
-      {data.photo ? (
-        <img
-          src={data.photo}
-          alt={data.photoAlt}
-          width="560"
-          height="700"
-          loading="lazy"
-          decoding="async"
-          class="block w-full aspect-[4/5] object-cover rounded-[24px] border-2 border-brand-dark shadow-retro-lg bg-brand-pink"
-        />
-      ) : (
-        <div
-          class="w-full aspect-[4/5] rounded-[24px] border-2 border-dashed border-brand-dark bg-brand-pink flex items-center justify-center font-display font-extrabold text-[72px]"
-          aria-hidden="true"
-        >
-          {initials(data.name)}
-        </div>
-      )}
-      <div class="flex flex-col gap-1.5">
-        {!isLive({ data }) && <DraftBadge />}
-        <h3 class="m-0 normal-case text-[28px] leading-[1.1]">{data.name}</h3>
-        <p class="m-0 font-extrabold text-[13px] tracking-[0.16em] uppercase">{data.title}</p>
-        {data.bio && (
-          <p class="m-0 mt-1.5 text-base leading-[1.55] text-brand-dark/85">{data.bio}</p>
+  {members.map(({ id, data }) => (
+    <li class="flex flex-col gap-2">
+      {!isLive({ data }) && <DraftBadge />}
+      <a
+        href={`/about/crew/${id}`}
+        class="lift-parent group flex flex-col gap-4 text-brand-dark no-underline rounded-[24px]"
+      >
+        {data.photo ? (
+          <img
+            src={data.photo}
+            alt={data.photoAlt}
+            width="560"
+            height="700"
+            loading="lazy"
+            decoding="async"
+            class={`${photoClass} object-cover object-top`}
+          />
+        ) : (
+          <div
+            class={`${photoClass} border-dashed flex items-center justify-center font-display font-extrabold text-[72px]`}
+            aria-hidden="true"
+          >
+            {initials(data.name)}
+          </div>
         )}
-      </div>
+        <div class="flex flex-col gap-1">
+          <h3 class="m-0 normal-case text-[26px] leading-[1.05] [text-wrap:balance] underline-offset-4 decoration-2 group-hover:underline">
+            {words(data.name).map((word, i) => (
+              <>
+                {i > 0 && ' '}
+                <span class="whitespace-nowrap">{word}</span>
+              </>
+            ))}
+          </h3>
+          <p class="m-0 font-extrabold text-[12px] leading-[1.5] tracking-[0.16em] uppercase">
+            {crewTitle(data.title)}
+          </p>
+        </div>
+      </a>
     </li>
   ))}
 </ul>

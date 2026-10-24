@@ -166,6 +166,9 @@ const team = defineCollection({
       bio: z.string().optional(),
       photo: z.string().optional(),
       photoAlt: z.string().optional(),
+      // The person's own sites, shown on their bio page. Only links the
+      // person shared for the site.
+      links: z.array(z.object({ label: z.string(), url: z.url() })).optional(),
       // Lower numbers come first.
       order: z.number().default(100),
       status: z.enum(['draft', 'published']).default('draft'),
