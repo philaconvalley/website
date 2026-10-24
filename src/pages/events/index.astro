@@ -159,12 +159,17 @@ const expect = [
                 </Button>
               </div>
             </div>
-            <div class="grow-[2] shrink basis-[560px] min-w-0 rounded-[28px] border-2 border-brand-dark overflow-hidden bg-white">
+            {/* The embed is as tall as the Next up card beside it (the row
+                stretches it), with a 420px floor once the cards stack on a
+                phone. A fixed 600px frame left an empty grey box below a
+                single event (10/24/2026); a page cannot read the height of
+                another site's frame, so the row sets it instead. */}
+            <div class="relative grow-[2] shrink basis-[560px] min-w-0 min-h-[420px] rounded-[28px] border-2 border-brand-dark overflow-hidden bg-white shadow-retro-lg">
               <iframe
                 src={links.lumaEmbed}
                 title="PhilaCon Valley event calendar on Luma"
                 loading="lazy"
-                class="block w-full h-[600px] border-0"
+                class="absolute inset-0 block w-full h-full border-0"
               ></iframe>
             </div>
           </div>
