@@ -39,6 +39,7 @@ export const links = {
   slack:
     'https://join.slack.com/t/philaconvalley/shared_invite/zt-35ujnfnnq-WLo8FpV4fFEHwqqIuoTq5g',
   luma: 'https://lu.ma/philaconvalley',
+  lumaEmbed: 'https://luma.com/embed/calendar/cal-KkQjuykLZNrSChl/events',
   /** Public, unauthenticated calendar feed — the source for events and nights held. */
   lumaIcs: 'https://api.lu.ma/ics/get?entity=calendar&id=cal-KkQjuykLZNrSChl',
   openCollective: 'https://opencollective.com/philacon-valley',

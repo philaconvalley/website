@@ -4,8 +4,7 @@ import { links } from '../src/config';
 
 /**
  * Events, Edition 1.2. The page's facts must match the rest of the site:
- * - with a real event, the Next up card sits beside our own calendar card,
- *   built from the Luma feed (no Luma embed, 10/24/2026);
+ * - with a real event, the Next up card sits beside the live Luma calendar;
  *   with none, one "between nights" card asks people to follow the calendar,
  *   and no RSVP shows anywhere (which test runs depends on the live calendar
  *   at build time; the other skips);
@@ -20,28 +19,14 @@ import { links } from '../src/config';
 const hasEvent = async (page: import('@playwright/test').Page) =>
   (await page.getByTestId('next-up').count()) > 0;
 
-test('with an event, Events shows Next up beside our calendar card', async ({ page }) => {
+test('with an event, Events shows Next up beside the live Luma calendar', async ({ page }) => {
   await page.goto('/events');
   test.skip(!(await hasEvent(page)), 'no upcoming event in this build');
 
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     'Hands-on nights. Every one free.',
   );
-  // Our own card replaced Luma's fixed-height embed.
-  await expect(page.locator('#calendar iframe')).toHaveCount(0);
-  const card = page.getByTestId('calendar-card');
-  await expect(card).toBeVisible();
-  await expect(card.getByRole('link', { name: 'Add to your calendar' })).toHaveAttribute(
-    'href',
-    links.lumaIcs.replace(/^https:/, 'webcal:'),
-  );
-  // Every later night links straight to its own Luma page.
-  for (const rsvp of await card.getByRole('link', { name: /^RSVP/ }).all()) {
-    await expect(rsvp).toHaveAttribute('href', /^https:\/\/(lu\.ma|luma\.com)\//);
-  }
-  // The next night shows once, in Next up, not again in the list.
-  const nextTitle = (await page.getByTestId('next-up').locator('h3').textContent())!.trim();
-  await expect(card.locator('h3').filter({ hasText: nextTitle })).toHaveCount(0);
+  await expect(page.locator('#calendar iframe')).toHaveAttribute('src', links.lumaEmbed);
   await expect(page.getByTestId('between-nights')).toHaveCount(0);
 });
 
