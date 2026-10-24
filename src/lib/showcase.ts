@@ -50,3 +50,12 @@ function sortKey(entry: CollectionEntry<ShowcaseCollection>): number {
   if ('order' in entry.data) return entry.data.order;
   return -entry.data.date.getTime();
 }
+
+/**
+ * A crew member's public title: "Crew · " and their plain job title, the
+ * format agreed in the Team Structure Design (Waskar, 10/23/2026). The YAML
+ * holds the plain title only, so the format lives in this one place.
+ */
+export function crewTitle(title: string): string {
+  return `Crew · ${title}`;
+}

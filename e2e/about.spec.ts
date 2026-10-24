@@ -11,13 +11,33 @@ import { parseValues } from '../src/lib/parse-handbook-values';
  * Home only) live in e2e/site-audit.spec.ts.
  */
 
-test('About shows the real founder photo, with alt text and a caption', async ({ page }) => {
+test('the founder leads the crew, with the real headshot and his title', async ({ page }) => {
   await page.goto('/about');
-  const photo = page.getByRole('img', { name: /Waskar Paulino/ });
+  // Waskar is one of the crew (10/23/2026), and the first card.
+  const founder = page.getByTestId('team').locator('li').first();
+  const photo = founder.getByRole('img', { name: /Waskar Paulino/ });
   await photo.scrollIntoViewIfNeeded();
   await expect(photo).toHaveAttribute('src', /waskar-paulino-560\.webp/);
-  expect(await photo.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
-  await expect(page.locator('figcaption')).toContainText('Founder & Executive Director');
+  await expect
+    .poll(() => photo.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth))
+    .toBeGreaterThan(0);
+  await expect(founder).toContainText('Crew · Founder');
+});
+
+test('each crew card leads to a bio page, and back', async ({ page }) => {
+  await page.goto('/about');
+  const card = page.getByTestId('team').locator('li').filter({ hasText: 'Diego' });
+  await card.getByRole('link').click();
+  await expect(page).toHaveURL(/\/about\/crew\/diego-mendoza$/);
+  await expect(page.locator('h1')).toHaveText('Diego Mendoza-Ramos');
+  await expect(page.getByText('Crew · Product & Experience Lead')).toBeVisible();
+  await expect(page.getByText(/Mexican-born multidisciplinary artist/)).toBeVisible();
+  await expect(page.getByRole('link', { name: /Made By 54 Studios/ })).toHaveAttribute(
+    'href',
+    'https://madeby54studios.com/',
+  );
+  await page.getByRole('link', { name: 'Back to the crew' }).click();
+  await expect(page).toHaveURL(/\/about#crew$/);
 });
 
 test('the member count says it is the Luma calendar count', async ({ page }) => {

@@ -17,7 +17,7 @@ for (const route of ['/about', '/support']) {
   });
 }
 
-test('About shows the team only with real photos and bios', async ({ page }) => {
+test('About shows the crew only with real photos, each linked to a bio', async ({ page }) => {
   await page.goto('/about');
   const team = page.getByTestId('team');
   if ((await team.count()) === 0) return;
@@ -32,7 +32,12 @@ test('About shows the team only with real photos and bios', async ({ page }) => 
       .poll(() => photo.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth))
       .toBeGreaterThan(0);
     await expect(member.locator('h3')).not.toBeEmpty();
-    await expect(member.locator('p')).toHaveCount(2);
+    await expect(member.locator('p')).toHaveText(/^Crew · \S/);
+    // The bio lives on the member's own page (crew redesign, 10/23/2026).
+    const href = await member.getByRole('link').getAttribute('href');
+    expect(href).toMatch(/^\/about\/crew\/[\w-]+$/);
+    const bio = await page.request.get(href!);
+    expect(bio.status()).toBe(200);
   }
 });
 

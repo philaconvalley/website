@@ -1,5 +1,24 @@
-# Waiting on: headshot, bio, and Diego's OK on the title.
-name: Diego Mendoza
-title: Product Design Lead
+# Bio: Diego's own words, #team-updates on Discord, 10/23/2026. One edit: his
+# role line now uses his title, "Product & Experience Lead" (Waskar,
+# 10/23/2026). Photo: his candid mural shot, by his choice (team sync,
+# 10/19/2026). Title: the agreed Crew title (Team Structure Design).
+name: Diego Mendoza-Ramos
+title: Product & Experience Lead
+bio: >-
+  Diego Mendoza-Ramos is a Mexican-born multidisciplinary artist and founder of
+  Made By 54 Studios. From murals and brand identity to digital art, he has
+  designed for clients like the LA Rams, LAFC, Nike, and Pocha Street. That
+  same energy fueled the grassroots art and music festivals he created across
+  Los Angeles, from Chuco's Justice Center and beyond. As Product &
+  Experience Lead, Diego builds PhilaCon Valley side by side with the
+  founder and the community that makes it what it is, helping shape what we
+  all see, feel, and step into, both online and in person. His North Star:
+  creating safe spaces where underrepresented people can thrive, grow, and
+  feel welcomed.
+photo: /images/team/diego-mendoza-560.webp
+photoAlt: Diego Mendoza-Ramos on a ladder in a cap, spray-painting a mural on a metal wall
+links:
+  - label: Made By 54 Studios
+    url: https://madeby54studios.com/
 order: 10
-status: draft
+status: published
