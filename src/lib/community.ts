@@ -53,6 +53,11 @@ export interface DiscordPreview {
 
 export interface CommunityData {
   nextEvent: CommunityEvent | null;
+  /**
+   * Every event still to come, soonest first; the first is `nextEvent`. Events
+   * lists them in our own cards instead of Luma's embed (10/24/2026).
+   */
+  upcomingEvents: CommunityEvent[];
   /** Events on the calendar whose start time has already passed. */
   nightsHeld: number;
   /** Public org repos with a live deployed URL. */
@@ -172,18 +177,19 @@ async function fetchLuma(now: Date) {
     return null;
   }
 
-  const upcoming = events.find((event) => event.start.getTime() > now.getTime()) ?? null;
+  const upcomingEvents: CommunityEvent[] = events
+    .filter((event) => event.start.getTime() > now.getTime())
+    .map((event) => ({
+      title: event.title,
+      start: event.start.toISOString(),
+      venue: event.venue,
+      url: event.url,
+    }));
 
   return {
     nightsHeld: events.filter((event) => event.start.getTime() <= now.getTime()).length,
-    nextEvent: upcoming
-      ? {
-          title: upcoming.title,
-          start: upcoming.start.toISOString(),
-          venue: upcoming.venue,
-          url: upcoming.url,
-        }
-      : null,
+    nextEvent: upcomingEvents[0] ?? null,
+    upcomingEvents,
   };
 }
 
@@ -365,6 +371,7 @@ async function resolveCommunityData(now: Date): Promise<CommunityData> {
 
   return {
     nextEvent: luma ? luma.nextEvent : snapshotEvent,
+    upcomingEvents: luma ? luma.upcomingEvents : snapshotEvent ? [snapshotEvent] : [],
     nightsHeld: atLeastSnapshot(luma ? luma.nightsHeld : null, snapshot.nightsHeld, 'nights held'),
     thingsShipped: atLeastSnapshot(shipped, snapshot.thingsShipped, 'things shipped'),
     discord: resolvedDiscord,

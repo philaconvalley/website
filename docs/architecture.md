@@ -49,7 +49,7 @@ src/
 ├── pages/                 # Each file = one URL on the site
 │   ├── index.astro        # / (homepage)
 │   ├── about.astro        # /about
-│   ├── events.astro       # /events (embeds Luma calendar)
+│   ├── events.astro       # /events (upcoming nights from the Luma feed)
 │   ├── join.astro         # /join
 │   ├── support.astro      # /support (links to Open Collective)
 │   ├── contact.astro      # /contact (Formspree form)

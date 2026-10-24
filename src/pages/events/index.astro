@@ -23,7 +23,9 @@ import { links } from '../../config';
  * - LabTrack, the old looping timeline, is retired (DESIGN.md, motion rule 1).
  * - No RSVP without a real event. With none in the build, the hero, the
  *   calendar section and the closing ask people to follow the Luma calendar
- *   ("Get notified"), and the empty Luma embed is not shown.
+ *   ("Get notified").
+ * - No Luma embed (10/24/2026). The upcoming nights come from the Luma feed
+ *   and show in our own calendar card, so the page keeps one design.
  *
  * Site audit, 10/18/2026:
  * - With no night on the calendar, "Recent nights" comes first, above the
@@ -34,7 +36,9 @@ import { links } from '../../config';
  * - The closing does not repeat the motto; that is Home's alone.
  */
 
-const { nextEvent } = await getCommunityData();
+const { nextEvent, upcomingEvents } = await getCommunityData();
+// Nights after the next one. The Next up card already shows the first.
+const laterEvents = upcomingEvents.slice(1, 6);
 
 // The Luma calendar feed as a subscription. An https link to the feed
 // downloads a one-time copy (the server sends it as an attachment); webcal://
@@ -110,12 +114,15 @@ const expect = [
     </div>
   </section>
 
-  <!-- On the calendar. With a real event: the Next up card beside the live Luma
-       calendar. The card removes itself once the event starts
-       (public/js/event-freshness.js), and the calendar then fills the row.
+  <!-- On the calendar. With a real event: the Next up card beside our own
+       calendar card. The calendar card lists the nights after the next one,
+       from the same Luma feed (10/24/2026: Luma's embed was a fixed-height
+       frame in Luma's grey styling that left an empty box beside one event).
+       With no later night it offers the calendar subscription instead. The
+       Next up card removes itself once the event starts
+       (public/js/event-freshness.js), and the calendar card then fills the row.
        With no event in the build: one "between nights" card in the Next up
-       card's shape, and no embed, because Luma's embed would only say "No
-       Upcoming Events". The scheduled rebuild brings the event state back
+       card's shape. The scheduled rebuild brings the event state back
        within hours of a new Luma event. -->
   {!nextEvent && <RecentNights loud />}
 
@@ -159,13 +166,53 @@ const expect = [
                 </Button>
               </div>
             </div>
-            <div class="grow-[2] shrink basis-[560px] min-w-0 rounded-[28px] border-2 border-brand-dark overflow-hidden bg-white">
-              <iframe
-                src={links.lumaEmbed}
-                title="PhilaCon Valley event calendar on Luma"
-                loading="lazy"
-                class="block w-full h-[600px] border-0"
-              ></iframe>
+            <div
+              class="grow shrink basis-[360px] self-start min-w-0 bg-white border-2 border-brand-dark rounded-[28px] shadow-retro-lg p-[clamp(24px,3vw,36px)] flex flex-col gap-5"
+              data-testid="calendar-card"
+            >
+              {laterEvents.length > 0 ? (
+                <>
+                  <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">
+                    Also coming up
+                  </p>
+                  <ul class="m-0 p-0 list-none flex flex-col">
+                    {laterEvents.map((event) => (
+                      <li class="py-4 first:pt-0 border-b-2 border-brand-dark flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+                        <div class="min-w-0 flex flex-col gap-1">
+                          <p class="m-0 font-black text-xs tracking-[0.14em] uppercase">
+                            {formatEventDate(event.start)}
+                          </p>
+                          <h3 class="m-0 normal-case text-[24px] leading-[1.1]">{event.title}</h3>
+                          {event.venue && <p class="m-0 text-base">{event.venue}</p>}
+                        </div>
+                        <a
+                          href={event.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="inline-flex items-center min-h-11 font-black text-[15px] text-brand-dark underline underline-offset-[6px] decoration-[3px]"
+                        >
+                          RSVP<span class="sr-only"> to {event.title} (opens Luma)</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <>
+                  <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">
+                    Every night, in your calendar
+                  </p>
+                  <p class="m-0 text-lg leading-[1.55]">
+                    We post every night on Luma. Add the calendar once, and each new night shows up
+                    in your calendar app on its own.
+                  </p>
+                </>
+              )}
+              <div class="flex flex-wrap gap-3.5 pt-1">
+                <Button href={calendarFeed} variant="primary">
+                  Add to your calendar
+                </Button>
+              </div>
             </div>
           </div>
         </>
