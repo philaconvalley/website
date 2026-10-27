@@ -213,7 +213,8 @@
      settle in 150ms. Movement is behind prefers-reduced-motion and hover
      gating; under reduced motion only the shadow size changes (rule 12). */
   .lift,
-  .card {
+  .card,
+  .lift-child {
     --lift-rest: 4px;
     --lift-hover: 6px;
     --lift-press: 2px;
@@ -235,6 +236,14 @@
 
   .card {
     @apply bg-white rounded-retro border-2 border-brand-dark;
+  }
+
+  /* .lift-child: a lift driven by a parent link (.lift-parent; the crew cards
+     on About). The whole card is the hit area, but only the photo is the
+     sticker, so only it moves. Same values as .card; the transform is set on
+     the photo itself, not passed down from the parent. */
+  .card,
+  .lift-child {
     --lift-rest: 6px;
     --lift-hover: 9px;
     --lift-press: 4px;
@@ -242,13 +251,15 @@
 
   @media (hover: hover) and (pointer: fine) {
     .lift:hover,
-    .card:hover {
+    .card:hover,
+    .lift-parent:hover .lift-child {
       --lift: var(--lift-hover);
     }
   }
 
   .lift:active,
-  .card:active {
+  .card:active,
+  .lift-parent:active .lift-child {
     --lift: var(--lift-press);
     transition-duration: 100ms;
   }
@@ -256,13 +267,15 @@
   @media (prefers-reduced-motion: no-preference) {
     @media (hover: hover) and (pointer: fine) {
       .lift:hover,
-      .card:hover {
+      .card:hover,
+      .lift-parent:hover .lift-child {
         transform: translate(-2px, -2px);
       }
     }
 
     .lift:active,
-    .card:active {
+    .card:active,
+    .lift-parent:active .lift-child {
       transform: translate(2px, 2px);
     }
   }
