@@ -23,11 +23,15 @@ export const site = {
  * subscription. Until we are on that plan this is maintained by hand.
  *
  * Update it from the Luma dashboard, and move the date when you do so the
- * staleness is visible in the diff rather than invisible on the page.
+ * staleness is visible in the diff rather than invisible on the page. Every
+ * Monday, .github/scripts/member-count-age-check.mjs reads that date and keeps
+ * one issue open while it is more than 30 days old. Paying for Luma Plus was
+ * weighed and declined on 2026-10-29: with the 3-hour rebuild check it would
+ * make this live, but the monthly cost is not worth one number right now.
  */
 export const community = {
-  memberCount: 493,
-  memberCountUpdated: '2026-10-11',
+  memberCount: 508,
+  memberCountUpdated: '2026-10-29',
 } as const;
 
 export const links = {
