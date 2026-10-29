@@ -39,3 +39,13 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: node .github/scripts/luma-upcoming-check.mjs
+
+      # The member count in src/config.ts is typed by hand (no free Luma
+      # source). Keep one issue open while it is more than 30 days old. Runs
+      # even when the calendar check fails: a feed outage says nothing about it.
+      - name: Check the member count age
+        if: ${{ !cancelled() }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: node .github/scripts/member-count-age-check.mjs
