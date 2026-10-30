@@ -89,7 +89,7 @@ This Code of Conduct applies:
 
 If you experience or witness unacceptable behavior, or have any other concerns, please report it as soon as possible:
 
-**Email**: waskar@philaconvalley.com
+**Email**: support@philaconvalley.com
 
 All reports will be handled with discretion. In your report, please include:
 
@@ -201,7 +201,7 @@ This Code of Conduct is adapted from:
 
 If you have questions about this Code of Conduct, please reach out to:
 
-**Email**: waskar@philaconvalley.com
+**Email**: support@philaconvalley.com
 
 ---
 

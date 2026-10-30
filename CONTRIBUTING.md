@@ -19,7 +19,7 @@ For detailed guides, see our docs:
 ## Questions?
 
 - **Discord**: Join and ask in the #website channel
-- **Email**: waskar@philaconvalley.com
+- **Email**: support@philaconvalley.com
 - **GitHub**: Open a discussion or comment on an issue
 
 Every contribution matters — from fixing a typo to building a feature. We appreciate you!
