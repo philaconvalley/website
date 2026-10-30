@@ -6,7 +6,7 @@ If you discover a security vulnerability in this project, please report it respo
 
 **Do not open a public GitHub issue for security vulnerabilities.**
 
-Instead, please email **waskar@philaconvalley.com** with:
+Instead, please email **support@philaconvalley.com** with:
 
 - A description of the vulnerability
 - Steps to reproduce it

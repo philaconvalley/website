@@ -94,7 +94,7 @@ A community-driven tech org centering Black, Brown, LGBTQIA+, and underrepresent
 
 ## Connect With Us
 
-[Events](https://lu.ma/philaconvalley) | [Discord](https://discord.gg/5haHYh5xcx) | [Instagram](https://www.instagram.com/phlconvalley/) | [LinkedIn](https://www.linkedin.com/company/philaconvalley/) | [Twitter/X](https://x.com/PhlConValley) | [GitHub](https://github.com/philaconvalley) | waskar@philaconvalley.com
+[Events](https://lu.ma/philaconvalley) | [Discord](https://discord.gg/5haHYh5xcx) | [Instagram](https://www.instagram.com/phlconvalley/) | [LinkedIn](https://www.linkedin.com/company/philaconvalley/) | [Twitter/X](https://x.com/PhlConValley) | [GitHub](https://github.com/philaconvalley) | support@philaconvalley.com
 
 Please read our [Code of Conduct](./CODE_OF_CONDUCT.md) before participating.
 
@@ -104,7 +104,7 @@ Found a security problem? Do not open a public issue. Follow [SECURITY.md](./SEC
 
 ## Support Us
 
-Help us keep PhilaCon Valley free and accessible: [Donate](https://opencollective.com/philacon-valley) | [Sponsor an Event](mailto:waskar@philaconvalley.com) | [Lead a Workshop](mailto:waskar@philaconvalley.com) | [Provide Venue Space](mailto:waskar@philaconvalley.com)
+Help us keep PhilaCon Valley free and accessible: [Donate](https://opencollective.com/philacon-valley) | [Sponsor an Event](mailto:support@philaconvalley.com) | [Lead a Workshop](mailto:support@philaconvalley.com) | [Provide Venue Space](mailto:support@philaconvalley.com)
 
 ---
 
