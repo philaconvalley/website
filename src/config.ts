@@ -6,7 +6,7 @@
 
 export const site = {
   name: 'PhilaCon Valley',
-  email: 'waskar@philaconvalley.com',
+  email: 'support@philaconvalley.com',
   location: 'Philadelphia, PA',
 } as const;
 

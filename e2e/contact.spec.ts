@@ -26,6 +26,18 @@ test('the connect card has the real contact details', async ({ page }) => {
   await expect(page.locator('main')).toContainText('We usually reply within 24 to 48 hours.');
 });
 
+// The other tests read site.email, so they pass whatever it holds. This one
+// pins the literal address, so a wrong edit to src/config.ts fails here.
+test('every email link goes to the support inbox', async ({ page }) => {
+  for (const path of ['/contact', '/privacy', '/']) {
+    await page.goto(path);
+    const mailtos = page.locator('a[href^="mailto:"]');
+    expect(await mailtos.count()).toBeGreaterThan(0);
+    for (const href of await mailtos.evaluateAll((as) => as.map((a) => a.getAttribute('href'))))
+      expect(href).toBe('mailto:support@philaconvalley.com');
+  }
+});
+
 test('the FAQ opens the first answer and the rest from the keyboard', async ({ page }) => {
   await page.goto('/contact');
   const items = page.getByTestId('faq').locator('details');
