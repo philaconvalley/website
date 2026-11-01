@@ -30,9 +30,19 @@ export const site = {
  * make this live, but the monthly cost is not worth one number right now.
  */
 export const community = {
-  memberCount: 508,
-  memberCountUpdated: '2026-10-29',
+  memberCount: 410,
+  memberCountUpdated: '2026-10-31',
 } as const;
+
+/**
+ * The member count as the site shows it: rounded down to the hundred, with a
+ * "+" after it (410 shows as "400+"). Luma contact cleanups remove people
+ * without warning; on 2026-10-31 one removed about 100 and left the exact
+ * count wrong. A floor stays true through cleanups and new sign-ups until
+ * the count crosses a hundred. Paying for Luma Plus to show the exact number
+ * was declined again on 2026-10-31.
+ */
+export const memberCountShown = Math.floor(community.memberCount / 100) * 100;
 
 export const links = {
   /** Main community channel. Slack stays up only for international members. */
