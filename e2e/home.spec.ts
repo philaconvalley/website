@@ -19,8 +19,12 @@ test('the live numbers settle on their real values, and screen readers never hea
     const target = await counter.getAttribute('data-count');
     await expect(counter).toHaveText(target!, { timeout: 3000 });
     await expect(counter).toHaveAttribute('aria-hidden', 'true');
-    // The sr-only sibling carries the same value from the first paint.
-    await expect(counter.locator('xpath=following-sibling::span[1]')).toHaveText(target!);
+    // The sr-only sibling carries the same value from the first paint. The
+    // member count adds a "+" (rounded down, src/config.ts); it sits outside
+    // data-count because the odometer rolls digits only.
+    await expect(counter.locator('xpath=following-sibling::span[1]')).toHaveText(
+      new RegExp(`^${target}\\+?$`),
+    );
   }
 });
 

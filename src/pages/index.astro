@@ -4,7 +4,7 @@ import Button from '../components/Button.astro';
 import ClosingFlock from '../components/ClosingFlock.astro';
 import EventBar from '../components/EventBar.astro';
 import { getCommunityData, formatEventDate } from '../lib/community';
-import { community, links } from '../config';
+import { links, memberCountShown } from '../config';
 import { labNight } from '../data/lab-night';
 import PhotoGrid from '../components/PhotoGrid.astro';
 import { getRoomPhotos } from '../lib/events';
@@ -102,14 +102,23 @@ const roomPhotos = await getRoomPhotos(4);
 
 const stats = [
   // The Luma calendar total, labeled so it never reads as the Discord count.
-  { value: community.memberCount, label: 'people on our calendar.', note: 'Not users.' },
+  // Rounded down with a "+" so Luma cleanups do not make it wrong (src/config.ts).
+  // The "+" sits outside data-count: the odometer rolls digits only.
+  {
+    value: memberCountShown,
+    suffix: '+',
+    label: 'people on our calendar.',
+    note: 'Not users.',
+  },
   {
     value: nightsHeld,
+    suffix: '',
     label: nightsHeld === 1 ? 'night held.' : 'nights held.',
     note: 'All of them free.',
   },
   {
     value: thingsShipped,
+    suffix: '',
     label: thingsShipped === 1 ? 'thing shipped.' : 'things shipped.',
     note: 'So far.',
   },
@@ -201,7 +210,12 @@ const stats = [
                   class="relative inline-block text-2xl lg:text-3xl tabular-nums"
                 >
                   {stat.value}
-                </span>{' '}
+                </span>
+                {stat.suffix && (
+                  <span data-odo-suffix class="text-2xl lg:text-3xl">
+                    {stat.suffix}
+                  </span>
+                )}{' '}
                 {stat.label.replace(/\.$/, '')}
               </li>
             ))}
@@ -419,14 +433,24 @@ const stats = [
                  The visible copy rolls in once on scroll (public/js/home.js);
                  the sr-only copy is what assistive tech reads, so it never
                  hears the roll. -->
-            <span
-              aria-hidden="true"
-              data-count={stat.value}
-              class="relative font-display font-extrabold text-[clamp(80px,10vw,140px)] leading-[0.85] tabular-nums"
-            >
-              {stat.value}
-            </span>
-            <span class="sr-only">{stat.value}</span>{' '}
+            <span class="font-display font-extrabold text-[clamp(80px,10vw,140px)] leading-[0.85] whitespace-nowrap">
+              <span
+                aria-hidden="true"
+                data-count={stat.value}
+                class="relative inline-block tabular-nums"
+              >
+                {stat.value}
+              </span>
+              <span class="sr-only">
+                {stat.value}
+                {stat.suffix}
+              </span>
+              {stat.suffix && (
+                <span aria-hidden="true" data-odo-suffix>
+                  {stat.suffix}
+                </span>
+              )}
+            </span>{' '}
             <span data-odo-rise class="font-black text-xl">
               {stat.label}
             </span>{' '}

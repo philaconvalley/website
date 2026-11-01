@@ -4,7 +4,7 @@ import Button from '../components/Button.astro';
 import ClosingFlock from '../components/ClosingFlock.astro';
 import PhotoGrid from '../components/PhotoGrid.astro';
 import PartnerStrip from '../components/PartnerStrip.astro';
-import { community, links } from '../config';
+import { links, memberCountShown } from '../config';
 import { getCommunityData } from '../lib/community';
 import { getRoomPhotos } from '../lib/events';
 import { getHireLink, getShowcase } from '../lib/showcase';
@@ -38,7 +38,7 @@ const partners = await getShowcase('partners');
 
 // The nights count is in the heading above, so the row does not repeat it.
 const proof = [
-  { value: community.memberCount, label: 'people on our calendar' },
+  { value: `${memberCountShown}+`, label: 'people on our calendar' },
   { value: thingsShipped, label: thingsShipped === 1 ? 'thing shipped' : 'things shipped' },
 ];
 

@@ -509,6 +509,12 @@
   color: transparent;
 }
 
+/* A suffix after the number (the member count's "+") is not rolled. It hides
+   with the number before the roll and shows when the roll starts. */
+.odo [data-odo-item]:not([data-odo]) [data-odo-suffix] {
+  color: transparent;
+}
+
 .odo-layer {
   position: absolute;
   inset: 0;
@@ -552,7 +558,8 @@
     opacity: 1;
   }
 
-  .odo [data-odo-item]:not([data-odo]) [data-count] {
+  .odo [data-odo-item]:not([data-odo]) [data-count],
+  .odo [data-odo-item]:not([data-odo]) [data-odo-suffix] {
     color: inherit;
   }
 }
@@ -666,7 +673,8 @@
     display: none !important;
   }
 
-  .odo [data-odo-item] [data-count] {
+  .odo [data-odo-item] [data-count],
+  .odo [data-odo-item] [data-odo-suffix] {
     color: inherit !important;
   }
 
