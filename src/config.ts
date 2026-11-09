@@ -52,7 +52,7 @@ export const memberCountShown = Math.floor(community.memberCount / 100) * 100;
  * vercel.json, and in scripts/refresh-community-data.mjs. The e2e test in
  * e2e/join.spec.ts fails if vercel.json and this value disagree.
  */
-export const discordInviteCode = '5haHYh5xcx';
+export const discordInviteCode = 'hZKzHAKcbm';
 
 export const links = {
   /** Main community channel. Slack stays up only for international members.
