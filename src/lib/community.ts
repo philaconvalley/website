@@ -28,7 +28,7 @@
  */
 
 import snapshotJson from '../data/community-snapshot.json';
-import { links } from '../config';
+import { discordInviteCode, links } from '../config';
 
 /** Third parties get this long to answer, once, with no retry. */
 const FETCH_TIMEOUT_MS = 5000;
@@ -242,15 +242,16 @@ async function fetchShipped(): Promise<number | null> {
 /**
  * The invite code is the one stable identifier in a Discord invite URL — the
  * server ID and icon hash both come back from the API response itself, so
- * only the code needs to be pulled out of `links.discord` here.
+ * only the code is needed here. `links.discord` is the /discord site path,
+ * not the invite, so the code comes from `discordInviteCode`.
  */
-const DISCORD_INVITE_CODE = links.discord.split('/').pop() ?? '';
+const DISCORD_INVITE_CODE = discordInviteCode;
 
 /**
  * A live member/online count for the join page, pulled from Discord's public
  * invite endpoint — no bot token, no auth, no server-side "widget" toggle
  * required, unlike the guild widget API. Requires only that the invite code
- * in `links.discord` still resolves.
+ * in `discordInviteCode` still resolves.
  */
 async function fetchDiscord(): Promise<DiscordPreview | null> {
   if (!DISCORD_INVITE_CODE) return null;

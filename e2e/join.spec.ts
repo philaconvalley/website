@@ -1,5 +1,6 @@
+import { readFileSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
-import { links } from '../src/config';
+import { discordInviteCode, links } from '../src/config';
 
 /**
  * Join, Edition 1.2. The page's facts must hold:
@@ -154,4 +155,23 @@ test('print shows every role on the ladder, even before it plays', async ({ page
   const n = await parts.count();
   expect(n).toBeGreaterThan(0);
   for (let i = 0; i < n; i++) await expect(parts.nth(i)).toHaveCSS('opacity', '1');
+});
+
+/**
+ * The site links to /discord, and vercel.json sends that path to the invite.
+ * Rotating the invite means editing both, so this fails when they disagree,
+ * and when any built page still shows a raw discord.gg link.
+ */
+test('the /discord redirect points at the configured invite', async ({ page }) => {
+  const vercel = JSON.parse(readFileSync('vercel.json', 'utf8')) as {
+    redirects: { source: string; destination: string }[];
+  };
+  const discord = vercel.redirects.filter((r) => r.source.startsWith('/discord'));
+  expect(discord.map((r) => r.source).sort()).toEqual(['/discord', '/discord/']);
+  for (const r of discord) {
+    expect(r.destination).toBe(`https://discord.gg/${discordInviteCode}`);
+  }
+
+  await page.goto('/join');
+  expect(await page.content()).not.toContain('discord.gg/');
 });

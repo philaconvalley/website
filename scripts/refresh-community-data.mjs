@@ -21,7 +21,8 @@ import { writeFile, readFile } from 'node:fs/promises';
 
 const ICS_URL = 'https://api.lu.ma/ics/get?entity=calendar&id=cal-KkQjuykLZNrSChl';
 const REPOS_URL = 'https://api.github.com/orgs/philaconvalley/repos?per_page=100&type=public';
-const DISCORD_INVITE_URL = 'https://discord.com/api/v10/invites/5haHYh5xcx?with_counts=true';
+// Keep this code equal to discordInviteCode in src/config.ts.
+const DISCORD_INVITE_URL = 'https://discord.com/api/v10/invites/hZKzHAKcbm?with_counts=true';
 const OUT = 'src/data/community-snapshot.json';
 const LUMA_FALLBACK = 'https://lu.ma/philaconvalley';
 
