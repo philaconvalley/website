@@ -44,9 +44,20 @@ export const community = {
  */
 export const memberCountShown = Math.floor(community.memberCount / 100) * 100;
 
+/**
+ * The live Discord invite code. Pages never show it: they link to /discord,
+ * and vercel.json redirects that path to this invite on the server. Bots
+ * scrape page HTML for discord.gg links, so the raw code stays out of it.
+ * To rotate the invite, change it here, in the /discord redirects in
+ * vercel.json, and in scripts/refresh-community-data.mjs. The e2e test in
+ * e2e/join.spec.ts fails if vercel.json and this value disagree.
+ */
+export const discordInviteCode = '5haHYh5xcx';
+
 export const links = {
-  /** Main community channel. Slack stays up only for international members. */
-  discord: 'https://discord.gg/5haHYh5xcx',
+  /** Main community channel. Slack stays up only for international members.
+   *  A site path, not the invite itself: see discordInviteCode. */
+  discord: '/discord',
   /** Backup for people who cannot reach Discord; quieter (Waskar, 10/17/2026).
    *  A shared invite link: if it was not created as "Never expires", it stops
    *  working after 30 days, and /join would show a dead link. */
