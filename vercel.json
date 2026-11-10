@@ -12,7 +12,7 @@
     { "source": "/resources/example-resource/", "destination": "/resources", "permanent": true }
   ],
   "rewrites": [
-    { "source": "/relay/p/:path*", "destination": "https://us.i.posthog.com/:path*" },
+    { "source": "/relay/p/:path(.*)", "destination": "https://us.i.posthog.com/:path" },
     {
       "source": "/relay/s",
       "destination": "https://o4511723969904640.ingest.us.sentry.io/api/4512405312176128/envelope/"

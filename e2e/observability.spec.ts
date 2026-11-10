@@ -247,7 +247,10 @@ test.describe('relay wiring', () => {
 
   test('sends PostHog events to the US region the project lives in', () => {
     expect(config).toContain("apiHost: '/relay/p'");
-    expect(rewrite('/relay/p/:path*')).toBe('https://us.i.posthog.com/:path*');
+    // `(.*)`, not `*`: posthog-js posts to paths with a trailing slash
+    // (`/e/`), and on Vercel `/relay/p/:path*` does not match those. The
+    // PR #239 preview answered every event with the site's 404 page.
+    expect(rewrite('/relay/p/:path(.*)')).toBe('https://us.i.posthog.com/:path');
   });
 
   test('reports enforced CSP violations, and not the Report-Only noise', () => {
