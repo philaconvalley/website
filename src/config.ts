@@ -101,6 +101,14 @@ export const analytics = {
  *
  * The org setting "Prevent storing of IP addresses" must stay on. The privacy
  * page promises it.
+ *
+ * CSP violation reports skip the SDK: the browser writes the report body and
+ * posts it straight to /relay/c, so `beforeSend` never sees it. The body's
+ * `document-uri` carries the full page address, query string included
+ * (checked 2026-11-09). The privacy page's "without anything after the ?"
+ * holds only because of a server-side rule in the Sentry project `website`:
+ * Settings > Security & Privacy > Advanced Data Scrubbing, Replace, regex
+ * `\?[^\s"']*`, source `$string`. Keep that rule.
  */
 export const errorTracking = {
   productionHost: analytics.productionHost,
