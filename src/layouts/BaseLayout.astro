@@ -76,6 +76,11 @@ const {
          it belongs to is already down. Note this does NOT remove the need for
          'unsafe-eval' — Alpine evaluates x-* directives through `new Function`
          wherever it is hosted. See e2e/csp.spec.ts. -->
+    <!-- Sentry first, so it is listening before Alpine starts. Bundled, so it
+         runs under `script-src 'self'`. See src/scripts/errors.ts. -->
+    <script>
+      import '../scripts/errors';
+    </script>
     <script>
       import Alpine from 'alpinejs';
 
@@ -85,6 +90,13 @@ const {
     <meta name="generator" content={Astro.generator} />
 
     <Analytics />
+
+    <!-- PostHog, bundled from node_modules like Alpine above, so it runs under
+         `script-src 'self'`. It sends events only on the production host.
+         See src/scripts/analytics.ts. -->
+    <script>
+      import '../scripts/analytics';
+    </script>
 
     <script is:inline type="application/ld+json">
       {

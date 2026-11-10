@@ -9,6 +9,8 @@ import { site, links } from '../config';
  * The page describes what the code actually does, and nothing more. Each row in
  * `services` matches one thing a visitor's browser talks to:
  *   - Vercel Analytics  -> <Analytics /> in src/layouts/BaseLayout.astro
+ *   - PostHog           -> src/scripts/analytics.ts, loaded by BaseLayout.astro
+ *   - Sentry            -> src/scripts/errors.ts, and report-uri in vercel.json
  *   - Formspree         -> the form on src/pages/contact.astro
  *   - Luma              -> the calendar iframe on src/pages/events/index.astro
  *
@@ -23,7 +25,7 @@ import { site, links } from '../config';
  * change to this page too.
  */
 
-const updated = 'October 12, 2026';
+const updated = 'November 9, 2026';
 
 /** Source files are linked on GitHub, so every claim below can be checked. */
 const source = (path: string) => `${links.github.website}/blob/main/${path}`;
@@ -54,6 +56,20 @@ const services = [
     what: 'The page you visit, the site that sent you, your country, and your browser and device type. It sets no cookies. It does not store your IP address, and it cannot follow you across days or to other sites.',
     policy: 'https://vercel.com/docs/analytics/privacy-policy',
     code: 'src/layouts/BaseLayout.astro',
+  },
+  {
+    name: 'PostHog',
+    where: 'Every page',
+    what: 'The page you visit, the site that sent you, and the links and buttons you click. It never sees what you type. It sets no cookies and stores nothing in your browser. It drops your IP address, and it cannot follow you across days or to other sites.',
+    policy: 'https://posthog.com/privacy',
+    code: 'src/scripts/analytics.ts',
+  },
+  {
+    name: 'Sentry',
+    where: 'Every page',
+    what: 'Only when something on the site breaks, or when our security rules block a script: the error, the page address without anything after the "?", your browser and device type, and your city and country. It works out the city from your IP address, then discards the address. It sets no cookies.',
+    policy: 'https://sentry.io/privacy/',
+    code: 'src/scripts/errors.ts',
   },
   {
     name: 'Formspree',
@@ -94,7 +110,7 @@ const services = [
           of visitors.
         </p>
         <p class="text-lg text-brand-dark/70">
-          Three outside services touch your visit. Each one is listed below, with what it receives.
+          Five outside services touch your visit. Each one is listed below, with what it receives.
         </p>
       </div>
     </div>

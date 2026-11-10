@@ -4,7 +4,9 @@ export default defineConfig({
   testDir: './e2e',
   // csp.spec.ts needs the vercel.json headers, which `astro preview` does not
   // serve — it runs under playwright.csp.config.ts instead.
-  testIgnore: ['csp.spec.ts', 'redirects.spec.ts'],
+  // observability.spec.ts needs a build with PostHog and Sentry switched on —
+  // it runs under playwright.observability.config.ts.
+  testIgnore: ['csp.spec.ts', 'redirects.spec.ts', 'observability.spec.ts'],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,

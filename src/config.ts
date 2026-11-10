@@ -54,6 +54,75 @@ export const memberCountShown = Math.floor(community.memberCount / 100) * 100;
  */
 export const discordInviteCode = 'hZKzHAKcbm';
 
+/**
+ * Product analytics (PostHog). Every value here is public: the token ships in
+ * every page, and it can only send events, never read them.
+ *
+ * Privacy settings live in two places, and both must hold:
+ *   - Here and in src/scripts/analytics.ts: cookieless mode, no replay, no
+ *     surveys, no feature flags, and the no-external build, which never loads
+ *     a script from PostHog's servers.
+ *   - In the PostHog project (id 721700, US Cloud): "cookieless tracking" on
+ *     and "discard client IP data" on. Without the first, PostHog drops every
+ *     event this site sends, with no error in the browser.
+ *
+ * `apiHost` is a same-origin path. vercel.json rewrites it to PostHog, so the
+ * CSP keeps `connect-src 'self'` and ad blockers that match "posthog" in a URL
+ * do not drop events. If you change it, change the rewrite in vercel.json too.
+ *
+ * Only `productionHost` sends events, so local dev, CI, and Vercel previews
+ * never pollute the numbers.
+ *
+ * `PUBLIC_OBSERVABILITY_HOST` exists for one build only: the one
+ * playwright.observability.config.ts makes, which sets it to `localhost` so
+ * e2e/observability.spec.ts can watch both tools run. Never set it in Vercel
+ * or in .env: production would stop sending events, with no error anywhere.
+ * The `?.` matters: e2e specs import this file in Node, where Vite has not
+ * defined `import.meta.env`.
+ */
+export const analytics = {
+  productionHost: import.meta.env?.PUBLIC_OBSERVABILITY_HOST ?? 'www.philaconvalley.com',
+  posthog: {
+    token: 'phc_BiGBNAmEG6BVFeh97gqAfprLTTrjpAS4MFmWcgkXtJ2g',
+    apiHost: '/relay/p',
+    uiHost: 'https://us.posthog.com',
+  },
+} as const;
+
+/**
+ * Error tracking (Sentry, org `philacon-valley`, project `website`). The DSN
+ * is public: it can only send events, never read them.
+ *
+ * `tunnel` is a same-origin path that vercel.json rewrites to this project's
+ * envelope endpoint, for the same reasons as PostHog's `apiHost`. If the
+ * project or DSN changes, change both rewrites in vercel.json: `/relay/s`
+ * (errors) and `/relay/c` (CSP violation reports, which carry the key in the
+ * rewrite's query string).
+ *
+ * The org setting "Prevent storing of IP addresses" must stay on. The privacy
+ * page promises it.
+ *
+ * CSP violation reports skip the SDK: the browser writes the report body and
+ * posts it straight to /relay/c, so `beforeSend` never sees it. The body's
+ * `document-uri` carries the full page address, query string included
+ * (checked 2026-11-09). On the PR #239 smoke test, the org's default
+ * scrubbers replaced a `document-uri` holding `?email=` with `[Filtered]`,
+ * but a query with no email or card number would be stored as sent. For the
+ * privacy page's "without anything after the ?" to hold in every case, the
+ * Sentry project `website` needs: Settings > Security & Privacy > Advanced
+ * Data Scrubbing, Replace, regex `\?[^\s"']*`, source `$string`.
+ *
+ * Sentry also stores a city and country derived from the visitor's IP
+ * address, even with IP storage off. The privacy page says so.
+ */
+export const errorTracking = {
+  productionHost: analytics.productionHost,
+  sentry: {
+    dsn: 'https://4cab24f9dc8c7cc446669b12da691111@o4511723969904640.ingest.us.sentry.io/4512405312176128',
+    tunnel: '/relay/s',
+  },
+} as const;
+
 export const links = {
   /** Main community channel. Slack stays up only for international members.
    *  A site path, not the invite itself: see discordInviteCode. */
