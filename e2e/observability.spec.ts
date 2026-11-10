@@ -156,6 +156,78 @@ test.describe('PostHog', () => {
   });
 });
 
+test.describe('PostHog contact form event', () => {
+  const typed = {
+    name: 'Jane Testvisitor',
+    email: 'jane.testvisitor@example.com',
+    message: 'A private message that must never reach analytics.',
+  };
+
+  async function sendContactForm(page: Page, context: BrowserContext, formspreeStatus: number) {
+    await lookLikeAVisitor(context);
+    const sent = await recordRelays(context);
+    await context.route('https://formspree.io/**', (route) =>
+      route.fulfill({
+        status: formspreeStatus,
+        contentType: 'application/json',
+        body: formspreeStatus === 200 ? '{"ok":true}' : '{"error":"rejected"}',
+      }),
+    );
+    await page.goto('/contact');
+    // Wait for PostHog to load, so the submit is not the first thing it sees.
+    await expect
+      .poll(() => postHogEvents(sent).map((e) => e.event), { timeout: 15_000 })
+      .toContain('$pageview');
+    const form = page.locator('form[action*="formspree.io"]');
+    await form.locator('[name="name"]').fill(typed.name);
+    await form.locator('[name="email"]').fill(typed.email);
+    const subject = form.locator('[name="subject"]');
+    if ((await subject.evaluate((el) => el.tagName)) === 'SELECT') {
+      await subject.selectOption({ index: 1 });
+    } else {
+      await subject.fill('Test subject');
+    }
+    await form.locator('[name="message"]').fill(typed.message);
+    await form.locator('[type="submit"]').click();
+    return sent;
+  }
+
+  test('sends contact_form_sent after Formspree accepts, with nothing typed', async ({
+    page,
+    context,
+  }) => {
+    const sent = await sendContactForm(page, context, 200);
+    await expect
+      .poll(() => postHogEvents(sent).map((e) => e.event), { timeout: 15_000 })
+      .toContain('contact_form_sent');
+
+    // No PostHog payload, from any event, may carry what the visitor typed.
+    const everything = JSON.stringify(postHogEvents(sent));
+    for (const value of Object.values(typed)) expect(everything).not.toContain(value);
+  });
+
+  test('sends nothing when Formspree rejects the message', async ({ page, context }) => {
+    const sent = await sendContactForm(page, context, 422);
+    await expect(page.getByText('Your message did not send.')).toBeVisible();
+    await page.waitForTimeout(4_000);
+    expect(postHogEvents(sent).map((e) => e.event)).not.toContain('contact_form_sent');
+  });
+
+  test('ignores event names that are not on the allowlist', async ({ page, context }) => {
+    await lookLikeAVisitor(context);
+    const sent = await recordRelays(context);
+    await page.goto('/contact');
+    await expect
+      .poll(() => postHogEvents(sent).map((e) => e.event), { timeout: 15_000 })
+      .toContain('$pageview');
+    await page.evaluate(() =>
+      window.dispatchEvent(new CustomEvent('pcv-track', { detail: { event: 'jane@example.com' } })),
+    );
+    await page.waitForTimeout(4_000);
+    expect(JSON.stringify(postHogEvents(sent))).not.toContain('jane@example.com');
+  });
+});
+
 test.describe('Sentry', () => {
   test('the smoke-test hook reports one error, with no query string and no user', async ({
     page,

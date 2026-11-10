@@ -26,12 +26,35 @@
  */
 import { analytics } from '../config';
 
+/**
+ * Custom events. Page code fires `pcv-track` with `{ event: name }` (Alpine:
+ * `$dispatch('pcv-track', { event: 'contact_form_sent' })`), so no page has
+ * to import PostHog. Only names in this list are sent, with no properties,
+ * so a form field can never reach PostHog by mistake. Each name added here
+ * must also fit the PostHog row on the privacy page.
+ *   - contact_form_sent: Formspree accepted a contact message (src/pages/contact.astro).
+ */
+const allowedEvents = new Set(['contact_form_sent']);
+
+let capture: ((event: string) => void) | null = null;
+// Events fired before PostHog loads (it waits for `load`) wait here.
+const queued: string[] = [];
+
+function track(e: Event) {
+  const name = (e as CustomEvent<{ event?: unknown }>).detail?.event;
+  if (typeof name !== 'string' || !allowedEvents.has(name)) return;
+  if (capture) capture(name);
+  else queued.push(name);
+}
+
 async function start() {
   const { startPostHog } = await import('./posthog-client');
-  startPostHog();
+  capture = startPostHog();
+  for (const name of queued.splice(0)) capture(name);
 }
 
 if (window.location.hostname === analytics.productionHost) {
+  window.addEventListener('pcv-track', track);
   if (document.readyState === 'complete') {
     void start();
   } else {
