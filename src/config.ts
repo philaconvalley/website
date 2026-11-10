@@ -105,10 +105,15 @@ export const analytics = {
  * CSP violation reports skip the SDK: the browser writes the report body and
  * posts it straight to /relay/c, so `beforeSend` never sees it. The body's
  * `document-uri` carries the full page address, query string included
- * (checked 2026-11-09). The privacy page's "without anything after the ?"
- * holds only because of a server-side rule in the Sentry project `website`:
- * Settings > Security & Privacy > Advanced Data Scrubbing, Replace, regex
- * `\?[^\s"']*`, source `$string`. Keep that rule.
+ * (checked 2026-11-09). On the PR #239 smoke test, the org's default
+ * scrubbers replaced a `document-uri` holding `?email=` with `[Filtered]`,
+ * but a query with no email or card number would be stored as sent. For the
+ * privacy page's "without anything after the ?" to hold in every case, the
+ * Sentry project `website` needs: Settings > Security & Privacy > Advanced
+ * Data Scrubbing, Replace, regex `\?[^\s"']*`, source `$string`.
+ *
+ * Sentry also stores a city and country derived from the visitor's IP
+ * address, even with IP storage off. The privacy page says so.
  */
 export const errorTracking = {
   productionHost: analytics.productionHost,

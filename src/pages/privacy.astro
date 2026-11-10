@@ -67,7 +67,7 @@ const services = [
   {
     name: 'Sentry',
     where: 'Every page',
-    what: 'Only when something on the site breaks, or when our security rules block a script: the error, the page address without anything after the "?", and your browser and device type. It sets no cookies, and it does not store your IP address.',
+    what: 'Only when something on the site breaks, or when our security rules block a script: the error, the page address without anything after the "?", your browser and device type, and your city and country. It works out the city from your IP address, then discards the address. It sets no cookies.',
     policy: 'https://sentry.io/privacy/',
     code: 'src/scripts/errors.ts',
   },
