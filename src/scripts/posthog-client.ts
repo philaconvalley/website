@@ -37,7 +37,7 @@ function stripQueries(event: CaptureResult | null): CaptureResult | null {
   return event;
 }
 
-export function startPostHog() {
+export function startPostHog(): (event: string) => void {
   posthog.init(analytics.posthog.token, {
     api_host: analytics.posthog.apiHost,
     ui_host: analytics.posthog.uiHost,
@@ -61,4 +61,9 @@ export function startPostHog() {
       autocapture: AnalyticsExtensions.autocapture,
     },
   });
+
+  // Event name only: no properties beyond what PostHog adds to every event.
+  return (event: string) => {
+    posthog.capture(event);
+  };
 }
