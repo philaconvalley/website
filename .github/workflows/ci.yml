@@ -80,6 +80,11 @@ jobs:
       - name: Run security header suite
         run: npm run test:csp
 
+      # Builds a second copy of the site with PostHog and Sentry switched on for
+      # localhost, then checks what they send against the privacy page.
+      - name: Run observability suite
+        run: npm run test:observability
+
       - name: Upload Playwright report
         if: failure()
         uses: actions/upload-artifact@v7

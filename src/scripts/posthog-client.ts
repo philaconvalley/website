@@ -5,9 +5,37 @@
  * `posthog-js/dist/extension-bundles` keeps every extension (211 KB raw).
  * Settings and reasons: src/scripts/analytics.ts.
  */
-import posthog from 'posthog-js/dist/module.slim.no-external';
+import posthog, { type CaptureResult } from 'posthog-js/dist/module.slim.no-external';
 import { AnalyticsExtensions } from 'posthog-js/dist/extension-bundles';
 import { analytics } from '../config';
+
+/**
+ * Keeps `utm_*` parameters, which say which campaign sent a visitor, and drops
+ * every other query parameter and the fragment. A link like `?email=...` would
+ * otherwise reach PostHog in `$current_url` and `$referrer`. Sentry strips the
+ * same way (src/scripts/errors.ts). Non-URL strings pass through unchanged.
+ */
+export function keepOnlyUtm(value: string): string {
+  if (!/^https?:\/\//.test(value)) return value;
+  try {
+    const url = new URL(value);
+    for (const key of [...url.searchParams.keys()]) {
+      if (!key.startsWith('utm_')) url.searchParams.delete(key);
+    }
+    url.hash = '';
+    return url.toString();
+  } catch {
+    return value;
+  }
+}
+
+function stripQueries(event: CaptureResult | null): CaptureResult | null {
+  if (!event) return event;
+  for (const [key, value] of Object.entries(event.properties)) {
+    if (typeof value === 'string') event.properties[key] = keepOnlyUtm(value);
+  }
+  return event;
+}
 
 export function startPostHog() {
   posthog.init(analytics.posthog.token, {
@@ -27,6 +55,7 @@ export function startPostHog() {
     capture_exceptions: false,
     capture_performance: false,
     disable_external_dependency_loading: true,
+    before_send: stripQueries,
     // The slim build ships no features. This list is the only one it runs.
     __extensionClasses: {
       autocapture: AnalyticsExtensions.autocapture,

@@ -5,6 +5,6 @@ export default [
   ...eslintPluginAstro.configs.recommended,
   eslintConfigPrettier,
   {
-    ignores: ['dist/', 'node_modules/', '.astro/'],
+    ignores: ['dist/', 'dist-observability/', 'node_modules/', '.astro/'],
   },
 ];

@@ -72,9 +72,16 @@ export const discordInviteCode = 'hZKzHAKcbm';
  *
  * Only `productionHost` sends events, so local dev, CI, and Vercel previews
  * never pollute the numbers.
+ *
+ * `PUBLIC_OBSERVABILITY_HOST` exists for one build only: the one
+ * playwright.observability.config.ts makes, which sets it to `localhost` so
+ * e2e/observability.spec.ts can watch both tools run. Never set it in Vercel
+ * or in .env: production would stop sending events, with no error anywhere.
+ * The `?.` matters: e2e specs import this file in Node, where Vite has not
+ * defined `import.meta.env`.
  */
 export const analytics = {
-  productionHost: 'www.philaconvalley.com',
+  productionHost: import.meta.env?.PUBLIC_OBSERVABILITY_HOST ?? 'www.philaconvalley.com',
   posthog: {
     token: 'phc_BiGBNAmEG6BVFeh97gqAfprLTTrjpAS4MFmWcgkXtJ2g',
     apiHost: '/relay/p',

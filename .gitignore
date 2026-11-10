@@ -88,6 +88,8 @@ out
 # Nuxt.js build / generate output
 .nuxt
 dist
+# Test-only build with observability turned on (playwright.observability.config.ts)
+dist-observability
 
 # Gatsby files
 .cache/

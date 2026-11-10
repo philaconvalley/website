@@ -10,6 +10,11 @@ declare module 'alpinejs' {
   export default Alpine;
 }
 
+interface ImportMetaEnv {
+  /** Test-only override of the observability host. See `analytics` in src/config.ts. */
+  readonly PUBLIC_OBSERVABILITY_HOST?: string;
+}
+
 interface Window {
   Alpine: { start(): void };
 }

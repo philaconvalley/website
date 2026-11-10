@@ -8,14 +8,17 @@
  * which injects Vite HMR, the Astro dev toolbar, and a differently-hashed
  * inline analytics script. Neither reflects production. This does.
  *
- * Usage: node scripts/serve-with-headers.mjs [port]
+ * Usage: node scripts/serve-with-headers.mjs [port] [dir]
+ *
+ * `dir` defaults to `dist`. playwright.observability.config.ts passes its own
+ * build folder, so its test build never overwrites the one other suites use.
  */
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { join, extname, normalize } from 'node:path';
 
 const PORT = Number(process.argv[2] ?? 4322);
-const DIST = 'dist';
+const DIST = process.argv[3] ?? 'dist';
 
 const config = JSON.parse(await readFile('vercel.json', 'utf8'));
 

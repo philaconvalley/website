@@ -13,6 +13,7 @@
     "astro": "astro",
     "test:e2e": "playwright test",
     "test:csp": "playwright test --config playwright.csp.config.ts",
+    "test:observability": "playwright test --config playwright.observability.config.ts",
     "csp:hash": "node scripts/check-csp-hashes.mjs",
     "prepare": "husky",
     "data:refresh": "node scripts/refresh-community-data.mjs && node scripts/refresh-handbook-values.mjs && node scripts/refresh-projects.mjs",
