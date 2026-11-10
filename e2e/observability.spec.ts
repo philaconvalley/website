@@ -247,6 +247,27 @@ test.describe('Sentry', () => {
     await expectNothingStored(page, context);
   });
 
+  test('tags errors with the debug IDs Sentry needs to read the source maps', async ({
+    page,
+    context,
+  }) => {
+    // The Sentry Vite plugin (astro.config.mjs) stamps every bundle with a
+    // debug ID. The SDK sends the IDs of the files in the stack trace, and
+    // Sentry matches them to the uploaded maps. With no IDs, every stack
+    // trace stays minified, with no error anywhere.
+    const sent = await recordRelays(context);
+    await page.goto('/about#sentry-smoke-test');
+    await expect.poll(() => sentryEvents(sent).length, { timeout: 15_000 }).toBe(1);
+    const [event] = sentryEvents(sent);
+    const images: { type: string; code_file: string; debug_id: string }[] =
+      event.debug_meta?.images ?? [];
+    const thrower = event.exception.values[0].stacktrace.frames.at(-1).filename as string;
+    const image = images.find((i) => i.code_file === thrower);
+    expect(image, `no debug ID for ${thrower}`).toBeDefined();
+    expect(image!.type).toBe('sourcemap');
+    expect(image!.debug_id).toMatch(/^[0-9a-f-]{36}$/);
+  });
+
   test('ignores errors that do not come from our scripts', async ({ page, context }) => {
     const sent = await recordRelays(context);
     await page.goto('/about');
