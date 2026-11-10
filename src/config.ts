@@ -54,6 +54,34 @@ export const memberCountShown = Math.floor(community.memberCount / 100) * 100;
  */
 export const discordInviteCode = 'hZKzHAKcbm';
 
+/**
+ * Product analytics (PostHog). Every value here is public: the token ships in
+ * every page, and it can only send events, never read them.
+ *
+ * Privacy settings live in two places, and both must hold:
+ *   - Here and in src/scripts/analytics.ts: cookieless mode, no replay, no
+ *     surveys, no feature flags, and the no-external build, which never loads
+ *     a script from PostHog's servers.
+ *   - In the PostHog project (id 721700, US Cloud): "cookieless tracking" on
+ *     and "discard client IP data" on. Without the first, PostHog drops every
+ *     event this site sends, with no error in the browser.
+ *
+ * `apiHost` is a same-origin path. vercel.json rewrites it to PostHog, so the
+ * CSP keeps `connect-src 'self'` and ad blockers that match "posthog" in a URL
+ * do not drop events. If you change it, change the rewrite in vercel.json too.
+ *
+ * Only `productionHost` sends events, so local dev, CI, and Vercel previews
+ * never pollute the numbers.
+ */
+export const analytics = {
+  productionHost: 'www.philaconvalley.com',
+  posthog: {
+    token: 'phc_BiGBNAmEG6BVFeh97gqAfprLTTrjpAS4MFmWcgkXtJ2g',
+    apiHost: '/relay/p',
+    uiHost: 'https://us.posthog.com',
+  },
+} as const;
+
 export const links = {
   /** Main community channel. Slack stays up only for international members.
    *  A site path, not the invite itself: see discordInviteCode. */

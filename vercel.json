@@ -11,6 +11,7 @@
     { "source": "/resources/example-resource", "destination": "/resources", "permanent": true },
     { "source": "/resources/example-resource/", "destination": "/resources", "permanent": true }
   ],
+  "rewrites": [{ "source": "/relay/p/:path*", "destination": "https://us.i.posthog.com/:path*" }],
   "headers": [
     {
       "source": "/((?!games/).*)",

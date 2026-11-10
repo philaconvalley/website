@@ -39,10 +39,12 @@
     "@fontsource/baloo-2": "^5.3.0",
     "@fontsource/jetbrains-mono": "^5.3.0",
     "@fontsource/nunito": "^5.3.0",
+    "@sentry/browser": "^11.11.0",
     "@tailwindcss/typography": "^0.5.20",
     "@vercel/analytics": "^2.0.1",
     "alpinejs": "^3.17.5",
     "astro": "^7.4.5",
+    "posthog-js": "^1.447.6",
     "tailwindcss": "^3.4.19",
     "typescript": "^5.6.2"
   },

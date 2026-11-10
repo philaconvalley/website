@@ -86,6 +86,13 @@ const {
 
     <Analytics />
 
+    <!-- PostHog, bundled from node_modules like Alpine above, so it runs under
+         `script-src 'self'`. It sends events only on the production host.
+         See src/scripts/analytics.ts. -->
+    <script>
+      import '../scripts/analytics';
+    </script>
+
     <script is:inline type="application/ld+json">
       {
         "@context": "https://schema.org",
