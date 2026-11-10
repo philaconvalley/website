@@ -82,6 +82,27 @@ export const analytics = {
   },
 } as const;
 
+/**
+ * Error tracking (Sentry, org `philacon-valley`, project `website`). The DSN
+ * is public: it can only send events, never read them.
+ *
+ * `tunnel` is a same-origin path that vercel.json rewrites to this project's
+ * envelope endpoint, for the same reasons as PostHog's `apiHost`. If the
+ * project or DSN changes, change both rewrites in vercel.json: `/relay/s`
+ * (errors) and `/relay/c` (CSP violation reports, which carry the key in the
+ * rewrite's query string).
+ *
+ * The org setting "Prevent storing of IP addresses" must stay on. The privacy
+ * page promises it.
+ */
+export const errorTracking = {
+  productionHost: analytics.productionHost,
+  sentry: {
+    dsn: 'https://4cab24f9dc8c7cc446669b12da691111@o4511723969904640.ingest.us.sentry.io/4512405312176128',
+    tunnel: '/relay/s',
+  },
+} as const;
+
 export const links = {
   /** Main community channel. Slack stays up only for international members.
    *  A site path, not the invite itself: see discordInviteCode. */

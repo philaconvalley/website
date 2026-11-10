@@ -11,7 +11,17 @@
     { "source": "/resources/example-resource", "destination": "/resources", "permanent": true },
     { "source": "/resources/example-resource/", "destination": "/resources", "permanent": true }
   ],
-  "rewrites": [{ "source": "/relay/p/:path*", "destination": "https://us.i.posthog.com/:path*" }],
+  "rewrites": [
+    { "source": "/relay/p/:path*", "destination": "https://us.i.posthog.com/:path*" },
+    {
+      "source": "/relay/s",
+      "destination": "https://o4511723969904640.ingest.us.sentry.io/api/4512405312176128/envelope/"
+    },
+    {
+      "source": "/relay/c",
+      "destination": "https://o4511723969904640.ingest.us.sentry.io/api/4512405312176128/security/?sentry_key=4cab24f9dc8c7cc446669b12da691111&sentry_environment=production"
+    }
+  ],
   "headers": [
     {
       "source": "/((?!games/).*)",
@@ -21,7 +31,7 @@
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-eval' 'sha256-1OwAbc4G7c1DUB6w/kEy+GwdlrxhXJwNrw5cuEOgQJQ='; font-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-src 'self' https://luma.com https://lu.ma; connect-src 'self' formspree.io; form-action 'self' formspree.io; frame-ancestors 'none'"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-eval' 'sha256-1OwAbc4G7c1DUB6w/kEy+GwdlrxhXJwNrw5cuEOgQJQ='; font-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-src 'self' https://luma.com https://lu.ma; connect-src 'self' formspree.io; form-action 'self' formspree.io; frame-ancestors 'none'; report-uri /relay/c"
         },
         {
           "key": "Content-Security-Policy-Report-Only",

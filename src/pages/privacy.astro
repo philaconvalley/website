@@ -10,6 +10,7 @@ import { site, links } from '../config';
  * `services` matches one thing a visitor's browser talks to:
  *   - Vercel Analytics  -> <Analytics /> in src/layouts/BaseLayout.astro
  *   - PostHog           -> src/scripts/analytics.ts, loaded by BaseLayout.astro
+ *   - Sentry            -> src/scripts/errors.ts, and report-uri in vercel.json
  *   - Formspree         -> the form on src/pages/contact.astro
  *   - Luma              -> the calendar iframe on src/pages/events/index.astro
  *
@@ -64,6 +65,13 @@ const services = [
     code: 'src/scripts/analytics.ts',
   },
   {
+    name: 'Sentry',
+    where: 'Every page',
+    what: 'Only when something on the site breaks, or when our security rules block a script: the error, the page address without anything after the "?", and your browser and device type. It sets no cookies, and it does not store your IP address.',
+    policy: 'https://sentry.io/privacy/',
+    code: 'src/scripts/errors.ts',
+  },
+  {
     name: 'Formspree',
     where: 'Contact page',
     what: 'The name, email, and message you type into the contact form, only when you press send. Formspree delivers it to our inbox. We use it to reply to you. We do not add you to a mailing list.',
@@ -102,7 +110,7 @@ const services = [
           of visitors.
         </p>
         <p class="text-lg text-brand-dark/70">
-          Four outside services touch your visit. Each one is listed below, with what it receives.
+          Five outside services touch your visit. Each one is listed below, with what it receives.
         </p>
       </div>
     </div>
