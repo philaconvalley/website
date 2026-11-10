@@ -180,7 +180,11 @@ test.describe('Sentry', () => {
     await page.goto('/about');
     // Thrown from an inline evaluation: no stack frame in our bundles, the
     // same as an error from a browser extension or the console.
-    await page.evaluate(() => setTimeout(() => (null as unknown as () => void)(), 0));
+    await page.evaluate(() =>
+      setTimeout(() => {
+        throw new Error('inline error, not from our scripts');
+      }, 0),
+    );
     await page.waitForTimeout(3_000);
     expect(sentryEvents(sent)).toEqual([]);
   });
