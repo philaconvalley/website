@@ -221,6 +221,14 @@ const caseStudies = defineCollection({
       liveUrl: z.url().optional(),
       before: shot.optional(),
       after: shot.optional(),
+      // Photos from the day, for work with no site to screenshot: an event we
+      // hosted or a workshop we taught (Waskar, 11/11/2026). Only people who
+      // agreed to be photographed, and never a name in the alt text.
+      photos: z.array(shot).max(4).optional(),
+      // Where the card sits on /studio. Lower comes first. A story without an
+      // order goes after every story with one, newest first. Set it so the
+      // strongest proof leads, not the most recent (Waskar, 11/11/2026).
+      order: z.number().int().optional(),
       testimonial: z.object({ quote: z.string(), name: z.string(), role: z.string() }).optional(),
       // Free build nights this project paid for. Only a real, counted number:
       // the page says it to funders, so it must survive a question.
@@ -231,8 +239,8 @@ const caseStudies = defineCollection({
     .refine((c) => c.status === 'draft' || c.approval, {
       message: 'An approved case study needs an approval record.',
     })
-    .refine((c) => c.status === 'draft' || c.after || c.testimonial, {
-      message: 'An approved case study needs an after image or a testimonial to show.',
+    .refine((c) => c.status === 'draft' || c.after || c.photos?.length || c.testimonial, {
+      message: 'An approved case study needs an after image, a photo, or a testimonial to show.',
     }),
 });
 
