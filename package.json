@@ -45,7 +45,7 @@
     "@vercel/analytics": "^2.0.1",
     "alpinejs": "^3.17.5",
     "astro": "^7.4.5",
-    "posthog-js": "^1.447.6",
+    "posthog-js": "^1.447.7",
     "tailwindcss": "^3.4.19",
     "typescript": "^5.6.2"
   },
@@ -53,7 +53,7 @@
     "@playwright/test": "^1.64.1",
     "@sentry/vite-plugin": "^11.11.0",
     "@types/node": "^26.6.6",
-    "@typescript-eslint/parser": "^8.72.1",
+    "@typescript-eslint/parser": "^8.72.2",
     "autoprefixer": "^10.6.2",
     "eslint": "^10.14.0",
     "eslint-config-prettier": "^10.1.8",
