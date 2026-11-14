@@ -24,7 +24,7 @@ export async function getShowcase<C extends ShowcaseCollection>(
   const entries = await getCollection(collection);
   return entries
     .filter((entry) => showDrafts || isLive(entry))
-    .sort((a, b) => sortKey(a) - sortKey(b) || a.id.localeCompare(b.id));
+    .sort((a, b) => compare(a, b) || a.id.localeCompare(b.id));
 }
 
 /**
@@ -45,10 +45,19 @@ export async function getHireLink(): Promise<{ href: string; label: string }> {
     : { href: '/contact', label: 'Start a project' };
 }
 
-function sortKey(entry: CollectionEntry<ShowcaseCollection>): number {
-  // Case studies sort newest first; team and partners by their `order` field.
-  if ('order' in entry.data) return entry.data.order;
-  return -entry.data.date.getTime();
+function compare(
+  a: CollectionEntry<ShowcaseCollection>,
+  b: CollectionEntry<ShowcaseCollection>,
+): number {
+  // Team and partners sort by their required `order`. Case studies sort by
+  // their optional `order` first, then newest first, so a strong older story
+  // can lead the page.
+  const orderA = 'order' in a.data ? (a.data.order ?? Infinity) : Infinity;
+  const orderB = 'order' in b.data ? (b.data.order ?? Infinity) : Infinity;
+  if (orderA !== orderB) return orderA < orderB ? -1 : 1;
+  const dateA = 'date' in a.data ? a.data.date.getTime() : 0;
+  const dateB = 'date' in b.data ? b.data.date.getTime() : 0;
+  return dateB - dateA;
 }
 
 /**

@@ -15,11 +15,21 @@ interface Props {
 }
 
 const { study } = Astro.props;
-const { client, offer, line, liveUrl, before, after, testimonial, nightsFunded } = study.data;
-const shots = [
-  { label: 'Before', shot: before },
-  { label: 'After', shot: after },
-].filter((s) => s.shot || !isLive(study));
+const { client, offer, line, liveUrl, before, after, photos, testimonial, nightsFunded } =
+  study.data;
+// A build shows its site before and after. Many builds start from nothing, so
+// "before" appears only when the entry has one (Waskar, 11/11/2026). A draft
+// shows an empty "after" slot, so the card can be reviewed before the image
+// arrives. An event or a workshop has no site, so it shows photos instead.
+const shots =
+  offer === 'build'
+    ? [
+        { label: 'Before', shot: before, show: Boolean(before) },
+        { label: 'After', shot: after, show: Boolean(after) || !isLive(study) },
+      ].filter((s) => s.show)
+    : [];
+const dayPhotos = photos ?? [];
+const photoSlots = offer !== 'build' && dayPhotos.length === 0 && !isLive(study) ? 2 : 0;
 ---
 
 <article
@@ -63,6 +73,31 @@ const shots = [
             {label}
           </figcaption>
         </figure>
+      ))}
+    </div>
+  )}
+
+  {(dayPhotos.length > 0 || photoSlots > 0) && (
+    <div
+      class="grid gap-5 grid-cols-[repeat(auto-fit,minmax(min(280px,100%),1fr))]"
+      data-testid="studio-proof-photos"
+    >
+      {dayPhotos.map((photo) => (
+        <img
+          src={photo.image}
+          alt={photo.alt}
+          loading="lazy"
+          decoding="async"
+          class="block w-full aspect-[4/3] object-cover rounded-[16px] border-2 border-brand-dark bg-brand-dark/5"
+        />
+      ))}
+      {Array.from({ length: photoSlots }, () => (
+        <div
+          class="w-full aspect-[4/3] rounded-[16px] border-2 border-dashed border-brand-dark flex items-center justify-center font-bold text-brand-dark/60"
+          aria-hidden="true"
+        >
+          Photo from the day goes here
+        </div>
       ))}
     </div>
   )}
