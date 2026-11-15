@@ -19,6 +19,7 @@
     },
     {
       "source": "/relay/c",
+      "has": [{ "type": "host", "value": "www.philaconvalley.com" }],
       "destination": "https://o4511723969904640.ingest.us.sentry.io/api/4512405312176128/security/?sentry_key=4cab24f9dc8c7cc446669b12da691111&sentry_environment=production"
     }
   ],
