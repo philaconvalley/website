@@ -28,7 +28,9 @@ const columns = [
       { name: 'Arcade', href: '/arcade' },
       { name: 'Resources', href: '/resources' },
       // Shown only once /studio has approved client proof (src/lib/showcase.ts).
-      ...((await isStudioLive()) ? [{ name: 'Studio', href: '/studio' }] : []),
+      // Labelled "Hire us", not "Studio", so Join / Support / Hire us read as a
+      // choice of audience (Waskar, 11/11/2026). The page keeps its /studio URL.
+      ...((await isStudioLive()) ? [{ name: 'Hire us', href: '/studio' }] : []),
       // Blog is hidden until an editorial procedure exists — see src/pages/_blog/.
     ],
   },
