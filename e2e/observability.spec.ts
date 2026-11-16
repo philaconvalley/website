@@ -342,6 +342,16 @@ test.describe('relay wiring', () => {
     expect(reports.searchParams.get('sentry_key')).toBe(key);
   });
 
+  test('forwards CSP reports from production only', () => {
+    // Preview builds send the same headers, so without this condition their
+    // CSP reports reached Sentry tagged `production` (WEBSITE-6, WEBSITE-7).
+    // On any other host `/relay/c` falls through to a 404, and the browser
+    // drops the report.
+    const relay = vercel.rewrites.find((r: { source: string }) => r.source === '/relay/c');
+    const productionHost = config.match(/productionHost: [^']*'([^']+)'/)![1];
+    expect(relay.has).toEqual([{ type: 'host', value: productionHost }]);
+  });
+
   test('sends PostHog events to the US region the project lives in', () => {
     expect(config).toContain("apiHost: '/relay/p'");
     // `(.*)`, not `*`: posthog-js posts to paths with a trailing slash

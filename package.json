@@ -44,7 +44,7 @@
     "@tailwindcss/typography": "^0.5.20",
     "@vercel/analytics": "^2.0.1",
     "alpinejs": "^3.17.5",
-    "astro": "^7.4.5",
+    "astro": "^7.4.8",
     "posthog-js": "^1.447.6",
     "tailwindcss": "^3.4.19",
     "typescript": "^5.6.2"
@@ -68,6 +68,8 @@
     "node": ">=22.12.0"
   },
   "overrides": {
+    "@emnapi/core": "^1.11.3",
+    "@emnapi/runtime": "^1.11.3",
     "postcss-selector-parser": "^7.1.6"
   }
 }
