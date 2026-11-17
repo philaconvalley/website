@@ -184,6 +184,29 @@ const stats = [
             Join the community
           </Button>
         </div>
+        {/* Between nights, the hero says why its button reads "Get notified"
+            (11/17/2026). Week one had no night on the calendar, and the hero
+            gave no sign one was coming. The words are the Events page's
+            between-nights line. With an event, the header (desktop) and the
+            RSVP bar (phones) already name it, so the hero does not repeat it
+            (one instance visible at a time, EventBar.astro). Once that night
+            starts, the same line appears, as the button turns to "Get
+            notified" (public/js/event-freshness.js). */}
+        {nextEvent ? (
+          <p
+            hidden
+            data-pcv-event-after={nextEvent.start}
+            class="mt-5 mb-0 max-w-[34rem] text-base font-semibold"
+          >
+            The next night is on the way. Follow the calendar, and Luma lets you know when it is
+            posted.
+          </p>
+        ) : (
+          <p data-testid="hero-next-night" class="mt-5 mb-0 max-w-[34rem] text-base font-semibold">
+            The next night is on the way. Follow the calendar, and Luma lets you know when it is
+            posted.
+          </p>
+        )}
         <!-- The same live numbers as the pink band below, at a glance. They roll
              in like the band (public/js/home.js). The real number stays in the
              text, so screen readers read it; the rolling copy is aria-hidden.

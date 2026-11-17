@@ -5,6 +5,8 @@ import { test, expect } from '@playwright/test';
  * - The live numbers roll in like an odometer on every load, but the HTML and
  *   the screen reader copy always hold the real values.
  * - The hero shows one hero-eligible gallery photo, picked at random per visit.
+ * - Between nights, the hero says the next night is on the way (11/17/2026). Which test runs depends on the live calendar at build
+ *   time; the other skips, as on Events.
  */
 
 test('the live numbers settle on their real values, and screen readers never hear the count', async ({
@@ -296,4 +298,29 @@ test('print shows the real numbers, even ones that never came into view', async 
     await expect(counts.nth(i)).toHaveCSS('color', 'rgb(26, 26, 26)');
     await expect(counts.nth(i).locator('.odo-layer')).toBeHidden();
   }
+});
+
+const hasEvent = async (page: import('@playwright/test').Page) =>
+  (await page.locator('section[aria-label="Next event"]').count()) > 0;
+
+test('with an event, the hero does not repeat the event the header and RSVP bar show', async ({
+  page,
+}) => {
+  await page.goto('/');
+  test.skip(!(await hasEvent(page)), 'no upcoming event in this build');
+
+  await expect(page.getByTestId('hero-next-night')).toHaveCount(0);
+  await expect(page.getByTestId('home-rsvp')).toContainText('RSVP for the next night');
+});
+
+test('with no event, the hero says the next night is on the way, and never offers an RSVP', async ({
+  page,
+}) => {
+  await page.goto('/');
+  test.skip(await hasEvent(page), 'this build has an upcoming event');
+
+  await expect(page.getByTestId('hero-next-night')).toHaveText(
+    'The next night is on the way. Follow the calendar, and Luma lets you know when it is posted.',
+  );
+  await expect(page.getByTestId('home-rsvp')).toHaveText('Get notified');
 });
