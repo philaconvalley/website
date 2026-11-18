@@ -53,7 +53,34 @@ async function start() {
   for (const name of queued.splice(0)) capture(name);
 }
 
-if (window.location.hostname === analytics.productionHost) {
+/**
+ * Crew opt-out, so our own visits do not count as traffic. Cookieless mode
+ * cannot tell a crew member from a visitor, and PostHog discards IPs, so the
+ * filter has to live in the browser. A crew member opens any page with
+ * `?pcv-analytics=off` once per browser; `?pcv-analytics=on` undoes it.
+ * localStorage is per browser, so each laptop and phone needs its own visit.
+ *
+ * The privacy page says PostHog "stores nothing in your browser". That stays
+ * true for visitors: this only reads the key, and only someone who opens the
+ * opt-out link gets one. PostHog never loads for them, so it stores nothing.
+ */
+const OPT_OUT_KEY = 'pcv-no-analytics';
+
+function crewOptedOut(): boolean {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('pcv-analytics')) {
+      if (params.get('pcv-analytics') === 'off') localStorage.setItem(OPT_OUT_KEY, '1');
+      else localStorage.removeItem(OPT_OUT_KEY);
+    }
+    return localStorage.getItem(OPT_OUT_KEY) === '1';
+  } catch {
+    // Storage blocked: count the visit, as before this opt-out existed.
+    return false;
+  }
+}
+
+if (window.location.hostname === analytics.productionHost && !crewOptedOut()) {
   window.addEventListener('pcv-track', track);
   if (document.readyState === 'complete') {
     void start();

@@ -16,6 +16,7 @@
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { join, extname, normalize } from 'node:path';
+import { match, compile } from 'path-to-regexp';
 
 const PORT = Number(process.argv[2] ?? 4322);
 const DIST = process.argv[3] ?? 'dist';
@@ -40,17 +41,27 @@ const MIME = {
 };
 
 /**
- * Redirects from vercel.json, matched exactly. Every redirect in the file today
- * is a literal path. A pattern (`:slug`, `(.*)`) would need path-to-regexp to
- * match the way Vercel does, so fail loudly instead of silently skipping it.
+ * Redirects from vercel.json, matched the way Vercel matches them: in file
+ * order, first match wins, with path-to-regexp. The version is pinned to the
+ * one Vercel uses (6.1.0), so a pattern behaves the same here as in production.
+ * A literal source like `/discord` is just a pattern with no parameters.
  */
-const redirects = new Map();
-for (const rule of config.redirects ?? []) {
-  if (/[:(*]/.test(rule.source)) {
-    throw new Error(`serve-with-headers: redirect patterns are not supported: ${rule.source}`);
-  }
+const redirects = (config.redirects ?? []).map((rule) => ({
+  match: match(rule.source, { decode: decodeURIComponent }),
+  // External destinations (https://...) contain no `:param`, so compile is safe for both.
+  toLocation: rule.destination.startsWith('/')
+    ? compile(rule.destination, { validate: false })
+    : () => rule.destination,
   // Vercel answers `permanent: true` with 308 and `false` with 307.
-  redirects.set(rule.source, { location: rule.destination, status: rule.permanent ? 308 : 307 });
+  status: rule.permanent ? 308 : 307,
+}));
+
+function redirectFor(pathname) {
+  for (const rule of redirects) {
+    const found = rule.match(pathname);
+    if (found) return { status: rule.status, location: rule.toLocation(found.params) };
+  }
+  return null;
 }
 
 /** Headers from vercel.json whose `source` pattern matches this path. */
@@ -91,7 +102,7 @@ const server = createServer(async (req, res) => {
   const { pathname } = new URL(req.url, `http://localhost:${PORT}`);
   const headers = headersFor(pathname);
 
-  const redirect = redirects.get(pathname);
+  const redirect = redirectFor(pathname);
   if (redirect) {
     res.writeHead(redirect.status, { ...headers, Location: redirect.location });
     res.end();

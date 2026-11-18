@@ -154,6 +154,32 @@ test.describe('PostHog', () => {
     const click = postHogEvents(sent).find((e) => e.event === '$autocapture')!;
     expect(String(click.properties.$elements_chain)).toContain('/discord');
   });
+
+  test('sends nothing for a crew member who opted out, until they opt back in', async ({
+    page,
+    context,
+  }) => {
+    await lookLikeAVisitor(context);
+    const sent = await recordRelays(context);
+    const chunks: string[] = [];
+    page.on('request', (r) => {
+      if (r.url().includes('posthog-client')) chunks.push(r.url());
+    });
+
+    // The opt-out link, then a plain later visit: the key must persist.
+    await page.goto('/?pcv-analytics=off');
+    await page.goto('/about');
+    await page.waitForTimeout(5_000);
+    expect(sent).toEqual([]);
+    expect(chunks, 'the PostHog client should not even download').toEqual([]);
+
+    await page.goto('/?pcv-analytics=on');
+    await expect
+      .poll(() => postHogEvents(sent).map((e) => e.event), { timeout: 15_000 })
+      .toContain('$pageview');
+    // The opt-in parameter is not a utm_* tag, so it never reaches PostHog.
+    expect(JSON.stringify(postHogEvents(sent))).not.toContain('pcv-analytics');
+  });
 });
 
 test.describe('PostHog contact form event', () => {

@@ -19,6 +19,12 @@ export default defineConfig({
   // Canonical URLs, the sitemap, and og:url all come from this value, so it
   // must name the host that answers 200, not the one that redirects.
   site: 'https://www.philaconvalley.com',
+  // One address per page: `/about`, never `/about/`. Every internal link
+  // already omits the slash. Before this, canonical tags, og:url, and the
+  // sitemap added one, so search and shared links landed on `/about/` and
+  // PostHog counted one page as two. vercel.json redirects `/x/` to `/x`
+  // (except /games/, whose pages load files by relative path).
+  trailingSlash: 'never',
   vite: {
     plugins: [
       // Source maps for Sentry, so a production error points at the real file,
