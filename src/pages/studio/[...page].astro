@@ -109,26 +109,39 @@ const nightsLine =
     ? `What's left pays for free build nights, about ${numberWords[nightsFunded] ?? nightsFunded} so far.`
     : "What's left pays for free build nights.";
 
+// The three offers, each with the client stories that prove it (Waskar,
+// 11/17/2026: "it feels like we have three types of products"). A story sits
+// under its own offer, read from the `offer` field, so there is one source of
+// truth for what a story proves. The verb leads, because a buyer pictures the
+// work; `covers` names the product types under it, small. Build comes first:
+// it is what the hero promises. An offer with no approved story shows only
+// its heading, never an empty card.
 const offers = [
   {
+    offer: 'build',
     kind: 'We build',
+    covers: 'Development and design',
     title: 'Sites and tools you run yourself.',
     line: 'Websites, apps and intake forms for Philly nonprofits and community orgs. We train your team before we hand over the keys.',
     fill: 'bg-white',
   },
   {
+    offer: 'teach',
     kind: 'We teach',
+    covers: 'Workshops and programs',
     title: 'Workshops where people build.',
     line: 'Hands-on sessions for your staff, members or students. Everyone leaves with something they made, not just slides.',
     fill: 'bg-brand-yellow',
   },
   {
+    offer: 'host',
     kind: 'We host',
+    covers: 'Experiences and activations',
     title: 'Events where guests make something.',
     line: 'Build nights and activations for your conference, launch or community. Your guests make something together, not just swap cards.',
     fill: 'bg-brand-purple',
   },
-];
+].map((o) => ({ ...o, studies: studies.filter((study) => study.data.offer === o.offer) }));
 ---
 
 <BaseLayout
@@ -160,48 +173,40 @@ const offers = [
     </div>
   </section>
 
-  {/* The proof: each client the way a buyer needs to see them. */}
-  {studies.length > 0 && (
-    <section id="work" class="bg-white border-t-2 border-brand-dark">
-      <div class="container-custom py-[clamp(72px,9vw,120px)] flex flex-col gap-12">
-        <div class="flex flex-col gap-[22px] max-w-[760px]">
-          <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">The work</p>
-          <h2 class="m-0 heading-quiet [text-wrap:balance]">Don't take our word for it.</h2>
-        </div>
-        <div class="flex flex-col gap-10">
-          {studies.map((study) => (
-            <StudioProof study={study} />
-          ))}
-        </div>
-      </div>
-    </section>
-  )}
-
-  <!-- The two offers, one line each. -->
-  <section class="bg-brand-coral border-t-2 border-brand-dark">
-    <div class="container-custom py-[clamp(72px,9vw,120px)] flex flex-col gap-12">
+  <!-- What we do: the three offers, each followed by the client stories that
+       prove it. -->
+  <section id="work" class="bg-brand-coral border-t-2 border-brand-dark">
+    <div class="container-custom py-[clamp(72px,9vw,120px)] flex flex-col gap-16">
       <div class="flex flex-col gap-[22px] max-w-[760px]">
         <p class="m-0 font-black text-[13px] tracking-[0.2em] uppercase">What we do</p>
         <h2 class="m-0 heading-quiet [text-wrap:balance]">Three ways to work with us.</h2>
       </div>
-      <ul class="m-0 p-0 list-none grid gap-7 grid-cols-[repeat(auto-fit,minmax(min(320px,100%),1fr))]">
-        {offers.map((offer) => (
-          <li
+      {offers.map((offer) => (
+        <div class="flex flex-col gap-10" data-testid={`studio-offer-${offer.offer}`}>
+          <div
             class:list={[
               'rounded-[28px] border-2 border-brand-dark p-[clamp(28px,4vw,48px)] flex flex-col gap-5 shadow-[8px_8px_0_theme(colors.brand.dark)]',
               offer.fill,
             ]}
           >
-            <span class="self-start rounded-full border-2 border-brand-dark bg-white px-3 py-[3px] font-black text-xs tracking-[0.14em] uppercase">
-              {offer.kind}
-            </span>
+            <p class="m-0 flex flex-wrap items-center gap-3">
+              <span class="rounded-full border-2 border-brand-dark bg-white px-3 py-[3px] font-black text-xs tracking-[0.14em] uppercase">
+                {offer.kind}
+              </span>
+              <span class="font-extrabold text-[13px] tracking-[0.16em] uppercase">
+                {offer.covers}
+              </span>
+            </p>
             <h3 class="m-0 text-[clamp(28px,2.6vw,38px)] leading-[0.95] [text-wrap:balance]">
               {offer.title}
             </h3>
-            <p class="m-0 text-[18px] leading-[1.55]">{offer.line}</p>
-          </li>
-        ))}
-      </ul>
+            <p class="m-0 max-w-[760px] text-[18px] leading-[1.55]">{offer.line}</p>
+          </div>
+          {offer.studies.map((study) => (
+            <StudioProof study={study} />
+          ))}
+        </div>
+      ))}
       {teachPhotos.length > 0 && (
         <div class="flex flex-col gap-7" data-testid="studio-teach-proof">
           <div class="flex flex-wrap justify-between items-end gap-6">
