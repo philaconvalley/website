@@ -1,0 +1,14 @@
+# Bunni Brown said yes by email, 11/03/2026, to a client listing on the
+# PhilaCon website, the logo, and screenshots. Record: clients/dsm215/06-decisions/
+# DSM215_Case_Study_Consent_2026-11-11.md in the main PhilaCon repo. Logo: DSM's
+# own file (DSM_logo_var215_black.png, from their Basecamp logo folder), the
+# wordmark on their live site.
+name: Deep Space Mind.215
+role: Website client
+url: https://dsm215.com
+logo: /images/partners/dsm215.webp
+order: 15
+status: approved
+approval:
+  date: 2026-11-03
+  source: Email from Bunni Brown
