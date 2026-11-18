@@ -23,6 +23,7 @@ import '@fontsource/jetbrains-mono/500.css';
 import headingFont from '@fontsource/baloo-2/files/baloo-2-latin-800-normal.woff2?url';
 import '../styles/global.css';
 import SEO from '../components/SEO.astro';
+import { shareImage } from '../config';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Analytics from '@vercel/analytics/astro';
@@ -37,7 +38,7 @@ interface Props {
 const {
   title,
   description = "PhilaCon Valley - Philadelphia's tech community by us, for us. Centering Black, Brown, LGBTQIA+, and underrepresented folks in tech.",
-  image = '/images/1200x675 banner.webp',
+  image = shareImage.src,
   type = 'website',
 } = Astro.props;
 ---

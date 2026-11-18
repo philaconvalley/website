@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { readdirSync } from 'node:fs';
+import { shareImage } from '../src/config';
 
 /**
  * The site audit's cross-page rules (10/18/2026). Each page gets one job, so
@@ -97,6 +98,34 @@ test('each page has at most one loud section heading', async ({ page }) => {
     );
     expect(loud.length, `${route} has loud headings: ${loud.join(' | ')}`).toBeLessThanOrEqual(1);
   }
+});
+
+// The link thumbnail (11/17/2026): PNG at the Brand Book size, with its size
+// and alt text declared, and the size tags only where they are true.
+test('the default link thumbnail is a real 1200 x 675 PNG with alt text', async ({
+  page,
+  request,
+}) => {
+  await page.goto('/');
+  const share = await page.locator('meta[property="og:image"]').getAttribute('content');
+  expect(share).toBe(`https://www.philaconvalley.com${shareImage.src}`);
+  await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute('content', '1200');
+  await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute('content', '675');
+  await expect(page.locator('meta[property="og:image:alt"]')).toHaveAttribute(
+    'content',
+    shareImage.alt,
+  );
+
+  const image = await request.get(shareImage.src);
+  expect(image.status()).toBe(200);
+  expect(image.headers()['content-type']).toContain('image/png');
+  const png = await image.body();
+  // PNG header: width and height are big-endian at bytes 16 and 20.
+  expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([1200, 675]);
+
+  // A page with its own image must not inherit the default image's size.
+  await page.goto('/arcade/flappy-philacon');
+  await expect(page.locator('meta[property="og:image:width"]')).toHaveCount(0);
 });
 
 test('a recap shares its own cover photo and links the nights around it', async ({ page }) => {

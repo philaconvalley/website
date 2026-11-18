@@ -237,7 +237,7 @@ Each page can specify a unique Open Graph image for social sharing previews. Pas
 
 **Image specs**: 1200x675px, PNG or JPG. Place files in `public/images/`.
 
-Currently all pages use the default banner (`/images/1200x675 banner.png`). To add unique images per page, create them and add the `image` prop — the SEO component handles the rest.
+Pages without their own image use the default link thumbnail, `shareImage` in `src/config.ts` (the sunset logo on cream, 1200 x 675 PNG). To add unique images per page, create them and add the `image` prop — the SEO component handles the rest.
 
 ### Arcade cards (`src/pages/arcade/index.astro`)
 
