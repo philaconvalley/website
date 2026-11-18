@@ -9,7 +9,8 @@
     { "source": "/projects/example-project", "destination": "/projects", "permanent": true },
     { "source": "/projects/example-project/", "destination": "/projects", "permanent": true },
     { "source": "/resources/example-resource", "destination": "/resources", "permanent": true },
-    { "source": "/resources/example-resource/", "destination": "/resources", "permanent": true }
+    { "source": "/resources/example-resource/", "destination": "/resources", "permanent": true },
+    { "source": "/:path((?!games/).+)/", "destination": "/:path", "permanent": true }
   ],
   "rewrites": [
     { "source": "/relay/p/:path(.*)", "destination": "https://us.i.posthog.com/:path" },
