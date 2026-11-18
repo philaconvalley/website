@@ -55,6 +55,24 @@ export const memberCountShown = Math.floor(community.memberCount / 100) * 100;
 export const discordInviteCode = 'hZKzHAKcbm';
 
 /**
+ * The link thumbnail (og:image) for every page that does not set its own.
+ * Discord, Slack, iMessage, and LinkedIn show it when someone pastes a link.
+ *   - 1200 x 675, per company/brand/ASSET-SPECS.md (Brand Book §11).
+ *   - The sunset logo, unchanged, on cream (#FFEED0). The full lockup sits in
+ *     the middle square, so apps that crop to a square (iMessage, WhatsApp)
+ *     still show all of it. Chosen by Waskar, 11/17/2026.
+ *   - PNG, not WebP: some link scrapers (LinkedIn among them) skip WebP.
+ * SEO.astro adds width, height, and alt tags only for this image, because
+ * pages that pass their own image (arcade, event recaps) use other sizes.
+ */
+export const shareImage = {
+  src: '/images/share-sunset-logo-1200x675.png',
+  width: 1200,
+  height: 675,
+  alt: 'PhilaCon Valley logo: a yellow pigeon carrying the Philadelphia skyline, standing on a purple keyboard, on a cream background.',
+} as const;
+
+/**
  * Product analytics (PostHog). Every value here is public: the token ships in
  * every page, and it can only send events, never read them.
  *
