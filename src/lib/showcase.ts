@@ -29,13 +29,22 @@ export async function getShowcase<C extends ShowcaseCollection>(
 
 /**
  * Whether /studio exists. The page is the proof a buyer needs, so it goes live
- * only with at least one approved client story; a page of claims with no
- * proof is the brochure it is meant to replace (Waskar, 10/18/2026). Until
- * then the nav hides it and "hire us" buttons go to /contact. In `astro dev`
- * a draft story is enough, so the page can be reviewed.
+ * only with approved client proof; a page of claims with no proof is the
+ * brochure it is meant to replace (Waskar, 10/18/2026). Until then the nav
+ * hides it and "hire us" buttons go to /contact.
+ *
+ * The proof must include an approved "build" story (Waskar, 11/17/2026). The
+ * hero promises sites a team runs itself, so the page cannot launch on a
+ * hosted event alone: a buyer would read the promise and find no site under
+ * it. Teach and host stories can be approved early; they wait for a build.
+ *
+ * In `astro dev` any story is enough, drafts included, so the page can be
+ * reviewed before an approval arrives.
  */
 export async function isStudioLive(): Promise<boolean> {
-  return (await getShowcase('caseStudies')).length > 0;
+  const studies = await getShowcase('caseStudies');
+  if (showDrafts) return studies.length > 0;
+  return studies.some((study) => study.data.offer === 'build');
 }
 
 /** Where a "hire us" button goes: /studio once it is live, /contact before. */
