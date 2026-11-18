@@ -1,0 +1,28 @@
+# Deep Space Mind.215 (DSM215). Bunni Brown approved the case study text, and
+# said yes to it on the website and on social media, by email 11/12/2026,
+# 4:09 PM: "I'm cool with it being on the website and on socials!" She agreed
+# to screenshots of DSM215's public pages in writing on 11/03/2026. Neither
+# screenshot shows a real face. Record: clients/dsm215/06-decisions/ in the
+# main PhilaCon repo (DSM215_Case_Study_Website_Approval_2026-11-12.md).
+client: Deep Space Mind.215
+offer: build
+line: We rebuilt a mental health cooperative's website and service request form, then taught the team to run it themselves.
+date: 2026-09-22
+liveUrl: https://dsm215.com
+before:
+  image: /images/studio/dsm215-before.webp
+  alt: The old Deep Space Mind 215 homepage, white text and round buttons on a black page
+after:
+  image: /images/studio/dsm215-after.webp
+  alt: The new Deep Space Mind.215 homepage, a dotted head illustration on a deep blue background above the menu
+# One sentence from the approved quote, her words as approved.
+testimonial:
+  quote: Waskar inspired us to brain dump all our little and big ideas, and he synthesized the messiness into something manageable and cohesive.
+  name: Bunni Brown
+  role: Co-founder, DSM215
+# The first client story leads the build shelf.
+order: 10
+status: approved
+approval:
+  date: 2026-11-12
+  source: Email from Bunni Brown
