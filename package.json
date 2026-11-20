@@ -60,7 +60,7 @@
     "eslint-plugin-astro": "^3.2.1",
     "husky": "^9.1.7",
     "lint-staged": "^17.6.0",
-    "path-to-regexp": "6.1.0",
+    "path-to-regexp": "9.0.0",
     "prettier": "^3.10.1",
     "prettier-plugin-astro": "^1.1.2",
     "semver": "7.8.6"
